@@ -6,13 +6,10 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.BottomSheetScaffold
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
-import androidx.compose.material3.rememberBottomSheetScaffoldState
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -44,8 +41,8 @@ class MainActivity : ComponentActivity() {
                     currentBackStackEntry.value?.destination?.route.toString()
                 }
                 val systemUIController = rememberSystemUiController()
-                systemUIController.setNavigationBarColor(MaterialTheme.colorScheme.surface)
-                systemUIController.setStatusBarColor(MaterialTheme.colorScheme.background)
+                systemUIController.setNavigationBarColor(NavigationBarDefaults.containerColor)
+                systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
                     if (NavigationRoutes.values().any {
                             it.name == currentRoute

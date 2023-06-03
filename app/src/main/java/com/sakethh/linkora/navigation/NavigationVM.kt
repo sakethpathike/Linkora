@@ -1,11 +1,13 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.CollectionsBookmark
 import androidx.compose.material.icons.filled.DatasetLinked
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.Collections
 import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocalLibrary
@@ -29,8 +31,8 @@ class NavigationVM : ViewModel() {
             navigationRoute = NavigationRoutes.HOME_SCREEN
         ),
         BtmNavigationItem(
-            selectedIcon = Icons.Filled.LocalLibrary,
-            nonSelectedIcon = Icons.Outlined.LocalLibrary,
+            selectedIcon = Icons.Filled.Collections,
+            nonSelectedIcon = Icons.Outlined.Collections,
             navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
         ),
         BtmNavigationItem(

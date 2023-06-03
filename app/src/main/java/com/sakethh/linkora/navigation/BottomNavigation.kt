@@ -24,8 +24,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .requiredHeight(55.dp),
-            containerColor = MaterialTheme.colorScheme.surface
+                .requiredHeight(55.dp)
         ) {
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
