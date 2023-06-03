@@ -36,18 +36,18 @@ object ArticleDataRetriever {
             },
                 async {
                     articleData.imgURLOfTheArticle.value =
-                        jsoupInstance.body().selectFirst("img[src]:not([src=''])")
+                        jsoupInstance.body().selectFirst("article")?.selectFirst("picture")?.selectFirst("img[src]:not([src=''])")
                             ?.absUrl("src").toString()
                 },
                 async { articleData.baseURLOfTheArticle.value = jsoupInstance.baseUri() },
                 async {
-                    val htmlOfArticle = jsoupInstance.body().select("article").outerHtml()
+                    val htmlOfArticle = jsoupInstance.body().select("article").select("ch bg dx dy dz ea").outerHtml()
                     articleData.markDownText.value =
                         FlexmarkHtmlConverter.builder().build().convert(htmlOfArticle)
                 },
                 async {
                     articleData.authorOfTheArticle.value =
-                        jsoupInstance.selectFirst("meta[name=author]")?.attr("content") ?: ""
+                        jsoupInstance.selectFirst("author")?.ownText() ?: ""
                 })
         }
         return articleData
