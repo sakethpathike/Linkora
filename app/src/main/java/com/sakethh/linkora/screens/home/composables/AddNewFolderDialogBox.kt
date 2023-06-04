@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home.composables
 
+
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -8,7 +9,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
@@ -27,16 +27,14 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
-    val linkTextFieldValue = rememberSaveable {
+fun AddNewFolderDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
+    val folderNameTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
     val noteTextFieldValue = rememberSaveable {
@@ -50,7 +48,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                 onDismissRequest = { shouldDialogBoxEnabled.value = false }) {
                 Column {
                     Text(
-                        text = "Save new link",
+                        text = "Create new folder",
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -65,7 +63,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                         ),
                         label = {
                             Text(
-                                text = "Link",
+                                text = "Folder name",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
@@ -74,9 +72,9 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
                         shape = RoundedCornerShape(5.dp),
-                        value = linkTextFieldValue.value,
+                        value = folderNameTextFieldValue.value,
                         onValueChange = {
-                            linkTextFieldValue.value = it
+                            folderNameTextFieldValue.value = it
                         })
                     OutlinedTextField(
                         maxLines = 1,
@@ -87,7 +85,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                         ),
                         label = {
                             Text(
-                                text = "Note for why you're saving this link",
+                                text = "Note for why you're creating this folder",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
@@ -100,27 +98,6 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    Row(
-                        Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 30.dp
-                        ),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Save in",
-                            color = AlertDialogDefaults.textContentColor,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 18.sp
-                        )
-                        IconButton(onClick = { }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDropDown,
-                                contentDescription = null
-                            )
-                        }
-                    }
                     Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
                         shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
@@ -131,7 +108,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                             .align(Alignment.End),
                         onClick = { shouldDialogBoxEnabled.value = false }) {
                         Text(
-                            text = "Save",
+                            text = "Create",
                             color = AlertDialogDefaults.containerColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
