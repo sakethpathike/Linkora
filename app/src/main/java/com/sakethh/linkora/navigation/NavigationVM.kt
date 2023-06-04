@@ -8,6 +8,7 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Collections
+import androidx.compose.material.icons.outlined.CollectionsBookmark
 import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocalLibrary
@@ -31,8 +32,8 @@ class NavigationVM : ViewModel() {
             navigationRoute = NavigationRoutes.HOME_SCREEN
         ),
         BtmNavigationItem(
-            selectedIcon = Icons.Filled.Collections,
-            nonSelectedIcon = Icons.Outlined.Collections,
+            selectedIcon = Icons.Filled.CollectionsBookmark,
+            nonSelectedIcon = Icons.Outlined.CollectionsBookmark,
             navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
         ),
         BtmNavigationItem(

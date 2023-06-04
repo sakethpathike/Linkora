@@ -82,17 +82,17 @@ fun LinkoraTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit,
 ) {
-    val colors = /*when {
+    val colors = when {
         dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
             val context = LocalContext.current
             if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
-        else -> */ if(useDarkTheme){
+        else ->  if(useDarkTheme){
             DarkColors
         }else{
             LightColors
         }
-    /*}*/
+    }
 
     MaterialTheme(
         colorScheme = colors,
