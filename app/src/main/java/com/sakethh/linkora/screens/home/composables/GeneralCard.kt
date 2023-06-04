@@ -49,7 +49,6 @@ fun GeneralCard(title: String, webBaseURL: String, imgURL: String) {
             ) {
                 Text(
                     text = title,
-                    color = MaterialTheme.colorScheme.primary,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 15.dp, top = 20.dp, end = 15.dp),
@@ -60,7 +59,6 @@ fun GeneralCard(title: String, webBaseURL: String, imgURL: String) {
                 )
                 Text(
                     text = webBaseURL,
-                    color = MaterialTheme.colorScheme.secondary,
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,

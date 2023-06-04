@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -41,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     currentBackStackEntry.value?.destination?.route.toString()
                 }
                 val systemUIController = rememberSystemUiController()
-                systemUIController.setNavigationBarColor(NavigationBarDefaults.containerColor)
+                systemUIController.setNavigationBarColor(MaterialTheme.colorScheme.onSurfaceVariant)
                 systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
                     if (NavigationRoutes.values().any {
@@ -61,7 +62,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                Scaffold {
+                Scaffold(modifier = Modifier) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState, sheetContent = {

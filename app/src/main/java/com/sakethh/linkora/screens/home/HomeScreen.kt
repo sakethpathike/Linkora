@@ -88,99 +88,106 @@ fun HomeScreen() {
         isMainFabRotated.value = false
     }
     LinkoraTheme {
-        Scaffold(floatingActionButton = {
-            Column(modifier = Modifier.padding(bottom = 60.dp)) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    if (isMainFabRotated.value) {
+        Scaffold(
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+            floatingActionButton = {
+                Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.align(Alignment.End)
+                    ) {
+                        if (isMainFabRotated.value) {
+                            AnimatedVisibility(
+                                visible = isMainFabRotated.value,
+                                enter = fadeIn(tween(200)),
+                                exit = fadeOut(tween(200))
+                            ) {
+                                Text(
+                                    text = "Create new folder",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                                )
+                            }
+                        }
                         AnimatedVisibility(
                             visible = isMainFabRotated.value,
-                            enter = fadeIn(tween(200)),
-                            exit = fadeOut(tween(200))
-                        ) {
-                            Text(
-                                text = "Create new folder",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                            enter = scaleIn(animationSpec = tween(300)),
+                            exit = scaleOut(
+                                tween(300)
                             )
+                        ) {
+                            FloatingActionButton(
+                                shape = RoundedCornerShape(10.dp),
+                                onClick = {
+                                    shouldScreenTransparencyDecreased.value = false
+                                    shouldDialogForNewFolderEnabled.value = true
+                                }) {
+                                Icon(
+                                    imageVector = Icons.Default.CreateNewFolder,
+                                    contentDescription = null
+                                )
+                            }
                         }
+
                     }
-                    AnimatedVisibility(
-                        visible = isMainFabRotated.value,
-                        enter = scaleIn(animationSpec = tween(300)),
-                        exit = scaleOut(
-                            tween(300)
-                        )
+                    Spacer(modifier = Modifier.height(15.dp))
+                    Row(
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.align(Alignment.End)
                     ) {
+                        if (isMainFabRotated.value) {
+                            AnimatedVisibility(
+                                visible = isMainFabRotated.value,
+                                enter = fadeIn(tween(200)),
+                                exit = fadeOut(tween(200))
+                            ) {
+                                Text(
+                                    text = "Add new link",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                                )
+                            }
+                        }
                         FloatingActionButton(
+                            modifier = Modifier.rotate(rotationAnimation.value),
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
-                                shouldScreenTransparencyDecreased.value = false
-                                shouldDialogForNewFolderEnabled.value = true
+                                if (isMainFabRotated.value) {
+                                    shouldScreenTransparencyDecreased.value = false
+                                    shouldDialogForNewLinkEnabled.value = true
+                                } else {
+                                    coroutineScope.launch {
+                                        awaitAll(async {
+                                            rotationAnimation.animateTo(
+                                                360f,
+                                                animationSpec = tween(300)
+                                            )
+                                        }, async {
+                                            shouldScreenTransparencyDecreased.value = true
+                                            delay(10L)
+                                            isMainFabRotated.value = true
+                                        })
+                                    }.invokeOnCompletion {
+                                        coroutineScope.launch {
+                                            rotationAnimation.snapTo(0f)
+                                        }
+                                    }
+                                }
                             }) {
                             Icon(
-                                imageVector = Icons.Default.CreateNewFolder,
+                                imageVector = currentIconForMainFAB.value,
                                 contentDescription = null
                             )
                         }
                     }
-
                 }
-                Spacer(modifier = Modifier.height(15.dp))
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier.align(Alignment.End)
-                ) {
-                    if (isMainFabRotated.value) {
-                        AnimatedVisibility(
-                            visible = isMainFabRotated.value,
-                            enter = fadeIn(tween(200)),
-                            exit = fadeOut(tween(200))
-                        ) {
-                            Text(
-                                text = "Add new link",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(top = 20.dp, end = 15.dp)
-                            )
-                        }
-                    }
-                    FloatingActionButton(
-                        modifier = Modifier.rotate(rotationAnimation.value),
-                        shape = RoundedCornerShape(10.dp),
-                        onClick = {
-                            if (isMainFabRotated.value) {
-                                shouldScreenTransparencyDecreased.value = false
-                                shouldDialogForNewLinkEnabled.value = true
-                            } else {
-                                coroutineScope.launch {
-                                    awaitAll(async {
-                                        rotationAnimation.animateTo(
-                                            360f,
-                                            animationSpec = tween(300)
-                                        )
-                                    }, async {
-                                        shouldScreenTransparencyDecreased.value = true
-                                        delay(10L)
-                                        isMainFabRotated.value = true
-                                    })
-                                }.invokeOnCompletion {
-                                    coroutineScope.launch {
-                                        rotationAnimation.snapTo(0f)
-                                    }
-                                }
-                            }
-                        }) {
-                        Icon(imageVector = currentIconForMainFAB.value, contentDescription = null)
-                    }
-                }
-            }
-        }, floatingActionButtonPosition = FabPosition.End) {
+            },
+            floatingActionButtonPosition = FabPosition.End
+        ) {
             val homeScreenVM: HomeScreenVM = viewModel()
             val currentPhaseOfTheDay =
                 rememberSaveable(inputs = arrayOf(homeScreenVM.currentPhaseOfTheDay.value)) {
@@ -223,8 +230,8 @@ fun HomeScreen() {
                         }
                         items(8) {
                             GeneralCard(
-                                title = "",
-                                webBaseURL = "",
+                                title = "ergferg",
+                                webBaseURL = "regrgttrg",
                                 imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
                             )
                             Spacer(modifier = Modifier.width(10.dp))
