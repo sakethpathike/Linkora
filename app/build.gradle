@@ -91,4 +91,6 @@ dependencies {
     implementation 'org.jsoup:jsoup:1.16.1'
     implementation 'com.vladsch.flexmark:flexmark-html2md-converter:0.64.0'
     implementation 'com.halilibo.compose-richtext:richtext-commonmark:0.16.0'
+
+    implementation 'androidx.datastore:datastore-preferences:1.0.0-alpha01'
 }

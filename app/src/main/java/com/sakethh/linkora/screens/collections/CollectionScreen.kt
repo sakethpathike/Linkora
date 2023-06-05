@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
@@ -105,6 +106,28 @@ fun CollectionScreen() {
                     }
                 }
                 item {
+                    Card(
+                        shape = RoundedCornerShape(10.dp), modifier = Modifier
+                            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                    ) {
+                        Row {
+                            Icon(
+                                modifier = Modifier.padding(20.dp),
+                                imageVector = Icons.Outlined.Delete,
+                                contentDescription = null
+                            )
+                            Text(
+                                text = "Trash",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(top = 25.dp)
+                            )
+                        }
+                    }
+                }
+                item {
                     Divider(thickness = 0.5.dp, modifier = Modifier.padding(25.dp))
                 }
                 item {
@@ -162,7 +185,7 @@ fun CollectionScreen() {
                                 Icon(
                                     imageVector = Icons.Filled.MoreVert,
                                     contentDescription = null,
-                                    modifier =  Modifier.padding(top = 20.dp,end=8.dp)
+                                    modifier =  Modifier.padding(top = 30.dp,end=8.dp)
                                 )
                             }
                         }

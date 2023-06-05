@@ -9,6 +9,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 
 private val LightColors = lightColorScheme(
@@ -82,17 +83,26 @@ fun LinkoraTheme(
     dynamicColor: Boolean = true,
     content: @Composable() () -> Unit,
 ) {
-    val colors = /*when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    val context = LocalContext.current
+    val colors = when {
+        SettingsScreenVM.Settings.shouldFollowDynamicTheming.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
+                if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
+                    context
+                )
+            } else {
+                if (SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) dynamicDarkColorScheme(
+                    context
+                ) else dynamicLightColorScheme(context)
+            }
         }
-        else -> */ if(useDarkTheme){
-            DarkColors
-        }else{
-            LightColors
+
+        else -> if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
+            if (useDarkTheme) DarkColors else LightColors
+        } else {
+            if (SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) DarkColors else LightColors
         }
-   /* }*/
+    }
 
     MaterialTheme(
         colorScheme = colors,
