@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -73,7 +75,7 @@ class MainActivity : ComponentActivity() {
                     currentBackStackEntry.value?.destination?.route.toString()
                 }
                 val systemUIController = rememberSystemUiController()
-                systemUIController.setNavigationBarColor(MaterialTheme.colorScheme.onSurfaceVariant)
+                systemUIController.setNavigationBarColor(NavigationVM.btmNavBarContainerColor.value)
                 systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
                     if (NavigationRoutes.values().any {
@@ -93,7 +95,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                Scaffold(modifier = Modifier) {
+                Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState, sheetContent = {

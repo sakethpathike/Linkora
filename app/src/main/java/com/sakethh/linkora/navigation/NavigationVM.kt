@@ -13,6 +13,10 @@ import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.LocalLibrary
 import androidx.compose.material.icons.outlined.Settings
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarDefaults
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
 
@@ -42,4 +46,8 @@ class NavigationVM : ViewModel() {
             navigationRoute = NavigationRoutes.SETTINGS_SCREEN
         ),
     )
+
+    companion object{
+        val btmNavBarContainerColor = mutableStateOf(Color(Color.Transparent.value))
+    }
 }

@@ -1,6 +1,5 @@
 package com.sakethh.linkora.screens.settings
 
-import android.os.Build
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.DataStore
@@ -21,6 +20,12 @@ data class SettingsUIElement(
 )
 
 class SettingsScreenVM : ViewModel() {
+
+    companion object {
+        const val currentAppVersion = "0.0.1"
+        val latestAppVersionFromServer = mutableStateOf("0.0.1")
+    }
+
     val themeSection = listOf(
         SettingsUIElement(
             title = "Use dynamic theming",
@@ -34,8 +39,13 @@ class SettingsScreenVM : ViewModel() {
                         preferenceKey = preferencesKey(
                             SettingsPreferences.DYNAMIC_THEMING.name
                         ), dataStore = Settings.dataStore,
-                        newValue = Settings.shouldFollowDynamicTheming.value
+                        newValue = !Settings.shouldFollowDynamicTheming.value
                     )
+                    Settings.shouldFollowDynamicTheming.value =
+                        Settings.readPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
+                            dataStore = Settings.dataStore
+                        ) == true
                 }
             }
         ),
@@ -51,8 +61,13 @@ class SettingsScreenVM : ViewModel() {
                         preferenceKey = preferencesKey(
                             SettingsPreferences.FOLLOW_SYSTEM_THEME.name
                         ), dataStore = Settings.dataStore,
-                        newValue = Settings.shouldFollowSystemTheme.value
+                        newValue = !Settings.shouldFollowSystemTheme.value
                     )
+                    Settings.shouldFollowSystemTheme.value =
+                        Settings.readPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
+                            dataStore = Settings.dataStore
+                        ) == true
                 }
             }
         ),
@@ -68,8 +83,13 @@ class SettingsScreenVM : ViewModel() {
                         preferenceKey = preferencesKey(
                             SettingsPreferences.DARK_THEME.name
                         ), dataStore = Settings.dataStore,
-                        newValue = Settings.shouldDarkThemeBeEnabled.value
+                        newValue = !Settings.shouldDarkThemeBeEnabled.value
                     )
+                    Settings.shouldDarkThemeBeEnabled.value =
+                        Settings.readPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsPreferences.DARK_THEME.name),
+                            dataStore = Settings.dataStore
+                        ) == true
                 }
             }
         ),
@@ -83,14 +103,7 @@ class SettingsScreenVM : ViewModel() {
             isSwitchNeeded = false,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
-                viewModelScope.launch {
-                    Settings.changePreferenceValue(
-                        preferenceKey = preferencesKey(
-                            SettingsPreferences.DYNAMIC_THEMING.name
-                        ), dataStore = Settings.dataStore,
-                        newValue = Settings.shouldFollowDynamicTheming.value
-                    )
-                }
+
             }
         ),
         SettingsUIElement(
@@ -100,14 +113,7 @@ class SettingsScreenVM : ViewModel() {
             isSwitchNeeded = false,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
-                viewModelScope.launch {
-                    Settings.changePreferenceValue(
-                        preferenceKey = preferencesKey(
-                            SettingsPreferences.DYNAMIC_THEMING.name
-                        ), dataStore = Settings.dataStore,
-                        newValue = Settings.shouldFollowDynamicTheming.value
-                    )
-                }
+
             }
         )
     )
@@ -138,6 +144,24 @@ class SettingsScreenVM : ViewModel() {
             dataStore.edit {
                 it[preferenceKey] = newValue
             }
+        }
+    }
+
+    fun preferencesKeyValueForThemingSection(name: String): String {
+        return when (name) {
+            themeSection[0].title -> SettingsPreferences.DYNAMIC_THEMING.name
+            themeSection[1].title -> SettingsPreferences.FOLLOW_SYSTEM_THEME.name
+            themeSection[2].title -> SettingsPreferences.DARK_THEME.name
+            else -> ""
+        }
+    }
+
+    fun booleanValueForThemingSection(name: String): Boolean {
+        return when (name) {
+            themeSection[0].title -> Settings.shouldFollowDynamicTheming.value
+            themeSection[1].title -> Settings.shouldFollowSystemTheme.value
+            themeSection[2].title -> Settings.shouldDarkThemeBeEnabled.value
+            else -> false
         }
     }
 }

@@ -7,6 +7,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -26,6 +27,7 @@ fun BottomNavigationBar(navController: NavController) {
                 .fillMaxWidth()
                 .requiredHeight(55.dp)
         ) {
+            NavigationVM.btmNavBarContainerColor.value = NavigationBarDefaults.containerColor
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name,
