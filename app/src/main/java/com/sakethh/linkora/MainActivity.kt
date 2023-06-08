@@ -38,29 +38,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         SettingsScreenVM.Settings.dataStore = createDataStore("linkoraDataStore")
         lifecycleScope.launch {
-            awaitAll(
-                async {
-                    SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
-                        SettingsScreenVM.Settings.readPreferenceValue(
-                            preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
-                            dataStore = SettingsScreenVM.Settings.dataStore
-                        ) == true
-                },
-                async {
-                    SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
-                        SettingsScreenVM.Settings.readPreferenceValue(
-                            preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.DARK_THEME.name),
-                            dataStore = SettingsScreenVM.Settings.dataStore
-                        ) == true
-                },
-                async {
-                    SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
-                        SettingsScreenVM.Settings.readPreferenceValue(
-                            preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name),
-                            dataStore = SettingsScreenVM.Settings.dataStore
-                        ) == true
-                }
-            )
+           SettingsScreenVM.Settings.readAllPreferencesValues()
         }
         setContent {
             LinkoraTheme {

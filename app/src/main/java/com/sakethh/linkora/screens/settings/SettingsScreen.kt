@@ -9,18 +9,25 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -30,14 +37,26 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.R
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
+import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
+import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScreen() {
     val settingsScreenVM: SettingsScreenVM = viewModel()
     val themeSectionData = settingsScreenVM.themeSection
     val generalSectionData = settingsScreenVM.generalSection
+    val coroutineScope = rememberCoroutineScope()
+    val shouldVersionCheckerDialogAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     LinkoraTheme {
         Scaffold(topBar = {
             TopAppBar(title = {
@@ -77,7 +96,21 @@ fun SettingsScreen() {
                             hasDescription = false,
                             description = "",
                             icon = Icons.Outlined.Update,
-                            title = "Check for latest version"
+                            title = "Check for latest version",
+                            onClick = {
+                                shouldVersionCheckerDialogAppear.value = true
+                                coroutineScope.launch {
+                                    delay(1000L)
+                                }.invokeOnCompletion {
+                                    shouldVersionCheckerDialogAppear.value = false
+                                    shouldBtmModalSheetBeVisible.value = true
+                                    coroutineScope.launch {
+                                        if (!btmModalSheetState.isVisible) {
+                                            btmModalSheetState.show()
+                                        }
+                                    }
+                                }
+                            }
                         )
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
@@ -90,7 +123,8 @@ fun SettingsScreen() {
                             icon = null,
                             usingLocalIcon = true,
                             title = "Github",
-                            localIcon = R.drawable.github_logo
+                            localIcon = R.drawable.github_logo,
+                            onClick = {}
                         )
 
                         Divider(
@@ -104,7 +138,8 @@ fun SettingsScreen() {
                             icon = null,
                             usingLocalIcon = true,
                             localIcon = R.drawable.twitter_logo,
-                            title = "Twitter"
+                            title = "Twitter",
+                            onClick = {}
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -119,7 +154,10 @@ fun SettingsScreen() {
                     )
                 }
                 items(themeSectionData) { settingsUIElement ->
-                    SettingComponent(settingsUIElement = settingsUIElement, data = themeSectionData)
+                    SettingComponent(
+                        settingsUIElement = settingsUIElement,
+                        data = themeSectionData
+                    )
                 }
                 item {
                     Text(
@@ -169,6 +207,23 @@ fun SettingsScreen() {
                 item {
                     Spacer(modifier = Modifier.height(65.dp))
                 }
+            }
+        }
+        SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear = shouldVersionCheckerDialogAppear)
+        if (shouldBtmModalSheetBeVisible.value) {
+            ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                coroutineScope.launch {
+                    if (btmModalSheetState.isVisible) {
+                        btmModalSheetState.hide()
+                    }
+                }.invokeOnCompletion {
+                    shouldBtmModalSheetBeVisible.value = false
+                }
+            }) {
+                SettingsNewVersionUpdateBtmContent(
+                    shouldBtmModalSheetBeVisible = shouldBtmModalSheetBeVisible,
+                    modalBtmSheetState = btmModalSheetState
+                )
             }
         }
     }

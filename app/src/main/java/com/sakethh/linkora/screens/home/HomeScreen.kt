@@ -8,8 +8,6 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -77,13 +75,13 @@ fun HomeScreen() {
             }
         )
     }
-    val shouldDialogForNewLinkEnabled = rememberSaveable {
+    val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val shouldDialogForNewFolderEnabled = rememberSaveable {
+    val shouldDialogForNewFolderAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    if (shouldDialogForNewFolderEnabled.value || shouldDialogForNewLinkEnabled.value) {
+    if (shouldDialogForNewFolderAppear.value || shouldDialogForNewLinkAppear.value) {
         shouldScreenTransparencyDecreased.value = false
         isMainFabRotated.value = false
     }
@@ -122,7 +120,7 @@ fun HomeScreen() {
                                 shape = RoundedCornerShape(10.dp),
                                 onClick = {
                                     shouldScreenTransparencyDecreased.value = false
-                                    shouldDialogForNewFolderEnabled.value = true
+                                    shouldDialogForNewFolderAppear.value = true
                                 }) {
                                 Icon(
                                     imageVector = Icons.Default.CreateNewFolder,
@@ -158,7 +156,7 @@ fun HomeScreen() {
                             onClick = {
                                 if (isMainFabRotated.value) {
                                     shouldScreenTransparencyDecreased.value = false
-                                    shouldDialogForNewLinkEnabled.value = true
+                                    shouldDialogForNewLinkAppear.value = true
                                 } else {
                                     coroutineScope.launch {
                                         awaitAll(async {
@@ -264,8 +262,8 @@ fun HomeScreen() {
             }
         }
 
-        AddNewLinkDialogBox(shouldDialogBoxEnabled = shouldDialogForNewLinkEnabled)
-        AddNewFolderDialogBox(shouldDialogBoxEnabled = shouldDialogForNewFolderEnabled)
+        AddNewLinkDialogBox(shouldDialogBoxAppear = shouldDialogForNewLinkAppear)
+        AddNewFolderDialogBox(shouldDialogBoxAppear = shouldDialogForNewFolderAppear)
     }
 
     BackHandler {

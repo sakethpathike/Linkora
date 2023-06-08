@@ -3,20 +3,14 @@ package com.sakethh.linkora.screens.home.composables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Icon
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -33,19 +27,19 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewFolderDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
+fun AddNewFolderDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
     val folderNameTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
     val noteTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
-    if (shouldDialogBoxEnabled.value) {
+    if (shouldDialogBoxAppear.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { shouldDialogBoxEnabled.value = false }) {
+                onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column {
                     Text(
                         text = "Create new folder",
@@ -106,7 +100,7 @@ fun AddNewFolderDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                                 top = 20.dp,
                             )
                             .align(Alignment.End),
-                        onClick = { shouldDialogBoxEnabled.value = false }) {
+                        onClick = { shouldDialogBoxAppear.value = false }) {
                         Text(
                             text = "Create",
                             color = AlertDialogDefaults.containerColor,
@@ -128,7 +122,7 @@ fun AddNewFolderDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                             )
                             .align(Alignment.End),
                         onClick = {
-                            shouldDialogBoxEnabled.value = false
+                            shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Cancel",

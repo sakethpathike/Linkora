@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
-import androidx.compose.material.OutlinedButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material3.AlertDialog
@@ -27,27 +26,25 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
+fun AddNewLinkDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
     val linkTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
     val noteTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
-    if (shouldDialogBoxEnabled.value) {
+    if (shouldDialogBoxAppear.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { shouldDialogBoxEnabled.value = false }) {
+                onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column {
                     Text(
                         text = "Save new link",
@@ -129,7 +126,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                                 top = 20.dp,
                             )
                             .align(Alignment.End),
-                        onClick = { shouldDialogBoxEnabled.value = false }) {
+                        onClick = { shouldDialogBoxAppear.value = false }) {
                         Text(
                             text = "Save",
                             color = AlertDialogDefaults.containerColor,
@@ -151,7 +148,7 @@ fun AddNewLinkDialogBox(shouldDialogBoxEnabled: MutableState<Boolean>) {
                             )
                             .align(Alignment.End),
                         onClick = {
-                            shouldDialogBoxEnabled.value = false
+                            shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Cancel",

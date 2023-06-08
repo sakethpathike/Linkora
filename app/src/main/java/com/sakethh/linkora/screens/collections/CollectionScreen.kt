@@ -33,9 +33,14 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -45,6 +50,10 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionScreen() {
+    val heightOfCard = remember {
+        mutableStateOf(0.dp)
+    }
+    val localDensity = LocalDensity.current
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -67,6 +76,11 @@ fun CollectionScreen() {
                             .padding(top = 20.dp, end = 20.dp, start = 20.dp)
                             .wrapContentHeight()
                             .fillMaxWidth()
+                            .onGloballyPositioned {
+                                heightOfCard.value = with(localDensity) {
+                                    it.size.height.toDp()
+                                }
+                            }
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
                             Icon(
@@ -74,12 +88,16 @@ fun CollectionScreen() {
                                 imageVector = Icons.Outlined.StarOutline,
                                 contentDescription = null
                             )
-                            Text(
-                                text = "Favorites",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(top = 25.dp)
-                            )
+                            Box(
+                                modifier = Modifier.height(heightOfCard.value),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    text = "Favorites",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -96,12 +114,16 @@ fun CollectionScreen() {
                                 imageVector = Icons.Outlined.Archive,
                                 contentDescription = null
                             )
-                            Text(
-                                text = "Archive",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(top = 25.dp)
-                            )
+                            Box(
+                                modifier = Modifier.height(heightOfCard.value),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    text = "Archive",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -118,12 +140,16 @@ fun CollectionScreen() {
                                 imageVector = Icons.Outlined.Delete,
                                 contentDescription = null
                             )
-                            Text(
-                                text = "Trash",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp,
-                                modifier = Modifier.padding(top = 25.dp)
-                            )
+                            Box(
+                                modifier = Modifier.height(heightOfCard.value),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    text = "Trash",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
                         }
                     }
                 }
@@ -139,28 +165,36 @@ fun CollectionScreen() {
                         modifier = Modifier.padding(start = 15.dp)
                     )
                 }
-                item{
+                item {
                     Spacer(modifier = Modifier.padding(top = 15.dp))
                 }
                 items(20) {
-                    Column{
+                    Column {
                         Row(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .requiredHeight(75.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Folder,
-                                contentDescription = null,
+                            Box(
+                                modifier = Modifier.fillMaxHeight(),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Folder,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .padding(20.dp)
+                                        .size(28.dp)
+                                )
+                            }
+                            Column(
                                 modifier = Modifier
-                                    .padding(20.dp)
-                                    .size(28.dp)
-                            )
-                            Column(modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(0.80f), verticalArrangement = Arrangement.SpaceEvenly) {
+                                    .fillMaxHeight()
+                                    .fillMaxWidth(0.80f),
+                                verticalArrangement = Arrangement.SpaceEvenly
+                            ) {
                                 Text(
-                                    text = "",
+                                    text = "trgtrngj rgnkjngjktrn trgjktnh nkjgtnn trgjknrh tgtrnkjn thsgn",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp,
@@ -169,7 +203,7 @@ fun CollectionScreen() {
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = "",
+                                    text = "rgtiug gtnktngkj gfrnjgfnt dfgnsdg dfgnjksn dfsngjknfjkgn dfsgnkjdfsn ",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,
@@ -178,18 +212,24 @@ fun CollectionScreen() {
                                     overflow = TextOverflow.Ellipsis
                                 )
                             }
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.End
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight()
                             ) {
                                 Icon(
                                     imageVector = Icons.Filled.MoreVert,
                                     contentDescription = null,
-                                    modifier =  Modifier.padding(top = 30.dp,end=8.dp)
+                                    modifier = Modifier
+                                        .padding(end = 20.dp)
+                                        .align(Alignment.CenterEnd)
                                 )
                             }
                         }
-                        Divider(thickness = 1.dp, modifier = Modifier.padding(start = 25.dp,end=25.dp))
+                        Divider(
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(start = 25.dp, end = 25.dp)
+                        )
                     }
                 }
                 item {
