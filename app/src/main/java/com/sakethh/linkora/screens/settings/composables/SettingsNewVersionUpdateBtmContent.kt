@@ -32,7 +32,10 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun SettingsNewVersionUpdateBtmContent(modalBtmSheetState: SheetState, shouldBtmModalSheetBeVisible:MutableState<Boolean>) {
+fun SettingsNewVersionUpdateBtmContent(
+    modalBtmSheetState: SheetState,
+    shouldBtmModalSheetBeVisible: MutableState<Boolean>,
+) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -83,7 +86,7 @@ fun SettingsNewVersionUpdateBtmContent(modalBtmSheetState: SheetState, shouldBtm
                         modalBtmSheetState.hide()
                     }
                 }.invokeOnCompletion {
-                    shouldBtmModalSheetBeVisible.value=false
+                    shouldBtmModalSheetBeVisible.value = false
                 }
                 openInWeb(
                     url = "https://www.google.com/",
@@ -111,7 +114,7 @@ fun SettingsNewVersionUpdateBtmContent(modalBtmSheetState: SheetState, shouldBtm
                         modalBtmSheetState.hide()
                     }
                 }.invokeOnCompletion {
-                    shouldBtmModalSheetBeVisible.value=false
+                    shouldBtmModalSheetBeVisible.value = false
                 }
             }) {
             Text(

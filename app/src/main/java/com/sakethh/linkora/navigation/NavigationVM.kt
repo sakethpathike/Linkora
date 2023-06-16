@@ -1,20 +1,12 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Collections
 import androidx.compose.material.icons.filled.CollectionsBookmark
-import androidx.compose.material.icons.filled.DatasetLinked
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.Collections
 import androidx.compose.material.icons.outlined.CollectionsBookmark
-import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.LocalLibrary
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -47,7 +39,7 @@ class NavigationVM : ViewModel() {
         ),
     )
 
-    companion object{
+    companion object {
         val btmNavBarContainerColor = mutableStateOf(Color(Color.Transparent.value))
     }
 }

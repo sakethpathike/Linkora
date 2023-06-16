@@ -26,9 +26,14 @@ fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boole
         AlertDialog(modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
             .background(AlertDialogDefaults.containerColor),
-            onDismissRequest = {  }) {
+            onDismissRequest = { }) {
             Row {
-                CircularProgressIndicator(modifier = Modifier.padding(20.dp).align(Alignment.CenterVertically), strokeWidth = 4.dp)
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .align(Alignment.CenterVertically),
+                    strokeWidth = 4.dp
+                )
                 Text(
                     text = "Retrieving latest information, this may take sometime; drink water until then \uD83D\uDC4D",
                     color = AlertDialogDefaults.textContentColor,

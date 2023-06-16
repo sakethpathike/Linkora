@@ -15,7 +15,6 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
@@ -24,10 +23,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.halilibo.richtext.markdown.Markdown
 import com.halilibo.richtext.ui.RichText
-import com.halilibo.richtext.ui.RichTextScope
-import com.halilibo.richtext.ui.RichTextStyle
-import com.halilibo.richtext.ui.string.RichTextString
-import com.halilibo.richtext.ui.string.Text
 import com.sakethh.linkora.screens.CoilImage
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 

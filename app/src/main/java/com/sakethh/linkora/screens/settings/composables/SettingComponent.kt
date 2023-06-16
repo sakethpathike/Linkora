@@ -23,11 +23,9 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsUIElement
-import kotlinx.coroutines.launch
 
 @Composable
 fun SettingComponent(settingsUIElement: SettingsUIElement, data: List<SettingsUIElement>) {

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,7 +15,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.createDataStore
-import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -27,8 +25,6 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -38,7 +34,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         SettingsScreenVM.Settings.dataStore = createDataStore("linkoraDataStore")
         lifecycleScope.launch {
-           SettingsScreenVM.Settings.readAllPreferencesValues()
+            SettingsScreenVM.Settings.readAllPreferencesValues()
         }
         setContent {
             LinkoraTheme {
@@ -57,7 +53,7 @@ class MainActivity : ComponentActivity() {
                 systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
                     if (NavigationRoutes.values().any {
-                            it.name == currentRoute
+                            it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute
                         }) {
 
                         if (bottomBarSheetState.bottomSheetState.isCollapsed) {
@@ -76,10 +72,11 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
-                        scaffoldState = bottomBarSheetState, sheetContent = {
+                        scaffoldState = bottomBarSheetState,
+                        sheetContent = {
                             BottomNavigationBar(navController = navController)
                         }) {
-                        Box {
+                        Scaffold {
                             MainNavigation(navController = navController)
                         }
                     }

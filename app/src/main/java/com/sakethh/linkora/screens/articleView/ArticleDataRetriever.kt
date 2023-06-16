@@ -20,6 +20,7 @@ object ArticleDataRetriever {
         val authorOfTheArticle: MutableState<String> = mutableStateOf(""),
         val markDownText: MutableState<String> = mutableStateOf(""),
     )
+
     suspend fun retrieveArticleData(webURL: String, coroutineScope: CoroutineScope): ArticleData {
         val articleData = ArticleData()
         val jsoupInstance = withContext(coroutineScope.coroutineContext + Dispatchers.IO) {
@@ -36,12 +37,15 @@ object ArticleDataRetriever {
             },
                 async {
                     articleData.imgURLOfTheArticle.value =
-                        jsoupInstance.body().selectFirst("article")?.selectFirst("picture")?.selectFirst("img[src]:not([src=''])")
+                        jsoupInstance.body().selectFirst("article")?.selectFirst("picture")
+                            ?.selectFirst("img[src]:not([src=''])")
                             ?.absUrl("src").toString()
                 },
                 async { articleData.baseURLOfTheArticle.value = jsoupInstance.baseUri() },
                 async {
-                    val htmlOfArticle = jsoupInstance.body().select("article").select("ch bg dx dy dz ea").outerHtml()
+                    val htmlOfArticle =
+                        jsoupInstance.body().select("article").select("ch bg dx dy dz ea")
+                            .outerHtml()
                     articleData.markDownText.value =
                         FlexmarkHtmlConverter.builder().build().convert(htmlOfArticle)
                 },

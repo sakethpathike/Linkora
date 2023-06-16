@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +14,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,9 +22,9 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,21 +35,20 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CollectionScreen() {
+fun CollectionScreen(navController: NavController) {
     val heightOfCard = remember {
         mutableStateOf(0.dp)
     }
@@ -80,6 +79,9 @@ fun CollectionScreen() {
                                 heightOfCard.value = with(localDensity) {
                                     it.size.height.toDp()
                                 }
+                            }
+                            .clickable {
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             }
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
@@ -146,6 +148,35 @@ fun CollectionScreen() {
                             ) {
                                 Text(
                                     text = "Trash",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    }
+                }
+                item {
+                    Divider(thickness = 0.5.dp, modifier = Modifier.padding(25.dp))
+                }
+                item {
+                    Card(
+                        shape = RoundedCornerShape(10.dp), modifier = Modifier
+                            .padding(end = 20.dp, start = 20.dp)
+                            .wrapContentHeight()
+                            .fillMaxWidth()
+                    ) {
+                        Row {
+                            Icon(
+                                modifier = Modifier.padding(20.dp),
+                                imageVector = Icons.Outlined.Link,
+                                contentDescription = null
+                            )
+                            Box(
+                                modifier = Modifier.height(heightOfCard.value),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Text(
+                                    text = "Saved Links",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp
                                 )

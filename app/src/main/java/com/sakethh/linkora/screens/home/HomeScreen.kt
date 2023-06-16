@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material3.Divider
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -48,6 +49,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
+import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -62,7 +64,7 @@ fun HomeScreen() {
     val rotationAnimation = remember {
         Animatable(0f)
     }
-    val shouldScreenTransparencyDecreased = rememberSaveable() {
+    val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable() {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
@@ -82,7 +84,7 @@ fun HomeScreen() {
         mutableStateOf(false)
     }
     if (shouldDialogForNewFolderAppear.value || shouldDialogForNewLinkAppear.value) {
-        shouldScreenTransparencyDecreased.value = false
+        shouldScreenTransparencyDecreasedBoxVisible.value = false
         isMainFabRotated.value = false
     }
     LinkoraTheme {
@@ -119,7 +121,7 @@ fun HomeScreen() {
                             FloatingActionButton(
                                 shape = RoundedCornerShape(10.dp),
                                 onClick = {
-                                    shouldScreenTransparencyDecreased.value = false
+                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
                                     shouldDialogForNewFolderAppear.value = true
                                 }) {
                                 Icon(
@@ -155,7 +157,7 @@ fun HomeScreen() {
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
                                 if (isMainFabRotated.value) {
-                                    shouldScreenTransparencyDecreased.value = false
+                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
                                     shouldDialogForNewLinkAppear.value = true
                                 } else {
                                     coroutineScope.launch {
@@ -165,7 +167,7 @@ fun HomeScreen() {
                                                 animationSpec = tween(300)
                                             )
                                         }, async {
-                                            shouldScreenTransparencyDecreased.value = true
+                                            shouldScreenTransparencyDecreasedBoxVisible.value = true
                                             delay(10L)
                                             isMainFabRotated.value = true
                                         })
@@ -203,17 +205,22 @@ fun HomeScreen() {
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 24.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 30.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 25.dp)
                     )
                 }
-
+                item {
+                    Divider(
+                        thickness = 0.25.dp,
+                        modifier = Modifier.padding(top = 20.dp, start = 15.dp, end = 30.dp)
+                    )
+                }
                 item {
                     Text(
                         text = "Recent Saves",
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 45.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 25.dp)
                     )
                 }
                 item {
@@ -236,14 +243,67 @@ fun HomeScreen() {
                         }
                     }
                 }
+
+                item {
+                    Text(
+                        text = "Recent Favorites",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                    )
+                }
+                item {
+                    LazyRow(
+                        modifier = Modifier
+                            .padding(top = 15.dp)
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+                        item {
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
+                        items(8) {
+                            GeneralCard(
+                                title = "ergferg",
+                                webBaseURL = "regrgttrg",
+                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                        }
+                    }
+                }
+
+                item {
+                    Text(
+                        text = "Recently Visited",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+                items(8) {
+                    LinkUIComponent(
+                        title = "title $it efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
+                        webBaseURL = "$it.efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
+                        imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.height(175.dp))
+                }
             }
-            if (shouldScreenTransparencyDecreased.value) {
+            if (shouldScreenTransparencyDecreasedBoxVisible.value) {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
                         .background(MaterialTheme.colorScheme.background.copy(0.85f))
                         .clickable {
-                            shouldScreenTransparencyDecreased.value = false
+                            shouldScreenTransparencyDecreasedBoxVisible.value = false
                             coroutineScope
                                 .launch {
                                     awaitAll(async {
@@ -268,7 +328,7 @@ fun HomeScreen() {
 
     BackHandler {
         if (isMainFabRotated.value) {
-            shouldScreenTransparencyDecreased.value = false
+            shouldScreenTransparencyDecreasedBoxVisible.value = false
             coroutineScope.launch {
                 awaitAll(async {
                     rotationAnimation.animateTo(
