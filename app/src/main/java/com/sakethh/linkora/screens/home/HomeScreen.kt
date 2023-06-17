@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -29,6 +30,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
@@ -43,9 +45,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
@@ -56,15 +61,21 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
-    val isMainFabRotated = rememberSaveable() {
+    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val activity = LocalContext.current as? Activity
+    val isMainFabRotated = rememberSaveable {
         mutableStateOf(false)
     }
     val rotationAnimation = remember {
         Animatable(0f)
     }
-    val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable() {
+    val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
@@ -237,7 +248,10 @@ fun HomeScreen() {
                             GeneralCard(
                                 title = "ergferg",
                                 webBaseURL = "regrgttrg",
-                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
+                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                onMoreIconClick = {
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -267,7 +281,10 @@ fun HomeScreen() {
                             GeneralCard(
                                 title = "ergferg",
                                 webBaseURL = "regrgttrg",
-                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
+                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                onMoreIconClick = {
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                }
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -290,7 +307,10 @@ fun HomeScreen() {
                     LinkUIComponent(
                         title = "title $it efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
                         webBaseURL = "$it.efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
-                        imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg"
+                        imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                        onMoreIconCLick = {
+                            shouldOptionsBtmModalSheetBeVisible.value = true
+                        }
                     )
                 }
                 item {
@@ -321,9 +341,14 @@ fun HomeScreen() {
                         })
             }
         }
-
         AddNewLinkDialogBox(shouldDialogBoxAppear = shouldDialogForNewLinkAppear)
         AddNewFolderDialogBox(shouldDialogBoxAppear = shouldDialogForNewFolderAppear)
+        OptionsBtmSheetUI(
+            btmModalSheetState = btmModalSheetState,
+            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+            coroutineScope = coroutineScope,
+            btmSheetFor = OptionsBtmSheetType.LINK
+        )
     }
 
     BackHandler {
@@ -344,6 +369,12 @@ fun HomeScreen() {
                     rotationAnimation.snapTo(0f)
                 }
             }
+        } else if (btmModalSheetState.isVisible) {
+            coroutineScope.launch {
+                btmModalSheetState.hide()
+            }
+        } else {
+            activity?.finish()
         }
     }
 }

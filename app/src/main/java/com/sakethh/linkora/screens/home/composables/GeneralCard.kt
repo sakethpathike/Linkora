@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home.composables
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,7 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
 @Composable
-fun GeneralCard(title: String, webBaseURL: String, imgURL: String) {
+fun GeneralCard(title: String, webBaseURL: String, imgURL: String, onMoreIconClick: () -> Unit) {
     Card(
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .height(155.dp)
@@ -85,7 +86,10 @@ fun GeneralCard(title: String, webBaseURL: String, imgURL: String) {
                 ) {
                     Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
                     Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
-                    Icon(imageVector = Icons.Filled.MoreVert, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = null,
+                        modifier = Modifier.clickable { onMoreIconClick() })
                 }
             }
         }

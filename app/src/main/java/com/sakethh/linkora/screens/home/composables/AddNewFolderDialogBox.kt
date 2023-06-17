@@ -5,7 +5,9 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -34,13 +36,14 @@ fun AddNewFolderDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
     val noteTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
+    val scrollState = rememberScrollState()
     if (shouldDialogBoxAppear.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
-                Column {
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Create new folder",
                         color = AlertDialogDefaults.textContentColor,

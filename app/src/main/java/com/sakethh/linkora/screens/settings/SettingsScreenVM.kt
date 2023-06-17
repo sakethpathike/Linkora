@@ -112,6 +112,26 @@ class SettingsScreenVM : ViewModel() {
                     ) == true
                 }
             }),
+        SettingsUIElement(title = "Auto-Detect Title",
+            doesDescriptionExists = true,
+            description = "If this is enabled, title for the links you save will be detected automatically based on the information given by the link you're saving.\n\nIf this is disabled, you'll get an option while saving link(s) to give a title to the respective link you're saving.",
+            isSwitchNeeded = true,
+            isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
+            onSwitchStateChange = {
+                viewModelScope.launch {
+                    Settings.changePreferenceValue(
+                        preferenceKey = preferencesKey(
+                            SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
+                        ),
+                        dataStore = Settings.dataStore,
+                        newValue = !Settings.isAutoDetectTitleForLinksEnabled.value
+                    )
+                    Settings.isAutoDetectTitleForLinksEnabled.value = Settings.readPreferenceValue(
+                        preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                        dataStore = Settings.dataStore
+                    ) == true
+                }
+            }),
         SettingsUIElement(title = "Move entire data to Trash",
             doesDescriptionExists = false,
             description = null,
@@ -130,7 +150,7 @@ class SettingsScreenVM : ViewModel() {
     )
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK
     }
 
     object Settings {
@@ -141,7 +161,7 @@ class SettingsScreenVM : ViewModel() {
         val shouldFollowSystemTheme = mutableStateOf(true)
         val shouldDarkThemeBeEnabled = mutableStateOf(false)
         val isInAppWebTabEnabled = mutableStateOf(true)
-
+        val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
         suspend fun readPreferenceValue(
             preferenceKey: androidx.datastore.preferences.Preferences.Key<Boolean>,
             dataStore: DataStore<androidx.datastore.preferences.Preferences>,
@@ -186,6 +206,13 @@ class SettingsScreenVM : ViewModel() {
                         isInAppWebTabEnabled.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                                dataStore = dataStore
+                            ) == true
+                    },
+                    async {
+                        isAutoDetectTitleForLinksEnabled.value =
+                            readPreferenceValue(
+                                preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
                                 dataStore = dataStore
                             ) == true
                     }

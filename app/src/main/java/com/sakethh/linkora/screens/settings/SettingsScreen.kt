@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,12 +27,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.sakethh.linkora.R
+import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -42,7 +48,9 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(navController: NavController) {
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
     val themeSectionData = settingsScreenVM.themeSection
     val generalSectionData = settingsScreenVM.generalSection
@@ -121,7 +129,13 @@ fun SettingsScreen() {
                             usingLocalIcon = true,
                             title = "Github",
                             localIcon = R.drawable.github_logo,
-                            onClick = {}
+                            onClick = {
+                                openInWeb(
+                                    url = "https://www.github.com/sakethpathike/Linkora",
+                                    context = context,
+                                    uriHandler = uriHandler
+                                )
+                            }
                         )
 
                         Divider(
@@ -136,7 +150,13 @@ fun SettingsScreen() {
                             usingLocalIcon = true,
                             localIcon = R.drawable.twitter_logo,
                             title = "Twitter",
-                            onClick = {}
+                            onClick = {
+                                openInWeb(
+                                    url = "https://www.twitter.com/LinkoraApp",
+                                    context = context,
+                                    uriHandler = uriHandler
+                                )
+                            }
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -221,6 +241,17 @@ fun SettingsScreen() {
                     shouldBtmModalSheetBeVisible = shouldBtmModalSheetBeVisible,
                     modalBtmSheetState = btmModalSheetState
                 )
+            }
+        }
+    }
+    BackHandler {
+        if (btmModalSheetState.isVisible) {
+            coroutineScope.launch {
+                btmModalSheetState.hide()
+            }
+        } else {
+            navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                popUpTo(0)
             }
         }
     }

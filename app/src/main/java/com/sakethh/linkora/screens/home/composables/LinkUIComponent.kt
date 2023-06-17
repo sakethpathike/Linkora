@@ -31,7 +31,12 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
 @Composable
-fun LinkUIComponent(title: String, webBaseURL: String, imgURL: String) {
+fun LinkUIComponent(
+    title: String,
+    webBaseURL: String,
+    imgURL: String,
+    onMoreIconCLick: () -> Unit,
+) {
     Column(
         modifier = Modifier
             .clickable { }
@@ -84,7 +89,10 @@ fun LinkUIComponent(title: String, webBaseURL: String, imgURL: String) {
                 ) {
                     Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
                     Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
-                    Icon(imageVector = Icons.Filled.MoreVert, contentDescription = null)
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = null,
+                        modifier = Modifier.clickable { onMoreIconCLick() })
                 }
             }
         }

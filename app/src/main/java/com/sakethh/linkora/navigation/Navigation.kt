@@ -19,10 +19,10 @@ fun MainNavigation(navController: NavHostController) {
             CollectionScreen(navController = navController)
         }
         composable(route = NavigationRoutes.SETTINGS_SCREEN.name) {
-            SettingsScreen()
+            SettingsScreen(navController = navController)
         }
         composable(route = NavigationRoutes.SPECIFIC_SCREEN.name) {
-            SpecificScreen()
+            SpecificScreen(navController = navController)
         }
     }
 }

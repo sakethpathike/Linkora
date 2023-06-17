@@ -6,7 +6,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -28,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,13 +42,14 @@ fun AddNewLinkDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
     val noteTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
+    val scrollState = rememberScrollState()
     if (shouldDialogBoxAppear.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
-                Column {
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Save new link",
                         color = AlertDialogDefaults.textContentColor,
@@ -75,6 +79,30 @@ fun AddNewLinkDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
                         onValueChange = {
                             linkTextFieldValue.value = it
                         })
+                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                        OutlinedTextField(
+                            maxLines = 1,
+                            modifier = Modifier.padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                                top = 15.dp
+                            ),
+                            label = {
+                                Text(
+                                    text = "Title for the link",
+                                    color = AlertDialogDefaults.textContentColor,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 12.sp
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleSmall,
+                            singleLine = true,
+                            shape = RoundedCornerShape(5.dp),
+                            value = linkTextFieldValue.value,
+                            onValueChange = {
+                                linkTextFieldValue.value = it
+                            })
+                    }
                     OutlinedTextField(
                         maxLines = 1,
                         modifier = Modifier.padding(

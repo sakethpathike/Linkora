@@ -1,13 +1,14 @@
 package com.sakethh.linkora.screens.settings.composables
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -39,10 +40,11 @@ fun SettingsNewVersionUpdateBtmContent(
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
+    val verticalScrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .verticalScroll(state = verticalScrollState)
     ) {
         Text(
             text = "Linkora just got better, new update is available.",
