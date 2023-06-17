@@ -41,6 +41,8 @@ import kotlinx.coroutines.launch
 fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     coroutineScope: CoroutineScope,
+    savingFrom: DataDialogBoxType=DataDialogBoxType.LINK,
+    folderName: String = "",
 ) {
     val linkTextFieldValue = rememberSaveable {
         mutableStateOf("")
@@ -165,11 +167,20 @@ fun AddNewLinkDialogBox(
                             .align(Alignment.End),
                         onClick = {
                             coroutineScope.launch {
-                                LocalDBFunctions.addANewLink(
-                                    title = titleTextField.value,
-                                    webURL = linkTextFieldValue.value,
-                                    noteForSaving = noteTextFieldValue.value
-                                )
+                                if (savingFrom == DataDialogBoxType.LINK) {
+                                    LocalDBFunctions.addANewLink(
+                                        title = titleTextField.value,
+                                        webURL = linkTextFieldValue.value,
+                                        noteForSaving = noteTextFieldValue.value
+                                    )
+                                } else {
+                                    LocalDBFunctions.addANewLinkInAFolder(
+                                        folderName = folderName,
+                                        titleForLink = titleTextField.value,
+                                        webURLOfLink = linkTextFieldValue.value,
+                                        noteForSavingLink = noteTextFieldValue.value
+                                    )
+                                }
                             }
                             shouldDialogBoxAppear.value = false
                         }) {

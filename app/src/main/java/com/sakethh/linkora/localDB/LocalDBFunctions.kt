@@ -20,7 +20,17 @@ object LocalDBFunctions {
         localDB.localDBData().addNewLink(linkData = linkData)
     }
 
-    suspend fun addANewLinkInAFolder(folderName: String, linkData: LinksTable) {
+    suspend fun addANewLinkInAFolder(folderName: String, titleForLink: String, webURLOfLink: String, noteForSavingLink: String) {
+        val linkData = LinksTable(
+            title = titleForLink,
+            webURL = webURLOfLink,
+            baseURL = "www.www.www",
+            imgURL = "",
+            isThisLinkImportant = false,
+            dateSavedOn = "",
+            timeSavedOn = "",
+            infoForSaving = noteForSavingLink
+        )
         localDB.localDBData().addANewLinkInAFolder(folderName = folderName, newLinkData = linkData)
     }
 

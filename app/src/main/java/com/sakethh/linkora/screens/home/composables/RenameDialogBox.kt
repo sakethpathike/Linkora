@@ -23,6 +23,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.localDB.LocalDBFunctions
@@ -52,7 +53,9 @@ fun RenameDialogBox(
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 30.dp),
+                        lineHeight = 24.sp,
+                        textAlign = TextAlign.Start
                     )
                     OutlinedTextField(
                         maxLines = 1,

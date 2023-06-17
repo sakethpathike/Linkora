@@ -54,7 +54,7 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
-import com.sakethh.linkora.screens.home.composables.DeleteDialogBoxType
+import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
@@ -306,7 +306,7 @@ fun CollectionScreen(navController: NavController) {
             coroutineScope = coroutineScope,
             webURL = "",
             folderName = clickedFolderName.value,
-            deleteDialogBoxType = DeleteDialogBoxType.FOLDER
+            deleteDialogBoxType = DataDialogBoxType.FOLDER
         )
     }
     BackHandler {

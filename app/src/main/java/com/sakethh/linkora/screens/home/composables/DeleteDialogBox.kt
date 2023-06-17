@@ -18,6 +18,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.localDB.LocalDBFunctions
@@ -25,7 +26,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-enum class DeleteDialogBoxType {
+enum class DataDialogBoxType {
     LINK, FOLDER
 }
 
@@ -36,7 +37,7 @@ fun DeleteDialogBox(
     coroutineScope: CoroutineScope,
     webURL: String,
     folderName: String,
-    deleteDialogBoxType: DeleteDialogBoxType,
+    deleteDialogBoxType: DataDialogBoxType,
 ) {
     Column {
         if (shouldDialogBoxAppear.value) {
@@ -47,11 +48,13 @@ fun DeleteDialogBox(
                     onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                     Column {
                         Text(
-                            text = if (deleteDialogBoxType == DeleteDialogBoxType.LINK) "Are you sure want to delete the link?" else "Are you sure want to delete the folder?",
+                            text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else "Are you sure want to delete the folder?",
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,
-                            modifier = Modifier.padding(start = 20.dp, top = 30.dp)
+                            modifier = Modifier.padding(start = 20.dp, top = 30.dp),
+                            lineHeight = 24.sp,
+                            textAlign = TextAlign.Start
                         )
                         Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
                             shape = RoundedCornerShape(5.dp),
@@ -62,7 +65,7 @@ fun DeleteDialogBox(
                                 )
                                 .align(Alignment.End),
                             onClick = {
-                                if (deleteDialogBoxType == DeleteDialogBoxType.LINK) {
+                                if (deleteDialogBoxType == DataDialogBoxType.LINK) {
                                     coroutineScope.launch {
                                         LocalDBFunctions.deleteALink(link = webURL)
                                     }
@@ -74,7 +77,7 @@ fun DeleteDialogBox(
                                 shouldDialogBoxAppear.value = false
                             }) {
                             Text(
-                                text = if (deleteDialogBoxType == DeleteDialogBoxType.LINK) "Delete this link" else "Delete this folder",
+                                text = "Delete it",
                                 color = AlertDialogDefaults.containerColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp

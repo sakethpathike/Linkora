@@ -45,6 +45,7 @@ fun LinkUIComponent(
             }
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
+            .height(155.dp)
     ) {
         Row {
             Column(
