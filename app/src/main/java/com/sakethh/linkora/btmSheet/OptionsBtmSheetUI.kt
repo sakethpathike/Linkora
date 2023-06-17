@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
@@ -79,6 +80,35 @@ fun OptionsBtmSheetUI(
                 }
             }
 
+            Card(
+                shape = RoundedCornerShape(10.dp), modifier = Modifier
+                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .onGloballyPositioned {
+                        heightOfCard.value = with(localDensity) {
+                            it.size.height.toDp()
+                        }
+                    }
+            ) {
+                Row {
+                    Icon(
+                        modifier = Modifier.padding(20.dp),
+                        imageVector = Icons.Outlined.Archive,
+                        contentDescription = null
+                    )
+                    Box(
+                        modifier = Modifier.height(heightOfCard.value),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Archive Folder" else "Archive Link",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
+                    }
+                }
+            }
             Card(
                 shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(top = 20.dp, end = 20.dp, start = 20.dp)

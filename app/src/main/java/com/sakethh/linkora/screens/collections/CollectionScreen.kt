@@ -105,7 +105,7 @@ fun CollectionScreen(navController: NavController) {
                                 contentAlignment = Alignment.CenterStart
                             ) {
                                 Text(
-                                    text = "Favorites",
+                                    text = "Important",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp
                                 )
