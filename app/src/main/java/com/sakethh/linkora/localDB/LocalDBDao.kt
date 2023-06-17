@@ -1,8 +1,51 @@
 package com.sakethh.linkora.localDB
 
 import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
+import androidx.room.TypeConverters
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDBDao {
-    fun getAllLinks()
+
+    @Insert
+    suspend fun addNewLink(linkData: LinksTable)
+
+    @Query("UPDATE folders_table SET links = json_insert(links, '$[#]', json(:newLinkData)) WHERE folderName = :folderName")
+    suspend fun addANewLinkInAFolder(
+        folderName: String,
+        @TypeConverters(LinkTypeConverter::class)
+        newLinkData: LinksTable,
+    )
+
+    @Query("UPDATE folders_table SET links = json_remove(links, '\$[?]', :link) WHERE folderName = :folderName")
+    suspend fun deleteALinkFromAFolder(
+        folderName: String,
+        link: String,
+    )
+
+    @Insert
+    suspend fun addNewFolder(newFolderData: FoldersTable)
+
+    @Query("UPDATE folders_table SET folderName = :newName WHERE folderName = :existingName")
+    suspend fun renameFolderName(existingName: String, newName: String)
+
+    @Query("SELECT * FROM links_table")
+    fun getAllLinks(): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM folders_table")
+    fun getAllFolders(): Flow<List<FoldersTable>>
+
+    @Query("DELETE from links_table WHERE webURL = :link")
+    suspend fun deleteThisLink(link: String)
+
+    @Query("DELETE from folders_table WHERE folderName = :folderName")
+    suspend fun deleteThisFolder(folderName: String)
+
+    @Query("DELETE FROM links_table")
+    suspend fun deleteAllLinks()
+
+    @Query("DELETE FROM folders_table")
+    suspend fun deleteAllFolders()
 }

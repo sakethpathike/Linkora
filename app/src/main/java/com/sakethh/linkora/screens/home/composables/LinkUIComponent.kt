@@ -36,10 +36,13 @@ fun LinkUIComponent(
     webBaseURL: String,
     imgURL: String,
     onMoreIconCLick: () -> Unit,
+    onLinkClick: () -> Unit,
 ) {
     Column(
         modifier = Modifier
-            .clickable { }
+            .clickable {
+                onLinkClick()
+            }
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
     ) {

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.btmSheet
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +41,8 @@ fun OptionsBtmSheetUI(
     shouldBtmModalSheetBeVisible: MutableState<Boolean>,
     coroutineScope: CoroutineScope,
     btmSheetFor: OptionsBtmSheetType,
+    onDeleteCardClick: () -> Unit,
+    onRenameClick: () -> Unit,
 ) {
     val heightOfCard = remember {
         mutableStateOf(0.dp)
@@ -55,31 +58,44 @@ fun OptionsBtmSheetUI(
                 shouldBtmModalSheetBeVisible.value = false
             }
         }) {
-            Card(
-                shape = RoundedCornerShape(10.dp), modifier = Modifier
-                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-            ) {
-                Row {
-                    Icon(
-                        modifier = Modifier.padding(20.dp),
-                        imageVector = Icons.Outlined.DriveFileRenameOutline,
-                        contentDescription = null
-                    )
-                    Box(
-                        modifier = Modifier.height(heightOfCard.value),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = "Rename",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
+            if (btmSheetFor != OptionsBtmSheetType.LINK) {
+                Card(
+                    shape = RoundedCornerShape(10.dp), modifier = Modifier
+                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .clickable {
+                            coroutineScope
+                                .launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }
+                                .invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
+                                }
+                            onRenameClick()
+                        }
+                ) {
+                    Row {
+                        Icon(
+                            modifier = Modifier.padding(20.dp),
+                            imageVector = Icons.Outlined.DriveFileRenameOutline,
+                            contentDescription = null
                         )
+                        Box(
+                            modifier = Modifier.height(heightOfCard.value),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = "Rename",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
+                            )
+                        }
                     }
                 }
             }
-
             Card(
                 shape = RoundedCornerShape(10.dp), modifier = Modifier
                     .padding(top = 20.dp, end = 20.dp, start = 20.dp)
@@ -89,6 +105,17 @@ fun OptionsBtmSheetUI(
                         heightOfCard.value = with(localDensity) {
                             it.size.height.toDp()
                         }
+                    }
+                    .clickable {
+                        coroutineScope
+                            .launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }
+                            .invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
                     }
             ) {
                 Row {
@@ -118,6 +145,18 @@ fun OptionsBtmSheetUI(
                         heightOfCard.value = with(localDensity) {
                             it.size.height.toDp()
                         }
+                    }
+                    .clickable {
+                        coroutineScope
+                            .launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }
+                            .invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
+                        onDeleteCardClick()
                     }
             ) {
                 Row {

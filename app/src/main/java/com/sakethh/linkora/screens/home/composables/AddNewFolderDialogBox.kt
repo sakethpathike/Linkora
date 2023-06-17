@@ -25,11 +25,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.localDB.FoldersTable
+import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddNewFolderDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
+fun AddNewFolderDialogBox(
+    coroutineScope: CoroutineScope,
+    shouldDialogBoxAppear: MutableState<Boolean>,
+) {
     val folderNameTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
@@ -103,7 +110,18 @@ fun AddNewFolderDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
                                 top = 20.dp,
                             )
                             .align(Alignment.End),
-                        onClick = { shouldDialogBoxAppear.value = false }) {
+                        onClick = {
+                            coroutineScope.launch {
+                                LocalDBFunctions.createANewFolder(
+                                    FoldersTable(
+                                        folderName = folderNameTextFieldValue.value,
+                                        links = emptyList(),
+                                        infoForSaving = noteTextFieldValue.value
+                                    )
+                                )
+                            }
+                            shouldDialogBoxAppear.value = false
+                        }) {
                         Text(
                             text = "Create",
                             color = AlertDialogDefaults.containerColor,

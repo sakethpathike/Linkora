@@ -310,7 +310,8 @@ fun HomeScreen() {
                         imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
                         onMoreIconCLick = {
                             shouldOptionsBtmModalSheetBeVisible.value = true
-                        }
+                        },
+                        {}
                     )
                 }
                 item {
@@ -341,13 +342,21 @@ fun HomeScreen() {
                         })
             }
         }
-        AddNewLinkDialogBox(shouldDialogBoxAppear = shouldDialogForNewLinkAppear)
-        AddNewFolderDialogBox(shouldDialogBoxAppear = shouldDialogForNewFolderAppear)
+        AddNewLinkDialogBox(
+            shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
+            coroutineScope = coroutineScope
+        )
+        AddNewFolderDialogBox(
+            shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
+            coroutineScope = coroutineScope
+        )
         OptionsBtmSheetUI(
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.LINK
+            btmSheetFor = OptionsBtmSheetType.LINK,
+            {},
+            {}
         )
     }
 

@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -33,6 +34,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -44,10 +46,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
+import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
+import com.sakethh.linkora.screens.home.composables.DeleteDialogBoxType
+import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -61,8 +69,17 @@ fun CollectionScreen(navController: NavController) {
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldRenameDialogBoxBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldDeleteDialogBoxBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val collectionsScreenVM: CollectionsScreenVM = viewModel()
+    val foldersData = collectionsScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val clickedFolderName = rememberSaveable { mutableStateOf("") }
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -91,7 +108,7 @@ fun CollectionScreen(navController: NavController) {
                                 }
                             }
                             .clickable {
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+
                             }
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
@@ -148,6 +165,10 @@ fun CollectionScreen(navController: NavController) {
                             .padding(end = 20.dp, start = 20.dp)
                             .wrapContentHeight()
                             .fillMaxWidth()
+                            .clickable {
+                                SpecificScreenVM.screenType.value = SpecificScreenType.LINKS_SCREEN
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            }
                     ) {
                         Row {
                             Icon(
@@ -183,10 +204,17 @@ fun CollectionScreen(navController: NavController) {
                 item {
                     Spacer(modifier = Modifier.padding(top = 15.dp))
                 }
-                items(20) {
+                itemsIndexed(foldersData) { folderIndex, foldersData ->
                     Column {
                         Row(
                             modifier = Modifier
+                                .clickable {
+                                    SpecificScreenVM.screenType.value =
+                                        SpecificScreenType.SPECIFIC_FOLDER_SCREEN
+                                    SpecificScreenVM.currentClickedIndexNumber =
+                                        folderIndex
+                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                }
                                 .fillMaxWidth()
                                 .requiredHeight(75.dp)
                         ) {
@@ -209,7 +237,7 @@ fun CollectionScreen(navController: NavController) {
                                 verticalArrangement = Arrangement.SpaceEvenly
                             ) {
                                 Text(
-                                    text = "trgtrngj rgnkjngjktrn trgjktnh nkjgtnn trgjknrh tgtrnkjn thsgn",
+                                    text = foldersData.folderName,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp,
@@ -218,7 +246,7 @@ fun CollectionScreen(navController: NavController) {
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    text = "rgtiug gtnktngkj gfrnjgfnt dfgnsdg dfgnjksn dfsngjknfjkgn dfsgnkjdfsn ",
+                                    text = foldersData.infoForSaving,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,
@@ -230,6 +258,7 @@ fun CollectionScreen(navController: NavController) {
                             Box(
                                 modifier = Modifier
                                     .clickable {
+                                        clickedFolderName.value = foldersData.folderName
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                     }
                                     .fillMaxWidth()
@@ -259,7 +288,25 @@ fun CollectionScreen(navController: NavController) {
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.FOLDER
+            btmSheetFor = OptionsBtmSheetType.FOLDER,
+            onDeleteCardClick = {
+                shouldDeleteDialogBoxBeVisible.value = true
+            },
+            onRenameClick = {
+                shouldRenameDialogBoxBeVisible.value = true
+            }
+        )
+        RenameDialogBox(
+            shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
+            coroutineScope = coroutineScope,
+            existingFolderName = clickedFolderName.value
+        )
+        DeleteDialogBox(
+            shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
+            coroutineScope = coroutineScope,
+            webURL = "",
+            folderName = clickedFolderName.value,
+            deleteDialogBoxType = DeleteDialogBoxType.FOLDER
         )
     }
     BackHandler {

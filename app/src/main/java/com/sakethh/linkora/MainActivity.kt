@@ -13,12 +13,15 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.createDataStore
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sakethh.linkora.localDB.LocalDBFunctions
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -37,6 +40,7 @@ class MainActivity : ComponentActivity() {
             SettingsScreenVM.Settings.readAllPreferencesValues()
         }
         setContent {
+            val context = LocalContext.current
             LinkoraTheme {
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
@@ -82,6 +86,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+            LocalDBFunctions.localDB = LocalDataBase.getLocalDB(context = context)
         }
     }
 }
