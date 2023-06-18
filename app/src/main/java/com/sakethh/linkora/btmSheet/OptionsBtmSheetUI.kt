@@ -31,6 +31,9 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.LocalDBFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -43,11 +46,13 @@ fun OptionsBtmSheetUI(
     btmSheetFor: OptionsBtmSheetType,
     onDeleteCardClick: () -> Unit,
     onRenameClick: () -> Unit,
+    importantLinks: ImportantLinks?,
 ) {
     val heightOfCard = remember {
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
+    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     if (shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
             coroutineScope.launch {
@@ -89,6 +94,50 @@ fun OptionsBtmSheetUI(
                         ) {
                             Text(
                                 text = "Rename",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
+                            )
+                        }
+                    }
+                }
+            }
+            if (btmSheetFor == OptionsBtmSheetType.LINK) {
+                Card(
+                    shape = RoundedCornerShape(10.dp), modifier = Modifier
+                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .clickable {
+                            coroutineScope
+                                .launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                    importantLinks?.link?.let {
+                                        LocalDBFunctions.importantLinksFunctions(
+                                            url = it,
+                                            importantLinks = importantLinks
+                                        )
+                                    }
+                                }
+                                .invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
+                                }
+                            onRenameClick()
+                        }
+                ) {
+                    Row {
+                        Icon(
+                            modifier = Modifier.padding(20.dp),
+                            imageVector = optionsBtmSheetVM.importantCardIcon.value,
+                            contentDescription = null
+                        )
+                        Box(
+                            modifier = Modifier.height(heightOfCard.value),
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Text(
+                                text = optionsBtmSheetVM.importantCardText.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )

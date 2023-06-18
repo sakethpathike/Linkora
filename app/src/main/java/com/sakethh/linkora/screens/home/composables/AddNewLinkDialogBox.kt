@@ -30,19 +30,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
-    coroutineScope: CoroutineScope,
-    savingFrom: DataDialogBoxType=DataDialogBoxType.LINK,
-    folderName: String = "",
+    onSaveBtnClick: (title: String, webURL: String, note: String) -> Unit,
 ) {
     val linkTextFieldValue = rememberSaveable {
         mutableStateOf("")
@@ -166,22 +161,11 @@ fun AddNewLinkDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            coroutineScope.launch {
-                                if (savingFrom == DataDialogBoxType.LINK) {
-                                    LocalDBFunctions.addANewLink(
-                                        title = titleTextField.value,
-                                        webURL = linkTextFieldValue.value,
-                                        noteForSaving = noteTextFieldValue.value
-                                    )
-                                } else {
-                                    LocalDBFunctions.addANewLinkInAFolder(
-                                        folderName = folderName,
-                                        titleForLink = titleTextField.value,
-                                        webURLOfLink = linkTextFieldValue.value,
-                                        noteForSavingLink = noteTextFieldValue.value
-                                    )
-                                }
-                            }
+                            onSaveBtnClick(
+                                titleTextField.value,
+                                linkTextFieldValue.value,
+                                noteTextFieldValue.value
+                            )
                             shouldDialogBoxAppear.value = false
                         }) {
                         Text(

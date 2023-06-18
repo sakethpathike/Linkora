@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.FoldersTable
+import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.LocalDBFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,6 +18,11 @@ class SpecificScreenVM : ViewModel() {
 
     private val _linksData = MutableStateFlow(emptyList<LinksTable>())
     val linksTable = _linksData.asStateFlow()
+
+    private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
+    val impLinksTable = _impLinksData.asStateFlow()
+
+    val impLinkDataForBtmSheet = ImportantLinks("", LinksTable("", "", "", "", false, "", "", ""))
 
     companion object {
         var currentClickedIndexNumber = 0
@@ -33,8 +39,12 @@ class SpecificScreenVM : ViewModel() {
                 }
             }
 
-            SpecificScreenType.FAVORITES_SCREEN -> {
-
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                viewModelScope.launch {
+                    LocalDBFunctions.getAllImportantLinks().collect {
+                        _impLinksData.value = it
+                    }
+                }
             }
 
             SpecificScreenType.ARCHIVE_SCREEN -> {
@@ -53,5 +63,5 @@ class SpecificScreenVM : ViewModel() {
 }
 
 enum class SpecificScreenType {
-    FAVORITES_SCREEN, ARCHIVE_SCREEN, LINKS_SCREEN, SPECIFIC_FOLDER_SCREEN
+    IMPORTANT_LINKS_SCREEN, ARCHIVE_SCREEN, LINKS_SCREEN, SPECIFIC_FOLDER_SCREEN
 }

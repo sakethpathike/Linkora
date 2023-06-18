@@ -13,7 +13,7 @@ data class LinksTable(
     val webURL: String,
     val baseURL: String,
     val imgURL: String,
-    val isThisLinkImportant: Boolean,
+    var isThisLinkImportant: Boolean,
     val dateSavedOn: String,
     val timeSavedOn: String,
     val infoForSaving: String,
@@ -32,32 +32,35 @@ data class FoldersTable(
 
 @Entity(tableName = "archived_links_table")
 @Serializable
-@TypeConverters(LinksTypeConverter::class)
+@TypeConverters(LinkTypeConverter::class)
 data class ArchivedLinks(
     @PrimaryKey val id: Int,
-    @TypeConverters(LinksTypeConverter::class) val links: List<LinksTable>,
+    @TypeConverters(LinkTypeConverter::class)
+    val linkData: LinksTable,
 )
 
 @Entity(tableName = "archived_folders_table")
 @Serializable
-@TypeConverters(LinksTypeConverter::class)
+@TypeConverters(FolderTypeConverter::class)
 data class ArchivedFolders(
     @PrimaryKey val id: Int,
-    @TypeConverters(LinksTypeConverter::class) val folders: List<FoldersTable>,
+    @TypeConverters(FolderTypeConverter::class)
+    val folderData: FoldersTable,
 )
 
 @Entity(tableName = "important_links_table")
 @Serializable
 @TypeConverters(LinksTypeConverter::class)
 data class ImportantLinks(
-    @PrimaryKey val id: Int,
-    @TypeConverters(LinksTypeConverter::class) val links: List<LinksTable>,
+    @PrimaryKey var link: String,
+    @TypeConverters(LinkTypeConverter::class)
+    var linkData: LinksTable,
 )
 
 @Entity(tableName = "important_folders_table")
 @Serializable
-@TypeConverters(FoldersTypeConverter::class)
+@TypeConverters(FolderTypeConverter::class)
 data class ImportantFolders(
     @PrimaryKey val id: Int,
-    @TypeConverters(FoldersTypeConverter::class) val folders: List<FoldersTable>,
+    @TypeConverters(FolderTypeConverter::class) val folderData: FoldersTable,
 )

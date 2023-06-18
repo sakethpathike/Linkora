@@ -5,6 +5,20 @@ import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
+class FolderTypeConverter {
+    private val json = Json { encodeDefaults = true }
+
+    @TypeConverter
+    fun convertToString(value: FoldersTable): String {
+        return json.encodeToString(value)
+    }
+
+    @TypeConverter
+    fun convertToList(value: String): FoldersTable {
+        return json.decodeFromString(value)
+    }
+}
+
 class FoldersTypeConverter {
     private val json = Json { encodeDefaults = true }
 

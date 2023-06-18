@@ -12,7 +12,12 @@ import androidx.room.TypeConverters
     entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class,
         ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class]
 )
-@TypeConverters(FoldersTypeConverter::class, LinksTypeConverter::class)
+@TypeConverters(
+    FoldersTypeConverter::class,
+    LinksTypeConverter::class,
+    LinkTypeConverter::class,
+    FolderTypeConverter::class
+)
 abstract class LocalDataBase : RoomDatabase() {
     abstract fun localDBData(): LocalDBDao
 

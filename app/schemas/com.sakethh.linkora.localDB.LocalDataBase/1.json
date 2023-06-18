@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "5dc2db1169a69f1f2eeb8a240c54f4ef",
+    "identityHash": "cd216ef1f2167e373c187b5615f91651",
     "entities": [
       {
         "tableName": "folders_table",
@@ -100,7 +100,7 @@
       },
       {
         "tableName": "archived_folders_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `folders` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `folderData` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -109,8 +109,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "folders",
-            "columnName": "folders",
+            "fieldPath": "folderData",
+            "columnName": "folderData",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -126,7 +126,7 @@
       },
       {
         "tableName": "archived_links_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `links` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `linkData` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -135,8 +135,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "links",
-            "columnName": "links",
+            "fieldPath": "linkData",
+            "columnName": "linkData",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -152,7 +152,7 @@
       },
       {
         "tableName": "important_folders_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `folders` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `folderData` TEXT NOT NULL, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -161,8 +161,8 @@
             "notNull": true
           },
           {
-            "fieldPath": "folders",
-            "columnName": "folders",
+            "fieldPath": "folderData",
+            "columnName": "folderData",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -178,17 +178,17 @@
       },
       {
         "tableName": "important_links_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER NOT NULL, `links` TEXT NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`link` TEXT NOT NULL, `linkData` TEXT NOT NULL, PRIMARY KEY(`link`))",
         "fields": [
           {
-            "fieldPath": "id",
-            "columnName": "id",
-            "affinity": "INTEGER",
+            "fieldPath": "link",
+            "columnName": "link",
+            "affinity": "TEXT",
             "notNull": true
           },
           {
-            "fieldPath": "links",
-            "columnName": "links",
+            "fieldPath": "linkData",
+            "columnName": "linkData",
             "affinity": "TEXT",
             "notNull": true
           }
@@ -196,7 +196,7 @@
         "primaryKey": {
           "autoGenerate": false,
           "columnNames": [
-            "id"
+            "link"
           ]
         },
         "indices": [],
@@ -206,7 +206,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5dc2db1169a69f1f2eeb8a240c54f4ef')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd216ef1f2167e373c187b5615f91651')"
     ]
   }
 }

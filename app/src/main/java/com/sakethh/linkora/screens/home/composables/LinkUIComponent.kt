@@ -4,12 +4,11 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -20,7 +19,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
@@ -45,64 +43,66 @@ fun LinkUIComponent(
             }
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
-            .height(155.dp)
+            .wrapContentHeight()
     ) {
-        Row {
-            Column(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 16.sp,
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.65f),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(end = 15.dp),
-                    maxLines = 4,
-                    lineHeight = 20.sp,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = webBaseURL,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    maxLines = 1,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(top = 25.dp)
-                )
-            }
-            Column(
+                    .fillMaxWidth(0.65f)
+                    .padding(end = 15.dp),
+                maxLines = 4,
+                lineHeight = 20.sp,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis
+            )
+            CoilImage(
                 modifier = Modifier
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.End
+                    .width(95.dp)
+                    .height(60.dp)
+                    .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(top = 15.dp),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = webBaseURL,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(top = 5.dp)
+                    .fillMaxWidth(0.65f)
+            )
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
-                CoilImage(
-                    modifier = Modifier
-                        .width(95.dp)
-                        .height(60.dp)
-                        .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
-                )
-                Row(
-                    modifier = Modifier.padding(top = 15.dp),
-                    horizontalArrangement = Arrangement.spacedBy(15.dp)
-                ) {
-                    Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
-                    Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier.clickable { onMoreIconCLick() })
-                }
+                Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
+                Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onMoreIconCLick() })
             }
         }
-        Divider(
-            thickness = 0.5.dp,
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 15.dp)
-        )
     }
+    Divider(
+        thickness = 0.5.dp,
+        modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 15.dp)
+    )
 }

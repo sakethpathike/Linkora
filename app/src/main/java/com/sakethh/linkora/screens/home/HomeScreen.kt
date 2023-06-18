@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
@@ -344,7 +345,15 @@ fun HomeScreen() {
         }
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            coroutineScope = coroutineScope
+            onSaveBtnClick = { title: String, webURL: String, note: String ->
+                coroutineScope.launch {
+                    LocalDBFunctions.addANewLink(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note
+                    )
+                }
+            }
         )
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
@@ -356,7 +365,8 @@ fun HomeScreen() {
             coroutineScope = coroutineScope,
             btmSheetFor = OptionsBtmSheetType.LINK,
             {},
-            {}
+            {},
+            importantLinks = null
         )
     }
 

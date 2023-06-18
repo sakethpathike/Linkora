@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.TypeConverters
 import kotlinx.coroutines.flow.Flow
@@ -9,8 +10,17 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocalDBDao {
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun addNewLink(linkData: LinksTable)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun addALinkToImportant(importantLinks: ImportantLinks)
+
+    @Query("DELETE from important_links_table WHERE link = :url")
+    suspend fun removeALinkFromImportant(url: String)
+
+    @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE link = :url)")
+    suspend fun doesThisLinkMarkedAsImportant(url: String): Boolean
 
     @Query("UPDATE folders_table SET links = json_insert(links, '$[#]', json(:newLinkData)) WHERE folderName = :folderName")
     suspend fun addANewLinkInAFolder(
@@ -19,11 +29,10 @@ interface LocalDBDao {
         newLinkData: LinksTable,
     )
 
-    @Query("UPDATE folders_table SET links = json_remove(links, '\$[?]', :link) WHERE folderName = :folderName")
-    suspend fun deleteALinkFromAFolder(
+    /*suspend fun deleteALinkFromAFolder(
         folderName: String,
         link: String,
-    )
+    )*/
 
     @Insert
     suspend fun addNewFolder(newFolderData: FoldersTable)
@@ -33,6 +42,9 @@ interface LocalDBDao {
 
     @Query("SELECT * FROM links_table")
     fun getAllLinks(): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM important_links_table")
+    fun getAllImportantLinks(): Flow<List<ImportantLinks>>
 
     @Query("SELECT * FROM folders_table")
     fun getAllFolders(): Flow<List<FoldersTable>>
