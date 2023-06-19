@@ -27,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
@@ -48,10 +49,7 @@ fun OptionsBtmSheetUI(
     onRenameClick: () -> Unit,
     importantLinks: ImportantLinks?,
 ) {
-    val heightOfCard = remember {
-        mutableStateOf(0.dp)
-    }
-    val localDensity = LocalDensity.current
+
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     if (shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
@@ -63,99 +61,9 @@ fun OptionsBtmSheetUI(
                 shouldBtmModalSheetBeVisible.value = false
             }
         }) {
-            if (btmSheetFor != OptionsBtmSheetType.LINK) {
-                Card(
-                    shape = RoundedCornerShape(10.dp), modifier = Modifier
-                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .clickable {
-                            coroutineScope
-                                .launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                }
-                                .invokeOnCompletion {
-                                    shouldBtmModalSheetBeVisible.value = false
-                                }
-                            onRenameClick()
-                        }
-                ) {
-                    Row {
-                        Icon(
-                            modifier = Modifier.padding(20.dp),
-                            imageVector = Icons.Outlined.DriveFileRenameOutline,
-                            contentDescription = null
-                        )
-                        Box(
-                            modifier = Modifier.height(heightOfCard.value),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = "Rename",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                }
-            }
-            if (btmSheetFor == OptionsBtmSheetType.LINK) {
-                Card(
-                    shape = RoundedCornerShape(10.dp), modifier = Modifier
-                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .clickable {
-                            coroutineScope
-                                .launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                    importantLinks?.link?.let {
-                                        LocalDBFunctions.importantLinksFunctions(
-                                            url = it,
-                                            importantLinks = importantLinks
-                                        )
-                                    }
-                                }
-                                .invokeOnCompletion {
-                                    shouldBtmModalSheetBeVisible.value = false
-                                }
-                            onRenameClick()
-                        }
-                ) {
-                    Row {
-                        Icon(
-                            modifier = Modifier.padding(20.dp),
-                            imageVector = optionsBtmSheetVM.importantCardIcon.value,
-                            contentDescription = null
-                        )
-                        Box(
-                            modifier = Modifier.height(heightOfCard.value),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Text(
-                                text = optionsBtmSheetVM.importantCardText.value,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                }
-            }
-            Card(
-                shape = RoundedCornerShape(10.dp), modifier = Modifier
-                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .onGloballyPositioned {
-                        heightOfCard.value = with(localDensity) {
-                            it.size.height.toDp()
-                        }
-                    }
-                    .clickable {
+            if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
                         coroutineScope
                             .launch {
                                 if (btmModalSheetState.isVisible) {
@@ -165,37 +73,53 @@ fun OptionsBtmSheetUI(
                             .invokeOnCompletion {
                                 shouldBtmModalSheetBeVisible.value = false
                             }
-                    }
-            ) {
-                Row {
-                    Icon(
-                        modifier = Modifier.padding(20.dp),
-                        imageVector = Icons.Outlined.Archive,
-                        contentDescription = null
-                    )
-                    Box(
-                        modifier = Modifier.height(heightOfCard.value),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Archive Folder" else "Archive Link",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
+                        onRenameClick()
+                    },
+                    elementName = "Rename",
+                    elementImageVector = Icons.Outlined.DriveFileRenameOutline
+                )
             }
-            Card(
-                shape = RoundedCornerShape(10.dp), modifier = Modifier
-                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                    .wrapContentHeight()
-                    .fillMaxWidth()
-                    .onGloballyPositioned {
-                        heightOfCard.value = with(localDensity) {
-                            it.size.height.toDp()
+            if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
+                        coroutineScope
+                            .launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                                importantLinks?.link?.let {
+                                    LocalDBFunctions.importantLinksFunctions(
+                                        url = it,
+                                        importantLinks = importantLinks
+                                    )
+                                }
+                            }
+                            .invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
+                    },
+                    elementName = optionsBtmSheetVM.importantCardText.value,
+                    elementImageVector = optionsBtmSheetVM.importantCardIcon.value
+                )
+            }
+            OptionsBtmSheetIndividualComponent(
+                onClick = {
+                    coroutineScope
+                        .launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
                         }
-                    }
-                    .clickable {
+                        .invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
+                        }
+                },
+                elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Archive Folder" else "Archive Link",
+                elementImageVector = Icons.Outlined.Archive
+            )
+            if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
                         coroutineScope
                             .launch {
                                 if (btmModalSheetState.isVisible) {
@@ -206,27 +130,56 @@ fun OptionsBtmSheetUI(
                                 shouldBtmModalSheetBeVisible.value = false
                             }
                         onDeleteCardClick()
-                    }
-            ) {
-                Row {
-                    Icon(
-                        modifier = Modifier.padding(20.dp),
-                        imageVector = if (btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever,
-                        contentDescription = null
-                    )
-                    Box(
-                        modifier = Modifier.height(heightOfCard.value),
-                        contentAlignment = Alignment.CenterStart
-                    ) {
-                        Text(
-                            text = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
-                    }
-                }
+                    },
+                    elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
+                    elementImageVector = if (btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
+                )
             }
             Spacer(modifier = Modifier.height(20.dp))
+        }
+    }
+}
+
+@Composable
+fun OptionsBtmSheetIndividualComponent(
+    onClick: () -> Unit,
+    elementName: String,
+    elementImageVector: ImageVector,
+) {
+    val heightOfCard = remember {
+        mutableStateOf(0.dp)
+    }
+    val localDensity = LocalDensity.current
+    Card(
+        shape = RoundedCornerShape(10.dp), modifier = Modifier
+            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .onGloballyPositioned {
+                heightOfCard.value = with(localDensity) {
+                    it.size.height.toDp()
+                }
+            }
+            .clickable {
+                onClick()
+            }
+    ) {
+        Row {
+            Icon(
+                modifier = Modifier.padding(20.dp),
+                imageVector = elementImageVector,
+                contentDescription = null
+            )
+            Box(
+                modifier = Modifier.height(heightOfCard.value),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Text(
+                    text = elementName,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp
+                )
+            }
         }
     }
 }

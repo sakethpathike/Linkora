@@ -51,6 +51,7 @@ import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
+import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -67,6 +68,9 @@ fun SpecificScreen(navController: NavController) {
     val tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldRenameDialogBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
     val shouldDeleteDialogBeVisible = rememberSaveable {
@@ -132,7 +136,14 @@ fun SpecificScreen(navController: NavController) {
                                 imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
                                 onMoreIconCLick = {
                                     selectedWebURL.value = it.webURL
+                                    tempImpLinkData.linkData =
+                                        it
+                                    tempImpLinkData.link =
+                                        it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
+                                    coroutineScope.launch {
+                                        optionsBtmSheetVM.updateImportantCardData(url = selectedWebURL.value)
+                                    }
                                 },
                                 onLinkClick = {
                                     openInWeb(
@@ -140,7 +151,8 @@ fun SpecificScreen(navController: NavController) {
                                         context = context,
                                         uriHandler = uriHandler
                                     )
-                                }
+                                },
+                                webURL = it.webURL
                             )
                         }
                     }
@@ -167,7 +179,8 @@ fun SpecificScreen(navController: NavController) {
                                             context = context,
                                             uriHandler = uriHandler
                                         )
-                                    }
+                                    },
+                                    webURL = it.webURL
                                 )
                             }
                         } else {
@@ -229,7 +242,8 @@ fun SpecificScreen(navController: NavController) {
                                             context = context,
                                             uriHandler = uriHandler
                                         )
-                                    }
+                                    },
+                                    webURL = it.linkData.webURL
                                 )
                             }
                         } else {
@@ -280,7 +294,12 @@ fun SpecificScreen(navController: NavController) {
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.LINK,
+            btmSheetFor = when (SpecificScreenVM.screenType.value) {
+                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
+                SpecificScreenType.ARCHIVE_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
+                SpecificScreenType.LINKS_SCREEN -> OptionsBtmSheetType.LINK
+                SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> OptionsBtmSheetType.FOLDER
+            },
             onDeleteCardClick = {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
@@ -305,8 +324,24 @@ fun SpecificScreen(navController: NavController) {
                     }
                 }
             },
-            {
+            onRenameClick = {
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
 
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        shouldRenameDialogBeVisible.value = true
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+
+                    }
+                }
             },
             importantLinks = tempImpLinkData
         )
@@ -316,6 +351,13 @@ fun SpecificScreen(navController: NavController) {
             webURL = selectedWebURL.value,
             folderName = "",
             deleteDialogBoxType = DataDialogBoxType.LINK
+        )
+        RenameDialogBox(
+            shouldDialogBoxAppear = shouldRenameDialogBeVisible,
+            coroutineScope = coroutineScope,
+            existingFolderName = "",
+            renameDialogBoxFor = OptionsBtmSheetType.LINK,
+            webURLForTitle = selectedWebURL.value
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,

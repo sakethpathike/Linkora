@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -38,6 +39,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,7 +67,13 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {
+    val homeScreenVM: HomeScreenVM = viewModel()
+    val recentlySavedImpsLinksData = homeScreenVM.recentlySavedImpLinksData.collectAsState().value
+    val recentlySavedLinksData = homeScreenVM.recentlySavedLinksData.collectAsState().value
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val selectedCardType = rememberSaveable {
+        mutableStateOf(HomeScreenBtmSheetType.RECENT_IMP_SAVES.name)
+    }
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -200,7 +208,6 @@ fun HomeScreen() {
             },
             floatingActionButtonPosition = FabPosition.End
         ) {
-            val homeScreenVM: HomeScreenVM = viewModel()
             val currentPhaseOfTheDay =
                 rememberSaveable(inputs = arrayOf(homeScreenVM.currentPhaseOfTheDay.value)) {
                     homeScreenVM.currentPhaseOfTheDay.value
@@ -228,7 +235,7 @@ fun HomeScreen() {
                 }
                 item {
                     Text(
-                        text = "Recent Saves",
+                        text = "Recently Saved Links",
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
@@ -245,14 +252,17 @@ fun HomeScreen() {
                         item {
                             Spacer(modifier = Modifier.width(10.dp))
                         }
-                        items(8) {
+                        items(recentlySavedLinksData) {
                             GeneralCard(
-                                title = "ergferg",
-                                webBaseURL = "regrgttrg",
-                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                title = it.title,
+                                webBaseURL = it.webURL,
+                                imgURL = it.imgURL,
                                 onMoreIconClick = {
                                     shouldOptionsBtmModalSheetBeVisible.value = true
-                                }
+                                    selectedCardType.value =
+                                        HomeScreenBtmSheetType.RECENT_SAVES.name
+                                },
+                                webURL = it.webURL
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -261,7 +271,7 @@ fun HomeScreen() {
 
                 item {
                     Text(
-                        text = "Recent Favorites",
+                        text = "Recent Important(s)",
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
@@ -278,14 +288,15 @@ fun HomeScreen() {
                         item {
                             Spacer(modifier = Modifier.width(10.dp))
                         }
-                        items(8) {
+                        items(recentlySavedImpsLinksData) {
                             GeneralCard(
-                                title = "ergferg",
-                                webBaseURL = "regrgttrg",
-                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                title = it.linkData.title,
+                                webBaseURL = it.linkData.webURL,
+                                imgURL = it.linkData.imgURL,
                                 onMoreIconClick = {
                                     shouldOptionsBtmModalSheetBeVisible.value = true
-                                }
+                                },
+                                webURL = it.linkData.webURL
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -312,7 +323,8 @@ fun HomeScreen() {
                         onMoreIconCLick = {
                             shouldOptionsBtmModalSheetBeVisible.value = true
                         },
-                        {}
+                        {},
+                        webURL = ""
                     )
                 }
                 item {
@@ -396,4 +408,8 @@ fun HomeScreen() {
             activity?.finish()
         }
     }
+}
+
+enum class HomeScreenBtmSheetType {
+    RECENT_SAVES, RECENT_IMP_SAVES, RECENT_VISITS
 }

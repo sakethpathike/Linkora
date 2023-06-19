@@ -10,7 +10,7 @@ import com.sakethh.linkora.localDB.LocalDBFunctions
 
 
 enum class OptionsBtmSheetType {
-    LINK, FOLDER
+    LINK, FOLDER, IMPORTANT_LINKS_SCREEN
 }
 
 class OptionsBtmSheetVM : ViewModel() {

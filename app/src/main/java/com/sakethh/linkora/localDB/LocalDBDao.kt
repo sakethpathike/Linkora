@@ -40,6 +40,15 @@ interface LocalDBDao {
     @Query("UPDATE folders_table SET folderName = :newName WHERE folderName = :existingName")
     suspend fun renameFolderName(existingName: String, newName: String)
 
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL")
+    suspend fun changeLinkTitle(newTitle: String, webURL: String)
+
+    @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
+    suspend fun renameFolderNote(folderName: String, newNote: String)
+
+    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName)")
+    suspend fun doesThisFolderExists(folderName: String): Boolean
+
     @Query("SELECT * FROM links_table")
     fun getAllLinks(): Flow<List<LinksTable>>
 

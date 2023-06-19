@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home.composables
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -39,6 +41,7 @@ fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     onSaveBtnClick: (title: String, webURL: String, note: String) -> Unit,
 ) {
+    val context = LocalContext.current
     val linkTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
@@ -161,12 +164,20 @@ fun AddNewLinkDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            onSaveBtnClick(
-                                titleTextField.value,
-                                linkTextFieldValue.value,
-                                noteTextFieldValue.value
-                            )
-                            shouldDialogBoxAppear.value = false
+                            if (linkTextFieldValue.value.isEmpty()) {
+                                Toast.makeText(
+                                    context,
+                                    "where's the link bruhh?",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                onSaveBtnClick(
+                                    titleTextField.value,
+                                    linkTextFieldValue.value,
+                                    noteTextFieldValue.value
+                                )
+                                shouldDialogBoxAppear.value = false
+                            }
                         }) {
                         Text(
                             text = "Save",

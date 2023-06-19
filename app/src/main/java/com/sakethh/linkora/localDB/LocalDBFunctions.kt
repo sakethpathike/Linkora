@@ -2,6 +2,9 @@ package com.sakethh.linkora.localDB
 
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 
 object LocalDBFunctions {
@@ -69,8 +72,30 @@ object LocalDBFunctions {
         /*localDB.localDBData().deleteALinkFromAFolder(folderName, link)*/
     }
 
-    suspend fun renameAFolder(existingName: String, newName: String) {
-        localDB.localDBData().renameFolderName(existingName, newName)
+    suspend fun renameAFolder(existingName: String, newName: String, newNote: String) {
+        coroutineScope {
+            awaitAll(
+                async { localDB.localDBData().renameFolderName(existingName, newName) },
+                async {
+                    if (newNote.isNotEmpty()) {
+                        renameAFolderNote(newNote = newNote, folderName = newName)
+                    }
+                })
+        }
+    }
+
+    suspend fun renameAFolderNote(folderName: String, newNote: String) {
+        localDB.localDBData()
+            .renameFolderNote(newNote = newNote, folderName = folderName)
+    }
+
+    suspend fun renameLinkTitle(newTitle: String, webURL: String) {
+        localDB.localDBData()
+            .changeLinkTitle(newTitle, webURL)
+    }
+
+    suspend fun doesThisFolderExists(folderName: String): Boolean {
+        return localDB.localDBData().doesThisFolderExists(folderName)
     }
 
     suspend fun importantLinksFunctions(url: String, importantLinks: ImportantLinks?) {

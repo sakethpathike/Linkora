@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.home.composables
 
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -23,6 +24,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.localDB.FoldersTable
@@ -44,6 +46,7 @@ fun AddNewFolderDialogBox(
         mutableStateOf("")
     }
     val scrollState = rememberScrollState()
+    val context = LocalContext.current
     if (shouldDialogBoxAppear.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
@@ -111,16 +114,24 @@ fun AddNewFolderDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            coroutineScope.launch {
-                                LocalDBFunctions.createANewFolder(
-                                    FoldersTable(
-                                        folderName = folderNameTextFieldValue.value,
-                                        links = emptyList(),
-                                        infoForSaving = noteTextFieldValue.value
+                            if (folderNameTextFieldValue.value.isEmpty()) {
+                                Toast.makeText(
+                                    context,
+                                    "where's the folder name bruhh?",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                coroutineScope.launch {
+                                    LocalDBFunctions.createANewFolder(
+                                        FoldersTable(
+                                            folderName = folderNameTextFieldValue.value,
+                                            links = emptyList(),
+                                            infoForSaving = noteTextFieldValue.value
+                                        )
                                     )
-                                )
+                                }
+                                shouldDialogBoxAppear.value = false
                             }
-                            shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Create",

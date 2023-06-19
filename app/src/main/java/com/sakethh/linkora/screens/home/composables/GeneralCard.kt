@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home.composables
 
+import android.content.Intent
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,8 +14,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Share
-import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -23,6 +24,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,7 +35,15 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
 @Composable
-fun GeneralCard(title: String, webBaseURL: String, imgURL: String, onMoreIconClick: () -> Unit) {
+fun GeneralCard(
+    title: String,
+    webBaseURL: String,
+    webURL: String,
+    imgURL: String,
+    onMoreIconClick: () -> Unit,
+) {
+    val context = LocalContext.current
+    val localClipBoardManager = LocalClipboardManager.current
     Card(
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .height(155.dp)
@@ -84,8 +96,22 @@ fun GeneralCard(title: String, webBaseURL: String, imgURL: String, onMoreIconCli
                     modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(imageVector = Icons.Outlined.Star, contentDescription = null)
-                    Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
+                    Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
+                        modifier = Modifier.clickable {
+                            localClipBoardManager.setText(
+                                AnnotatedString(webURL)
+                            )
+                        })
+                    Icon(imageVector = Icons.Outlined.Share, contentDescription = null,
+                        modifier = Modifier.clickable {
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, webURL)
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(intent, null)
+                            context.startActivity(shareIntent)
+                        })
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
                         contentDescription = null,
