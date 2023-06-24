@@ -7,6 +7,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 
+// will be fixed in next commit:
 object LocalDBFunctions {
 
     lateinit var localDB: LocalDataBase
@@ -100,7 +101,7 @@ object LocalDBFunctions {
 
     suspend fun importantLinksFunctions(url: String, importantLinks: ImportantLinks?) {
         val doesThisLinkExistsInImportantLinksDB =
-            localDB.localDBData().doesThisLinkMarkedAsImportant(url = url)
+            localDB.localDBData().isThisLinkMarkedAsImportant(url = url)
         if (doesThisLinkExistsInImportantLinksDB) {
             SpecificScreenVM().impLinkDataForBtmSheet.linkData.isThisLinkImportant = false
             localDB.localDBData().removeALinkFromImportant(url = url)

@@ -298,7 +298,7 @@ fun SpecificScreen(navController: NavController) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
                 SpecificScreenType.ARCHIVE_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
                 SpecificScreenType.LINKS_SCREEN -> OptionsBtmSheetType.LINK
-                SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> OptionsBtmSheetType.FOLDER
+                SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> OptionsBtmSheetType.LINK
             },
             onDeleteCardClick = {
                 when (SpecificScreenVM.screenType.value) {

@@ -2,71 +2,57 @@ package com.sakethh.linkora.localDB
 
 import androidx.room.Dao
 import androidx.room.Insert
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.TypeConverters
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDBDao {
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addNewLink(linkData: LinksTable)
-
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun addALinkToImportant(importantLinks: ImportantLinks)
-
-    @Query("DELETE from important_links_table WHERE link = :url")
-    suspend fun removeALinkFromImportant(url: String)
-
-    @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE link = :url)")
-    suspend fun doesThisLinkMarkedAsImportant(url: String): Boolean
-
-    @Query("UPDATE folders_table SET links = json_insert(links, '$[#]', json(:newLinkData)) WHERE folderName = :folderName")
-    suspend fun addANewLinkInAFolder(
-        folderName: String,
-        @TypeConverters(LinkTypeConverter::class)
-        newLinkData: LinksTable,
-    )
-
-    /*suspend fun deleteALinkFromAFolder(
-        folderName: String,
-        link: String,
-    )*/
+    @Insert
+    suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
 
     @Insert
-    suspend fun addNewFolder(newFolderData: FoldersTable)
+    suspend fun addANewLinkToImpLinks(importantLinks: ImportantLinks)
 
-    @Query("UPDATE folders_table SET folderName = :newName WHERE folderName = :existingName")
-    suspend fun renameFolderName(existingName: String, newName: String)
+    @Insert
+    suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)
 
-    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL")
-    suspend fun changeLinkTitle(newTitle: String, webURL: String)
+    @Query("DELETE from links_table WHERE webURL = :webURL")
+    suspend fun deleteALinkFromSavedLinksOrInFolders(webURL: String)
 
-    @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
-    suspend fun renameFolderNote(folderName: String, newNote: String)
+    @Query("DELETE from important_links_table WHERE webURL = :webURL")
+    suspend fun deleteALinkFromImpLinks(webURL: String)
 
-    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName)")
-    suspend fun doesThisFolderExists(folderName: String): Boolean
+    @Query("DELETE from archived_links_table WHERE webURL = :webURL")
+    suspend fun deleteALinkFromArchiveLinks(webURL: String)
 
-    @Query("SELECT * FROM links_table")
-    fun getAllLinks(): Flow<List<LinksTable>>
+    @Query("DELETE from folders_table WHERE folderName = :folderName")
+    suspend fun deleteAFolder(folderName: String)
+
+    @Query("DELETE from important_folders_table WHERE folderName = :folderName")
+    suspend fun deleteAnImpFolder(folderName: String)
+
+    @Query("DELETE from archived_folders_table WHERE folderName = :folderName")
+    suspend fun deleteAnArchiveFolder(folderName: String)
+
+    @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")
+    fun getAllSavedLinks(): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM important_links_table")
-    fun getAllImportantLinks(): Flow<List<ImportantLinks>>
+    fun getAllImpLinks(): Flow<List<ImportantLinks>>
+
+    @Query("SELECT * FROM archived_links_table")
+    fun getAllArchiveLinks(): Flow<List<ArchivedLinks>>
+
+    @Query("SELECT * FROM archived_folders_table")
+    fun getAllArchiveFolders(): Flow<List<ArchivedFolders>>
+
+
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1")
+    fun getAllArchiveFoldersData(): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM folders_table")
     fun getAllFolders(): Flow<List<FoldersTable>>
 
-    @Query("DELETE from links_table WHERE webURL = :link")
-    suspend fun deleteThisLink(link: String)
-
-    @Query("DELETE from folders_table WHERE folderName = :folderName")
-    suspend fun deleteThisFolder(folderName: String)
-
-    @Query("DELETE FROM links_table")
-    suspend fun deleteAllLinks()
-
-    @Query("DELETE FROM folders_table")
-    suspend fun deleteAllFolders()
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")
+    fun getThisFolderData(folderName: String): Flow<List<LinksTable>>
 }
