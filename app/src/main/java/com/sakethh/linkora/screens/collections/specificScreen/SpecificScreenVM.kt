@@ -3,10 +3,10 @@ package com.sakethh.linkora.screens.collections.specificScreen
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -33,7 +33,7 @@ class SpecificScreenVM : ViewModel() {
         when (screenType.value) {
             SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDBFunctions.getAllFolders().collect {
+                    CustomLocalDBDaoFunctionsDecl.getAllFolders().collect {
                         _foldersData.value = it[currentClickedIndexNumber]
                     }
                 }
@@ -41,7 +41,7 @@ class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDBFunctions.getAllImportantLinks().collect {
+                    CustomLocalDBDaoFunctionsDecl.getAllImportantLinks().collect {
                         _impLinksData.value = it
                     }
                 }
@@ -53,7 +53,7 @@ class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDBFunctions.getAllLinks().collect {
+                    CustomLocalDBDaoFunctionsDecl.getAllLinks().collect {
                         _linksData.value = it
                     }
                 }

@@ -45,8 +45,8 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
@@ -304,7 +304,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            LocalDBFunctions.deleteALinkFromThisFolder(
+                            CustomLocalDBDaoFunctionsDecl.deleteALinkFromThisFolder(
                                 folderName = foldersData.folderName,
                                 link = selectedWebURL.value
                             )
@@ -378,7 +378,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            LocalDBFunctions.importantLinksFunctions(
+                            CustomLocalDBDaoFunctionsDecl.importantLinksFunctions(
                                 url = webURL,
                                 importantLinks = impLinkData
                             )
@@ -391,7 +391,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            LocalDBFunctions.addANewLink(
+                            CustomLocalDBDaoFunctionsDecl.addANewLink(
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note
@@ -401,7 +401,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            LocalDBFunctions.addANewLinkInAFolder(
+                            CustomLocalDBDaoFunctionsDecl.addANewLinkInAFolder(
                                 folderName = foldersData.folderName,
                                 titleForLink = title,
                                 webURLOfLink = webURL,

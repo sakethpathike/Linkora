@@ -6,7 +6,7 @@ import androidx.compose.material.icons.outlined.Favorite
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.sakethh.linkora.localDB.LocalDBFunctions
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 
 
 enum class OptionsBtmSheetType {
@@ -18,7 +18,9 @@ class OptionsBtmSheetVM : ViewModel() {
     val importantCardText = mutableStateOf("")
 
     suspend fun updateImportantCardData(url: String) {
-        if (LocalDBFunctions.doesThisLinkExistsInImportantLinksDB(url = url)) {
+        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                .doesThisExistsInImpLinks(webURL = url)
+        ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
             importantCardText.value = "Remove from Important Links"
         } else {

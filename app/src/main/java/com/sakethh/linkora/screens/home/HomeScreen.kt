@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
-import com.sakethh.linkora.localDB.LocalDBFunctions
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
@@ -290,13 +290,13 @@ fun HomeScreen() {
                         }
                         items(recentlySavedImpsLinksData) {
                             GeneralCard(
-                                title = it.linkData.title,
-                                webBaseURL = it.linkData.webURL,
-                                imgURL = it.linkData.imgURL,
+                                title = it.title,
+                                webBaseURL = it.webURL,
+                                imgURL = it.imgURL,
                                 onMoreIconClick = {
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                 },
-                                webURL = it.linkData.webURL
+                                webURL = it.webURL
                             )
                             Spacer(modifier = Modifier.width(10.dp))
                         }
@@ -359,10 +359,12 @@ fun HomeScreen() {
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             onSaveBtnClick = { title: String, webURL: String, note: String ->
                 coroutineScope.launch {
-                    LocalDBFunctions.addANewLink(
+                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecifically(
                         title = title,
                         webURL = webURL,
-                        noteForSaving = note
+                        noteForSaving = note,
+                        folderName = null,
+                        savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
                     )
                 }
             }

@@ -3,9 +3,9 @@ package com.sakethh.linkora.screens.home
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -48,14 +48,14 @@ class HomeScreenVM : ViewModel() {
         }
 
         viewModelScope.launch {
-            LocalDBFunctions.getAllImportantLinks().collect {
-                _impLinksData.value = it.reversed().take(8)
+            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllImpLinks().collect {
+                _impLinksData.emit(it.reversed().take(8))
             }
         }
 
         viewModelScope.launch {
-            LocalDBFunctions.getAllLinks().collect {
-                _linksData.value = it.reversed().take(8)
+            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllSavedLinks().collect {
+                _linksData.emit(it.reversed().take(8))
             }
         }
     }

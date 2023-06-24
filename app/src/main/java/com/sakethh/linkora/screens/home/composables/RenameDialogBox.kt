@@ -29,11 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
-import com.sakethh.linkora.localDB.LocalDBFunctions
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
+// will be fixed in the next commit :
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameDialogBox(
@@ -140,9 +141,10 @@ fun RenameDialogBox(
                                 if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
                                     coroutineScope.launch {
                                         doesFolderNameAlreadyExists =
-                                            LocalDBFunctions.doesThisFolderExists(
-                                                newFolderOrTitleName.value
-                                            )
+                                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                .doesThisFolderExists(
+                                                    newFolderOrTitleName.value
+                                                )
                                     }.invokeOnCompletion {
                                         if (doesFolderNameAlreadyExists) {
                                             Toast.makeText(
@@ -153,10 +155,10 @@ fun RenameDialogBox(
                                         } else {
                                             coroutineScope.launch {
                                                 if (existingFolderName != null) {
-                                                    LocalDBFunctions.renameAFolder(
-                                                        existingName = existingFolderName,
-                                                        newName = newFolderOrTitleName.value,
-                                                        newNote = newNote.value
+                                                    CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
+                                                        existingFolderName = existingFolderName,
+                                                        newFolderName = newFolderOrTitleName.value,
+                                                        infoForFolder = newNote.value
                                                     )
                                                 }
                                             }
@@ -165,7 +167,7 @@ fun RenameDialogBox(
                                     }
                                 } else {
                                     coroutineScope.launch {
-                                        LocalDBFunctions.renameLinkTitle(
+                                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().renam(
                                             newTitle = newFolderOrTitleName.value,
                                             webURL = webURLForTitle!!
                                         )
@@ -200,7 +202,7 @@ fun RenameDialogBox(
                                 } else {
                                     coroutineScope.launch {
                                         if (existingFolderName != null) {
-                                            LocalDBFunctions.renameAFolderNote(
+                                            CustomLocalDBDaoFunctionsDecl.renameAFolderNote(
                                                 folderName = existingFolderName,
                                                 newNote = newNote.value
                                             )

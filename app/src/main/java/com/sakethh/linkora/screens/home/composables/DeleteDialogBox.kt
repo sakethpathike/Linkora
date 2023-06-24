@@ -21,10 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 enum class DataDialogBoxType {
     LINK, FOLDER
@@ -34,10 +31,8 @@ enum class DataDialogBoxType {
 @Composable
 fun DeleteDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
-    coroutineScope: CoroutineScope,
-    webURL: String,
-    folderName: String,
     deleteDialogBoxType: DataDialogBoxType,
+    onDeleteClick: () -> Unit,
 ) {
     Column {
         if (shouldDialogBoxAppear.value) {
@@ -65,15 +60,7 @@ fun DeleteDialogBox(
                                 )
                                 .align(Alignment.End),
                             onClick = {
-                                if (deleteDialogBoxType == DataDialogBoxType.LINK) {
-                                    coroutineScope.launch {
-                                        LocalDBFunctions.deleteALink(link = webURL)
-                                    }
-                                } else {
-                                    coroutineScope.launch {
-                                        LocalDBFunctions.deleteAFolder(folderName = folderName)
-                                    }
-                                }
+                                onDeleteClick()
                                 shouldDialogBoxAppear.value = false
                             }) {
                             Text(

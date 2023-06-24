@@ -7,8 +7,12 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDBDao {
+
     @Insert
     suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
+
+    @Insert
+    suspend fun addANewFolder(foldersTable: FoldersTable)
 
     @Insert
     suspend fun addANewLinkToImpLinks(importantLinks: ImportantLinks)
@@ -55,4 +59,19 @@ interface LocalDBDao {
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")
     fun getThisFolderData(folderName: String): Flow<List<LinksTable>>
+
+    @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE webURL = :webURL)")
+    suspend fun doesThisExistsInImpLinks(webURL: String): Boolean
+
+    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName)")
+    suspend fun doesThisFolderExists(folderName: String): Boolean
+
+    @Query("UPDATE folders_table SET folderName = :newFolderName WHERE folderName = :existingFolderName")
+    suspend fun renameAFolderName(existingFolderName: String, newFolderName: String)
+
+    @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
+    suspend fun renameAFolderNote(folderName: String, newNote: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+    suspend fun renameALinkTitleFromSavedLinksOrInFolders(webURL: String, newTitle: String)
 }

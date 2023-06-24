@@ -33,8 +33,8 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -64,15 +64,13 @@ fun OptionsBtmSheetUI(
             if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
-                        coroutineScope
-                            .launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
-                                }
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
                             }
-                            .invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
+                        }.invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
+                        }
                         onRenameClick()
                     },
                     elementName = "Rename",
@@ -82,21 +80,18 @@ fun OptionsBtmSheetUI(
             if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
-                        coroutineScope
-                            .launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
-                                }
-                                importantLinks?.link?.let {
-                                    LocalDBFunctions.importantLinksFunctions(
-                                        url = it,
-                                        importantLinks = importantLinks
-                                    )
-                                }
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
                             }
-                            .invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
+                            if (importantLinks != null) {
+                                CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                    importantLinks = importantLinks
+                                )
                             }
+                        }.invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
+                        }
                     },
                     elementName = optionsBtmSheetVM.importantCardText.value,
                     elementImageVector = optionsBtmSheetVM.importantCardIcon.value
@@ -104,15 +99,13 @@ fun OptionsBtmSheetUI(
             }
             OptionsBtmSheetIndividualComponent(
                 onClick = {
-                    coroutineScope
-                        .launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
-                            }
+                    coroutineScope.launch {
+                        if (btmModalSheetState.isVisible) {
+                            btmModalSheetState.hide()
                         }
-                        .invokeOnCompletion {
-                            shouldBtmModalSheetBeVisible.value = false
-                        }
+                    }.invokeOnCompletion {
+                        shouldBtmModalSheetBeVisible.value = false
+                    }
                 },
                 elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Archive Folder" else "Archive Link",
                 elementImageVector = Icons.Outlined.Archive
@@ -120,15 +113,13 @@ fun OptionsBtmSheetUI(
             if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
-                        coroutineScope
-                            .launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
-                                }
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
                             }
-                            .invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
+                        }.invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
+                        }
                         onDeleteCardClick()
                     },
                     elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
@@ -150,8 +141,8 @@ fun OptionsBtmSheetIndividualComponent(
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
-    Card(
-        shape = RoundedCornerShape(10.dp), modifier = Modifier
+    Card(shape = RoundedCornerShape(10.dp),
+        modifier = Modifier
             .padding(top = 20.dp, end = 20.dp, start = 20.dp)
             .wrapContentHeight()
             .fillMaxWidth()
@@ -162,8 +153,7 @@ fun OptionsBtmSheetIndividualComponent(
             }
             .clickable {
                 onClick()
-            }
-    ) {
+            }) {
         Row {
             Icon(
                 modifier = Modifier.padding(20.dp),

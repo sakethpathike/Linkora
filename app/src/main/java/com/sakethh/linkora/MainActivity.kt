@@ -20,7 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sakethh.linkora.localDB.LocalDBFunctions
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            LocalDBFunctions.localDB = LocalDataBase.getLocalDB(context = context)
+            CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)
         }
     }
 }

@@ -27,8 +27,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.FoldersTable
-import com.sakethh.linkora.localDB.LocalDBFunctions
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -122,13 +122,13 @@ fun AddNewFolderDialogBox(
                                 ).show()
                             } else {
                                 coroutineScope.launch {
-                                    LocalDBFunctions.createANewFolder(
-                                        FoldersTable(
-                                            folderName = folderNameTextFieldValue.value,
-                                            links = emptyList(),
-                                            infoForSaving = noteTextFieldValue.value
+                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                        .addANewFolder(
+                                            FoldersTable(
+                                                folderName = folderNameTextFieldValue.value,
+                                                infoForSaving = noteTextFieldValue.value
+                                            )
                                         )
-                                    )
                                 }
                                 shouldDialogBoxAppear.value = false
                             }
