@@ -100,6 +100,9 @@ fun SpecificScreen(navController: NavController) {
     val shouldNewLinkDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val isDataExtractingFromTheLink = rememberSaveable {
+        mutableStateOf(false)
+    }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             FloatingActionButton(
@@ -381,7 +384,10 @@ fun SpecificScreen(navController: NavController) {
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
-            onSaveBtnClick = { title: String, webURL: String, note: String ->
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolderName:String ->
+                if(webURL.isNotEmpty()){
+                    isDataExtractingFromTheLink.value = true
+                }
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
@@ -394,6 +400,10 @@ fun SpecificScreen(navController: NavController) {
                                     infoForSaving = note
                                 )
                             )
+                        }.invokeOnCompletion {
+                            if(webURL.isNotEmpty()){
+                                isDataExtractingFromTheLink.value = false
+                            }
                         }
                     }
 
@@ -410,6 +420,10 @@ fun SpecificScreen(navController: NavController) {
                                 folderName = null,
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
                             )
+                        }.invokeOnCompletion {
+                            if(webURL.isNotEmpty()){
+                                isDataExtractingFromTheLink.value = false
+                            }
                         }
                     }
 
@@ -422,10 +436,15 @@ fun SpecificScreen(navController: NavController) {
                                 noteForSaving = note,
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
                             )
+                        }.invokeOnCompletion {
+                            if(webURL.isNotEmpty()){
+                                isDataExtractingFromTheLink.value = false
+                            }
                         }
                     }
                 }
-            }
+            },
+            isDataExtractingForTheLink = isDataExtractingFromTheLink
         )
     }
     BackHandler {

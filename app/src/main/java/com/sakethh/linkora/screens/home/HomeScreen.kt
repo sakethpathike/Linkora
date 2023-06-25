@@ -103,6 +103,9 @@ fun HomeScreen() {
     val shouldDialogForNewFolderAppear = rememberSaveable {
         mutableStateOf(false)
     }
+    val isDataExtractingFromLink = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (shouldDialogForNewFolderAppear.value || shouldDialogForNewLinkAppear.value) {
         shouldScreenTransparencyDecreasedBoxVisible.value = false
         isMainFabRotated.value = false
@@ -357,17 +360,25 @@ fun HomeScreen() {
         }
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            onSaveBtnClick = { title: String, webURL: String, note: String ->
+            onSaveBtnClick = { title: String, webURL: String, note: String,selectedFolder:String ->
+                if(webURL.isNotEmpty()){
+                    isDataExtractingFromLink.value = true
+                }
                 coroutineScope.launch {
                     CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                         title = title,
                         webURL = webURL,
                         noteForSaving = note,
-                        folderName = null,
-                        savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
+                        folderName = selectedFolder,
+                        savingFor = if(selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
                     )
+                }.invokeOnCompletion {
+                    if(webURL.isNotEmpty()){
+                        isDataExtractingFromLink.value = false
+                    }
                 }
-            }
+            },
+            isDataExtractingForTheLink = isDataExtractingFromLink
         )
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear,

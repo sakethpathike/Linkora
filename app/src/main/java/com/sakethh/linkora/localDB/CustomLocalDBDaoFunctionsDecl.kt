@@ -53,12 +53,13 @@ object CustomLocalDBDaoFunctionsDecl {
     ) {
         when (savingFor) {
             ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS -> {
+                val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = folderName?.let {
                     LinksTable(
                         title = title,
                         webURL = webURL,
-                        baseURL = "www.www.www",
-                        imgURL = "",
+                        baseURL = linkDataExtractor?.baseURL ?: webURL,
+                        imgURL = linkDataExtractor?.imgURL ?: "",
                         infoForSaving = noteForSaving,
                         isLinkedWithSavedLinks = false,
                         isLinkedWithFolders = true,
@@ -79,12 +80,13 @@ object CustomLocalDBDaoFunctionsDecl {
             }
 
             ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS -> {
+                val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = folderName?.let {
                     LinksTable(
                         title = title,
                         webURL = webURL,
-                        baseURL = "www.www.www",
-                        imgURL = "",
+                        baseURL = linkDataExtractor?.baseURL ?: webURL,
+                        imgURL = linkDataExtractor?.imgURL ?: "",
                         infoForSaving = noteForSaving,
                         isLinkedWithSavedLinks = false,
                         isLinkedWithFolders = false,
@@ -101,11 +103,12 @@ object CustomLocalDBDaoFunctionsDecl {
             }
 
             ModifiedLocalDbFunctionsType.SAVED_LINKS -> {
+                val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = LinksTable(
                     title = title,
                     webURL = webURL,
-                    baseURL = "www.www.www",
-                    imgURL = "",
+                    baseURL = linkDataExtractor?.baseURL ?: webURL,
+                    imgURL = linkDataExtractor?.imgURL ?: "",
                     infoForSaving = noteForSaving,
                     isLinkedWithSavedLinks = true,
                     isLinkedWithFolders = false,
