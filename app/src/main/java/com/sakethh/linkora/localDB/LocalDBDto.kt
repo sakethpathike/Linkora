@@ -16,14 +16,14 @@ import androidx.room.PrimaryKey
         ),
         ForeignKey(
             entity = ImportantFolders::class,
-            parentColumns = ["folderName"],
+            parentColumns = ["impFolderName"],
             childColumns = ["keyOfImpLinkedFolder"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
         ),
         ForeignKey(
             entity = ArchivedFolders::class,
-            parentColumns = ["folderName"],
+            parentColumns = ["archiveFolderName"],
             childColumns = ["keyOfArchiveLinkedFolder"],
             onDelete = ForeignKey.CASCADE,
             onUpdate = ForeignKey.CASCADE
@@ -66,7 +66,7 @@ data class ArchivedLinks(
 
 @Entity(tableName = "archived_folders_table")
 data class ArchivedFolders(
-    @PrimaryKey val folderName: String,
+    @PrimaryKey val archiveFolderName: String,
     val infoForSaving: String,
 )
 
@@ -81,6 +81,6 @@ data class ImportantLinks(
 
 @Entity(tableName = "important_folders_table")
 data class ImportantFolders(
-    @PrimaryKey val folderName: String,
+    @PrimaryKey val impFolderName: String,
     val infoForSaving: String,
 )

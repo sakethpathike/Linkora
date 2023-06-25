@@ -94,7 +94,7 @@ fun SpecificScreen(navController: NavController) {
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-            foldersData[0].keyOfLinkedFolder
+            SpecificScreenVM.currentClickedFolderName.value
         }
     }
     val shouldNewLinkDialogBoxBeVisible = rememberSaveable {
@@ -136,7 +136,7 @@ fun SpecificScreen(navController: NavController) {
                             LinkUIComponent(
                                 title = it.title,
                                 webBaseURL = it.baseURL,
-                                imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                imgURL = it.imgURL,
                                 onMoreIconCLick = {
                                     selectedWebURL.value = it.webURL
                                     tempImpLinkData.apply {
@@ -171,7 +171,7 @@ fun SpecificScreen(navController: NavController) {
                                 LinkUIComponent(
                                     title = it.title,
                                     webBaseURL = it.baseURL,
-                                    imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                    imgURL = it.imgURL,
                                     onMoreIconCLick = {
                                         selectedWebURL.value = it.webURL
                                         tempImpLinkData.apply {
@@ -238,7 +238,7 @@ fun SpecificScreen(navController: NavController) {
                                 LinkUIComponent(
                                     title = it.title,
                                     webBaseURL = it.baseURL,
-                                    imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                                    imgURL = it.imgURL,
                                     onMoreIconCLick = {
                                         selectedWebURL.value = it.webURL
                                         tempImpLinkData.apply {
@@ -384,8 +384,8 @@ fun SpecificScreen(navController: NavController) {
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
-            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolderName:String ->
-                if(webURL.isNotEmpty()){
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolderName: String ->
+                if (webURL.isNotEmpty()) {
                     isDataExtractingFromTheLink.value = true
                 }
                 when (SpecificScreenVM.screenType.value) {
@@ -401,7 +401,7 @@ fun SpecificScreen(navController: NavController) {
                                 )
                             )
                         }.invokeOnCompletion {
-                            if(webURL.isNotEmpty()){
+                            if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
                             }
                         }
@@ -421,7 +421,7 @@ fun SpecificScreen(navController: NavController) {
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
                             )
                         }.invokeOnCompletion {
-                            if(webURL.isNotEmpty()){
+                            if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
                             }
                         }
@@ -430,21 +430,22 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                folderName = foldersData[0].keyOfLinkedFolder,
+                                folderName = SpecificScreenVM.currentClickedFolderName.value,
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
                             )
                         }.invokeOnCompletion {
-                            if(webURL.isNotEmpty()){
+                            if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
                             }
                         }
                     }
                 }
             },
-            isDataExtractingForTheLink = isDataExtractingFromTheLink
+            isDataExtractingForTheLink = isDataExtractingFromTheLink,
+            inCollectionBasedFolder = mutableStateOf(true)
         )
     }
     BackHandler {

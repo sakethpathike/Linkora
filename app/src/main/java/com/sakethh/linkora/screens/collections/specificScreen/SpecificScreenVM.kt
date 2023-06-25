@@ -24,7 +24,7 @@ class SpecificScreenVM : ViewModel() {
     val impLinkDataForBtmSheet = ImportantLinks("", "", "", "", "")
 
     companion object {
-        var currentClickedFolderName = ""
+        val currentClickedFolderName = mutableStateOf("")
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_SCREEN)
     }
 
@@ -33,7 +33,7 @@ class SpecificScreenVM : ViewModel() {
             SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                 viewModelScope.launch {
                     CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getThisFolderData(
-                        currentClickedFolderName
+                        currentClickedFolderName.value
                     ).collect {
                         _foldersData.emit(it)
                     }

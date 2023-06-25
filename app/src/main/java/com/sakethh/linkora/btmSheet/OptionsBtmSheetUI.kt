@@ -61,22 +61,20 @@ fun OptionsBtmSheetUI(
                 shouldBtmModalSheetBeVisible.value = false
             }
         }) {
-            if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                OptionsBtmSheetIndividualComponent(
-                    onClick = {
-                        coroutineScope.launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
-                            }
-                        }.invokeOnCompletion {
-                            shouldBtmModalSheetBeVisible.value = false
+            OptionsBtmSheetIndividualComponent(
+                onClick = {
+                    coroutineScope.launch {
+                        if (btmModalSheetState.isVisible) {
+                            btmModalSheetState.hide()
                         }
-                        onRenameClick()
-                    },
-                    elementName = "Rename",
-                    elementImageVector = Icons.Outlined.DriveFileRenameOutline
-                )
-            }
+                    }.invokeOnCompletion {
+                        shouldBtmModalSheetBeVisible.value = false
+                    }
+                    onRenameClick()
+                },
+                elementName = "Rename",
+                elementImageVector = Icons.Outlined.DriveFileRenameOutline
+            )
             if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {

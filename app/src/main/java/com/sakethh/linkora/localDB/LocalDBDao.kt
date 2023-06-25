@@ -32,10 +32,10 @@ interface LocalDBDao {
     @Query("DELETE from folders_table WHERE folderName = :folderName")
     suspend fun deleteAFolder(folderName: String)
 
-    @Query("DELETE from important_folders_table WHERE folderName = :folderName")
+    @Query("DELETE from important_folders_table WHERE impFolderName = :folderName")
     suspend fun deleteAnImpFolder(folderName: String)
 
-    @Query("DELETE from archived_folders_table WHERE folderName = :folderName")
+    @Query("DELETE from archived_folders_table WHERE archiveFolderName = :folderName")
     suspend fun deleteAnArchiveFolder(folderName: String)
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")

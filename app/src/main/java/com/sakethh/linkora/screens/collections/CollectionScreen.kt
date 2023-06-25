@@ -214,7 +214,7 @@ fun CollectionScreen(navController: NavController) {
                                 .clickable {
                                     SpecificScreenVM.screenType.value =
                                         SpecificScreenType.SPECIFIC_FOLDER_SCREEN
-                                    SpecificScreenVM.currentClickedFolderName =
+                                    SpecificScreenVM.currentClickedFolderName.value =
                                         foldersData.folderName
                                     navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                                 }

@@ -44,7 +44,6 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -52,6 +51,7 @@ fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     onSaveBtnClick: (title: String, webURL: String, note: String, selectedFolder: String) -> Unit,
     isDataExtractingForTheLink: MutableState<Boolean>,
+    inCollectionBasedFolder: MutableState<Boolean>,
 ) {
     val selectedFolderName = rememberSaveable {
         mutableStateOf("Saved Links")
@@ -161,39 +161,41 @@ fun AddNewLinkDialogBox(
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    Row(
-                        Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 30.dp
-                        ),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Save in",
-                            color = AlertDialogDefaults.textContentColor,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 18.sp
-                        )
-                        Row() {
-                            Spacer(modifier = Modifier.width(10.dp))
+                    if (!inCollectionBasedFolder.value) {
+                        Row(
+                            Modifier.padding(
+                                start = 20.dp,
+                                end = 20.dp,
+                                top = 30.dp
+                            ),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
                             Text(
-                                text = selectedFolderName.value,
+                                text = "Save in",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 18.sp
                             )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            IconButton(onClick = {
-                                isDropDownMenuIconClicked.value = true
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                    tint = AlertDialogDefaults.textContentColor
+                            Row() {
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = selectedFolderName.value,
+                                    color = AlertDialogDefaults.textContentColor,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 18.sp
                                 )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                IconButton(onClick = {
+                                    isDropDownMenuIconClicked.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = null,
+                                        tint = AlertDialogDefaults.textContentColor
+                                    )
+                                }
+                                Spacer(modifier = Modifier.width(10.dp))
                             }
-                            Spacer(modifier = Modifier.width(10.dp))
                         }
                     }
                     DropdownMenu(
@@ -201,15 +203,6 @@ fun AddNewLinkDialogBox(
                         onDismissRequest = { isDropDownMenuIconClicked.value = false }) {
                         DropdownMenuItem(onClick = {
                             selectedFolderName.value = "Saved Links"
-                            coroutineScope.launch {
-                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                    title = titleTextField.value,
-                                    webURL = linkTextFieldValue.value,
-                                    noteForSaving = noteTextFieldValue.value,
-                                    folderName = selectedFolderName.value,
-                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
-                                )
-                            }
                         }) {
                             Icon(imageVector = Icons.Outlined.Link, contentDescription = null)
                             Spacer(modifier = Modifier.width(15.dp))
@@ -223,15 +216,6 @@ fun AddNewLinkDialogBox(
                         foldersTableData.forEach {
                             DropdownMenuItem(onClick = {
                                 selectedFolderName.value = it.folderName
-                                coroutineScope.launch {
-                                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                        title = titleTextField.value,
-                                        webURL = linkTextFieldValue.value,
-                                        noteForSaving = noteTextFieldValue.value,
-                                        folderName = selectedFolderName.value,
-                                        savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                                    )
-                                }
                             }) {
                                 Icon(imageVector = Icons.Outlined.Folder, contentDescription = null)
                                 Spacer(modifier = Modifier.width(15.dp))
@@ -267,15 +251,17 @@ fun AddNewLinkDialogBox(
                                     noteTextFieldValue.value,
                                     selectedFolderName.value
                                 )
-                                shouldDialogBoxAppear.value = false
+                                if (!isDataExtractingForTheLink.value) {
+                                    shouldDialogBoxAppear.value = false
+                                }
                             }
                         }) {
                         if (isDataExtractingForTheLink.value) {
                             Row {
-                                CircularProgressIndicator()
-                                Spacer(modifier = Modifier.width(15.dp))
+                                CircularProgressIndicator(strokeWidth = 4.dp)
+                                Spacer(modifier = Modifier.width(20.dp))
                                 Text(
-                                    text = "Extracting data...",
+                                    text = "Extracting the data...",
                                     color = AlertDialogDefaults.containerColor,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp

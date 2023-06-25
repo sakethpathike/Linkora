@@ -360,8 +360,8 @@ fun HomeScreen() {
         }
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            onSaveBtnClick = { title: String, webURL: String, note: String,selectedFolder:String ->
-                if(webURL.isNotEmpty()){
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
+                if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = true
                 }
                 coroutineScope.launch {
@@ -370,15 +370,16 @@ fun HomeScreen() {
                         webURL = webURL,
                         noteForSaving = note,
                         folderName = selectedFolder,
-                        savingFor = if(selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
                     )
                 }.invokeOnCompletion {
-                    if(webURL.isNotEmpty()){
+                    if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
                 }
             },
-            isDataExtractingForTheLink = isDataExtractingFromLink
+            isDataExtractingForTheLink = isDataExtractingFromLink,
+            inCollectionBasedFolder = mutableStateOf(false)
         )
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear,

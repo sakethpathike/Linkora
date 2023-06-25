@@ -1,6 +1,7 @@
 package com.sakethh.linkora.localDB
 
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -38,7 +39,15 @@ object CustomLocalDBDaoFunctionsDecl {
         if (localDB.localDBData().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
             localDB.localDBData().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
         } else {
-            localDB.localDBData().addANewLinkToImpLinks(importantLinks = importantLinks)
+            val linkDataExtractor = linkDataExtractor(importantLinks.webURL)
+            val linksData = ImportantLinks(
+                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else importantLinks.title,
+                webURL = importantLinks.webURL,
+                baseURL = linkDataExtractor.baseURL,
+                imgURL = linkDataExtractor.imgURL,
+                infoForSaving = importantLinks.infoForSaving
+            )
+            localDB.localDBData().addANewLinkToImpLinks(importantLinks = linksData)
         }
         OptionsBtmSheetVM().updateImportantCardData(url = importantLinks.webURL)
     }
@@ -56,10 +65,10 @@ object CustomLocalDBDaoFunctionsDecl {
                 val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = folderName?.let {
                     LinksTable(
-                        title = title,
+                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
                         webURL = webURL,
-                        baseURL = linkDataExtractor?.baseURL ?: webURL,
-                        imgURL = linkDataExtractor?.imgURL ?: "",
+                        baseURL = linkDataExtractor.baseURL,
+                        imgURL = linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
                         isLinkedWithSavedLinks = false,
                         isLinkedWithFolders = true,
@@ -83,10 +92,10 @@ object CustomLocalDBDaoFunctionsDecl {
                 val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = folderName?.let {
                     LinksTable(
-                        title = title,
+                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
                         webURL = webURL,
-                        baseURL = linkDataExtractor?.baseURL ?: webURL,
-                        imgURL = linkDataExtractor?.imgURL ?: "",
+                        baseURL = linkDataExtractor.baseURL,
+                        imgURL = linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
                         isLinkedWithSavedLinks = false,
                         isLinkedWithFolders = false,
@@ -105,10 +114,10 @@ object CustomLocalDBDaoFunctionsDecl {
             ModifiedLocalDbFunctionsType.SAVED_LINKS -> {
                 val linkDataExtractor = linkDataExtractor(webURL)
                 val linkData = LinksTable(
-                    title = title,
+                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
                     webURL = webURL,
-                    baseURL = linkDataExtractor?.baseURL ?: webURL,
-                    imgURL = linkDataExtractor?.imgURL ?: "",
+                    baseURL = linkDataExtractor.baseURL,
+                    imgURL = linkDataExtractor.imgURL,
                     infoForSaving = noteForSaving,
                     isLinkedWithSavedLinks = true,
                     isLinkedWithFolders = false,
