@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
                 systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
                     if (NavigationRoutes.values().any {
-                            it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute
+                            it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute && it.name != NavigationRoutes.ARCHIVE_SCREEN.name
                         }) {
 
                         if (bottomBarSheetState.bottomSheetState.isCollapsed) {

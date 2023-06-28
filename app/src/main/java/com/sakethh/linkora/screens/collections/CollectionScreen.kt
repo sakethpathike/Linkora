@@ -58,6 +58,8 @@ import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -139,6 +141,9 @@ fun CollectionScreen(navController: NavController) {
                             .padding(top = 20.dp, end = 20.dp, start = 20.dp)
                             .wrapContentHeight()
                             .fillMaxWidth()
+                            .clickable {
+                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                            }
                     ) {
                         Row {
                             Icon(
@@ -309,8 +314,13 @@ fun CollectionScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
             onDeleteClick = {
                 coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                        .deleteAFolder(folderName = clickedFolderName.value)
+                    awaitAll(async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteAFolder(folderName = clickedFolderName.value)
+                    }, async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteThisFolderData(folderName = clickedFolderName.value)
+                    })
                 }
             },
             deleteDialogBoxType = DataDialogBoxType.FOLDER

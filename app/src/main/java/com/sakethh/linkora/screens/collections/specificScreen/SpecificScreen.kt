@@ -325,11 +325,11 @@ fun SpecificScreen(navController: NavController) {
             onRenameClick = {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-
+                        shouldRenameDialogBeVisible.value = true
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                        shouldRenameDialogBeVisible.value = true
                     }
 
                     SpecificScreenType.LINKS_SCREEN -> {
@@ -337,7 +337,7 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-
+                        shouldRenameDialogBeVisible.value = true
                     }
                 }
             },
@@ -403,6 +403,7 @@ fun SpecificScreen(navController: NavController) {
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
+                                shouldNewLinkDialogBoxBeVisible.value = false
                             }
                         }
                     }
@@ -423,6 +424,7 @@ fun SpecificScreen(navController: NavController) {
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
+                                shouldNewLinkDialogBoxBeVisible.value = false
                             }
                         }
                     }
@@ -439,6 +441,7 @@ fun SpecificScreen(navController: NavController) {
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
+                                shouldNewLinkDialogBoxBeVisible.value = false
                             }
                         }
                     }

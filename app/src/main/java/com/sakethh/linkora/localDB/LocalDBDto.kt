@@ -4,32 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 
-@Entity(
-    tableName = "links_table",
-    foreignKeys = [
-        ForeignKey(
-            entity = FoldersTable::class,
-            parentColumns = ["folderName"],
-            childColumns = ["keyOfLinkedFolder"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = ImportantFolders::class,
-            parentColumns = ["impFolderName"],
-            childColumns = ["keyOfImpLinkedFolder"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-        ForeignKey(
-            entity = ArchivedFolders::class,
-            parentColumns = ["archiveFolderName"],
-            childColumns = ["keyOfArchiveLinkedFolder"],
-            onDelete = ForeignKey.CASCADE,
-            onUpdate = ForeignKey.CASCADE
-        ),
-    ]
-)
+@Entity(tableName = "links_table")
 data class LinksTable(
     val title: String,
     @PrimaryKey val webURL: String,

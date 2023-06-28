@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.sakethh.linkora.screens.collections.CollectionScreen
+import com.sakethh.linkora.screens.collections.archiveScreen.ParentArchiveScreen
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreen
 import com.sakethh.linkora.screens.home.HomeScreen
 import com.sakethh.linkora.screens.settings.SettingsScreen
@@ -23,6 +24,9 @@ fun MainNavigation(navController: NavHostController) {
         }
         composable(route = NavigationRoutes.SPECIFIC_SCREEN.name) {
             SpecificScreen(navController = navController)
+        }
+        composable(route = NavigationRoutes.ARCHIVE_SCREEN.name) {
+            ParentArchiveScreen(navController = navController)
         }
     }
 }
