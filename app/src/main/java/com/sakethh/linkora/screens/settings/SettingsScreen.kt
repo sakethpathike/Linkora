@@ -37,6 +37,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
@@ -130,11 +131,19 @@ fun SettingsScreen(navController: NavController) {
                             title = "Github",
                             localIcon = R.drawable.github_logo,
                             onClick = {
-                                openInWeb(
-                                    url = "https://www.github.com/sakethpathike/Linkora",
-                                    context = context,
-                                    uriHandler = uriHandler
-                                )
+                                coroutineScope.launch {
+                                    openInWeb(
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = "Linkora on Github",
+                                            webURL = "https://www.github.com/sakethpathike/Linkora",
+                                            baseURL = "github.com",
+                                            imgURL = "it.imgURL",
+                                            infoForSaving = "Linkora on Github"
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler
+                                    )
+                                }
                             }
                         )
 
@@ -151,11 +160,20 @@ fun SettingsScreen(navController: NavController) {
                             localIcon = R.drawable.twitter_logo,
                             title = "Twitter",
                             onClick = {
-                                openInWeb(
-                                    url = "https://www.twitter.com/LinkoraApp",
-                                    context = context,
-                                    uriHandler = uriHandler
-                                )
+
+                                coroutineScope.launch {
+                                    openInWeb(
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = "Linkora on Twitter",
+                                            webURL = "https://www.twitter.com/LinkoraApp",
+                                            baseURL = "twitter.com",
+                                            imgURL = "it.imgURL",
+                                            infoForSaving = "Linkora on Twitter"
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler
+                                    )
+                                }
                             }
                         )
                         Spacer(modifier = Modifier.height(20.dp))

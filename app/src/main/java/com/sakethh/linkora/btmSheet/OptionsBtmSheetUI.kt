@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
@@ -47,6 +46,7 @@ fun OptionsBtmSheetUI(
     btmSheetFor: OptionsBtmSheetType,
     onDeleteCardClick: () -> Unit,
     onRenameClick: () -> Unit,
+    onArchiveClick: () -> Unit,
     importantLinks: ImportantLinks?,
 ) {
 
@@ -104,9 +104,10 @@ fun OptionsBtmSheetUI(
                     }.invokeOnCompletion {
                         shouldBtmModalSheetBeVisible.value = false
                     }
+                    onArchiveClick()
                 },
-                elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Archive Folder" else "Archive Link",
-                elementImageVector = Icons.Outlined.Archive
+                elementName = optionsBtmSheetVM.archiveCardText.value,
+                elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
             )
             if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                 OptionsBtmSheetIndividualComponent(

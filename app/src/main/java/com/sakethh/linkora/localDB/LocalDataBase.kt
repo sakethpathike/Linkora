@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase
     version = 1,
     exportSchema = true,
     entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class,
-        ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class]
+        ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
 abstract class LocalDataBase : RoomDatabase() {
     abstract fun localDBData(): LocalDBDao

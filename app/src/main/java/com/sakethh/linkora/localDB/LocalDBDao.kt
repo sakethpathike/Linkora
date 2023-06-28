@@ -20,6 +20,12 @@ interface LocalDBDao {
     @Insert
     suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)
 
+    @Insert
+    suspend fun addANewArchiveFolder(archivedFolders: ArchivedFolders)
+
+    @Insert
+    suspend fun addANewLinkInRecentlyVisited(recentlyVisited: RecentlyVisited)
+
     @Query("DELETE from links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromSavedLinksOrInFolders(webURL: String)
 
@@ -29,12 +35,17 @@ interface LocalDBDao {
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromArchiveLinks(webURL: String)
 
+    @Query("DELETE from recently_visited_table WHERE webURL = :webURL")
+    suspend fun deleteARecentlyVisitedLink(webURL: String)
+
     @Query("DELETE from folders_table WHERE folderName = :folderName")
     suspend fun deleteAFolder(folderName: String)
 
     @Query("DELETE from links_table WHERE keyOfLinkedFolder = :folderName")
-    suspend fun deleteThisFolderData(folderName:String)
+    suspend fun deleteThisFolderData(folderName: String)
 
+    @Query("DELETE from links_table WHERE keyOfArchiveLinkedFolder = :folderName")
+    suspend fun deleteThisArchiveFolderData(folderName: String)
 
     @Query("DELETE from important_folders_table WHERE impFolderName = :folderName")
     suspend fun deleteAnImpFolder(folderName: String)
@@ -44,6 +55,9 @@ interface LocalDBDao {
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")
     fun getAllSavedLinks(): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM recently_visited_table")
+    fun getAllRecentlyVisitedLinks(): Flow<List<RecentlyVisited>>
 
     @Query("SELECT * FROM important_links_table")
     fun getAllImpLinks(): Flow<List<ImportantLinks>>
@@ -67,8 +81,14 @@ interface LocalDBDao {
     @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInImpLinks(webURL: String): Boolean
 
+    @Query("SELECT EXISTS(SELECT * FROM archived_links_table WHERE webURL = :webURL)")
+    suspend fun doesThisExistsInArchiveLinks(webURL: String): Boolean
+
     @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName)")
     suspend fun doesThisFolderExists(folderName: String): Boolean
+
+    @Query("SELECT EXISTS(SELECT * FROM archived_folders_table WHERE archiveFolderName = :folderName)")
+    suspend fun doesThisArchiveFolderExists(folderName: String): Boolean
 
     @Query("UPDATE folders_table SET folderName = :newFolderName WHERE folderName = :existingFolderName")
     suspend fun renameAFolderName(existingFolderName: String, newFolderName: String)
@@ -78,4 +98,11 @@ interface LocalDBDao {
 
     @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromSavedLinksOrInFolders(webURL: String, newTitle: String)
+
+
+    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+    suspend fun renameALinkTitleFromImpLinks(webURL: String, newTitle: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+    suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 }

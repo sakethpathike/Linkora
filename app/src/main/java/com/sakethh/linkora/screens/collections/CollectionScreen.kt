@@ -50,7 +50,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
@@ -78,6 +81,8 @@ fun CollectionScreen(navController: NavController) {
     val shouldDeleteDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    var selectedFolderData = FoldersTable("", "")
+    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
@@ -266,6 +271,11 @@ fun CollectionScreen(navController: NavController) {
                             Box(
                                 modifier = Modifier
                                     .clickable {
+                                        selectedFolderData.folderName = foldersData.folderName
+                                        selectedFolderData.infoForSaving = foldersData.infoForSaving
+                                        coroutineScope.launch {
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
+                                        }
                                         clickedFolderName.value = foldersData.folderName
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                     }
@@ -303,7 +313,17 @@ fun CollectionScreen(navController: NavController) {
             onRenameClick = {
                 shouldRenameDialogBoxBeVisible.value = true
             },
-            importantLinks = null
+            importantLinks = null,
+            onArchiveClick = {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.archiveFolderTableUpdater(
+                        archivedFolders = ArchivedFolders(
+                            archiveFolderName = selectedFolderData.folderName,
+                            infoForSaving = selectedFolderData.infoForSaving
+                        )
+                    )
+                }
+            }
         )
         RenameDialogBox(
             shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,

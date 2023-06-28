@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
+import com.sakethh.linkora.localDB.RecentlyVisited
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -19,6 +20,9 @@ class HomeScreenVM : ViewModel() {
 
     private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
     val recentlySavedImpLinksData = _impLinksData.asStateFlow()
+
+    private val _recentlyVisitedLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
+    val recentlyVisitedLinksData = _recentlyVisitedLinksData.asStateFlow()
 
     init {
         when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
@@ -57,6 +61,13 @@ class HomeScreenVM : ViewModel() {
             CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllSavedLinks().collect {
                 _linksData.emit(it.reversed().take(8))
             }
+        }
+
+        viewModelScope.launch {
+            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllRecentlyVisitedLinks()
+                .collect {
+                    _recentlyVisitedLinksData.emit(it.reversed())
+                }
         }
     }
 }

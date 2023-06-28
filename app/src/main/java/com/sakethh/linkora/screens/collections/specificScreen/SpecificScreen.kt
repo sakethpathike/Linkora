@@ -45,14 +45,18 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -150,15 +154,29 @@ fun SpecificScreen(navController: NavController) {
                                         it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     coroutineScope.launch {
-                                        optionsBtmSheetVM.updateImportantCardData(url = selectedWebURL.value)
+                                        awaitAll(
+                                            async {
+                                                optionsBtmSheetVM.updateImportantCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            },
+                                            async { optionsBtmSheetVM.updateArchiveLinkCardData(url = selectedWebURL.value) })
                                     }
                                 },
                                 onLinkClick = {
-                                    openInWeb(
-                                        url = it.webURL,
-                                        context = context,
-                                        uriHandler = uriHandler
-                                    )
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler
+                                        )
+                                    }
                                 },
                                 webURL = it.webURL
                             )
@@ -184,15 +202,33 @@ fun SpecificScreen(navController: NavController) {
                                         tempImpLinkData.webURL = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         coroutineScope.launch {
-                                            optionsBtmSheetVM.updateImportantCardData(url = selectedWebURL.value)
+                                            awaitAll(
+                                                async {
+                                                    optionsBtmSheetVM.updateImportantCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                },
+                                                async {
+                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                })
                                         }
                                     },
                                     onLinkClick = {
-                                        openInWeb(
-                                            url = it.webURL,
-                                            context = context,
-                                            uriHandler = uriHandler
-                                        )
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
                                     },
                                     webURL = it.webURL
                                 )
@@ -252,15 +288,33 @@ fun SpecificScreen(navController: NavController) {
                                             it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         coroutineScope.launch {
-                                            optionsBtmSheetVM.updateImportantCardData(url = selectedWebURL.value)
+                                            awaitAll(
+                                                async {
+                                                    optionsBtmSheetVM.updateImportantCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                },
+                                                async {
+                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                })
                                         }
                                     },
                                     onLinkClick = {
-                                        openInWeb(
-                                            url = it.webURL,
-                                            context = context,
-                                            uriHandler = uriHandler
-                                        )
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
                                     },
                                     webURL = it.webURL
                                 )
@@ -341,7 +395,20 @@ fun SpecificScreen(navController: NavController) {
                     }
                 }
             },
-            importantLinks = tempImpLinkData
+            importantLinks = tempImpLinkData,
+            onArchiveClick = {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                        archivedLinks = ArchivedLinks(
+                            title = tempImpLinkData.title,
+                            webURL = tempImpLinkData.webURL,
+                            baseURL = tempImpLinkData.baseURL,
+                            imgURL = tempImpLinkData.imgURL,
+                            infoForSaving = tempImpLinkData.infoForSaving
+                        )
+                    )
+                }
+            }
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBeVisible,

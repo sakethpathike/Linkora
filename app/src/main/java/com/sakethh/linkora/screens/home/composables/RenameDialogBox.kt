@@ -34,7 +34,6 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-// will be fixed in the next commit :
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameDialogBox(
@@ -42,6 +41,7 @@ fun RenameDialogBox(
     coroutineScope: CoroutineScope, existingFolderName: String?,
     webURLForTitle: String? = null,
     renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
+    onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)? = null,
 ) {
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
@@ -166,13 +166,21 @@ fun RenameDialogBox(
                                         }
                                     }
                                 } else {
-                                    coroutineScope.launch {
-                                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                            .renameALinkTitleFromSavedLinksOrInFolders(
-                                                newTitle = newFolderOrTitleName.value,
-                                                webURL = webURLForTitle!!
-                                            )
+                                    if (onNoteChangeClickForLinks != null) {
+                                        coroutineScope.launch {
+                                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                .renameALinkTitleFromSavedLinksOrInFolders(
+                                                    newTitle = newFolderOrTitleName.value,
+                                                    webURL = webURLForTitle!!
+                                                )
+                                        }
+                                    } else {
+                                        onNoteChangeClickForLinks?.invoke(
+                                            webURLForTitle!!,
+                                            newFolderOrTitleName.value
+                                        )
                                     }
+
                                     shouldDialogBoxAppear.value = false
                                 }
                             }

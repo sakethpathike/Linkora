@@ -53,7 +53,7 @@ fun ParentArchiveScreen(navController: NavController) {
                                     Text(
                                         text = archiveScreenModal.name,
                                         style = MaterialTheme.typography.titleLarge,
-                                        fontSize = 24.sp
+                                        fontSize = 18.sp
                                     )
                                 }
                             }

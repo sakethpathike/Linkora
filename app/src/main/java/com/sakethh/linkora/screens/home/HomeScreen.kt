@@ -53,11 +53,16 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
+import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
+import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
+import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -70,11 +75,15 @@ fun HomeScreen() {
     val homeScreenVM: HomeScreenVM = viewModel()
     val recentlySavedImpsLinksData = homeScreenVM.recentlySavedImpLinksData.collectAsState().value
     val recentlySavedLinksData = homeScreenVM.recentlySavedLinksData.collectAsState().value
+    val recentlyVisitedLinksData = homeScreenVM.recentlyVisitedLinksData.collectAsState().value
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     val selectedCardType = rememberSaveable {
         mutableStateOf(HomeScreenBtmSheetType.RECENT_IMP_SAVES.name)
     }
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldRenameDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
     val activity = LocalContext.current as? Activity
@@ -87,6 +96,13 @@ fun HomeScreen() {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val selectedWebURL = rememberSaveable {
+        mutableStateOf("")
+    }
+    val shouldDeleteBoxAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    var tempImpData = ImportantLinks("", "", "", "", "")
     val coroutineScope = rememberCoroutineScope()
     val currentIconForMainFAB = remember(isMainFabRotated.value) {
         mutableStateOf(
@@ -141,12 +157,10 @@ fun HomeScreen() {
                                 tween(300)
                             )
                         ) {
-                            FloatingActionButton(
-                                shape = RoundedCornerShape(10.dp),
-                                onClick = {
-                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                    shouldDialogForNewFolderAppear.value = true
-                                }) {
+                            FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
+                                shouldScreenTransparencyDecreasedBoxVisible.value = false
+                                shouldDialogForNewFolderAppear.value = true
+                            }) {
                                 Icon(
                                     imageVector = Icons.Default.CreateNewFolder,
                                     contentDescription = null
@@ -175,8 +189,7 @@ fun HomeScreen() {
                                 )
                             }
                         }
-                        FloatingActionButton(
-                            modifier = Modifier.rotate(rotationAnimation.value),
+                        FloatingActionButton(modifier = Modifier.rotate(rotationAnimation.value),
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
                                 if (isMainFabRotated.value) {
@@ -186,8 +199,7 @@ fun HomeScreen() {
                                     coroutineScope.launch {
                                         awaitAll(async {
                                             rotationAnimation.animateTo(
-                                                360f,
-                                                animationSpec = tween(300)
+                                                360f, animationSpec = tween(300)
                                             )
                                         }, async {
                                             shouldScreenTransparencyDecreasedBoxVisible.value = true
@@ -202,8 +214,7 @@ fun HomeScreen() {
                                 }
                             }) {
                             Icon(
-                                imageVector = currentIconForMainFAB.value,
-                                contentDescription = null
+                                imageVector = currentIconForMainFAB.value, contentDescription = null
                             )
                         }
                     }
@@ -261,6 +272,12 @@ fun HomeScreen() {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconClick = {
+                                    tempImpData.webURL = it.webURL
+                                    tempImpData.baseURL = it.baseURL
+                                    tempImpData.imgURL = it.imgURL
+                                    tempImpData.title = it.title
+                                    tempImpData.infoForSaving = it.infoForSaving
+                                    selectedWebURL.value = it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     selectedCardType.value =
                                         HomeScreenBtmSheetType.RECENT_SAVES.name
@@ -297,7 +314,15 @@ fun HomeScreen() {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconClick = {
+                                    tempImpData.webURL = it.webURL
+                                    tempImpData.baseURL = it.baseURL
+                                    tempImpData.imgURL = it.imgURL
+                                    tempImpData.title = it.title
+                                    tempImpData.infoForSaving = it.infoForSaving
+                                    selectedWebURL.value = it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
+                                    selectedCardType.value =
+                                        HomeScreenBtmSheetType.RECENT_IMP_SAVES.name
                                 },
                                 webURL = it.webURL
                             )
@@ -318,16 +343,23 @@ fun HomeScreen() {
                 item {
                     Spacer(modifier = Modifier.height(5.dp))
                 }
-                items(8) {
+                items(recentlyVisitedLinksData) {
                     LinkUIComponent(
-                        title = "title $it efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
-                        webBaseURL = "$it.efhe riuhi gh iruerg huigh rgti htrgtr ghuitrh rghui rgthuit hguitr",
-                        imgURL = "https://i.pinimg.com/originals/73/b2/a8/73b2a8acdc03a65a1c2c8901a9ed1b0b.jpg",
+                        title = it.title,
+                        webBaseURL = it.baseURL,
+                        imgURL = it.imgURL,
                         onMoreIconCLick = {
+                            tempImpData.webURL = it.webURL
+                            tempImpData.baseURL = it.baseURL
+                            tempImpData.imgURL = it.imgURL
+                            tempImpData.title = it.title
+                            tempImpData.infoForSaving = it.infoForSaving
+                            selectedWebURL.value = it.webURL
+                            selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
                             shouldOptionsBtmModalSheetBeVisible.value = true
                         },
                         {},
-                        webURL = ""
+                        webURL = it.webURL
                     )
                 }
                 item {
@@ -335,27 +367,25 @@ fun HomeScreen() {
                 }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background.copy(0.85f))
-                        .clickable {
-                            shouldScreenTransparencyDecreasedBoxVisible.value = false
-                            coroutineScope
-                                .launch {
-                                    awaitAll(async {
-                                        rotationAnimation.animateTo(
-                                            -360f,
-                                            animationSpec = tween(300)
-                                        )
-                                    }, async { isMainFabRotated.value = false })
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                    .clickable {
+                        shouldScreenTransparencyDecreasedBoxVisible.value = false
+                        coroutineScope
+                            .launch {
+                                awaitAll(async {
+                                    rotationAnimation.animateTo(
+                                        -360f, animationSpec = tween(300)
+                                    )
+                                }, async { isMainFabRotated.value = false })
+                            }
+                            .invokeOnCompletion {
+                                coroutineScope.launch {
+                                    rotationAnimation.snapTo(0f)
                                 }
-                                .invokeOnCompletion {
-                                    coroutineScope.launch {
-                                        rotationAnimation.snapTo(0f)
-                                    }
-                                }
-                        })
+                            }
+                    })
             }
         }
         AddNewLinkDialogBox(
@@ -382,28 +412,112 @@ fun HomeScreen() {
             inCollectionBasedFolder = mutableStateOf(false)
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-            coroutineScope = coroutineScope
+            shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope
         )
-        OptionsBtmSheetUI(
-            btmModalSheetState = btmModalSheetState,
+        OptionsBtmSheetUI(btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
             btmSheetFor = OptionsBtmSheetType.LINK,
-            {},
-            {},
-            importantLinks = null
-        )
+            onRenameClick = {
+                coroutineScope.launch {
+                    btmModalSheetState.hide()
+                }
+                shouldRenameDialogBoxBeVisible.value = true
+            },
+            onDeleteCardClick = {
+                shouldDeleteBoxAppear.value = true
+            },
+            importantLinks = tempImpData,
+            onArchiveClick = {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                        archivedLinks = ArchivedLinks(
+                            tempImpData.title,
+                            tempImpData.webURL,
+                            tempImpData.baseURL,
+                            tempImpData.imgURL,
+                            tempImpData.infoForSaving
+                        )
+                    )
+                }
+            })
     }
+    DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteBoxAppear,
+        deleteDialogBoxType = DataDialogBoxType.LINK,
+        onDeleteClick = {
+            when (selectedCardType.value) {
+                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteALinkFromSavedLinksOrInFolders(
+                                webURL = selectedWebURL.value
+                            )
+                    }
+                    Unit
+                }
 
+                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteARecentlyVisitedLink(
+                                webURL = selectedWebURL.value
+                            )
+                    }
+                    Unit
+                }
+
+                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteALinkFromImpLinks(webURL = selectedWebURL.value)
+                    }
+                    Unit
+                }
+            }
+        })
+    RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
+        coroutineScope = coroutineScope,
+        webURLForTitle = selectedWebURL.value,
+        existingFolderName = "",
+        renameDialogBoxFor = OptionsBtmSheetType.LINK,
+        onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+            when (selectedCardType.value) {
+                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromRecentlyVisited(
+                                webURL = webURL, newTitle = newNote
+                            )
+                    }
+                    Unit
+                }
+
+                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromRecentlyVisited(
+                                webURL = webURL, newTitle = newNote
+                            )
+                    }
+                    Unit
+                }
+
+                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newNote)
+                    }
+                    Unit
+                }
+            }
+        })
     BackHandler {
         if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false
             coroutineScope.launch {
                 awaitAll(async {
                     rotationAnimation.animateTo(
-                        -360f,
-                        animationSpec = tween(300)
+                        -360f, animationSpec = tween(300)
                     )
                 }, async {
                     delay(10L)

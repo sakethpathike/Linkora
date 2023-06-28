@@ -24,11 +24,9 @@ object CustomLocalDBDaoFunctionsDecl {
             coroutineScope {
                 awaitAll(async {
                     localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
-                },
-                    async {
-                        localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
-                    }
-                )
+                }, async {
+                    localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
+                })
             }
         } else {
             localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
@@ -50,6 +48,51 @@ object CustomLocalDBDaoFunctionsDecl {
             localDB.localDBData().addANewLinkToImpLinks(importantLinks = linksData)
         }
         OptionsBtmSheetVM().updateImportantCardData(url = importantLinks.webURL)
+    }
+
+    suspend fun archiveLinkTableUpdater(archivedLinks: ArchivedLinks) {
+        if (localDB.localDBData().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
+            localDB.localDBData().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
+        } else {
+            localDB.localDBData().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
+        }
+        OptionsBtmSheetVM().updateArchiveLinkCardData(url = archivedLinks.webURL)
+    }
+
+    suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders) {
+        if (localDB.localDBData()
+                .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
+        ) {
+            coroutineScope {
+                awaitAll(async {
+                    localDB.localDBData()
+                        .deleteAnArchiveFolder(folderName = archivedFolders.archiveFolderName)
+                }, async {
+                    localDB.localDBData()
+                        .deleteThisArchiveFolderData(folderName = archivedFolders.archiveFolderName)
+                })
+            }
+        } else {
+            coroutineScope {
+                awaitAll(async {
+                    localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
+                }, async {
+                    localDB.localDBData()
+                        .getThisFolderData(folderName = archivedFolders.archiveFolderName).collect {
+                            it.forEach {
+                                addANewLinkSpecificallyInFolders(
+                                    title = it.title,
+                                    webURL = it.webURL,
+                                    noteForSaving = it.infoForSaving,
+                                    folderName = archivedFolders.archiveFolderName,
+                                    savingFor = ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS
+                                )
+                            }
+                        }
+                })
+            }
+        }
+        OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
     }
 
 
