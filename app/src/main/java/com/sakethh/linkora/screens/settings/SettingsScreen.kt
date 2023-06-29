@@ -125,7 +125,7 @@ fun SettingsScreen(navController: NavController) {
                         )
 
                         SettingsAppInfoComponent(
-                            description = "Source-code for this app is public and open-source, feel free to checkout what this app does under the hood.",
+                            description = "The source code for this app is public and open-source; feel free to check out what this app does under the hood.",
                             icon = null,
                             usingLocalIcon = true,
                             title = "Github",
@@ -154,7 +154,7 @@ fun SettingsScreen(navController: NavController) {
                         )
 
                         SettingsAppInfoComponent(
-                            description = "Follow @LinkoraApp on the bird app to get the latest information about releases and all in between about this app :)",
+                            description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about this app.",
                             icon = null,
                             usingLocalIcon = true,
                             localIcon = R.drawable.twitter_logo,

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.home
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
@@ -73,6 +74,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen() {

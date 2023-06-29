@@ -3,6 +3,7 @@ package com.sakethh.linkora.localDB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import java.net.MalformedURLException
 import java.net.URL
 
@@ -15,8 +16,15 @@ suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
     } catch (_: MalformedURLException) {
         webURL.removePrefix("https://www.").removePrefix("http://www.")
     }
-    val jsoup = withContext(Dispatchers.IO) { Jsoup.connect(webURL).get() }
-    val imgURL = jsoup.body().select("img").first()?.absUrl("src")
+    val jsoup = try {
+        withContext(Dispatchers.IO) {
+            Jsoup.connect(webURL).get()
+        }
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    val imgURL = jsoup as Document
+    imgURL.body().select("img").first()?.absUrl("src")
     val title = jsoup.title()
-    return LinkDataExtractor(baseURL = urlHost, imgURL = imgURL ?: "", title = title)
+    return LinkDataExtractor(baseURL = urlHost, imgURL = imgURL.toString(), title = title)
 }

@@ -89,6 +89,10 @@ object CustomLocalDBDaoFunctionsDecl {
                                 )
                             }
                         }
+                    localDB.localDBData()
+                        .deleteAFolder(folderName = archivedFolders.archiveFolderName)
+                    localDB.localDBData()
+                        .deleteThisFolderData(folderName = archivedFolders.archiveFolderName)
                 })
             }
         }

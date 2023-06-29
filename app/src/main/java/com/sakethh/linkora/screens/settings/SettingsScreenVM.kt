@@ -31,7 +31,7 @@ class SettingsScreenVM : ViewModel() {
     val themeSection = listOf(
         SettingsUIElement(title = "Use dynamic theming",
             doesDescriptionExists = true,
-            description = "Change color theming stuff within the app based on your wallpaper.",
+            description = "Change colour themes within the app based on your wallpaper.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
@@ -94,7 +94,7 @@ class SettingsScreenVM : ViewModel() {
     val generalSection = listOf(
         SettingsUIElement(title = "Use in-app browser",
             doesDescriptionExists = true,
-            description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will opened everytime you click on a link when using this app.",
+            description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will open every time you click on a link when using this app.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isInAppWebTabEnabled,
             onSwitchStateChange = {
@@ -114,7 +114,7 @@ class SettingsScreenVM : ViewModel() {
             }),
         SettingsUIElement(title = "Auto-Detect Title",
             doesDescriptionExists = true,
-            description = "If this is enabled, title for the links you save will be detected automatically based on the information given by the link you're saving.\n\nIf this is disabled, you'll get an option while saving link(s) to give a title to the respective link you're saving.",
+            description = "If this is enabled, title for the links you save will be detected automatically.\n\nNote: This may not detect every website.\n\nIf this is disabled, you'll get an option while saving link(s) to give a title to the respective link you're saving.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
             onSwitchStateChange = {
@@ -131,17 +131,9 @@ class SettingsScreenVM : ViewModel() {
                         dataStore = Settings.dataStore
                     ) == true
                 }
-            }),
-        SettingsUIElement(title = "Move entire data to Trash",
-            doesDescriptionExists = false,
-            description = null,
-            isSwitchNeeded = false,
-            isSwitchEnabled = Settings.shouldFollowDynamicTheming,
-            onSwitchStateChange = {
-
             }), SettingsUIElement(title = "Delete entire data permanently",
             doesDescriptionExists = true,
-            description = "Delete all links and folders; links and folders from Trash also gets deleted permanently.",
+            description = "Delete all links and folders permanently.",
             isSwitchNeeded = false,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {

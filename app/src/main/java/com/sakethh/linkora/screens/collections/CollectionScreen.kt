@@ -338,7 +338,7 @@ fun FolderIndividualComponent(
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
-                    modifier = Modifier.padding(top = 10.dp),
+                    modifier = Modifier.padding(top = if (folderNote.isNotEmpty()) 10.dp else 0.dp),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -348,7 +348,7 @@ fun FolderIndividualComponent(
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(bottom = 10.dp),
+                        modifier = Modifier.padding(bottom = if (folderNote.isNotEmpty()) 10.dp else 0.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )

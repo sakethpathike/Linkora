@@ -19,6 +19,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
@@ -48,6 +49,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
+    val optionsBtmSheetVM:OptionsBtmSheetVM = viewModel()
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier
@@ -63,6 +65,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         onMoreIconCLick = {
                             shouldOptionsBtmModalSheetBeVisible.value = true
                             selectedURLOrFolderName.value = it.webURL
+                            coroutineScope.launch {
+                                optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                            }
                         },
                         onLinkClick = {
                             coroutineScope.launch {
@@ -88,9 +93,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         onMoreIconClick = {
                             shouldOptionsBtmModalSheetBeVisible.value = true
                             selectedURLOrFolderName.value = it.archiveFolderName
+                            coroutineScope.launch {
+                                optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
+                            }
                         }, onFolderClick = {
                             SpecificScreenVM.screenType.value = SpecificScreenType.ARCHIVE_SCREEN
-                            navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                         })
                 }
             }

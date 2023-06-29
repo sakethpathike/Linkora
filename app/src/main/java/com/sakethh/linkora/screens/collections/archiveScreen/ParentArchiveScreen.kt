@@ -15,6 +15,7 @@ import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -24,6 +25,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -32,6 +34,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun ParentArchiveScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val archiveScreenVM: ArchiveScreenVM = viewModel()
+    val coroutineScope = rememberCoroutineScope()
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -50,14 +53,18 @@ fun ParentArchiveScreen(navController: NavController) {
                         TabRow(selectedTabIndex = pagerState.currentPage) {
                             archiveScreenVM.parentArchiveScreenData.forEachIndexed { index, archiveScreenModal ->
                                 Tab(selected = pagerState.currentPage == index, onClick = {
-
+                                    coroutineScope.launch {
+                                        pagerState.animateScrollToPage(index)
+                                    }.start()
                                 }) {
                                     Text(
                                         text = archiveScreenModal.name,
                                         style = MaterialTheme.typography.titleLarge,
                                         fontSize = 18.sp,
                                         modifier = Modifier.padding(15.dp),
-                                        color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface
+                                        color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                            0.85f
+                                        )
                                     )
                                 }
                             }
@@ -67,7 +74,7 @@ fun ParentArchiveScreen(navController: NavController) {
                 HorizontalPager(
                     count = archiveScreenVM.parentArchiveScreenData.size, state = pagerState
                 ) {
-                    archiveScreenVM.parentArchiveScreenData[it].screen(navController=navController)
+                    archiveScreenVM.parentArchiveScreenData[it].screen(navController = navController)
                 }
             }
         }
