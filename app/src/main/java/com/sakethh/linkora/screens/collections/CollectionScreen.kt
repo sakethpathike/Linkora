@@ -55,6 +55,7 @@ import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
@@ -217,25 +218,31 @@ fun CollectionScreen(navController: NavController) {
                 item {
                     Spacer(modifier = Modifier.padding(top = 15.dp))
                 }
-                itemsIndexed(foldersData) { folderIndex, foldersData ->
-                    FolderIndividualComponent(
-                        folderName = foldersData.folderName,
-                        folderNote = foldersData.infoForSaving,
-                        onMoreIconClick = {
-                            selectedFolderData.folderName = foldersData.folderName
-                            selectedFolderData.infoForSaving = foldersData.infoForSaving
-                            coroutineScope.launch {
-                                optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
-                            }
-                            clickedFolderName.value = foldersData.folderName
-                            shouldOptionsBtmModalSheetBeVisible.value = true
-                        }, onFolderClick = {
-                            SpecificScreenVM.screenType.value =
-                                SpecificScreenType.SPECIFIC_FOLDER_SCREEN
-                            SpecificScreenVM.currentClickedFolderName.value =
-                                foldersData.folderName
-                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                        })
+                if (foldersData.isNotEmpty()) {
+                    itemsIndexed(foldersData) { folderIndex, foldersData ->
+                        FolderIndividualComponent(
+                            folderName = foldersData.folderName,
+                            folderNote = foldersData.infoForSaving,
+                            onMoreIconClick = {
+                                selectedFolderData.folderName = foldersData.folderName
+                                selectedFolderData.infoForSaving = foldersData.infoForSaving
+                                coroutineScope.launch {
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
+                                }
+                                clickedFolderName.value = foldersData.folderName
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                            }, onFolderClick = {
+                                SpecificScreenVM.screenType.value =
+                                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN
+                                SpecificScreenVM.currentClickedFolderName.value =
+                                    foldersData.folderName
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            })
+                    }
+                } else {
+                    item {
+                        DataEmptyScreen()
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(65.dp))

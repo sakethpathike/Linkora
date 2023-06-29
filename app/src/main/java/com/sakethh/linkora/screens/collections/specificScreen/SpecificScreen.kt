@@ -2,16 +2,11 @@ package com.sakethh.linkora.screens.collections.specificScreen
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,18 +25,13 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
@@ -50,6 +40,7 @@ import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
@@ -238,35 +229,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(
-                                            start = 15.dp,
-                                            end = 15.dp
-                                        )
-                                    ) {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
-                                            painter = painterResource(id = R.drawable.img1),
-                                            contentDescription = "you're breathtaking",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .wrapContentSize()
-                                        )
-                                        Text(
-                                            text = "You're Breathtaking, but it's all empty here:)",
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontSize = 20.sp,
-                                            lineHeight = 24.sp,
-                                            textAlign = TextAlign.Start,
-                                            modifier = Modifier.padding(top = 25.dp)
-                                        )
-                                    }
-                                }
+                                DataEmptyScreen()
                             }
                         }
                     }
@@ -324,41 +287,13 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Column(
-                                        modifier = Modifier.padding(
-                                            start = 0.dp,
-                                            end = 0.dp
-                                        )
-                                    ) {
-                                        Image(
-                                            contentScale = ContentScale.Crop,
-                                            painter = painterResource(id = R.drawable.img1),
-                                            contentDescription = "you're breathtaking",
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .wrapContentSize()
-                                        )
-                                        Text(
-                                            text = "You're Breathtaking, but it's all empty here:)",
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            fontSize = 20.sp,
-                                            lineHeight = 24.sp,
-                                            textAlign = TextAlign.Start,
-                                            modifier = Modifier.padding(top = 25.dp)
-                                        )
-                                    }
-                                }
+                                DataEmptyScreen()
                             }
                         }
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-                        items(archiveLinksData){
+                        items(archiveLinksData) {
                             LinkUIComponent(
                                 title = it.title,
                                 webBaseURL = it.baseURL,

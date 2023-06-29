@@ -61,6 +61,7 @@ import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
@@ -440,6 +441,11 @@ fun HomeScreen() {
                             },
                             webURL = it.webURL
                         )
+                    }
+                }
+                if (recentlySavedImpsLinksData.isEmpty() && recentlySavedLinksData.isEmpty() && recentlyVisitedLinksData.isEmpty()) {
+                    item {
+                        DataEmptyScreen()
                     }
                 }
                 item {

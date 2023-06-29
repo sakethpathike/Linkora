@@ -25,6 +25,7 @@ import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
@@ -49,7 +50,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
-    val optionsBtmSheetVM:OptionsBtmSheetVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier
@@ -57,49 +58,62 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (archiveScreenType == ArchiveScreenType.LINKS) {
-                items(archiveLinksData) {
-                    LinkUIComponent(
-                        title = it.title,
-                        webBaseURL = it.baseURL,
-                        imgURL = it.imgURL,
-                        onMoreIconCLick = {
-                            shouldOptionsBtmModalSheetBeVisible.value = true
-                            selectedURLOrFolderName.value = it.webURL
-                            coroutineScope.launch {
-                                optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                            }
-                        },
-                        onLinkClick = {
-                            coroutineScope.launch {
-                                openInWeb(
-                                    recentlyVisitedData = RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    ), context = context, uriHandler = uriHandler
-                                )
-                            }
-                        },
-                        webURL = it.webURL
-                    )
+                if (archiveLinksData.isNotEmpty()) {
+                    items(archiveLinksData) {
+                        LinkUIComponent(
+                            title = it.title,
+                            webBaseURL = it.baseURL,
+                            imgURL = it.imgURL,
+                            onMoreIconCLick = {
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                selectedURLOrFolderName.value = it.webURL
+                                coroutineScope.launch {
+                                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                }
+                            },
+                            onLinkClick = {
+                                coroutineScope.launch {
+                                    openInWeb(
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = it.title,
+                                            webURL = it.webURL,
+                                            baseURL = it.baseURL,
+                                            imgURL = it.imgURL,
+                                            infoForSaving = it.infoForSaving
+                                        ), context = context, uriHandler = uriHandler
+                                    )
+                                }
+                            },
+                            webURL = it.webURL
+                        )
+                    }
+                } else {
+                    item {
+                        DataEmptyScreen()
+                    }
                 }
             } else {
-                items(archiveFoldersData) {
-                    FolderIndividualComponent(
-                        folderName = it.archiveFolderName,
-                        folderNote = it.infoForSaving,
-                        onMoreIconClick = {
-                            shouldOptionsBtmModalSheetBeVisible.value = true
-                            selectedURLOrFolderName.value = it.archiveFolderName
-                            coroutineScope.launch {
-                                optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
-                            }
-                        }, onFolderClick = {
-                            SpecificScreenVM.screenType.value = SpecificScreenType.ARCHIVE_SCREEN
-                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                        })
+                if (archiveFoldersData.isNotEmpty()) {
+                    items(archiveFoldersData) {
+                        FolderIndividualComponent(
+                            folderName = it.archiveFolderName,
+                            folderNote = it.infoForSaving,
+                            onMoreIconClick = {
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                selectedURLOrFolderName.value = it.archiveFolderName
+                                coroutineScope.launch {
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
+                                }
+                            }, onFolderClick = {
+                                SpecificScreenVM.screenType.value =
+                                    SpecificScreenType.ARCHIVE_SCREEN
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            })
+                    }
+                } else {
+                    item {
+                        DataEmptyScreen()
+                    }
                 }
             }
         }

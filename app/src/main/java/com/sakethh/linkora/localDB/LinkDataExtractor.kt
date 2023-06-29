@@ -3,28 +3,26 @@ package com.sakethh.linkora.localDB
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
-import org.jsoup.nodes.Document
-import java.net.MalformedURLException
-import java.net.URL
 
 data class LinkDataExtractor(val baseURL: String, val imgURL: String, val title: String)
 
 suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
-    val urlHost = try {
-        URL(webURL).host.removePrefix("https://www.").removePrefix("http://www.")
-            .removePrefix("http://").removePrefix("https://")
-    } catch (_: MalformedURLException) {
+    val urlHost =
         webURL.removePrefix("https://www.").removePrefix("http://www.")
-    }
-    val jsoup = try {
+    val imgURL =
         withContext(Dispatchers.IO) {
-            Jsoup.connect(webURL).get()
+            try {
+                Jsoup.connect(webURL).get().body().select("img").first()?.absUrl("src").toString()
+            } catch (e: Exception) {
+                ""
+            }
         }
-    } catch (e: Exception) {
-        e.printStackTrace()
+    val title = withContext(Dispatchers.IO) {
+        try {
+            Jsoup.connect(webURL).get().title()
+        } catch (e: Exception) {
+            "Something went wrong while detecting the title:("
+        }
     }
-    val imgURL = jsoup as Document
-    imgURL.body().select("img").first()?.absUrl("src")
-    val title = jsoup.title()
-    return LinkDataExtractor(baseURL = urlHost, imgURL = imgURL.toString(), title = title)
+    return LinkDataExtractor(baseURL = urlHost, imgURL = imgURL, title = title)
 }
