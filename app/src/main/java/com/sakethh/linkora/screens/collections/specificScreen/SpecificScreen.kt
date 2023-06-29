@@ -362,16 +362,79 @@ fun SpecificScreen(navController: NavController) {
             },
             importantLinks = tempImpLinkData,
             onArchiveClick = {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                        archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        )
-                    )
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        title = tempImpLinkData.title,
+                                        webURL = tempImpLinkData.webURL,
+                                        baseURL = tempImpLinkData.baseURL,
+                                        imgURL = tempImpLinkData.imgURL,
+                                        infoForSaving = tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
+                            })
+                        }
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        title = tempImpLinkData.title,
+                                        webURL = tempImpLinkData.webURL,
+                                        baseURL = tempImpLinkData.baseURL,
+                                        imgURL = tempImpLinkData.imgURL,
+                                        infoForSaving = tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            })
+                        }
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        title = tempImpLinkData.title,
+                                        webURL = tempImpLinkData.webURL,
+                                        baseURL = tempImpLinkData.baseURL,
+                                        imgURL = tempImpLinkData.imgURL,
+                                        infoForSaving = tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromSavedLinksOrInFolders(webURL = tempImpLinkData.webURL)
+                            })
+                        }
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        title = tempImpLinkData.title,
+                                        webURL = tempImpLinkData.webURL,
+                                        baseURL = tempImpLinkData.baseURL,
+                                        imgURL = tempImpLinkData.imgURL,
+                                        infoForSaving = tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromSavedLinksOrInFolders(webURL = tempImpLinkData.webURL)
+                            })
+                        }
+                    }
                 }
             }
         )

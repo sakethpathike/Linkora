@@ -2,9 +2,13 @@ package com.sakethh.linkora.localDB
 
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.asFlow
+import kotlinx.coroutines.flow.flatMapConcat
+import kotlinx.coroutines.flow.toList
 
 object CustomLocalDBDaoFunctionsDecl {
 
@@ -59,6 +63,7 @@ object CustomLocalDBDaoFunctionsDecl {
         OptionsBtmSheetVM().updateArchiveLinkCardData(url = archivedLinks.webURL)
     }
 
+    @OptIn(FlowPreview::class)
     suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders) {
         if (localDB.localDBData()
                 .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
@@ -78,16 +83,17 @@ object CustomLocalDBDaoFunctionsDecl {
                     localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
                 }, async {
                     localDB.localDBData()
-                        .getThisFolderData(folderName = archivedFolders.archiveFolderName).collect {
-                            it.forEach {
-                                addANewLinkSpecificallyInFolders(
-                                    title = it.title,
-                                    webURL = it.webURL,
-                                    noteForSaving = it.infoForSaving,
-                                    folderName = archivedFolders.archiveFolderName,
-                                    savingFor = ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS
-                                )
-                            }
+                        .getThisFolderData(folderName = archivedFolders.archiveFolderName)
+                        .flatMapConcat {
+                            it.asFlow()
+                        }.toList().forEach {
+                            addANewLinkSpecificallyInFolders(
+                                title = it.title,
+                                webURL = it.webURL,
+                                noteForSaving = it.infoForSaving,
+                                folderName = archivedFolders.archiveFolderName,
+                                savingFor = ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS
+                            )
                         }
                     localDB.localDBData()
                         .deleteAFolder(folderName = archivedFolders.archiveFolderName)

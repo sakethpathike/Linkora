@@ -63,7 +63,7 @@ fun ParentArchiveScreen(navController: NavController) {
                                         fontSize = 18.sp,
                                         modifier = Modifier.padding(15.dp),
                                         color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                            0.85f
+                                            0.50f
                                         )
                                     )
                                 }

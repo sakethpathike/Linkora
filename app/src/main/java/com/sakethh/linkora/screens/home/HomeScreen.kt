@@ -59,7 +59,6 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
@@ -110,7 +109,6 @@ fun HomeScreen() {
         mutableStateOf(false)
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val tempImpData = ImportantLinks("", "", "", "", "")
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -261,7 +259,7 @@ fun HomeScreen() {
                     item {
                         Text(
                             text = "Recently Saved Links",
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp, top = 25.dp)
@@ -283,11 +281,12 @@ fun HomeScreen() {
                                     webBaseURL = it.webURL,
                                     imgURL = it.imgURL,
                                     onMoreIconClick = {
-                                        tempImpData.webURL = it.webURL
-                                        tempImpData.baseURL = it.baseURL
-                                        tempImpData.imgURL = it.imgURL
-                                        tempImpData.title = it.title
-                                        tempImpData.infoForSaving = it.infoForSaving
+                                        HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                        HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                        HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                        HomeScreenVM.tempImpLinkData.title = it.title
+                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                            it.infoForSaving
                                         selectedWebURL.value = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         selectedCardType.value =
@@ -327,7 +326,7 @@ fun HomeScreen() {
                     item {
                         Text(
                             text = "Recent Important(s)",
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp, top = 40.dp)
@@ -349,11 +348,12 @@ fun HomeScreen() {
                                     webBaseURL = it.webURL,
                                     imgURL = it.imgURL,
                                     onMoreIconClick = {
-                                        tempImpData.webURL = it.webURL
-                                        tempImpData.baseURL = it.baseURL
-                                        tempImpData.imgURL = it.imgURL
-                                        tempImpData.title = it.title
-                                        tempImpData.infoForSaving = it.infoForSaving
+                                        HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                        HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                        HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                        HomeScreenVM.tempImpLinkData.title = it.title
+                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                            it.infoForSaving
                                         selectedWebURL.value = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         selectedCardType.value =
@@ -393,7 +393,7 @@ fun HomeScreen() {
                     item {
                         Text(
                             text = "Recently Visited",
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp, top = 40.dp)
@@ -408,11 +408,11 @@ fun HomeScreen() {
                             webBaseURL = it.baseURL,
                             imgURL = it.imgURL,
                             onMoreIconCLick = {
-                                tempImpData.webURL = it.webURL
-                                tempImpData.baseURL = it.baseURL
-                                tempImpData.imgURL = it.imgURL
-                                tempImpData.title = it.title
-                                tempImpData.infoForSaving = it.infoForSaving
+                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                HomeScreenVM.tempImpLinkData.title = it.title
+                                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
                                 selectedWebURL.value = it.webURL
                                 selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
                                 shouldOptionsBtmModalSheetBeVisible.value = true
@@ -513,18 +513,68 @@ fun HomeScreen() {
             onDeleteCardClick = {
                 shouldDeleteBoxAppear.value = true
             },
-            importantLinks = tempImpData,
+            importantLinks = HomeScreenVM.tempImpLinkData,
             onArchiveClick = {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                        archivedLinks = ArchivedLinks(
-                            tempImpData.title,
-                            tempImpData.webURL,
-                            tempImpData.baseURL,
-                            tempImpData.imgURL,
-                            tempImpData.infoForSaving
-                        )
-                    )
+                when (selectedCardType.value) {
+                    HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        HomeScreenVM.tempImpLinkData.title,
+                                        HomeScreenVM.tempImpLinkData.webURL,
+                                        HomeScreenVM.tempImpLinkData.baseURL,
+                                        HomeScreenVM.tempImpLinkData.imgURL,
+                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromSavedLinksOrInFolders(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            })
+                        }
+                        Unit
+                    }
+
+                    HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        HomeScreenVM.tempImpLinkData.title,
+                                        HomeScreenVM.tempImpLinkData.webURL,
+                                        HomeScreenVM.tempImpLinkData.baseURL,
+                                        HomeScreenVM.tempImpLinkData.imgURL,
+                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteARecentlyVisitedLink(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            })
+                        }
+                        Unit
+                    }
+
+                    HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
+                                    archivedLinks = ArchivedLinks(
+                                        HomeScreenVM.tempImpLinkData.title,
+                                        HomeScreenVM.tempImpLinkData.webURL,
+                                        HomeScreenVM.tempImpLinkData.baseURL,
+                                        HomeScreenVM.tempImpLinkData.imgURL,
+                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                    )
+                                )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            })
+                        }
+                        Unit
+                    }
                 }
             })
     }

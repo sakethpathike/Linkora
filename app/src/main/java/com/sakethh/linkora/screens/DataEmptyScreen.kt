@@ -21,20 +21,20 @@ fun DataEmptyScreen() {
     LinkoraTheme {
         Box(
             modifier = Modifier
-                .padding(start = 15.dp)
+                .padding(top = 75.dp, start = 15.dp)
                 .fillMaxSize(),
             contentAlignment = Alignment.CenterStart
         ) {
             Column {
-                Image(painter = painterResource(id = R.drawable.img1), contentDescription = null)
+                Image(painter = painterResource(id = R.drawable.img11), contentDescription = null)
                 androidx.compose.material3.Text(
-                    text = "You're Breathtaking, but it's all empty here:)",
+                    text = "You're Breathtaking, but it's all empty here.",
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
-                    fontSize = 36.sp,
-                    lineHeight = 40.sp,
+                    fontSize = 32.sp,
+                    lineHeight = 36.sp,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(top = 25.dp)
+                    modifier = Modifier.padding(top = 25.dp, end = 50.dp, bottom = 50.dp)
                 )
             }
         }

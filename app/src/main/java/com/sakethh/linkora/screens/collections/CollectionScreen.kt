@@ -209,7 +209,7 @@ fun CollectionScreen(navController: NavController) {
                 item {
                     Text(
                         text = "Folders",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
                         modifier = Modifier.padding(start = 15.dp)

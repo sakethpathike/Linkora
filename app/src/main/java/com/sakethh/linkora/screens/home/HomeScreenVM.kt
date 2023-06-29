@@ -24,6 +24,10 @@ class HomeScreenVM : ViewModel() {
     private val _recentlyVisitedLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
     val recentlyVisitedLinksData = _recentlyVisitedLinksData.asStateFlow()
 
+    companion object {
+        val tempImpLinkData = ImportantLinks("", "", "", "", "")
+    }
+
     init {
         when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
             in 0..3 -> {

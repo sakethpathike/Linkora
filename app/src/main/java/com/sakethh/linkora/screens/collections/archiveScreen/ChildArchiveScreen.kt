@@ -105,6 +105,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
                                 }
                             }, onFolderClick = {
+                                SpecificScreenVM.currentClickedFolderName.value =
+                                    it.archiveFolderName
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVE_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
