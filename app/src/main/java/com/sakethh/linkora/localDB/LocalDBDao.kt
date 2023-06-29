@@ -78,6 +78,9 @@ interface LocalDBDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")
     fun getThisFolderData(folderName: String): Flow<List<LinksTable>>
 
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName")
+    fun getThisArchiveFolderData(folderName: String): Flow<List<LinksTable>>
+
     @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInImpLinks(webURL: String): Boolean
 

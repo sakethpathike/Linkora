@@ -48,6 +48,7 @@ fun OptionsBtmSheetUI(
     onRenameClick: () -> Unit,
     onArchiveClick: () -> Unit,
     importantLinks: ImportantLinks?,
+    inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
 ) {
 
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
@@ -61,39 +62,41 @@ fun OptionsBtmSheetUI(
                 shouldBtmModalSheetBeVisible.value = false
             }
         }) {
-            OptionsBtmSheetIndividualComponent(
-                onClick = {
-                    coroutineScope.launch {
-                        if (btmModalSheetState.isVisible) {
-                            btmModalSheetState.hide()
-                        }
-                    }.invokeOnCompletion {
-                        shouldBtmModalSheetBeVisible.value = false
-                    }
-                    onRenameClick()
-                },
-                elementName = "Rename",
-                elementImageVector = Icons.Outlined.DriveFileRenameOutline
-            )
-            if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+            if (!inArchiveScreen.value) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
                         coroutineScope.launch {
                             if (btmModalSheetState.isVisible) {
                                 btmModalSheetState.hide()
                             }
-                            if (importantLinks != null) {
-                                CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                    importantLinks = importantLinks
-                                )
-                            }
                         }.invokeOnCompletion {
                             shouldBtmModalSheetBeVisible.value = false
                         }
+                        onRenameClick()
                     },
-                    elementName = optionsBtmSheetVM.importantCardText.value,
-                    elementImageVector = optionsBtmSheetVM.importantCardIcon.value
+                    elementName = "Rename",
+                    elementImageVector = Icons.Outlined.DriveFileRenameOutline
                 )
+                if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                    OptionsBtmSheetIndividualComponent(
+                        onClick = {
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                                if (importantLinks != null) {
+                                    CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                        importantLinks = importantLinks
+                                    )
+                                }
+                            }.invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
+                        },
+                        elementName = optionsBtmSheetVM.importantCardText.value,
+                        elementImageVector = optionsBtmSheetVM.importantCardIcon.value
+                    )
+                }
             }
             OptionsBtmSheetIndividualComponent(
                 onClick = {
@@ -109,7 +112,7 @@ fun OptionsBtmSheetUI(
                 elementName = optionsBtmSheetVM.archiveCardText.value,
                 elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
             )
-            if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+            if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN && !inArchiveScreen.value) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
                         coroutineScope.launch {

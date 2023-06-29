@@ -48,14 +48,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
@@ -102,7 +106,10 @@ fun HomeScreen() {
     val shouldDeleteBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    var tempImpData = ImportantLinks("", "", "", "", "")
+    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val tempImpData = ImportantLinks("", "", "", "", "")
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val currentIconForMainFAB = remember(isMainFabRotated.value) {
         mutableStateOf(
@@ -247,120 +254,191 @@ fun HomeScreen() {
                         modifier = Modifier.padding(top = 20.dp, start = 15.dp, end = 30.dp)
                     )
                 }
-                item {
-                    Text(
-                        text = "Recently Saved Links",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 25.dp)
-                    )
-                }
-                item {
-                    LazyRow(
-                        modifier = Modifier
-                            .padding(top = 15.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.width(10.dp))
-                        }
-                        items(recentlySavedLinksData) {
-                            GeneralCard(
-                                title = it.title,
-                                webBaseURL = it.webURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {
-                                    tempImpData.webURL = it.webURL
-                                    tempImpData.baseURL = it.baseURL
-                                    tempImpData.imgURL = it.imgURL
-                                    tempImpData.title = it.title
-                                    tempImpData.infoForSaving = it.infoForSaving
-                                    selectedWebURL.value = it.webURL
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    selectedCardType.value =
-                                        HomeScreenBtmSheetType.RECENT_SAVES.name
-                                },
-                                webURL = it.webURL
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
+                if (recentlySavedLinksData.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Recently Saved Links",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(start = 15.dp, top = 25.dp)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(top = 15.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+                            item {
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
+                            items(recentlySavedLinksData) {
+                                GeneralCard(
+                                    title = it.title,
+                                    webBaseURL = it.webURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {
+                                        tempImpData.webURL = it.webURL
+                                        tempImpData.baseURL = it.baseURL
+                                        tempImpData.imgURL = it.imgURL
+                                        tempImpData.title = it.title
+                                        tempImpData.infoForSaving = it.infoForSaving
+                                        selectedWebURL.value = it.webURL
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                        selectedCardType.value =
+                                            HomeScreenBtmSheetType.RECENT_SAVES.name
+                                        coroutineScope.launch {
+                                            awaitAll(async {
+                                                optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                            }, async {
+                                                optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                            })
+                                        }
+                                    },
+                                    webURL = it.webURL,
+                                    onCardClick = {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
                         }
                     }
                 }
 
-                item {
-                    Text(
-                        text = "Recent Important(s)",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
-                    )
-                }
-                item {
-                    LazyRow(
-                        modifier = Modifier
-                            .padding(top = 15.dp)
-                            .fillMaxWidth()
-                            .wrapContentHeight()
-                    ) {
-                        item {
-                            Spacer(modifier = Modifier.width(10.dp))
-                        }
-                        items(recentlySavedImpsLinksData) {
-                            GeneralCard(
-                                title = it.title,
-                                webBaseURL = it.webURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {
-                                    tempImpData.webURL = it.webURL
-                                    tempImpData.baseURL = it.baseURL
-                                    tempImpData.imgURL = it.imgURL
-                                    tempImpData.title = it.title
-                                    tempImpData.infoForSaving = it.infoForSaving
-                                    selectedWebURL.value = it.webURL
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    selectedCardType.value =
-                                        HomeScreenBtmSheetType.RECENT_IMP_SAVES.name
-                                },
-                                webURL = it.webURL
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
+                if (recentlySavedImpsLinksData.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Recent Important(s)",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        )
+                    }
+                    item {
+                        LazyRow(
+                            modifier = Modifier
+                                .padding(top = 15.dp)
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                        ) {
+                            item {
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
+                            items(recentlySavedImpsLinksData) {
+                                GeneralCard(
+                                    title = it.title,
+                                    webBaseURL = it.webURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {
+                                        tempImpData.webURL = it.webURL
+                                        tempImpData.baseURL = it.baseURL
+                                        tempImpData.imgURL = it.imgURL
+                                        tempImpData.title = it.title
+                                        tempImpData.infoForSaving = it.infoForSaving
+                                        selectedWebURL.value = it.webURL
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                        selectedCardType.value =
+                                            HomeScreenBtmSheetType.RECENT_IMP_SAVES.name
+                                        coroutineScope.launch {
+                                            awaitAll(async {
+                                                optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                            }, async {
+                                                optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                            })
+                                        }
+                                    },
+                                    webURL = it.webURL,
+                                    onCardClick = {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
+                                    }
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                            }
                         }
                     }
                 }
 
-                item {
-                    Text(
-                        text = "Recently Visited",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
-                    )
-                }
-                item {
-                    Spacer(modifier = Modifier.height(5.dp))
-                }
-                items(recentlyVisitedLinksData) {
-                    LinkUIComponent(
-                        title = it.title,
-                        webBaseURL = it.baseURL,
-                        imgURL = it.imgURL,
-                        onMoreIconCLick = {
-                            tempImpData.webURL = it.webURL
-                            tempImpData.baseURL = it.baseURL
-                            tempImpData.imgURL = it.imgURL
-                            tempImpData.title = it.title
-                            tempImpData.infoForSaving = it.infoForSaving
-                            selectedWebURL.value = it.webURL
-                            selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
-                            shouldOptionsBtmModalSheetBeVisible.value = true
-                        },
-                        {},
-                        webURL = it.webURL
-                    )
+                if (recentlyVisitedLinksData.isNotEmpty()) {
+                    item {
+                        Text(
+                            text = "Recently Visited",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(5.dp))
+                    }
+                    items(recentlyVisitedLinksData) {
+                        LinkUIComponent(
+                            title = it.title,
+                            webBaseURL = it.baseURL,
+                            imgURL = it.imgURL,
+                            onMoreIconCLick = {
+                                tempImpData.webURL = it.webURL
+                                tempImpData.baseURL = it.baseURL
+                                tempImpData.imgURL = it.imgURL
+                                tempImpData.title = it.title
+                                tempImpData.infoForSaving = it.infoForSaving
+                                selectedWebURL.value = it.webURL
+                                selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                coroutineScope.launch {
+                                    awaitAll(async {
+                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                    }, async {
+                                        optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                    })
+                                }
+                            },
+                            onLinkClick = {
+                                coroutineScope.launch {
+                                    openInWeb(
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = it.title,
+                                            webURL = it.webURL,
+                                            baseURL = it.baseURL,
+                                            imgURL = it.imgURL,
+                                            infoForSaving = it.infoForSaving
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler
+                                    )
+                                }
+                            },
+                            webURL = it.webURL
+                        )
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(175.dp))

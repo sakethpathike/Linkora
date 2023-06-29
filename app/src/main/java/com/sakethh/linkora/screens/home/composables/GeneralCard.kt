@@ -41,6 +41,7 @@ fun GeneralCard(
     webURL: String,
     imgURL: String,
     onMoreIconClick: () -> Unit,
+    onCardClick: () -> Unit,
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
@@ -48,6 +49,9 @@ fun GeneralCard(
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .height(155.dp)
             .width(275.dp)
+            .clickable {
+                onCardClick()
+            }
     ) {
         Row(modifier = Modifier.fillMaxSize()) {
             Column(
@@ -96,13 +100,15 @@ fun GeneralCard(
                     modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
+                    Icon(imageVector = Icons.Outlined.ContentCopy,
+                        contentDescription = null,
                         modifier = Modifier.clickable {
                             localClipBoardManager.setText(
                                 AnnotatedString(webURL)
                             )
                         })
-                    Icon(imageVector = Icons.Outlined.Share, contentDescription = null,
+                    Icon(imageVector = Icons.Outlined.Share,
+                        contentDescription = null,
                         modifier = Modifier.clickable {
                             val intent = Intent().apply {
                                 action = Intent.ACTION_SEND
@@ -112,8 +118,7 @@ fun GeneralCard(
                             val shareIntent = Intent.createChooser(intent, null)
                             context.startActivity(shareIntent)
                         })
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
+                    Icon(imageVector = Icons.Filled.MoreVert,
                         contentDescription = null,
                         modifier = Modifier.clickable { onMoreIconClick() })
                 }

@@ -218,84 +218,24 @@ fun CollectionScreen(navController: NavController) {
                     Spacer(modifier = Modifier.padding(top = 15.dp))
                 }
                 itemsIndexed(foldersData) { folderIndex, foldersData ->
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .clickable {
-                                    SpecificScreenVM.screenType.value =
-                                        SpecificScreenType.SPECIFIC_FOLDER_SCREEN
-                                    SpecificScreenVM.currentClickedFolderName.value =
-                                        foldersData.folderName
-                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                                }
-                                .fillMaxWidth()
-                                .requiredHeight(75.dp)
-                        ) {
-                            Box(
-                                modifier = Modifier.fillMaxHeight(),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Folder,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(20.dp)
-                                        .size(28.dp)
-                                )
+                    FolderIndividualComponent(
+                        folderName = foldersData.folderName,
+                        folderNote = foldersData.infoForSaving,
+                        onMoreIconClick = {
+                            selectedFolderData.folderName = foldersData.folderName
+                            selectedFolderData.infoForSaving = foldersData.infoForSaving
+                            coroutineScope.launch {
+                                optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
                             }
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .fillMaxWidth(0.80f),
-                                verticalArrangement = Arrangement.SpaceEvenly
-                            ) {
-                                Text(
-                                    text = foldersData.folderName,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(top = 10.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                                Text(
-                                    text = foldersData.infoForSaving,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 12.sp,
-                                    modifier = Modifier.padding(bottom = 10.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .clickable {
-                                        selectedFolderData.folderName = foldersData.folderName
-                                        selectedFolderData.infoForSaving = foldersData.infoForSaving
-                                        coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
-                                        }
-                                        clickedFolderName.value = foldersData.folderName
-                                        shouldOptionsBtmModalSheetBeVisible.value = true
-                                    }
-                                    .fillMaxWidth()
-                                    .fillMaxHeight()
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.MoreVert,
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .padding(end = 20.dp)
-                                        .align(Alignment.CenterEnd)
-                                )
-                            }
-                        }
-                        Divider(
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(start = 25.dp, end = 25.dp)
-                        )
-                    }
+                            clickedFolderName.value = foldersData.folderName
+                            shouldOptionsBtmModalSheetBeVisible.value = true
+                        }, onFolderClick = {
+                            SpecificScreenVM.screenType.value =
+                                SpecificScreenType.SPECIFIC_FOLDER_SCREEN
+                            SpecificScreenVM.currentClickedFolderName.value =
+                                foldersData.folderName
+                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                        })
                 }
                 item {
                     Spacer(modifier = Modifier.height(65.dp))
@@ -356,5 +296,84 @@ fun CollectionScreen(navController: NavController) {
                 popUpTo(0)
             }
         }
+    }
+}
+
+@Composable
+fun FolderIndividualComponent(
+    folderName: String,
+    folderNote: String,
+    onMoreIconClick: () -> Unit,
+    onFolderClick: () -> Unit,
+) {
+    Column {
+        Row(
+            modifier = Modifier
+                .clickable {
+                    onFolderClick()
+                }
+                .fillMaxWidth()
+                .requiredHeight(75.dp)
+        ) {
+            Box(
+                modifier = Modifier.fillMaxHeight(),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Folder,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(28.dp)
+                )
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(0.80f),
+                verticalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Text(
+                    text = folderName,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp,
+                    modifier = Modifier.padding(top = 10.dp),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                if (folderNote.isNotEmpty()) {
+                    Text(
+                        text = folderNote,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(bottom = 10.dp),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier
+                    .clickable {
+                        onMoreIconClick()
+                    }
+                    .fillMaxWidth()
+                    .fillMaxHeight()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(end = 20.dp)
+                        .align(Alignment.CenterEnd)
+                )
+            }
+        }
+        Divider(
+            thickness = 1.dp,
+            modifier = Modifier.padding(start = 25.dp, end = 25.dp)
+        )
     }
 }

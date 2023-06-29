@@ -21,11 +21,15 @@ class SpecificScreenVM : ViewModel() {
     private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
     val impLinksTable = _impLinksData.asStateFlow()
 
+    private val _archiveFolderData = MutableStateFlow(emptyList<LinksTable>())
+    val archiveFolderDataTable = _archiveFolderData.asStateFlow()
+
     val impLinkDataForBtmSheet = ImportantLinks("", "", "", "", "")
 
     companion object {
         val currentClickedFolderName = mutableStateOf("")
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_SCREEN)
+        val selectedArchiveFolderName = mutableStateOf("")
     }
 
     init {
@@ -49,7 +53,13 @@ class SpecificScreenVM : ViewModel() {
             }
 
             SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        .getThisArchiveFolderData(folderName = selectedArchiveFolderName.value)
+                        .collect {
+                            _archiveFolderData.emit(it)
+                        }
+                }
             }
 
             SpecificScreenType.LINKS_SCREEN -> {

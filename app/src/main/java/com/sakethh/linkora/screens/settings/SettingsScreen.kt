@@ -160,7 +160,6 @@ fun SettingsScreen(navController: NavController) {
                             localIcon = R.drawable.twitter_logo,
                             title = "Twitter",
                             onClick = {
-
                                 coroutineScope.launch {
                                     openInWeb(
                                         recentlyVisitedData = RecentlyVisited(

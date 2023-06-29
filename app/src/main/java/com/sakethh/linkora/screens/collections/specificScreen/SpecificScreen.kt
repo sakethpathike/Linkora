@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.collections.specificScreen
 
+import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -59,6 +60,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpecificScreen(navController: NavController) {
@@ -69,6 +71,7 @@ fun SpecificScreen(navController: NavController) {
     val foldersData = specificScreenVM.foldersData.collectAsState().value
     val linksData = specificScreenVM.linksTable.collectAsState().value
     val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
+    val archiveLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
     var tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
@@ -90,7 +93,7 @@ fun SpecificScreen(navController: NavController) {
         }
 
         SpecificScreenType.ARCHIVE_SCREEN -> {
-            ""
+            SpecificScreenVM.selectedArchiveFolderName.value
         }
 
         SpecificScreenType.LINKS_SCREEN -> {
@@ -355,7 +358,33 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                        items(archiveLinksData){
+                            LinkUIComponent(
+                                title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    selectedWebURL.value = it.webURL
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL
+                            )
+                        }
                     }
                 }
                 item {
@@ -364,6 +393,7 @@ fun SpecificScreen(navController: NavController) {
             }
         }
         OptionsBtmSheetUI(
+            inArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
@@ -422,7 +452,10 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteALinkFromArchiveLinks(webURL = selectedWebURL.value)
+                        }
                     }
 
                     SpecificScreenType.LINKS_SCREEN -> {
