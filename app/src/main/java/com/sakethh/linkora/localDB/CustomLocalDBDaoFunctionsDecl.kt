@@ -82,19 +82,12 @@ object CustomLocalDBDaoFunctionsDecl {
                 awaitAll(async {
                     localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
                 }, async {
-                    localDB.localDBData()
+                    val listOfData = localDB.localDBData()
                         .getThisFolderData(folderName = archivedFolders.archiveFolderName)
                         .flatMapConcat {
                             it.asFlow()
-                        }.toList().forEach {
-                            addANewLinkSpecificallyInFolders(
-                                title = it.title,
-                                webURL = it.webURL,
-                                noteForSaving = it.infoForSaving,
-                                folderName = archivedFolders.archiveFolderName,
-                                savingFor = ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS
-                            )
-                        }
+                        }.toList()
+                    localDB.localDBData().addListOfDataInLinksTable(listOfData)
                     localDB.localDBData()
                         .deleteAFolder(folderName = archivedFolders.archiveFolderName)
                     localDB.localDBData()

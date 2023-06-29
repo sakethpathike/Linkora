@@ -273,6 +273,7 @@ fun CollectionScreen(navController: NavController) {
             }
         )
         RenameDialogBox(
+            onNoteChangeClickForLinks = null,
             shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
             coroutineScope = coroutineScope,
             existingFolderName = clickedFolderName.value

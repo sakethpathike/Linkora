@@ -41,7 +41,7 @@ fun RenameDialogBox(
     coroutineScope: CoroutineScope, existingFolderName: String?,
     webURLForTitle: String? = null,
     renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
-    onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)? = null,
+    onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
 ) {
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
@@ -167,20 +167,11 @@ fun RenameDialogBox(
                                     }
                                 } else {
                                     if (onNoteChangeClickForLinks != null) {
-                                        coroutineScope.launch {
-                                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                .renameALinkTitleFromSavedLinksOrInFolders(
-                                                    newTitle = newFolderOrTitleName.value,
-                                                    webURL = webURLForTitle!!
-                                                )
-                                        }
-                                    } else {
-                                        onNoteChangeClickForLinks?.invoke(
+                                        onNoteChangeClickForLinks(
                                             webURLForTitle!!,
                                             newFolderOrTitleName.value
                                         )
                                     }
-
                                     shouldDialogBoxAppear.value = false
                                 }
                             }

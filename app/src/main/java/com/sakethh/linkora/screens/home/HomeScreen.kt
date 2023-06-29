@@ -59,6 +59,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
@@ -500,7 +501,8 @@ fun HomeScreen() {
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope
         )
-        OptionsBtmSheetUI(btmModalSheetState = btmModalSheetState,
+        OptionsBtmSheetUI(
+            btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
             btmSheetFor = OptionsBtmSheetType.LINK,
@@ -513,7 +515,31 @@ fun HomeScreen() {
             onDeleteCardClick = {
                 shouldDeleteBoxAppear.value = true
             },
-            importantLinks = HomeScreenVM.tempImpLinkData,
+            onImportantLinkAdditionInTheTable = {
+                coroutineScope.launch {
+                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .doesThisExistsInImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                    ) {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                    } else {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().addANewLinkToImpLinks(
+                            ImportantLinks(
+                                HomeScreenVM.tempImpLinkData.title,
+                                HomeScreenVM.tempImpLinkData.webURL,
+                                HomeScreenVM.tempImpLinkData.baseURL,
+                                HomeScreenVM.tempImpLinkData.imgURL,
+                                HomeScreenVM.tempImpLinkData.infoForSaving)
+                        )
+                    }
+                }.invokeOnCompletion {
+                    coroutineScope.launch {
+                        optionsBtmSheetVM.updateImportantCardData(HomeScreenVM.tempImpLinkData.webURL)
+                    }
+                }
+                Unit
+            },
+            importantLinks = null,
             onArchiveClick = {
                 when (selectedCardType.value) {
                     HomeScreenBtmSheetType.RECENT_SAVES.name -> {

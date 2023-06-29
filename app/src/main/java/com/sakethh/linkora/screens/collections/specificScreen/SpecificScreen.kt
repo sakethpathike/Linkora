@@ -478,7 +478,38 @@ fun SpecificScreen(navController: NavController) {
             coroutineScope = coroutineScope,
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
-            webURLForTitle = selectedWebURL.value
+            webURLForTitle = selectedWebURL.value,
+            onNoteChangeClickForLinks = {webURL: String, newNote: String ->
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkTitleFromImpLinks(webURL = selectedWebURL.value, newTitle = newNote)
+                        }
+                        Unit
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkTitleFromSavedLinksOrInFolders(webURL = selectedWebURL.value, newTitle = newNote)
+                        }
+                        Unit
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkTitleFromSavedLinksOrInFolders(webURL = selectedWebURL.value, newTitle = newNote)
+                        }
+                        Unit
+                    }
+                }
+            }
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,

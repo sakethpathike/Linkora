@@ -13,6 +13,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.FolderDelete
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -47,6 +48,7 @@ fun OptionsBtmSheetUI(
     onDeleteCardClick: () -> Unit,
     onRenameClick: () -> Unit,
     onArchiveClick: () -> Unit,
+    onImportantLinkAdditionInTheTable: (() -> Unit?)? = null,
     importantLinks: ImportantLinks?,
     inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
 ) {
@@ -84,10 +86,14 @@ fun OptionsBtmSheetUI(
                                 if (btmModalSheetState.isVisible) {
                                     btmModalSheetState.hide()
                                 }
-                                if (importantLinks != null) {
+                                if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
                                     CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
                                         importantLinks = importantLinks
                                     )
+                                }else{
+                                    if (onImportantLinkAdditionInTheTable != null) {
+                                        onImportantLinkAdditionInTheTable()
+                                    }
                                 }
                             }.invokeOnCompletion {
                                 shouldBtmModalSheetBeVisible.value = false
@@ -98,20 +104,22 @@ fun OptionsBtmSheetUI(
                     )
                 }
             }
-            OptionsBtmSheetIndividualComponent(
-                onClick = {
-                    coroutineScope.launch {
-                        if (btmModalSheetState.isVisible) {
-                            btmModalSheetState.hide()
+            if(optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !inArchiveScreen.value){
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
+                        }.invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
                         }
-                    }.invokeOnCompletion {
-                        shouldBtmModalSheetBeVisible.value = false
-                    }
-                    onArchiveClick()
-                },
-                elementName = optionsBtmSheetVM.archiveCardText.value,
-                elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
-            )
+                        onArchiveClick()
+                    },
+                    elementName = optionsBtmSheetVM.archiveCardText.value,
+                    elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
+                )
+            }
             if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN && !inArchiveScreen.value) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
