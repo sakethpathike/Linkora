@@ -38,10 +38,10 @@ class OptionsBtmSheetVM : ViewModel() {
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
-            archiveCardText.value = "Remove from Archive(s)"
+            archiveCardText.value = "Remove from Archive"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Add to Archive(s)"
+            archiveCardText.value = "Move to Archive"
         }
     }
 

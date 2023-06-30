@@ -479,12 +479,15 @@ fun SpecificScreen(navController: NavController) {
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             webURLForTitle = selectedWebURL.value,
-            onNoteChangeClickForLinks = {webURL: String, newNote: String ->
+            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromImpLinks(webURL = selectedWebURL.value, newTitle = newNote)
+                                .renameALinkTitleFromImpLinks(
+                                    webURL = selectedWebURL.value,
+                                    newTitle = newNote
+                                )
                         }
                         Unit
                     }
@@ -496,7 +499,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromSavedLinksOrInFolders(webURL = selectedWebURL.value, newTitle = newNote)
+                                .renameALinkTitleFromSavedLinksOrInFolders(
+                                    webURL = selectedWebURL.value,
+                                    newTitle = newNote
+                                )
                         }
                         Unit
                     }
@@ -504,7 +510,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromSavedLinksOrInFolders(webURL = selectedWebURL.value, newTitle = newNote)
+                                .renameALinkTitleFromSavedLinksOrInFolders(
+                                    webURL = selectedWebURL.value,
+                                    newTitle = newNote
+                                )
                         }
                         Unit
                     }

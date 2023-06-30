@@ -12,9 +12,9 @@ interface LocalDBDao {
     suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
 
     @Insert
-    suspend fun addListOfDataInLinksTable(list:List<LinksTable>)
+    suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
 
-   @Insert
+    @Insert
     suspend fun addANewFolder(foldersTable: FoldersTable)
 
     @Insert

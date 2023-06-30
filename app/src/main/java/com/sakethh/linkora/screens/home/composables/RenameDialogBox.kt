@@ -166,9 +166,9 @@ fun RenameDialogBox(
                                         }
                                     }
                                 } else {
-                                    if (onNoteChangeClickForLinks != null) {
+                                    if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
                                         onNoteChangeClickForLinks(
-                                            webURLForTitle!!,
+                                            webURLForTitle,
                                             newFolderOrTitleName.value
                                         )
                                     }

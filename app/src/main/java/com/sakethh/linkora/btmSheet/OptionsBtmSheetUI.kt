@@ -90,7 +90,7 @@ fun OptionsBtmSheetUI(
                                     CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
                                         importantLinks = importantLinks
                                     )
-                                }else{
+                                } else {
                                     if (onImportantLinkAdditionInTheTable != null) {
                                         onImportantLinkAdditionInTheTable()
                                     }
@@ -104,7 +104,7 @@ fun OptionsBtmSheetUI(
                     )
                 }
             }
-            if(optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !inArchiveScreen.value){
+            if (optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || inArchiveScreen.value) {
                 OptionsBtmSheetIndividualComponent(
                     onClick = {
                         coroutineScope.launch {

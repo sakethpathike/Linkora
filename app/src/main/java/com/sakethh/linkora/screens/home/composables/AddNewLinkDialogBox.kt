@@ -3,18 +3,20 @@ package com.sakethh.linkora.screens.home.composables
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.DropdownMenu
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
@@ -27,6 +29,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -41,9 +44,12 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetIndividualComponent
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.launch
+import okhttp3.internal.trimSubstring
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -72,6 +78,10 @@ fun AddNewLinkDialogBox(
     }
     val isDropDownMenuIconClicked = rememberSaveable {
         mutableStateOf(false)
+    }
+    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    if (isDataExtractingForTheLink.value) {
+        isDropDownMenuIconClicked.value = false
     }
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
@@ -174,15 +184,33 @@ fun AddNewLinkDialogBox(
                                 text = "Save in",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
-                                fontSize = 18.sp
+                                fontSize = 18.sp,
+                                modifier = Modifier.padding(top = 15.dp)
                             )
-                            Row() {
+                            Row(modifier = Modifier
+                                .padding(start = 15.dp, end = 15.dp)
+                                .clip(RoundedCornerShape(50.dp))
+                                .border(
+                                    shape = RoundedCornerShape(50.dp),
+                                    width = 1.dp,
+                                    color = AlertDialogDefaults.textContentColor
+                                )
+                                .clickable {
+                                    if (!isDataExtractingForTheLink.value) {
+                                        isDropDownMenuIconClicked.value = true
+                                    }
+                                }) {
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
-                                    text = selectedFolderName.value,
+                                    text = if (selectedFolderName.value.length <= 9) selectedFolderName.value else selectedFolderName.value.trimSubstring(
+                                        0,
+                                        6
+                                    ) + "...",
                                     color = AlertDialogDefaults.textContentColor,
                                     style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 18.sp
+                                    fontSize = 18.sp,
+                                    maxLines = 1,
+                                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 IconButton(onClick = {
@@ -195,36 +223,6 @@ fun AddNewLinkDialogBox(
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))
-                            }
-                        }
-                    }
-                    DropdownMenu(
-                        expanded = isDropDownMenuIconClicked.value,
-                        onDismissRequest = { isDropDownMenuIconClicked.value = false }) {
-                        DropdownMenuItem(onClick = {
-                            selectedFolderName.value = "Saved Links"
-                        }) {
-                            Icon(imageVector = Icons.Outlined.Link, contentDescription = null)
-                            Spacer(modifier = Modifier.width(15.dp))
-                            Text(
-                                text = "Saved Links",
-                                color = AlertDialogDefaults.textContentColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 18.sp
-                            )
-                        }
-                        foldersTableData.forEach {
-                            DropdownMenuItem(onClick = {
-                                selectedFolderName.value = it.folderName
-                            }) {
-                                Icon(imageVector = Icons.Outlined.Folder, contentDescription = null)
-                                Spacer(modifier = Modifier.width(15.dp))
-                                Text(
-                                    text = it.folderName,
-                                    color = AlertDialogDefaults.textContentColor,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 18.sp
-                                )
                             }
                         }
                     }
@@ -258,13 +256,17 @@ fun AddNewLinkDialogBox(
                         }) {
                         if (isDataExtractingForTheLink.value) {
                             Row {
-                                CircularProgressIndicator(strokeWidth = 4.dp)
-                                Spacer(modifier = Modifier.width(20.dp))
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(20.dp),
+                                    strokeWidth = 2.5.dp
+                                )
+                                Spacer(modifier = Modifier.width(15.dp))
                                 Text(
                                     text = "Extracting the data...",
                                     color = AlertDialogDefaults.containerColor,
                                     style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(top = 2.dp)
                                 )
                             }
                         } else {
@@ -299,6 +301,46 @@ fun AddNewLinkDialogBox(
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
+                        }
+                    }
+                    if (isDropDownMenuIconClicked.value) {
+                        ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }.invokeOnCompletion {
+                                isDropDownMenuIconClicked.value = false
+                            }
+                        }) {
+                            Text(
+                                text = "Save in :",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 24.sp,
+                                modifier = Modifier
+                                    .padding(
+                                        start = 20.dp
+                                    )
+                            )
+                            OptionsBtmSheetIndividualComponent(
+                                onClick = {
+                                    selectedFolderName.value = "Saved Links"
+                                    isDropDownMenuIconClicked.value = false
+                                },
+                                elementName = "Saved Links",
+                                elementImageVector = Icons.Outlined.Link
+                            )
+                            foldersTableData.forEach {
+                                OptionsBtmSheetIndividualComponent(
+                                    onClick = {
+                                        selectedFolderName.value = it.folderName
+                                        isDropDownMenuIconClicked.value = false
+                                    },
+                                    elementName = it.folderName,
+                                    elementImageVector = Icons.Outlined.Folder
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }

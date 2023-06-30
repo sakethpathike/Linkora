@@ -529,7 +529,8 @@ fun HomeScreen() {
                                 HomeScreenVM.tempImpLinkData.webURL,
                                 HomeScreenVM.tempImpLinkData.baseURL,
                                 HomeScreenVM.tempImpLinkData.imgURL,
-                                HomeScreenVM.tempImpLinkData.infoForSaving)
+                                HomeScreenVM.tempImpLinkData.infoForSaving
+                            )
                         )
                     }
                 }.invokeOnCompletion {
