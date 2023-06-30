@@ -99,6 +99,9 @@ interface LocalDBDao {
     @Query("UPDATE folders_table SET folderName = :newFolderName WHERE folderName = :existingFolderName")
     suspend fun renameAFolderName(existingFolderName: String, newFolderName: String)
 
+    @Query("UPDATE links_table SET keyOfLinkedFolder = :newFolderName WHERE keyOfLinkedFolder = :existingFolderName")
+    suspend fun renameFolderNameForExistingFolderData(existingFolderName: String, newFolderName: String)
+
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
     suspend fun renameAFolderNote(folderName: String, newNote: String)
 

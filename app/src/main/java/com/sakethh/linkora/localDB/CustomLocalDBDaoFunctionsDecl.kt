@@ -26,14 +26,34 @@ object CustomLocalDBDaoFunctionsDecl {
     ) {
         if (infoForFolder.isNotEmpty()) {
             coroutineScope {
-                awaitAll(async {
-                    localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
-                }, async {
-                    localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
-                })
+                awaitAll(
+                    async {
+                        localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
+                    },
+                    async {
+                        localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
+                    },
+                    async {
+                        localDB.localDBData().renameFolderNameForExistingFolderData(
+                            existingFolderName,
+                            newFolderName
+                        )
+                    })
             }
         } else {
-            localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
+            coroutineScope {
+                awaitAll(
+                    async {
+                        localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
+                    },
+                    async {
+                        localDB.localDBData()
+                            .renameFolderNameForExistingFolderData(
+                                existingFolderName,
+                                newFolderName
+                            )
+                    })
+            }
         }
     }
 
