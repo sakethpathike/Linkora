@@ -42,6 +42,7 @@ fun RenameDialogBox(
     webURLForTitle: String? = null,
     renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
+    onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
 ) {
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
@@ -60,7 +61,7 @@ fun RenameDialogBox(
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
-                        text = if (renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"$existingFolderName\" folder:" else "Change Link's title:",
+                        text = if (renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"$existingFolderName\" folder:" else "Change Link's Data:",
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -90,29 +91,29 @@ fun RenameDialogBox(
                         onValueChange = {
                             newFolderOrTitleName.value = it
                         })
+                    OutlinedTextField(
+                        maxLines = 1,
+                        modifier = Modifier.padding(
+                            start = 20.dp,
+                            end = 20.dp,
+                            top = 15.dp
+                        ),
+                        label = {
+                            Text(
+                                text = "New note",
+                                color = AlertDialogDefaults.textContentColor,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 12.sp
+                            )
+                        },
+                        textStyle = MaterialTheme.typography.titleSmall,
+                        singleLine = true,
+                        shape = RoundedCornerShape(5.dp),
+                        value = newNote.value,
+                        onValueChange = {
+                            newNote.value = it
+                        })
                     if (renameDialogBoxFor != OptionsBtmSheetType.LINK) {
-                        OutlinedTextField(
-                            maxLines = 1,
-                            modifier = Modifier.padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                top = 15.dp
-                            ),
-                            label = {
-                                Text(
-                                    text = "New note",
-                                    color = AlertDialogDefaults.textContentColor,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 12.sp
-                                )
-                            },
-                            textStyle = MaterialTheme.typography.titleSmall,
-                            singleLine = true,
-                            shape = RoundedCornerShape(5.dp),
-                            value = newNote.value,
-                            onValueChange = {
-                                newNote.value = it
-                            })
                         Text(
                             text = "Leave above field empty, if you don't want to change the note.",
                             color = AlertDialogDefaults.textContentColor,
@@ -131,68 +132,84 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (newFolderOrTitleName.value.isEmpty()) {
-                                Toast.makeText(
-                                    localContext,
-                                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
-                                    Toast.LENGTH_SHORT
-                                ).show()
+                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK) {
+                                if (onTitleChangeClickForLinks != null && webURLForTitle != null) {
+                                    onTitleChangeClickForLinks(
+                                        webURLForTitle,
+                                        newFolderOrTitleName.value
+                                    )
+                                }
+                                if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
+                                    onNoteChangeClickForLinks(
+                                        webURLForTitle,
+                                        newNote.value
+                                    )
+                                }
+                                shouldDialogBoxAppear.value = false
                             } else {
-                                if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                                    coroutineScope.launch {
-                                        doesFolderNameAlreadyExists =
-                                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                .doesThisFolderExists(
-                                                    newFolderOrTitleName.value
-                                                )
-                                    }.invokeOnCompletion {
-                                        if (doesFolderNameAlreadyExists) {
-                                            Toast.makeText(
-                                                localContext,
-                                                "Folder name already exists",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        } else {
-                                            coroutineScope.launch {
-                                                if (existingFolderName != null) {
-                                                    CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
-                                                        existingFolderName = existingFolderName,
-                                                        newFolderName = newFolderOrTitleName.value,
-                                                        infoForFolder = newNote.value
+                                if (newFolderOrTitleName.value.isEmpty()) {
+                                    Toast.makeText(
+                                        localContext,
+                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
+                                        coroutineScope.launch {
+                                            doesFolderNameAlreadyExists =
+                                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                    .doesThisFolderExists(
+                                                        newFolderOrTitleName.value
                                                     )
+                                        }.invokeOnCompletion {
+                                            if (doesFolderNameAlreadyExists) {
+                                                Toast.makeText(
+                                                    localContext,
+                                                    "Folder name already exists",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                coroutineScope.launch {
+                                                    if (existingFolderName != null) {
+                                                        CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
+                                                            existingFolderName = existingFolderName,
+                                                            newFolderName = newFolderOrTitleName.value,
+                                                            infoForFolder = newNote.value
+                                                        )
+                                                    }
                                                 }
+                                                shouldDialogBoxAppear.value = false
                                             }
-                                            shouldDialogBoxAppear.value = false
                                         }
                                     }
-                                } else {
-                                    if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
-                                        onNoteChangeClickForLinks(
-                                            webURLForTitle,
-                                            newFolderOrTitleName.value
-                                        )
-                                    }
-                                    shouldDialogBoxAppear.value = false
                                 }
                             }
                         }) {
                         Text(
-                            text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title",
+                            text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title data",
                             color = AlertDialogDefaults.containerColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
                     }
-                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                        Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
-                            shape = RoundedCornerShape(5.dp),
-                            modifier = Modifier
-                                .padding(
-                                    end = 20.dp,
-                                    top = 10.dp,
-                                )
-                                .align(Alignment.End),
-                            onClick = {
+                    Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
+                        shape = RoundedCornerShape(5.dp),
+                        modifier = Modifier
+                            .padding(
+                                end = 20.dp,
+                                top = 10.dp,
+                            )
+                            .align(Alignment.End),
+                        onClick = {
+                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK) {
+                                if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
+                                    onNoteChangeClickForLinks(
+                                        webURLForTitle,
+                                        newNote.value
+                                    )
+                                }
+                                shouldDialogBoxAppear.value = false
+                            } else {
                                 if (newNote.value.isEmpty()) {
                                     Toast.makeText(
                                         localContext,
@@ -211,14 +228,14 @@ fun RenameDialogBox(
                                     }
                                     shouldDialogBoxAppear.value = false
                                 }
-                            }) {
-                            Text(
-                                text = "Change note only",
-                                color = AlertDialogDefaults.containerColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
+                            }
+                        }) {
+                        Text(
+                            text = "Change note only",
+                            color = AlertDialogDefaults.containerColor,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
                     }
                     OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                         border = BorderStroke(

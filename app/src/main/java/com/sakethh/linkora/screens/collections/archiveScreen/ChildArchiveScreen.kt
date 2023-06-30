@@ -50,6 +50,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedURLOrFolderNote = rememberSaveable {
+        mutableStateOf("")
+    }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     LinkoraTheme {
         LazyColumn(
@@ -67,6 +70,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             onMoreIconCLick = {
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.webURL
+                                selectedURLOrFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
                                 }
@@ -101,6 +105,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             onMoreIconClick = {
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
+                                selectedURLOrFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
                                 }
@@ -148,7 +153,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 }
             },
-            importantLinks = null
+            importantLinks = null,
+            noteForSaving = selectedURLOrFolderNote.value
         )
     }
 }

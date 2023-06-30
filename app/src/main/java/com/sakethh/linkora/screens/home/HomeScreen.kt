@@ -106,6 +106,9 @@ fun HomeScreen() {
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedURLNote = rememberSaveable {
+        mutableStateOf("")
+    }
     val shouldDeleteBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -288,6 +291,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.title = it.title
                                         HomeScreenVM.tempImpLinkData.infoForSaving =
                                             it.infoForSaving
+                                        selectedURLNote.value = it.infoForSaving
                                         selectedWebURL.value = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         selectedCardType.value =
@@ -355,6 +359,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.title = it.title
                                         HomeScreenVM.tempImpLinkData.infoForSaving =
                                             it.infoForSaving
+                                        selectedURLNote.value = it.infoForSaving
                                         selectedWebURL.value = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         selectedCardType.value =
@@ -414,6 +419,7 @@ fun HomeScreen() {
                                 HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                 HomeScreenVM.tempImpLinkData.title = it.title
                                 HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                                selectedURLNote.value = it.infoForSaving
                                 selectedWebURL.value = it.webURL
                                 selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
                                 shouldOptionsBtmModalSheetBeVisible.value = true
@@ -603,7 +609,8 @@ fun HomeScreen() {
                         Unit
                     }
                 }
-            })
+            }, noteForSaving = selectedURLNote.value
+        )
     }
     DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteBoxAppear,
         deleteDialogBoxType = DataDialogBoxType.LINK,
@@ -648,8 +655,8 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromRecentlyVisited(
-                                webURL = webURL, newTitle = newNote
+                            .renameALinkInfoFromSavedLinksOrInFolders(
+                                webURL = webURL, newInfo = newNote
                             )
                     }
                     Unit
@@ -658,8 +665,8 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_VISITS.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromRecentlyVisited(
-                                webURL = webURL, newTitle = newNote
+                            .renameALinkInfoFromRecentlyVisitedLinks(
+                                webURL = webURL, newInfo = newNote
                             )
                     }
                     Unit
@@ -668,12 +675,43 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newNote)
+                            .renameALinkInfoFromImpLinks(webURL = webURL, newInfo = newNote)
                     }
                     Unit
                 }
             }
-        })
+        },
+    onTitleChangeClickForLinks = {webURL: String, newTitle: String ->
+        when (selectedCardType.value) {
+            HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        .renameALinkTitleFromSavedLinksOrInFolders(
+                            webURL = webURL, newTitle = newTitle
+                        )
+                }
+                Unit
+            }
+
+            HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        .renameALinkTitleFromRecentlyVisited(
+                            webURL = webURL, newTitle = newTitle
+                        )
+                }
+                Unit
+            }
+
+            HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
+                }
+                Unit
+            }
+        }
+    })
     BackHandler {
         if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false

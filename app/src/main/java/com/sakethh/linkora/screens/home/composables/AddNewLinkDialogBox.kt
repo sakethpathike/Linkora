@@ -325,7 +325,13 @@ fun AddNewLinkDialogBox(
                             OptionsBtmSheetIndividualComponent(
                                 onClick = {
                                     selectedFolderName.value = "Saved Links"
-                                    isDropDownMenuIconClicked.value = false
+                                    coroutineScope.launch {
+                                        if (btmModalSheetState.isVisible) {
+                                            btmModalSheetState.hide()
+                                        }
+                                    }.invokeOnCompletion {
+                                        isDropDownMenuIconClicked.value = false
+                                    }
                                 },
                                 elementName = "Saved Links",
                                 elementImageVector = Icons.Outlined.Link

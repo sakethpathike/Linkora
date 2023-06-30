@@ -74,6 +74,9 @@ fun SpecificScreen(navController: NavController) {
     val shouldDeleteDialogBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val selectedURLOrFolderNote = rememberSaveable {
+        mutableStateOf("")
+    }
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -137,6 +140,7 @@ fun SpecificScreen(navController: NavController) {
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
                                     selectedWebURL.value = it.webURL
+                                    selectedURLOrFolderNote.value = it.infoForSaving
                                     tempImpLinkData.apply {
                                         this.webURL = it.webURL
                                         this.baseURL = it.baseURL
@@ -186,6 +190,7 @@ fun SpecificScreen(navController: NavController) {
                                     imgURL = it.imgURL,
                                     onMoreIconCLick = {
                                         selectedWebURL.value = it.webURL
+                                        selectedURLOrFolderNote.value = it.infoForSaving
                                         tempImpLinkData.apply {
                                             this.webURL = it.webURL
                                             this.baseURL = it.baseURL
@@ -243,6 +248,7 @@ fun SpecificScreen(navController: NavController) {
                                     imgURL = it.imgURL,
                                     onMoreIconCLick = {
                                         selectedWebURL.value = it.webURL
+                                        selectedURLOrFolderNote.value = it.infoForSaving
                                         tempImpLinkData.apply {
                                             this.webURL = it.webURL
                                             this.baseURL = it.baseURL
@@ -300,6 +306,7 @@ fun SpecificScreen(navController: NavController) {
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
                                     selectedWebURL.value = it.webURL
+                                    selectedURLOrFolderNote.value = it.infoForSaving
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                 },
                                 onLinkClick = {
@@ -436,7 +443,8 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-            }
+            },
+            noteForSaving = selectedURLOrFolderNote.value
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
@@ -479,16 +487,56 @@ fun SpecificScreen(navController: NavController) {
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             webURLForTitle = selectedWebURL.value,
-            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+            onNoteChangeClickForLinks  = {webURL: String, newNote: String ->
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromImpLinks(
-                                    webURL = selectedWebURL.value,
-                                    newTitle = newNote
+                                .renameALinkInfoFromImpLinks(
+                                    webURL = webURL,
+                                    newInfo =newNote
                                 )
-                        }
+                        }.start()
+                        Unit
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkInfoFromSavedLinksOrInFolders(
+                                    webURL = webURL,
+                                    newInfo = newNote
+                                )
+                        }.start()
+                        Unit
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkInfoFromSavedLinksOrInFolders(
+                                    webURL = webURL,
+                                    newInfo = newNote
+                                )
+                        }.start()
+                        Unit
+                    }
+                }
+            },
+            onTitleChangeClickForLinks= { webURL: String, newTitle: String ->
+            when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkTitleFromImpLinks(
+                                    webURL = webURL,
+                                    newTitle = newTitle
+                                )
+                        }.start()
                         Unit
                     }
 
@@ -500,10 +548,10 @@ fun SpecificScreen(navController: NavController) {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                 .renameALinkTitleFromSavedLinksOrInFolders(
-                                    webURL = selectedWebURL.value,
-                                    newTitle = newNote
+                                    webURL = webURL,
+                                    newTitle = newTitle
                                 )
-                        }
+                        }.start()
                         Unit
                     }
 
@@ -511,10 +559,10 @@ fun SpecificScreen(navController: NavController) {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                 .renameALinkTitleFromSavedLinksOrInFolders(
-                                    webURL = selectedWebURL.value,
-                                    newTitle = newNote
+                                    webURL = webURL,
+                                    newTitle = newTitle
                                 )
-                        }
+                        }.start()
                         Unit
                     }
                 }

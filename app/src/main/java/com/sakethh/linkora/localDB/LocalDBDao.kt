@@ -102,13 +102,22 @@ interface LocalDBDao {
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
     suspend fun renameAFolderNote(folderName: String, newNote: String)
 
-    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromSavedLinksOrInFolders(webURL: String, newTitle: String)
 
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
+    suspend fun renameALinkInfoFromSavedLinksOrInFolders(webURL: String, newInfo: String)
 
-    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+
+    @Query("UPDATE important_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromImpLinks(webURL: String, newTitle: String)
 
-    @Query("UPDATE links_table SET infoForSaving = :newTitle WHERE webURL = :webURL")
+    @Query("UPDATE important_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
+    suspend fun renameALinkInfoFromImpLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
+
+    @Query("UPDATE recently_visited_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
+    suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
 }
