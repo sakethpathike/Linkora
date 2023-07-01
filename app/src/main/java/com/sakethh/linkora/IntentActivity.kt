@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -83,7 +84,7 @@ class IntentActivity : ComponentActivity() {
         window.setLayout(
             WindowManager.LayoutParams.MATCH_PARENT, WindowManager.LayoutParams.MATCH_PARENT
         )
-        val windowsType = if (Build.VERSION.SDK_INT <= 26) {
+        val windowsType = if (Build.VERSION.SDK_INT >= 26) {
             WindowManager.LayoutParams.TYPE_ACCESSIBILITY_OVERLAY
         } else {
             WindowManager.LayoutParams.TYPE_SYSTEM_ALERT
@@ -98,6 +99,9 @@ class IntentActivity : ComponentActivity() {
             val context = LocalContext.current
             val noteTextFieldValue = rememberSaveable {
                 mutableStateOf("")
+            }
+            val linkTextFieldValue = rememberSaveable(inputs = arrayOf(intentData.value.getStringExtra(Intent.EXTRA_TEXT).toString())) {
+                mutableStateOf(intentData.value.getStringExtra(Intent.EXTRA_TEXT).toString())
             }
             val titleTextFieldValue = rememberSaveable {
                 mutableStateOf("")
@@ -150,9 +154,9 @@ class IntentActivity : ComponentActivity() {
                                     Column() {
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
-                                            text = "Selected folder",
+                                            text = "Selected folder:",
                                             style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 16.sp,
+                                            fontSize = 12.sp,
                                         )
                                         Spacer(modifier = Modifier.height(5.dp))
                                         Text(
@@ -160,11 +164,11 @@ class IntentActivity : ComponentActivity() {
                                             style = MaterialTheme.typography.titleMedium,
                                             fontSize = 20.sp,
                                             maxLines = 1,
-                                            modifier = Modifier.fillMaxWidth(0.65f)
+                                            modifier = Modifier.fillMaxWidth(0.50f)
                                         )
                                     }
                                     Button(modifier = Modifier.padding(
-                                        start = 20.dp, end = 20.dp, bottom = 20.dp
+                                        start = 20.dp, bottom = 10.dp
                                     ), shape = RoundedCornerShape(10.dp), onClick = {
                                         if (Intent.ACTION_SEND == intentData.value.action && intentData.value.type != null && intentData.value.type == "text/plain") {
                                             isDataExtractingForTheLink.value = true
@@ -246,11 +250,32 @@ class IntentActivity : ComponentActivity() {
                             ) {
                                 item {
                                     Text(
-                                        text = "Save new link",
+                                        text = "Save a new link",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontSize = 24.sp,
                                         modifier = Modifier.padding(start = 20.dp)
                                     )
+                                }
+                                item {
+                                    OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(
+                                                start = 20.dp, end = 20.dp, top = 20.dp
+                                            ),
+                                        label = {
+                                            Text(
+                                                text = "URL",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 12.sp
+                                            )
+                                        },
+                                        textStyle = MaterialTheme.typography.titleSmall,
+                                        shape = RoundedCornerShape(5.dp),
+                                        value = linkTextFieldValue.value,
+                                        onValueChange = {
+                                            linkTextFieldValue.value = it
+                                        })
                                 }
                                 if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                                     item {
@@ -258,7 +283,7 @@ class IntentActivity : ComponentActivity() {
                                             modifier = Modifier
                                                 .fillMaxWidth()
                                                 .padding(
-                                                    start = 20.dp, end = 20.dp, top = 15.dp
+                                                    start = 20.dp, end = 20.dp, top = 20.dp
                                                 ),
                                             label = {
                                                 Text(
@@ -277,7 +302,7 @@ class IntentActivity : ComponentActivity() {
                                 }
                                 item {
                                     OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
-                                        modifier = Modifier.padding(
+                                        modifier = Modifier.fillMaxWidth().padding(
                                             start = 20.dp, end = 20.dp, top = 15.dp
                                         ),
                                         label = {
@@ -303,42 +328,32 @@ class IntentActivity : ComponentActivity() {
                                     )
                                 }
                                 item {
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                }
+                                item {
                                     OutlinedButton(modifier = Modifier.padding(
-                                        start = 20.dp, end = 20.dp, bottom = 20.dp
+                                        start = 20.dp, end = 20.dp
                                     ), shape = RoundedCornerShape(10.dp), onClick = {
                                         shouldNewFolderDialogBoxAppear.value = true
                                     }) {
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth()
-                                        ) {
-                                            Box(
-                                                modifier = Modifier.fillMaxHeight(),
-                                                contentAlignment = Alignment.CenterStart
-                                            ) {
-                                                Icon(
-                                                    imageVector = Icons.Outlined.CreateNewFolder,
-                                                    contentDescription = null,
-                                                    modifier = Modifier
-                                                        .padding(20.dp)
-                                                        .size(28.dp)
-                                                )
+                                        Text(
+                                            text = "Create a new folder",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 16.sp,
+                                            textAlign = TextAlign.Center,
+                                            lineHeight = 18.sp,
+                                            modifier = Modifier
+                                                .padding(10.dp)
+                                                .fillMaxWidth()
+                                        )
+
                                             }
-                                            Column(
-                                                modifier = Modifier
-                                                    .fillMaxHeight()
-                                                    .fillMaxWidth(0.80f),
-                                                verticalArrangement = Arrangement.SpaceEvenly
-                                            ) {
-                                                Text(
-                                                    text = "Create a new folder",
-                                                    style = MaterialTheme.typography.titleSmall,
-                                                    fontSize = 16.sp,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                            }
-                                        }
-                                    }
+
+                                }
+                                item {
+                                    Divider(
+                                    thickness = 1.dp, modifier = Modifier.padding(start = 25.dp, top=20.dp, end = 25.dp)
+                                )
                                 }
                                 item {
                                     FolderIntentIndividualComponent(
@@ -389,7 +404,7 @@ fun FolderIntentIndividualComponent(
     _isComponentSelected: Boolean,
 ) {
     val isComponentSelected = rememberSaveable(inputs = arrayOf(_isComponentSelected)) {
-        mutableStateOf(false)
+        mutableStateOf(_isComponentSelected)
     }
     Column {
         Row(modifier = Modifier
@@ -426,15 +441,17 @@ fun FolderIntentIndividualComponent(
             }
             if (isComponentSelected.value) {
                 Box(
-                    modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd
+                    modifier = Modifier.requiredHeight(75.dp).fillMaxWidth(), contentAlignment = Alignment.CenterEnd
                 ) {
-                    androidx.compose.material3.Icon(
-                        imageVector = Icons.Filled.CheckCircle,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .size(28.dp)
-                    )
+                    Row{
+                        androidx.compose.material3.Icon(
+                            imageVector = Icons.Filled.CheckCircle,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(26.dp)
+                        )
+                        Spacer(modifier = Modifier.width(20.dp))
+                    }
                 }
             }
         }
