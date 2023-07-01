@@ -29,7 +29,7 @@
         <activity
             android:name=".IntentActivity"
             android:exported="true"
-            android:theme="@style/Theme.Linkora">
+            android:theme="@style/Theme.IntentActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

@@ -4,4 +4,12 @@
     <style name="Theme.Linkora" parent="android:Theme.Material.Light.NoActionBar" >
         <item name="android:windowBackground">@color/bg</item>
     </style>
+
+    <style name="Theme.IntentActivity" parent="android:Theme.Material.Light.NoActionBar" >
+        <item name="android:windowShowWallpaper">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+
 </resources>

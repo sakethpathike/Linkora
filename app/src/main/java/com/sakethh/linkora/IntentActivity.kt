@@ -1,5 +1,6 @@
 package com.sakethh.linkora
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
@@ -51,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -67,8 +69,6 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-
-val intentData = mutableStateOf(Intent())
 
 class IntentActivity : ComponentActivity() {
     @RequiresApi(VERSION_CODES.LOLLIPOP_MR1)
@@ -97,11 +97,16 @@ class IntentActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
             val context = LocalContext.current
+            val activity = context as? Activity
+            val intent = activity?.intent
+            val intentData = rememberSaveable(inputs = arrayOf(intent)) {
+                mutableStateOf(intent)
+            }
             val noteTextFieldValue = rememberSaveable {
                 mutableStateOf("")
             }
-            val linkTextFieldValue = rememberSaveable(inputs = arrayOf(intentData.value.getStringExtra(Intent.EXTRA_TEXT).toString())) {
-                mutableStateOf(intentData.value.getStringExtra(Intent.EXTRA_TEXT).toString())
+            val linkTextFieldValue = rememberSaveable(inputs = arrayOf(intentData.value?.getStringExtra(Intent.EXTRA_TEXT).toString())) {
+                mutableStateOf(intentData.value?.getStringExtra(Intent.EXTRA_TEXT).toString())
             }
             val titleTextFieldValue = rememberSaveable {
                 mutableStateOf("")
@@ -170,11 +175,11 @@ class IntentActivity : ComponentActivity() {
                                     Button(modifier = Modifier.padding(
                                         start = 20.dp, bottom = 10.dp
                                     ), shape = RoundedCornerShape(10.dp), onClick = {
-                                        if (Intent.ACTION_SEND == intentData.value.action && intentData.value.type != null && intentData.value.type == "text/plain") {
+                                        if (Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
                                             isDataExtractingForTheLink.value = true
                                             if (selectedFolder.value == "Saved Links") {
                                                 coroutineScope.launch {
-                                                    intentData.value.getStringExtra(Intent.EXTRA_TEXT)
+                                                    intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                         ?.let {
                                                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                                 title = titleTextFieldValue.value,
@@ -195,7 +200,7 @@ class IntentActivity : ComponentActivity() {
                                                 }
                                             } else {
                                                 coroutineScope.launch {
-                                                    intentData.value.getStringExtra(Intent.EXTRA_TEXT)
+                                                    intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                         ?.let {
                                                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                                 title = titleTextFieldValue.value,
@@ -218,19 +223,10 @@ class IntentActivity : ComponentActivity() {
                                         }
                                     }) {
                                         if (isDataExtractingForTheLink.value) {
-                                            Row {
                                                 CircularProgressIndicator(
                                                     modifier = Modifier.size(20.dp),
                                                     strokeWidth = 2.5.dp
                                                 )
-                                                Spacer(modifier = Modifier.width(15.dp))
-                                                Text(
-                                                    text = "Extracting the data...",
-                                                    style = MaterialTheme.typography.titleSmall,
-                                                    fontSize = 16.sp,
-                                                    modifier = Modifier.padding(top = 2.dp)
-                                                )
-                                            }
                                         } else {
                                             Text(
                                                 text = "Save",
@@ -384,14 +380,6 @@ class IntentActivity : ComponentActivity() {
                     shouldDialogBoxAppear = shouldNewFolderDialogBoxAppear
                 )
             }
-        }
-    }
-
-    @OptIn(ExperimentalMaterial3Api::class)
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
-        if (intent != null) {
-            intentData.value = intent
         }
     }
 }
