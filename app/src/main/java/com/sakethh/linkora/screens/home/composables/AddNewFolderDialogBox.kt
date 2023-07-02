@@ -38,6 +38,7 @@ import kotlinx.coroutines.launch
 fun AddNewFolderDialogBox(
     coroutineScope: CoroutineScope,
     shouldDialogBoxAppear: MutableState<Boolean>,
+    newFolderName :(String)->Unit = {}
 ) {
     val folderNameTextFieldValue = rememberSaveable {
         mutableStateOf("")
@@ -121,6 +122,7 @@ fun AddNewFolderDialogBox(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
+                                newFolderName(folderNameTextFieldValue.value)
                                 coroutineScope.launch {
                                     CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                         .addANewFolder(

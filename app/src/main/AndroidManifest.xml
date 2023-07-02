@@ -29,7 +29,8 @@
         <activity
             android:name=".IntentActivity"
             android:exported="true"
-            android:theme="@style/Theme.IntentActivity">
+            android:theme="@style/Theme.IntentActivity"
+            android:excludeFromRecents="true">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
