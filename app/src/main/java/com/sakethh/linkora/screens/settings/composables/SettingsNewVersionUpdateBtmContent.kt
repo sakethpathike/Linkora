@@ -61,7 +61,7 @@ fun SettingsNewVersionUpdateBtmContent(
         )
         VersionCardForBtmSheetContent(
             title = "latest version which you should be using",
-            value = "v0.0.2"
+            value = SettingsScreenVM.latestAppVersionFromServer.value
         )
 
         Divider(

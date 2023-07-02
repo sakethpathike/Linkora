@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections.specificScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -413,6 +414,8 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
+                Toast.makeText(context,"saved the link successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
@@ -431,23 +434,7 @@ fun SpecificScreen(navController: NavController) {
                 shouldDeleteDialogBeVisible.value = true
             },
             onRenameClick = {
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        shouldRenameDialogBeVisible.value = true
-                    }
-
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
-                        shouldRenameDialogBeVisible.value = true
-                    }
-
-                    SpecificScreenType.LINKS_SCREEN -> {
-                        shouldRenameDialogBeVisible.value = true
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-                        shouldRenameDialogBeVisible.value = true
-                    }
-                }
+                shouldRenameDialogBeVisible.value = true
             },
             importantLinks = tempImpLinkData,
             onArchiveClick = {
@@ -525,6 +512,8 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
+                Toast.makeText(context,"moved to archives successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             noteForSaving = selectedURLOrFolderNote.value
         )
@@ -560,6 +549,8 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
+                Toast.makeText(context,"deleted the link successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             deleteDialogBoxType = DataDialogBoxType.LINK
         )
@@ -608,6 +599,8 @@ fun SpecificScreen(navController: NavController) {
                         Unit
                     }
                 }
+                Toast.makeText(context,"renamed link's data successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 when (SpecificScreenVM.screenType.value) {
@@ -648,6 +641,8 @@ fun SpecificScreen(navController: NavController) {
                         Unit
                     }
                 }
+                Toast.makeText(context,"renamed link's data successfully",
+                    Toast.LENGTH_SHORT).show()
             }
         )
         AddNewLinkDialogBox(
@@ -714,6 +709,8 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
+                Toast.makeText(context,"saved the link successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             isDataExtractingForTheLink = isDataExtractingFromTheLink,
             inCollectionBasedFolder = mutableStateOf(true)

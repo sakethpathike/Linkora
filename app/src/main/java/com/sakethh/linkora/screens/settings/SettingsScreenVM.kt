@@ -7,6 +7,9 @@ import androidx.datastore.preferences.edit
 import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.android.Android
+import io.ktor.client.request.get
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -267,6 +270,11 @@ class SettingsScreenVM : ViewModel() {
                     }
                 )
             }
+        }
+
+        suspend fun latestAppVersionRetriever(){
+            val ktorClient = HttpClient(Android)
+            val latestVersionOfTheApp = ktorClient.get("")
         }
     }
 }

@@ -2,6 +2,7 @@ package com.sakethh.linkora.screens.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -524,6 +525,8 @@ fun HomeScreen() {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
+                    Toast.makeText(context,"saved the link successfully",
+                    Toast.LENGTH_SHORT).show()
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -569,7 +572,8 @@ fun HomeScreen() {
                         optionsBtmSheetVM.updateImportantCardData(HomeScreenVM.tempImpLinkData.webURL)
                     }
                 }
-                Unit
+                Toast.makeText(context,"added to the \"Important Links\" successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             importantLinks = null,
             onArchiveClick = {
@@ -634,6 +638,8 @@ fun HomeScreen() {
                         Unit
                     }
                 }
+                Toast.makeText(context,"archived the link successfully",
+                    Toast.LENGTH_SHORT).show()
             }, noteForSaving = selectedURLNote.value
         )
     }
@@ -647,6 +653,9 @@ fun HomeScreen() {
                             .deleteALinkFromSavedLinksOrInFolders(
                                 webURL = selectedWebURL.value
                             )
+                    }.invokeOnCompletion {
+                        Toast.makeText(context,"deleted the link successfully",
+                            Toast.LENGTH_SHORT).show()
                     }
                     Unit
                 }
@@ -736,6 +745,8 @@ fun HomeScreen() {
                     Unit
                 }
             }
+            Toast.makeText(context,"renamed the link's data successfully",
+                Toast.LENGTH_SHORT).show()
         })
     NewLinkBtmSheet(
         isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -758,6 +769,8 @@ fun HomeScreen() {
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = false
                 }
+                Toast.makeText(context,"saved the link successfully",
+                    Toast.LENGTH_SHORT).show()
             }
         },
         shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled

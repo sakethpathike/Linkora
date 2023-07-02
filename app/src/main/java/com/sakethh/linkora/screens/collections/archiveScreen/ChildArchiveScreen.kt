@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.lazy.LazyColumn
@@ -141,6 +142,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName.value)
+                    }.invokeOnCompletion {
+                        Toast.makeText(context,"removed the link from archive permanently",
+                            Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     coroutineScope.launch {
@@ -150,6 +154,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 infoForSaving = ""
                             )
                         )
+                    }.invokeOnCompletion {
+                        Toast.makeText(context,"removed the folder from archive permanently",
+                            Toast.LENGTH_SHORT).show()
                     }
                 }
             },

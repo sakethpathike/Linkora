@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.collections
 
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -55,6 +56,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -86,6 +88,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionScreen(navController: NavController) {
+    val context = LocalContext.current
     val heightOfCard = remember {
         mutableStateOf(0.dp)
     }
@@ -455,6 +458,9 @@ fun CollectionScreen(navController: NavController) {
                             infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
                         )
                     )
+                }.invokeOnCompletion {
+                    Toast.makeText(context,"moved the link to archive successfully",
+                        Toast.LENGTH_SHORT).show()
                 }
             },
             noteForSaving = clickedFolderNote.value
@@ -499,6 +505,8 @@ fun CollectionScreen(navController: NavController) {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
+                    Toast.makeText(context,"saved the link successfully",
+                        Toast.LENGTH_SHORT).show()
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -529,6 +537,8 @@ fun CollectionScreen(navController: NavController) {
                         isDataExtractingFromLink.value = false
                     }
                 }
+                Toast.makeText(context,"saved the link successfully",
+                    Toast.LENGTH_SHORT).show()
             },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
