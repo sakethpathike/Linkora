@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
@@ -46,6 +47,7 @@ import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -65,6 +67,7 @@ fun SpecificScreen(navController: NavController) {
     val archiveLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
     var tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLink = androidx.compose.material3.rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -104,12 +107,23 @@ fun SpecificScreen(navController: NavController) {
     val isDataExtractingFromTheLink = rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
+        mutableStateOf(false)
+    }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             FloatingActionButton(
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    shouldNewLinkDialogBoxBeVisible.value = true
+                    if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                        shouldNewLinkDialogBoxBeVisible.value = true
+                    } else {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                btmModalSheetStateForSavingLink.expand()
+                            }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
+                        }
+                    }
                 }) {
                 Icon(
                     imageVector = Icons.Default.AddLink,
@@ -334,6 +348,34 @@ fun SpecificScreen(navController: NavController) {
                 }
             }
         }
+        val isDataExtractingFromLink = rememberSaveable {
+            mutableStateOf(false)
+        }
+        NewLinkBtmSheet(
+            isDataExtractingForTheLink = isDataExtractingFromLink,
+            btmSheetState = btmModalSheetStateForSavingLink,
+            _inIntentActivity = false,
+            inASpecificFolder = true,
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
+                if (webURL.isNotEmpty()) {
+                    isDataExtractingFromLink.value = true
+                }
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        folderName = selectedFolder,
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                    )
+                }.invokeOnCompletion {
+                    if (webURL.isNotEmpty()) {
+                        isDataExtractingFromLink.value = false
+                    }
+                }
+            },
+            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+        )
         OptionsBtmSheetUI(
             inArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
             btmModalSheetState = btmModalSheetState,
@@ -487,14 +529,14 @@ fun SpecificScreen(navController: NavController) {
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             webURLForTitle = selectedWebURL.value,
-            onNoteChangeClickForLinks  = {webURL: String, newNote: String ->
+            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                 .renameALinkInfoFromImpLinks(
                                     webURL = webURL,
-                                    newInfo =newNote
+                                    newInfo = newNote
                                 )
                         }.start()
                         Unit
@@ -527,8 +569,8 @@ fun SpecificScreen(navController: NavController) {
                     }
                 }
             },
-            onTitleChangeClickForLinks= { webURL: String, newTitle: String ->
-            when (SpecificScreenVM.screenType.value) {
+            onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+                when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()

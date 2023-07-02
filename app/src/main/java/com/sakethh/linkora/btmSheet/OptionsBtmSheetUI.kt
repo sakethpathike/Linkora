@@ -176,7 +176,10 @@ fun OptionsBtmSheetUI(
                                 start = 20.dp
                             )
                     )
-                    Divider(modifier = Modifier.padding(start=15.dp,top=15.dp,end=65.dp), color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                    Divider(
+                        modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 65.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                    )
                     Text(
                         text = noteText.value,
                         style = MaterialTheme.typography.titleSmall,

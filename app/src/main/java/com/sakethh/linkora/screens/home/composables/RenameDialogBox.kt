@@ -140,10 +140,12 @@ fun RenameDialogBox(
                                     )
                                 }
                                 if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
-                                    onNoteChangeClickForLinks(
-                                        webURLForTitle,
-                                        newNote.value
-                                    )
+                                    if (newNote.value.isNotEmpty()) {
+                                        onNoteChangeClickForLinks(
+                                            webURLForTitle,
+                                            newNote.value
+                                        )
+                                    }
                                 }
                                 shouldDialogBoxAppear.value = false
                             } else {

@@ -38,7 +38,7 @@ import kotlinx.coroutines.launch
 fun AddNewFolderDialogBox(
     coroutineScope: CoroutineScope,
     shouldDialogBoxAppear: MutableState<Boolean>,
-    newFolderName :(String)->Unit = {}
+    newFolderName: (String) -> Unit = {},
 ) {
     val folderNameTextFieldValue = rememberSaveable {
         mutableStateOf("")

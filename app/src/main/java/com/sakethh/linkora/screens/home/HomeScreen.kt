@@ -53,6 +53,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
@@ -69,6 +70,7 @@ import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.GeneralCard
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -84,6 +86,8 @@ fun HomeScreen() {
     val recentlySavedLinksData = homeScreenVM.recentlySavedLinksData.collectAsState().value
     val recentlyVisitedLinksData = homeScreenVM.recentlyVisitedLinksData.collectAsState().value
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLinks =
+        androidx.compose.material3.rememberModalBottomSheetState()
     val selectedCardType = rememberSaveable {
         mutableStateOf(HomeScreenBtmSheetType.RECENT_IMP_SAVES.name)
     }
@@ -134,6 +138,9 @@ fun HomeScreen() {
     val isDataExtractingFromLink = rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (shouldDialogForNewFolderAppear.value || shouldDialogForNewLinkAppear.value) {
         shouldScreenTransparencyDecreasedBoxVisible.value = false
         isMainFabRotated.value = false
@@ -142,92 +149,110 @@ fun HomeScreen() {
         Scaffold(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             floatingActionButton = {
-                Column(modifier = Modifier.padding(bottom = 60.dp)) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        if (isMainFabRotated.value) {
+                if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                    FloatingActionButton(
+                        shape = RoundedCornerShape(10.dp),
+                        onClick = {
+                            coroutineScope.launch {
+                                awaitAll(async {
+                                    btmModalSheetState.expand()
+                                }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
+                            }
+                        }) {
+                        Icon(
+                            imageVector = Icons.Default.AddLink, contentDescription = null
+                        )
+                    }
+                } else {
+                    Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.align(Alignment.End)
+                        ) {
+                            if (isMainFabRotated.value) {
+                                AnimatedVisibility(
+                                    visible = isMainFabRotated.value,
+                                    enter = fadeIn(tween(200)),
+                                    exit = fadeOut(tween(200))
+                                ) {
+                                    Text(
+                                        text = "Create new folder",
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                                    )
+                                }
+                            }
                             AnimatedVisibility(
                                 visible = isMainFabRotated.value,
-                                enter = fadeIn(tween(200)),
-                                exit = fadeOut(tween(200))
-                            ) {
-                                Text(
-                                    text = "Create new folder",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                                enter = scaleIn(animationSpec = tween(300)),
+                                exit = scaleOut(
+                                    tween(300)
                                 )
+                            ) {
+                                FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
+                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
+                                    shouldDialogForNewFolderAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.CreateNewFolder,
+                                        contentDescription = null
+                                    )
+                                }
                             }
+
                         }
-                        AnimatedVisibility(
-                            visible = isMainFabRotated.value,
-                            enter = scaleIn(animationSpec = tween(300)),
-                            exit = scaleOut(
-                                tween(300)
-                            )
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Row(
+                            horizontalArrangement = Arrangement.Center,
+                            modifier = Modifier.align(Alignment.End)
                         ) {
-                            FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
-                                shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                shouldDialogForNewFolderAppear.value = true
-                            }) {
+                            if (isMainFabRotated.value) {
+                                AnimatedVisibility(
+                                    visible = isMainFabRotated.value,
+                                    enter = fadeIn(tween(200)),
+                                    exit = fadeOut(tween(200))
+                                ) {
+                                    Text(
+                                        text = "Add new link",
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleMedium,
+                                        fontSize = 20.sp,
+                                        modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                                    )
+                                }
+                            }
+                            FloatingActionButton(modifier = Modifier.rotate(rotationAnimation.value),
+                                shape = RoundedCornerShape(10.dp),
+                                onClick = {
+                                    if (isMainFabRotated.value) {
+                                        shouldScreenTransparencyDecreasedBoxVisible.value = false
+                                        shouldDialogForNewLinkAppear.value = true
+                                    } else {
+                                        coroutineScope.launch {
+                                            awaitAll(async {
+                                                rotationAnimation.animateTo(
+                                                    360f, animationSpec = tween(300)
+                                                )
+                                            }, async {
+                                                shouldScreenTransparencyDecreasedBoxVisible.value =
+                                                    true
+                                                delay(10L)
+                                                isMainFabRotated.value = true
+                                            })
+                                        }.invokeOnCompletion {
+                                            coroutineScope.launch {
+                                                rotationAnimation.snapTo(0f)
+                                            }
+                                        }
+                                    }
+                                }) {
                                 Icon(
-                                    imageVector = Icons.Default.CreateNewFolder,
+                                    imageVector = currentIconForMainFAB.value,
                                     contentDescription = null
                                 )
                             }
-                        }
-
-                    }
-                    Spacer(modifier = Modifier.height(15.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.align(Alignment.End)
-                    ) {
-                        if (isMainFabRotated.value) {
-                            AnimatedVisibility(
-                                visible = isMainFabRotated.value,
-                                enter = fadeIn(tween(200)),
-                                exit = fadeOut(tween(200))
-                            ) {
-                                Text(
-                                    text = "Add new link",
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(top = 20.dp, end = 15.dp)
-                                )
-                            }
-                        }
-                        FloatingActionButton(modifier = Modifier.rotate(rotationAnimation.value),
-                            shape = RoundedCornerShape(10.dp),
-                            onClick = {
-                                if (isMainFabRotated.value) {
-                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                    shouldDialogForNewLinkAppear.value = true
-                                } else {
-                                    coroutineScope.launch {
-                                        awaitAll(async {
-                                            rotationAnimation.animateTo(
-                                                360f, animationSpec = tween(300)
-                                            )
-                                        }, async {
-                                            shouldScreenTransparencyDecreasedBoxVisible.value = true
-                                            delay(10L)
-                                            isMainFabRotated.value = true
-                                        })
-                                    }.invokeOnCompletion {
-                                        coroutineScope.launch {
-                                            rotationAnimation.snapTo(0f)
-                                        }
-                                    }
-                                }
-                            }) {
-                            Icon(
-                                imageVector = currentIconForMainFAB.value, contentDescription = null
-                            )
                         }
                     }
                 }
@@ -681,37 +706,62 @@ fun HomeScreen() {
                 }
             }
         },
-    onTitleChangeClickForLinks = {webURL: String, newTitle: String ->
-        when (selectedCardType.value) {
-            HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                        .renameALinkTitleFromSavedLinksOrInFolders(
-                            webURL = webURL, newTitle = newTitle
-                        )
+        onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+            when (selectedCardType.value) {
+                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromSavedLinksOrInFolders(
+                                webURL = webURL, newTitle = newTitle
+                            )
+                    }
+                    Unit
                 }
-                Unit
-            }
 
-            HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                        .renameALinkTitleFromRecentlyVisited(
-                            webURL = webURL, newTitle = newTitle
-                        )
+                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromRecentlyVisited(
+                                webURL = webURL, newTitle = newTitle
+                            )
+                    }
+                    Unit
                 }
-                Unit
-            }
 
-            HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                        .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
+                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
+                    }
+                    Unit
                 }
-                Unit
             }
-        }
-    })
+        })
+    NewLinkBtmSheet(
+        isDataExtractingForTheLink = isDataExtractingFromLink,
+        btmSheetState = btmModalSheetStateForSavingLinks,
+        _inIntentActivity = false,
+        inASpecificFolder = false,
+        onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
+            if (webURL.isNotEmpty()) {
+                isDataExtractingFromLink.value = true
+            }
+            coroutineScope.launch {
+                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                    title = title,
+                    webURL = webURL,
+                    noteForSaving = note,
+                    folderName = selectedFolder,
+                    savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                )
+            }.invokeOnCompletion {
+                if (webURL.isNotEmpty()) {
+                    isDataExtractingFromLink.value = false
+                }
+            }
+        },
+        shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+    )
     BackHandler {
         if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false

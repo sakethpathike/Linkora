@@ -112,6 +112,46 @@ class SettingsScreenVM : ViewModel() {
                     ) == true
                 }
             }),
+        SettingsUIElement(title = "Enable Home Screen",
+            doesDescriptionExists = true,
+            description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
+            isSwitchNeeded = true,
+            isSwitchEnabled = Settings.isHomeScreenEnabled,
+            onSwitchStateChange = {
+                viewModelScope.launch {
+                    Settings.changePreferenceValue(
+                        preferenceKey = preferencesKey(
+                            SettingsPreferences.HOME_SCREEN_VISIBILITY.name
+                        ),
+                        dataStore = Settings.dataStore,
+                        newValue = !Settings.isHomeScreenEnabled.value
+                    )
+                    Settings.isHomeScreenEnabled.value = Settings.readPreferenceValue(
+                        preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                        dataStore = Settings.dataStore
+                    ) == true
+                }
+            }),
+        SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
+            doesDescriptionExists = true,
+            description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a dialog box will be shown instead of bottom sheet.",
+            isSwitchNeeded = true,
+            isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
+            onSwitchStateChange = {
+                viewModelScope.launch {
+                    Settings.changePreferenceValue(
+                        preferenceKey = preferencesKey(
+                            SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
+                        ),
+                        dataStore = Settings.dataStore,
+                        newValue = !Settings.isBtmSheetEnabledForSavingLinks.value
+                    )
+                    Settings.isBtmSheetEnabledForSavingLinks.value = Settings.readPreferenceValue(
+                        preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
+                        dataStore = Settings.dataStore
+                    ) == true
+                }
+            }),
         SettingsUIElement(title = "Auto-Detect Title",
             doesDescriptionExists = true,
             description = "If this is enabled, title for the links you save will be detected automatically.\n\nNote: This may not detect every website.\n\nIf this is disabled, you'll get an option while saving link(s) to give a title to the respective link you're saving.",
@@ -142,7 +182,8 @@ class SettingsScreenVM : ViewModel() {
     )
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS,
+        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY
     }
 
     object Settings {
@@ -154,6 +195,8 @@ class SettingsScreenVM : ViewModel() {
         val shouldDarkThemeBeEnabled = mutableStateOf(false)
         val isInAppWebTabEnabled = mutableStateOf(true)
         val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
+        val isBtmSheetEnabledForSavingLinks = mutableStateOf(true)
+        val isHomeScreenEnabled = mutableStateOf(true)
         suspend fun readPreferenceValue(
             preferenceKey: androidx.datastore.preferences.Preferences.Key<Boolean>,
             dataStore: DataStore<androidx.datastore.preferences.Preferences>,
@@ -205,6 +248,20 @@ class SettingsScreenVM : ViewModel() {
                         isAutoDetectTitleForLinksEnabled.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                                dataStore = dataStore
+                            ) == true
+                    },
+                    async {
+                        isHomeScreenEnabled.value =
+                            readPreferenceValue(
+                                preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                                dataStore = dataStore
+                            ) == true
+                    },
+                    async {
+                        isBtmSheetEnabledForSavingLinks.value =
+                            readPreferenceValue(
+                                preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                                 dataStore = dataStore
                             ) == true
                     }

@@ -12,9 +12,10 @@ class CollectionsScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
     val foldersData = _foldersData.asStateFlow()
 
-    companion object{
+    companion object {
         val selectedFolderData = FoldersTable("", "")
     }
+
     init {
         viewModelScope.launch {
             CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collect {

@@ -1,6 +1,13 @@
 package com.sakethh.linkora.screens.collections
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +27,9 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
@@ -28,6 +38,8 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +53,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
@@ -48,22 +61,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,9 +89,6 @@ fun CollectionScreen(navController: NavController) {
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
-    val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
-        mutableStateOf(false)
-    }
     val shouldRenameDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -89,17 +102,160 @@ fun CollectionScreen(navController: NavController) {
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
+    val btmModalSheetStateForSavingLinks =
+        androidx.compose.material3.rememberModalBottomSheetState()
+    val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isMainFabRotated = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val rotationAnimation = remember {
+        Animatable(0f)
+    }
+    val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val currentIconForMainFAB = remember(isMainFabRotated.value) {
+        mutableStateOf(
+            if (isMainFabRotated.value) {
+                Icons.Default.AddLink
+            } else {
+                Icons.Default.Add
+            }
+        )
+    }
+    val shouldDialogForNewLinkAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldDialogForNewFolderAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isDataExtractingFromLink = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
+        mutableStateOf(false)
+    }
     LinkoraTheme {
-        Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = "Collections",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp
-                )
-            })
-        }) {
+        Scaffold(floatingActionButton = {
+            if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                FloatingActionButton(
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                btmModalSheetState.expand()
+                            }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
+                        }
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.AddLink, contentDescription = null
+                    )
+                }
+            }
+            Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    if (isMainFabRotated.value) {
+                        AnimatedVisibility(
+                            visible = isMainFabRotated.value,
+                            enter = fadeIn(tween(200)),
+                            exit = fadeOut(tween(200))
+                        ) {
+                            Text(
+                                text = "Create new folder",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                            )
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = isMainFabRotated.value,
+                        enter = scaleIn(animationSpec = tween(300)),
+                        exit = scaleOut(
+                            tween(300)
+                        )
+                    ) {
+                        FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
+                            shouldScreenTransparencyDecreasedBoxVisible.value = false
+                            shouldDialogForNewFolderAppear.value = true
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.CreateNewFolder,
+                                contentDescription = null
+                            )
+                        }
+                    }
+
+                }
+                Spacer(modifier = Modifier.height(15.dp))
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier.align(Alignment.End)
+                ) {
+                    if (isMainFabRotated.value) {
+                        AnimatedVisibility(
+                            visible = isMainFabRotated.value,
+                            enter = fadeIn(tween(200)),
+                            exit = fadeOut(tween(200))
+                        ) {
+                            Text(
+                                text = "Add new link",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(top = 20.dp, end = 15.dp)
+                            )
+                        }
+                    }
+                    FloatingActionButton(modifier = Modifier.rotate(rotationAnimation.value),
+                        shape = RoundedCornerShape(10.dp),
+                        onClick = {
+                            if (isMainFabRotated.value) {
+                                shouldScreenTransparencyDecreasedBoxVisible.value = false
+                                shouldDialogForNewLinkAppear.value = true
+                            } else {
+                                coroutineScope.launch {
+                                    awaitAll(async {
+                                        rotationAnimation.animateTo(
+                                            360f, animationSpec = tween(300)
+                                        )
+                                    }, async {
+                                        shouldScreenTransparencyDecreasedBoxVisible.value = true
+                                        delay(10L)
+                                        isMainFabRotated.value = true
+                                    })
+                                }.invokeOnCompletion {
+                                    coroutineScope.launch {
+                                        rotationAnimation.snapTo(0f)
+                                    }
+                                }
+                            }
+                        }) {
+                        Icon(
+                            imageVector = currentIconForMainFAB.value, contentDescription = null
+                        )
+                    }
+                }
+            }
+        },
+            floatingActionButtonPosition = FabPosition.End,
+            modifier = Modifier.background(MaterialTheme.colorScheme.surface),
+            topBar = {
+                TopAppBar(title = {
+                    Text(
+                        text = "Collections",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 24.sp
+                    )
+                })
+            }) {
             LazyColumn(
                 modifier = Modifier
                     .padding(it)
@@ -224,8 +380,10 @@ fun CollectionScreen(navController: NavController) {
                             folderName = foldersData.folderName,
                             folderNote = foldersData.infoForSaving,
                             onMoreIconClick = {
-                                CollectionsScreenVM.selectedFolderData.folderName = foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.infoForSaving = foldersData.infoForSaving
+                                CollectionsScreenVM.selectedFolderData.folderName =
+                                    foldersData.folderName
+                                CollectionsScreenVM.selectedFolderData.infoForSaving =
+                                    foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
@@ -279,7 +437,7 @@ fun CollectionScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
             coroutineScope = coroutineScope,
             existingFolderName = clickedFolderName.value,
-            onTitleChangeClickForLinks =  null
+            onTitleChangeClickForLinks = null
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
@@ -295,6 +453,54 @@ fun CollectionScreen(navController: NavController) {
                 }
             },
             deleteDialogBoxType = DataDialogBoxType.FOLDER
+        )
+        AddNewLinkDialogBox(
+            shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
+                if (webURL.isNotEmpty()) {
+                    isDataExtractingFromLink.value = true
+                }
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        folderName = selectedFolder,
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                    )
+                }.invokeOnCompletion {
+                    if (webURL.isNotEmpty()) {
+                        isDataExtractingFromLink.value = false
+                    }
+                }
+            },
+            isDataExtractingForTheLink = isDataExtractingFromLink,
+            inCollectionBasedFolder = mutableStateOf(false)
+        )
+        NewLinkBtmSheet(
+            isDataExtractingForTheLink = isDataExtractingFromLink,
+            btmSheetState = btmModalSheetStateForSavingLinks,
+            _inIntentActivity = false,
+            inASpecificFolder = false,
+            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
+                if (webURL.isNotEmpty()) {
+                    isDataExtractingFromLink.value = true
+                }
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        folderName = selectedFolder,
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                    )
+                }.invokeOnCompletion {
+                    if (webURL.isNotEmpty()) {
+                        isDataExtractingFromLink.value = false
+                    }
+                }
+            },
+            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
     }
     BackHandler {

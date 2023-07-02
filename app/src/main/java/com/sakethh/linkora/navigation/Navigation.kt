@@ -9,10 +9,14 @@ import com.sakethh.linkora.screens.collections.archiveScreen.ParentArchiveScreen
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreen
 import com.sakethh.linkora.screens.home.HomeScreen
 import com.sakethh.linkora.screens.settings.SettingsScreen
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 @Composable
 fun MainNavigation(navController: NavHostController) {
-    NavHost(navController = navController, startDestination = NavigationRoutes.HOME_SCREEN.name) {
+    NavHost(
+        navController = navController,
+        startDestination = if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) NavigationRoutes.HOME_SCREEN.name else NavigationRoutes.COLLECTIONS_SCREEN.name
+    ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
             HomeScreen()
         }
