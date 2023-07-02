@@ -117,10 +117,16 @@ fun NewLinkBtmSheet(
     LaunchedEffect(key1 = Unit) {
         this.launch {
             awaitAll(async {
-                if (inIntentActivity.value) btmSheetState.show()
+                if (inIntentActivity.value) {
+                    btmSheetState.show()
+                }
                 btmSheetState.expand()
             },
-                async { shouldUIBeVisible.value = true },
+                async {
+                    if (inIntentActivity.value) {
+                        shouldUIBeVisible.value = true
+                    }
+                },
                 async {
                     if (inIntentActivity.value) {
                         SettingsScreenVM.Settings.readAllPreferencesValues()
@@ -315,7 +321,29 @@ fun NewLinkBtmSheet(
                                         titleTextFieldValue.value = it
                                     })
                             }
-                        } else {
+                        }
+                        item {
+                            OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(
+                                        start = 20.dp, end = 20.dp, top = 15.dp
+                                    ),
+                                label = {
+                                    Text(
+                                        text = "add a note for why you're saving this link",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 12.sp
+                                    )
+                                },
+                                textStyle = MaterialTheme.typography.titleSmall,
+                                shape = RoundedCornerShape(5.dp),
+                                value = noteTextFieldValue.value,
+                                onValueChange = {
+                                    noteTextFieldValue.value = it
+                                })
+                        }
+                        if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                             item {
                                 Card(
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
@@ -344,102 +372,81 @@ fun NewLinkBtmSheet(
                                         Text(
                                             text = "Title will be automatically detected as this setting is enabled.",
                                             style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 14.sp,
+                                            fontSize = 14.sp/*,
                                             modifier = Modifier.padding(
                                                 top = 10.dp,
                                                 start = 15.dp,
                                                 bottom = 20.dp,
                                                 end = 15.dp
-                                            ),
-                                            lineHeight = 16.sp,
+                                            )*/,
+                                            lineHeight = 18.sp,
                                             textAlign = TextAlign.Start
                                         )
                                     }
                                 }
                             }
+                        }
+                        if (inIntentActivity.value || !inASpecificFolder) {
                             item {
-                                OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(
-                                            start = 20.dp, end = 20.dp, top = 15.dp
-                                        ),
-                                    label = {
-                                        Text(
-                                            text = "add a note for why you're saving this link",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 12.sp
-                                        )
-                                    },
-                                    textStyle = MaterialTheme.typography.titleSmall,
-                                    shape = RoundedCornerShape(5.dp),
-                                    value = noteTextFieldValue.value,
-                                    onValueChange = {
-                                        noteTextFieldValue.value = it
-                                    })
-                            }
-                            if (inIntentActivity.value || !inASpecificFolder) {
-                                item {
-                                    Text(
-                                        text = "Save in:",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontSize = 24.sp,
-                                        modifier = Modifier.padding(top = 30.dp, start = 20.dp)
-                                    )
-                                }
-                                item {
-                                    Spacer(modifier = Modifier.height(20.dp))
-                                }
-                                item {
-                                    OutlinedButton(modifier = Modifier.padding(
-                                        start = 20.dp, end = 20.dp
-                                    ), shape = RoundedCornerShape(10.dp), onClick = {
-                                        shouldNewFolderDialogBoxAppear.value = true
-                                    }) {
-                                        Text(
-                                            text = "Create a new folder",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 16.sp,
-                                            textAlign = TextAlign.Center,
-                                            lineHeight = 18.sp,
-                                            modifier = Modifier
-                                                .padding(10.dp)
-                                                .fillMaxWidth()
-                                        )
-
-                                    }
-
-                                }
-                                item {
-                                    Divider(
-                                        thickness = 1.dp,
-                                        modifier = Modifier.padding(
-                                            start = 25.dp,
-                                            top = 20.dp,
-                                            end = 25.dp
-                                        )
-                                    )
-                                }
-                                item {
-                                    FolderForBtmSheetIndividualComponent(
-                                        onClick = { selectedFolder.value = "Saved Links" },
-                                        folderName = "Saved Links",
-                                        imageVector = Icons.Outlined.Link,
-                                        _isComponentSelected = selectedFolder.value == "Saved Links"
-                                    )
-                                }
-                                items(foldersData) {
-                                    FolderForBtmSheetIndividualComponent(
-                                        onClick = { selectedFolder.value = it.folderName },
-                                        folderName = it.folderName,
-                                        imageVector = Icons.Outlined.Folder,
-                                        _isComponentSelected = selectedFolder.value == it.folderName
-                                    )
-                                }
+                                Text(
+                                    text = "Save in:",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier.padding(top = 30.dp, start = 20.dp)
+                                )
                             }
                             item {
                                 Spacer(modifier = Modifier.height(20.dp))
                             }
+                            item {
+                                OutlinedButton(modifier = Modifier.padding(
+                                    start = 20.dp, end = 20.dp
+                                ), shape = RoundedCornerShape(10.dp), onClick = {
+                                    shouldNewFolderDialogBoxAppear.value = true
+                                }) {
+                                    Text(
+                                        text = "Create a new folder",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 16.sp,
+                                        textAlign = TextAlign.Center,
+                                        lineHeight = 18.sp,
+                                        modifier = Modifier
+                                            .padding(10.dp)
+                                            .fillMaxWidth()
+                                    )
+
+                                }
+
+                            }
+                            item {
+                                Divider(
+                                    thickness = 1.dp,
+                                    modifier = Modifier.padding(
+                                        start = 25.dp,
+                                        top = 20.dp,
+                                        end = 25.dp
+                                    )
+                                )
+                            }
+                            item {
+                                FolderForBtmSheetIndividualComponent(
+                                    onClick = { selectedFolder.value = "Saved Links" },
+                                    folderName = "Saved Links",
+                                    imageVector = Icons.Outlined.Link,
+                                    _isComponentSelected = selectedFolder.value == "Saved Links"
+                                )
+                            }
+                            items(foldersData) {
+                                FolderForBtmSheetIndividualComponent(
+                                    onClick = { selectedFolder.value = it.folderName },
+                                    folderName = it.folderName,
+                                    imageVector = Icons.Outlined.Folder,
+                                    _isComponentSelected = selectedFolder.value == it.folderName
+                                )
+                            }
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }

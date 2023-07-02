@@ -2,6 +2,9 @@ package com.sakethh.linkora.navigation
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.requiredHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
@@ -12,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @Composable
@@ -25,6 +29,23 @@ fun BottomNavigationBar(navController: NavController) {
                 .requiredHeight(55.dp)
         ) {
             NavigationVM.btmNavBarContainerColor.value = NavigationBarDefaults.containerColor
+            if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+                NavigationBarItem(
+                    selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
+                    onClick = {
+                        if (currentRoute != NavigationRoutes.HOME_SCREEN.name)
+                            navController.navigate(NavigationRoutes.HOME_SCREEN.name)
+                    },
+                    icon = {
+                        Icon(
+                            imageVector = if (currentRoute == NavigationRoutes.HOME_SCREEN.name) {
+                                Icons.Filled.Home
+                            } else {
+                                Icons.Outlined.Home
+                            }, contentDescription = null
+                        )
+                    })
+            }
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name,

@@ -7,6 +7,10 @@
 
     <style name="Theme.IntentActivity" parent="android:Theme.Material.Light.NoActionBar" >
         <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:backgroundDimEnabled">true</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
     </style>
 

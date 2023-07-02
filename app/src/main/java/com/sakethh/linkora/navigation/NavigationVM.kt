@@ -2,10 +2,8 @@ package com.sakethh.linkora.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CollectionsBookmark
-import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.CollectionsBookmark
-import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -22,11 +20,6 @@ data class BtmNavigationItem(
 class NavigationVM : ViewModel() {
 
     val btmBarList = listOf(
-        BtmNavigationItem(
-            selectedIcon = Icons.Filled.Home,
-            nonSelectedIcon = Icons.Outlined.Home,
-            navigationRoute = NavigationRoutes.HOME_SCREEN
-        ),
         BtmNavigationItem(
             selectedIcon = Icons.Filled.CollectionsBookmark,
             nonSelectedIcon = Icons.Outlined.CollectionsBookmark,

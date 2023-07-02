@@ -115,7 +115,7 @@ fun SpecificScreen(navController: NavController) {
             FloatingActionButton(
                 shape = RoundedCornerShape(10.dp),
                 onClick = {
-                    if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                    if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
                         shouldNewLinkDialogBoxBeVisible.value = true
                     } else {
                         coroutineScope.launch {
@@ -360,17 +360,57 @@ fun SpecificScreen(navController: NavController) {
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = true
                 }
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    )
-                }.invokeOnCompletion {
-                    if (webURL.isNotEmpty()) {
-                        isDataExtractingFromLink.value = false
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                ImportantLinks(
+                                    title = title,
+                                    webURL = webURL,
+                                    infoForSaving = note, baseURL = "", imgURL = ""
+                                )
+                            )
+                        }.invokeOnCompletion {
+                            if (webURL.isNotEmpty()) {
+                                isDataExtractingFromLink.value = false
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                folderName = selectedFolder,
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
+                            )
+                        }.invokeOnCompletion {
+                            if (webURL.isNotEmpty()) {
+                                isDataExtractingFromLink.value = false
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                folderName = selectedFolder,
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                            )
+                        }.invokeOnCompletion {
+                            if (webURL.isNotEmpty()) {
+                                isDataExtractingFromLink.value = false
+                            }
+                        }
                     }
                 }
             },

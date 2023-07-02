@@ -34,7 +34,7 @@ fun DataEmptyScreen() {
                     fontSize = 32.sp,
                     lineHeight = 36.sp,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(top = 25.dp, end = 50.dp, bottom = 50.dp)
+                    modifier = Modifier.padding(top = 25.dp, end = 50.dp, bottom = 100.dp)
                 )
             }
         }
