@@ -1,7 +1,10 @@
 package com.sakethh.linkora.localDB
 
+import android.content.Context
+import android.widget.Toast
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -9,6 +12,7 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.withContext
 
 object CustomLocalDBDaoFunctionsDecl {
 
@@ -23,6 +27,7 @@ object CustomLocalDBDaoFunctionsDecl {
         existingFolderName: String,
         newFolderName: String,
         infoForFolder: String,
+        context: Context,
     ) {
         if (infoForFolder.isNotEmpty()) {
             coroutineScope {
@@ -55,11 +60,19 @@ object CustomLocalDBDaoFunctionsDecl {
                     })
             }
         }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "updated folder data", Toast.LENGTH_SHORT).show()
+        }
     }
 
-    suspend fun importantLinkTableUpdater(importantLinks: ImportantLinks) {
+    suspend fun importantLinkTableUpdater(importantLinks: ImportantLinks, context: Context) {
+
         if (localDB.localDBData().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
             localDB.localDBData().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "deleted the link from Important Links", Toast.LENGTH_SHORT)
+                    .show()
+            }
         } else {
             val linkDataExtractor = linkDataExtractor(importantLinks.webURL)
             val linksData = ImportantLinks(
@@ -69,22 +82,39 @@ object CustomLocalDBDaoFunctionsDecl {
                 imgURL = linkDataExtractor.imgURL,
                 infoForSaving = importantLinks.infoForSaving
             )
-            localDB.localDBData().addANewLinkToImpLinks(importantLinks = linksData)
+            if (linkDataExtractor.errorInGivenURL) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                localDB.localDBData().addANewLinkToImpLinks(importantLinks = linksData)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "added the link to Important Links", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
         }
         OptionsBtmSheetVM().updateImportantCardData(url = importantLinks.webURL)
     }
 
-    suspend fun archiveLinkTableUpdater(archivedLinks: ArchivedLinks) {
+    suspend fun archiveLinkTableUpdater(archivedLinks: ArchivedLinks, context: Context) {
         if (localDB.localDBData().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
             localDB.localDBData().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "removed the link from archive(s)", Toast.LENGTH_SHORT)
+                    .show()
+            }
         } else {
             localDB.localDBData().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "added the link to archive(s)", Toast.LENGTH_SHORT).show()
+            }
         }
         OptionsBtmSheetVM().updateArchiveLinkCardData(url = archivedLinks.webURL)
     }
 
     @OptIn(FlowPreview::class)
-    suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders) {
+    suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders, context: Context) {
         if (localDB.localDBData()
                 .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
         ) {
@@ -97,23 +127,33 @@ object CustomLocalDBDaoFunctionsDecl {
                         .deleteThisArchiveFolderData(folderName = archivedFolders.archiveFolderName)
                 })
             }
-        } else {
-            coroutineScope {
-                awaitAll(async {
-                    localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
-                }, async {
-                    val listOfData = localDB.localDBData()
-                        .getThisFolderData(folderName = archivedFolders.archiveFolderName)
-                        .flatMapConcat {
-                            it.asFlow()
-                        }.toList()
-                    localDB.localDBData().addListOfDataInLinksTable(listOfData)
-                    localDB.localDBData()
-                        .deleteAFolder(folderName = archivedFolders.archiveFolderName)
-                    localDB.localDBData()
-                        .deleteThisFolderData(folderName = archivedFolders.archiveFolderName)
-                })
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "deleted the archived folder and it's data permanently",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
+        } else {
+            localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
+            val listOfData = localDB.localDBData()
+                .getThisFolderData(folderName = archivedFolders.archiveFolderName)
+                .flatMapConcat {
+                    it.asFlow()
+                }.toList()
+            listOfData.find {
+                it.isLinkedWithFolders = false
+                it.isLinkedWithArchivedFolder = true
+                it.keyOfArchiveLinkedFolder = archivedFolders.archiveFolderName
+                it.isLinkedWithImpFolder = false
+                it.isLinkedWithSavedLinks = false
+                true
+            }
+            localDB.localDBData().addListOfDataInLinksTable(listOfData)
+            localDB.localDBData()
+                .deleteAFolder(folderName = archivedFolders.archiveFolderName)
+            localDB.localDBData()
+                .deleteThisFolderData(folderName = archivedFolders.archiveFolderName)
         }
         OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
     }
@@ -125,75 +165,103 @@ object CustomLocalDBDaoFunctionsDecl {
         noteForSaving: String,
         folderName: String?,
         savingFor: ModifiedLocalDbFunctionsType,
+        context: Context,
     ) {
         when (savingFor) {
             ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS -> {
                 val linkDataExtractor = linkDataExtractor(webURL)
-                val linkData = folderName?.let {
-                    LinksTable(
+                if (linkDataExtractor.errorInGivenURL) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val linkData = folderName?.let {
+                        LinksTable(
+                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
+                            webURL = webURL,
+                            baseURL = linkDataExtractor.baseURL,
+                            imgURL = linkDataExtractor.imgURL,
+                            infoForSaving = noteForSaving,
+                            isLinkedWithSavedLinks = false,
+                            isLinkedWithFolders = true,
+                            keyOfLinkedFolder = it,
+                            isLinkedWithImpFolder = false,
+                            keyOfImpLinkedFolder = "",
+                            isLinkedWithArchivedFolder = false,
+                            keyOfArchiveLinkedFolder = ""
+                        )
+                    }
+                    if (linkData != null) {
+                        localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "added the url", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+
+            ModifiedLocalDbFunctionsType.IMP_FOLDERS_LINKS -> {
+            }
+
+            ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS -> {
+                val linkDataExtractor = linkDataExtractor(webURL)
+                if (linkDataExtractor.errorInGivenURL) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val linkData = folderName?.let {
+                        LinksTable(
+                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
+                            webURL = webURL,
+                            baseURL = linkDataExtractor.baseURL,
+                            imgURL = linkDataExtractor.imgURL,
+                            infoForSaving = noteForSaving,
+                            isLinkedWithSavedLinks = false,
+                            isLinkedWithFolders = false,
+                            keyOfLinkedFolder = "",
+                            isLinkedWithImpFolder = false,
+                            keyOfImpLinkedFolder = "",
+                            isLinkedWithArchivedFolder = true,
+                            keyOfArchiveLinkedFolder = folderName
+                        )
+                    }
+                    if (linkData != null) {
+                        localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+
+            }
+
+            ModifiedLocalDbFunctionsType.SAVED_LINKS -> {
+                val linkDataExtractor = linkDataExtractor(webURL)
+                if (linkDataExtractor.errorInGivenURL) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
                         webURL = webURL,
                         baseURL = linkDataExtractor.baseURL,
                         imgURL = linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
-                        isLinkedWithSavedLinks = false,
-                        isLinkedWithFolders = true,
-                        keyOfLinkedFolder = it,
+                        isLinkedWithSavedLinks = true,
+                        isLinkedWithFolders = false,
+                        keyOfLinkedFolder = "",
                         isLinkedWithImpFolder = false,
                         keyOfImpLinkedFolder = "",
                         isLinkedWithArchivedFolder = false,
                         keyOfArchiveLinkedFolder = ""
                     )
-                }
-                if (linkData != null) {
                     localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            }
-
-            ModifiedLocalDbFunctionsType.IMP_FOLDERS_LINKS -> {
-
-            }
-
-            ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS -> {
-                val linkDataExtractor = linkDataExtractor(webURL)
-                val linkData = folderName?.let {
-                    LinksTable(
-                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
-                        webURL = webURL,
-                        baseURL = linkDataExtractor.baseURL,
-                        imgURL = linkDataExtractor.imgURL,
-                        infoForSaving = noteForSaving,
-                        isLinkedWithSavedLinks = false,
-                        isLinkedWithFolders = false,
-                        keyOfLinkedFolder = "",
-                        isLinkedWithImpFolder = false,
-                        keyOfImpLinkedFolder = "",
-                        isLinkedWithArchivedFolder = true,
-                        keyOfArchiveLinkedFolder = folderName
-                    )
-                }
-                if (linkData != null) {
-                    localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
-                }
-            }
-
-            ModifiedLocalDbFunctionsType.SAVED_LINKS -> {
-                val linkDataExtractor = linkDataExtractor(webURL)
-                val linkData = LinksTable(
-                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
-                    webURL = webURL,
-                    baseURL = linkDataExtractor.baseURL,
-                    imgURL = linkDataExtractor.imgURL,
-                    infoForSaving = noteForSaving,
-                    isLinkedWithSavedLinks = true,
-                    isLinkedWithFolders = false,
-                    keyOfLinkedFolder = "",
-                    isLinkedWithImpFolder = false,
-                    keyOfImpLinkedFolder = "",
-                    isLinkedWithArchivedFolder = false,
-                    keyOfArchiveLinkedFolder = ""
-                )
-                localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
             }
         }
     }

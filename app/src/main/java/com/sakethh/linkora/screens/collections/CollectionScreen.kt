@@ -456,11 +456,8 @@ fun CollectionScreen(navController: NavController) {
                         archivedFolders = ArchivedFolders(
                             archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
                             infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
-                        )
+                        ),context=context
                     )
-                }.invokeOnCompletion {
-                    Toast.makeText(context,"moved the link to archive successfully",
-                        Toast.LENGTH_SHORT).show()
                 }
             },
             noteForSaving = clickedFolderNote.value
@@ -500,13 +497,11 @@ fun CollectionScreen(navController: NavController) {
                         noteForSaving = note,
                         folderName = selectedFolder,
                         savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    )
+                        ,context=context )
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
-                    Toast.makeText(context,"saved the link successfully",
-                        Toast.LENGTH_SHORT).show()
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -531,14 +526,12 @@ fun CollectionScreen(navController: NavController) {
                         noteForSaving = note,
                         folderName = selectedFolder,
                         savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    )
+                        ,context=context  )
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
                 }
-                Toast.makeText(context,"saved the link successfully",
-                    Toast.LENGTH_SHORT).show()
             },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )

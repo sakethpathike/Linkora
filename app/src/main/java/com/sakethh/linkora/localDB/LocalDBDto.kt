@@ -13,16 +13,16 @@ data class LinksTable(
     val imgURL: String,
     val infoForSaving: String,
 
-    val isLinkedWithSavedLinks: Boolean,
+    var isLinkedWithSavedLinks: Boolean,
 
-    val isLinkedWithFolders: Boolean,
+    var isLinkedWithFolders: Boolean,
     val keyOfLinkedFolder: String,
 
-    val isLinkedWithImpFolder: Boolean,
+    var isLinkedWithImpFolder: Boolean,
     val keyOfImpLinkedFolder: String,
 
-    val isLinkedWithArchivedFolder: Boolean,
-    val keyOfArchiveLinkedFolder: String,
+    var isLinkedWithArchivedFolder: Boolean,
+    var keyOfArchiveLinkedFolder: String,
 )
 
 @Entity(tableName = "folders_table")

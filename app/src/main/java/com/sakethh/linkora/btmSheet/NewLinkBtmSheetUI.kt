@@ -70,12 +70,16 @@ fun NewLinkBtmSheet(
     _inIntentActivity: Boolean,
     shouldUIBeVisible: MutableState<Boolean>,
     inASpecificFolder: Boolean,
+    _folderName: String = "",
     onSaveBtnClick: (title: String, webURL: String, note: String, selectedFolder: String) -> Unit,
     btmSheetState: SheetState,
     isDataExtractingForTheLink: MutableState<Boolean>,
 ) {
     val inIntentActivity = rememberSaveable(inputs = arrayOf(_inIntentActivity)) {
         mutableStateOf(_inIntentActivity)
+    }
+    val folderName = rememberSaveable(inputs = arrayOf(_folderName)) {
+        mutableStateOf(_folderName)
     }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -105,7 +109,7 @@ fun NewLinkBtmSheet(
     val titleTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedFolder = rememberSaveable {
+    val selectedFolderForIntent = rememberSaveable {
         mutableStateOf("Saved Links")
     }
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
@@ -169,13 +173,13 @@ fun NewLinkBtmSheet(
                             Column {
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = "Selected folder:",
+                                    text = if (inIntentActivity.value || !inASpecificFolder) "Selected folder" else "Will be saved in:",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if (inIntentActivity.value || !inASpecificFolder) selectedFolder.value else selectedFolder.value,
+                                    text = if (inIntentActivity.value || !inASpecificFolder) selectedFolderForIntent.value else folderName.value,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 20.sp,
                                     maxLines = 1,
@@ -190,22 +194,22 @@ fun NewLinkBtmSheet(
                                         titleTextFieldValue.value,
                                         linkTextFieldValue.value,
                                         noteTextFieldValue.value,
-                                        selectedFolder.value
+                                        selectedFolderForIntent.value
                                     )
                                 } else {
                                     if (Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
                                         isDataExtractingForTheLink.value = true
-                                        if (selectedFolder.value == "Saved Links") {
+                                        if (selectedFolderForIntent.value == "Saved Links") {
                                             coroutineScope.launch {
                                                 intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                     ?.let {
                                                         CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                             title = titleTextFieldValue.value,
                                                             webURL = it,
-                                                            folderName = selectedFolder.value,
+                                                            folderName = selectedFolderForIntent.value,
                                                             noteForSaving = noteTextFieldValue.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
-                                                        )
+                                                            ,context=context)
                                                     }
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
@@ -219,8 +223,11 @@ fun NewLinkBtmSheet(
                                                         activity?.finishAndRemoveTask()
                                                     }
                                                 }
-                                                Toast.makeText(context,"saved to the linkora successfully",
-                                                    Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "saved to the linkora successfully",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         } else {
                                             coroutineScope.launch {
@@ -229,10 +236,10 @@ fun NewLinkBtmSheet(
                                                         CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                             title = titleTextFieldValue.value,
                                                             webURL = it,
-                                                            folderName = selectedFolder.value,
+                                                            folderName = selectedFolderForIntent.value,
                                                             noteForSaving = noteTextFieldValue.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                                                        )
+                                                            ,context=context )
                                                     }
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
@@ -246,8 +253,11 @@ fun NewLinkBtmSheet(
                                                         activity?.finishAndRemoveTask()
                                                     }
                                                 }
-                                                Toast.makeText(context,"saved to the linkora successfully",
-                                                    Toast.LENGTH_SHORT).show()
+                                                Toast.makeText(
+                                                    context,
+                                                    "saved to the linkora successfully",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
                                             }
                                         }
                                     }
@@ -354,7 +364,7 @@ fun NewLinkBtmSheet(
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(15.dp),
+                                        .padding(start=15.dp,end=15.dp,top=15.dp),
                                     shape = RoundedCornerShape(10.dp)
                                 ) {
                                     Row(
@@ -377,13 +387,11 @@ fun NewLinkBtmSheet(
                                         Text(
                                             text = "Title will be automatically detected as this setting is enabled.",
                                             style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 14.sp/*,
+                                            fontSize = 14.sp,
                                             modifier = Modifier.padding(
-                                                top = 10.dp,
-                                                start = 15.dp,
-                                                bottom = 20.dp,
+                                                top = 20.dp,
                                                 end = 15.dp
-                                            )*/,
+                                            ),
                                             lineHeight = 18.sp,
                                             textAlign = TextAlign.Start
                                         )
@@ -435,18 +443,18 @@ fun NewLinkBtmSheet(
                             }
                             item {
                                 FolderForBtmSheetIndividualComponent(
-                                    onClick = { selectedFolder.value = "Saved Links" },
+                                    onClick = { selectedFolderForIntent.value = "Saved Links" },
                                     folderName = "Saved Links",
                                     imageVector = Icons.Outlined.Link,
-                                    _isComponentSelected = selectedFolder.value == "Saved Links"
+                                    _isComponentSelected = selectedFolderForIntent.value == "Saved Links"
                                 )
                             }
                             items(foldersData) {
                                 FolderForBtmSheetIndividualComponent(
-                                    onClick = { selectedFolder.value = it.folderName },
+                                    onClick = { selectedFolderForIntent.value = it.folderName },
                                     folderName = it.folderName,
                                     imageVector = Icons.Outlined.Folder,
-                                    _isComponentSelected = selectedFolder.value == it.folderName
+                                    _isComponentSelected = selectedFolderForIntent.value == it.folderName
                                 )
                             }
                         }
@@ -460,7 +468,7 @@ fun NewLinkBtmSheet(
                 coroutineScope = coroutineScope,
                 shouldDialogBoxAppear = shouldNewFolderDialogBoxAppear,
                 newFolderName = {
-                    selectedFolder.value = it
+                    selectedFolderForIntent.value = it
                 }
             )
         }

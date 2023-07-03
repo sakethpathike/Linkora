@@ -17,7 +17,7 @@ fun CoilImage(
     onSuccess: () -> Unit = {},
 ) {
     AsyncImage(
-        error = painterResource(id = R.drawable.image),
+        error = painterResource(id = R.drawable.image_light_theme),
         model = ImageRequest.Builder(LocalContext.current).data(imgURL).crossfade(true).build(),
         contentDescription = null,
         onError = {

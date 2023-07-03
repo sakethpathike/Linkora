@@ -152,11 +152,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             ArchivedFolders(
                                 archiveFolderName = selectedURLOrFolderName.value,
                                 infoForSaving = ""
-                            )
+                            ),context=context
                         )
-                    }.invokeOnCompletion {
-                        Toast.makeText(context,"removed the folder from archive permanently",
-                            Toast.LENGTH_SHORT).show()
                     }
                 }
             },

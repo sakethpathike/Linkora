@@ -176,7 +176,8 @@ fun RenameDialogBox(
                                                         CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
                                                             existingFolderName = existingFolderName,
                                                             newFolderName = newFolderOrTitleName.value,
-                                                            infoForFolder = newNote.value
+                                                            infoForFolder = newNote.value,
+                                                            context = localContext
                                                         )
                                                     }
                                                 }

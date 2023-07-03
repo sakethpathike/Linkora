@@ -357,6 +357,7 @@ fun SpecificScreen(navController: NavController) {
             btmSheetState = btmModalSheetStateForSavingLink,
             _inIntentActivity = false,
             inASpecificFolder = true,
+            _folderName = topBarText,
             onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = true
@@ -369,7 +370,8 @@ fun SpecificScreen(navController: NavController) {
                                     title = title,
                                     webURL = webURL,
                                     infoForSaving = note, baseURL = "", imgURL = ""
-                                )
+                                ),
+                                context=context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -390,7 +392,7 @@ fun SpecificScreen(navController: NavController) {
                                 noteForSaving = note,
                                 folderName = selectedFolder,
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
-                            )
+                            ,context=context)
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromLink.value = false
@@ -406,7 +408,7 @@ fun SpecificScreen(navController: NavController) {
                                 noteForSaving = note,
                                 folderName = selectedFolder,
                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                            )
+                            ,context=context)
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromLink.value = false
@@ -414,8 +416,6 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(context,"saved the link successfully",
-                    Toast.LENGTH_SHORT).show()
             },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
@@ -449,7 +449,8 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    )
+                                    ),
+                                    context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -468,7 +469,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             })
                         }
@@ -484,7 +485,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -503,7 +504,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -661,7 +662,7 @@ fun SpecificScreen(navController: NavController) {
                                     baseURL = "",
                                     imgURL = "",
                                     infoForSaving = note
-                                )
+                                ),context=context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -682,7 +683,7 @@ fun SpecificScreen(navController: NavController) {
                                 webURL = webURL,
                                 noteForSaving = note,
                                 folderName = null,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,context=context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -699,7 +700,7 @@ fun SpecificScreen(navController: NavController) {
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,context=context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {

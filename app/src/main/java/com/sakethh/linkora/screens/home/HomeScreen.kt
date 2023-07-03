@@ -151,18 +151,24 @@ fun HomeScreen() {
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             floatingActionButton = {
                 if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
-                    FloatingActionButton(
-                        shape = RoundedCornerShape(10.dp),
-                        onClick = {
-                            coroutineScope.launch {
-                                awaitAll(async {
-                                    btmModalSheetState.expand()
-                                }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
-                            }
-                        }) {
-                        Icon(
-                            imageVector = Icons.Default.AddLink, contentDescription = null
-                        )
+                    Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                        FloatingActionButton(
+                            shape = RoundedCornerShape(10.dp),
+                            onClick = {
+                                coroutineScope.launch {
+                                    awaitAll(
+                                        async {
+                                            btmModalSheetState.expand()
+                                        },
+                                        async {
+                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = true
+                                        })
+                                }
+                            }) {
+                            Icon(
+                                imageVector = Icons.Default.AddLink, contentDescription = null
+                            )
+                        }
                     }
                 } else {
                     Column(modifier = Modifier.padding(bottom = 60.dp)) {
@@ -520,13 +526,15 @@ fun HomeScreen() {
                         noteForSaving = note,
                         folderName = selectedFolder,
                         savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    )
+                    ,context=context)
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
-                    Toast.makeText(context,"saved the link successfully",
-                    Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context, "saved the link successfully",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -572,8 +580,10 @@ fun HomeScreen() {
                         optionsBtmSheetVM.updateImportantCardData(HomeScreenVM.tempImpLinkData.webURL)
                     }
                 }
-                Toast.makeText(context,"added to the \"Important Links\" successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "added to the \"Important Links\" successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             importantLinks = null,
             onArchiveClick = {
@@ -588,7 +598,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -608,7 +618,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -628,7 +638,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    )
+                                    ),context=context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -638,8 +648,10 @@ fun HomeScreen() {
                         Unit
                     }
                 }
-                Toast.makeText(context,"archived the link successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "archived the link successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             }, noteForSaving = selectedURLNote.value
         )
     }
@@ -654,8 +666,10 @@ fun HomeScreen() {
                                 webURL = selectedWebURL.value
                             )
                     }.invokeOnCompletion {
-                        Toast.makeText(context,"deleted the link successfully",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context, "deleted the link successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     Unit
                 }
@@ -745,8 +759,10 @@ fun HomeScreen() {
                     Unit
                 }
             }
-            Toast.makeText(context,"renamed the link's data successfully",
-                Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context, "renamed the link's data successfully",
+                Toast.LENGTH_SHORT
+            ).show()
         })
     NewLinkBtmSheet(
         isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -764,13 +780,15 @@ fun HomeScreen() {
                     noteForSaving = note,
                     folderName = selectedFolder,
                     savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                )
+                    ,context=context)
             }.invokeOnCompletion {
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = false
                 }
-                Toast.makeText(context,"saved the link successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "saved the link successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         },
         shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled

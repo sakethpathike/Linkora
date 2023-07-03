@@ -53,7 +53,7 @@ class OptionsBtmSheetVM : ViewModel() {
             archiveCardText.value = "Remove from Archive(s)"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Add to Archive(s)"
+            archiveCardText.value = "Move to Archive(s)"
         }
     }
 }
