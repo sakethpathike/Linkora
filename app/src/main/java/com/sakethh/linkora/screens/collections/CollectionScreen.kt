@@ -1,6 +1,5 @@
 package com.sakethh.linkora.screens.collections
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -456,7 +455,7 @@ fun CollectionScreen(navController: NavController) {
                         archivedFolders = ArchivedFolders(
                             archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
                             infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
-                        ),context=context
+                        ), context = context
                     )
                 }
             },
@@ -496,8 +495,9 @@ fun CollectionScreen(navController: NavController) {
                         webURL = webURL,
                         noteForSaving = note,
                         folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                        ,context=context )
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                        context = context
+                    )
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
@@ -525,8 +525,9 @@ fun CollectionScreen(navController: NavController) {
                         webURL = webURL,
                         noteForSaving = note,
                         folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                        ,context=context  )
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                        context = context
+                    )
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false

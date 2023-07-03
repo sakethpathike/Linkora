@@ -21,6 +21,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Folder
@@ -173,7 +174,7 @@ fun NewLinkBtmSheet(
                             Column {
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if (inIntentActivity.value || !inASpecificFolder) "Selected folder" else "Will be saved in:",
+                                    text = if (inIntentActivity.value || !inASpecificFolder) "Selected folder:" else "Will be saved in:",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,
                                 )
@@ -208,8 +209,9 @@ fun NewLinkBtmSheet(
                                                             webURL = it,
                                                             folderName = selectedFolderForIntent.value,
                                                             noteForSaving = noteTextFieldValue.value,
-                                                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
-                                                            ,context=context)
+                                                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                                            context = context
+                                                        )
                                                     }
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
@@ -238,8 +240,9 @@ fun NewLinkBtmSheet(
                                                             webURL = it,
                                                             folderName = selectedFolderForIntent.value,
                                                             noteForSaving = noteTextFieldValue.value,
-                                                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                                                            ,context=context )
+                                                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                                            context = context
+                                                        )
                                                     }
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
@@ -316,12 +319,13 @@ fun NewLinkBtmSheet(
                         }
                         if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                             item {
-                                OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                                OutlinedTextField(
                                     modifier = Modifier
-                                        .fillMaxWidth()
                                         .padding(
                                             start = 20.dp, end = 20.dp, top = 20.dp
-                                        ),
+                                        )
+                                        .fillMaxWidth(),
+                                    readOnly = isDataExtractingForTheLink.value,
                                     label = {
                                         Text(
                                             text = "title of the link you're saving",
@@ -329,7 +333,7 @@ fun NewLinkBtmSheet(
                                             fontSize = 12.sp
                                         )
                                     },
-                                    textStyle = MaterialTheme.typography.titleSmall,
+                                    textStyle = LocalTextStyle.current.copy(lineHeight = 22.sp),
                                     shape = RoundedCornerShape(5.dp),
                                     value = titleTextFieldValue.value,
                                     onValueChange = {
@@ -340,10 +344,10 @@ fun NewLinkBtmSheet(
                         item {
                             OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                                 modifier = Modifier
-                                    .fillMaxWidth()
                                     .padding(
                                         start = 20.dp, end = 20.dp, top = 15.dp
-                                    ),
+                                    )
+                                    .fillMaxWidth(),
                                 label = {
                                     Text(
                                         text = "add a note for why you're saving this link",
@@ -351,7 +355,7 @@ fun NewLinkBtmSheet(
                                         fontSize = 12.sp
                                     )
                                 },
-                                textStyle = MaterialTheme.typography.titleSmall,
+                                textStyle = LocalTextStyle.current.copy(lineHeight = 22.sp),
                                 shape = RoundedCornerShape(5.dp),
                                 value = noteTextFieldValue.value,
                                 onValueChange = {
@@ -364,37 +368,43 @@ fun NewLinkBtmSheet(
                                     colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start=15.dp,end=15.dp,top=15.dp),
+                                        .padding(start = 20.dp, end = 20.dp, top = 15.dp),
                                     shape = RoundedCornerShape(10.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .requiredHeight(75.dp)
+                                            .requiredHeight(65.dp)
                                     ) {
                                         Box(
-                                            modifier = Modifier.fillMaxHeight(),
+                                            modifier = Modifier.requiredHeight(65.dp),
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Outlined.Info,
                                                 contentDescription = null,
                                                 modifier = Modifier
-                                                    .padding(20.dp)
+                                                    .padding(start = 20.dp, end = 22.dp)
                                                     .size(28.dp)
                                             )
                                         }
-                                        Text(
-                                            text = "Title will be automatically detected as this setting is enabled.",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(
-                                                top = 20.dp,
-                                                end = 15.dp
-                                            ),
-                                            lineHeight = 18.sp,
-                                            textAlign = TextAlign.Start
-                                        )
+                                        Box(
+                                            modifier = Modifier
+                                                .height(65.dp)
+                                                .fillMaxWidth(),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Title will be automatically detected as this setting is enabled.",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(
+                                                    end = 20.dp
+                                                ),
+                                                lineHeight = 18.sp,
+                                                textAlign = TextAlign.Start
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -405,7 +415,7 @@ fun NewLinkBtmSheet(
                                     text = "Save in:",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 24.sp,
-                                    modifier = Modifier.padding(top = 30.dp, start = 20.dp)
+                                    modifier = Modifier.padding(top = 20.dp, start = 20.dp)
                                 )
                             }
                             item {

@@ -1,17 +1,19 @@
 package com.sakethh.linkora.localDB
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.flatMapConcat
 import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 object CustomLocalDBDaoFunctionsDecl {
@@ -115,6 +117,7 @@ object CustomLocalDBDaoFunctionsDecl {
 
     @OptIn(FlowPreview::class)
     suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders, context: Context) {
+        val coroutineJob = Job()
         if (localDB.localDBData()
                 .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
         ) {
@@ -136,24 +139,33 @@ object CustomLocalDBDaoFunctionsDecl {
             }
         } else {
             localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
-            val listOfData = localDB.localDBData()
-                .getThisFolderData(folderName = archivedFolders.archiveFolderName)
-                .flatMapConcat {
-                    it.asFlow()
-                }.toList()
-            listOfData.find {
-                it.isLinkedWithFolders = false
-                it.isLinkedWithArchivedFolder = true
-                it.keyOfArchiveLinkedFolder = archivedFolders.archiveFolderName
-                it.isLinkedWithImpFolder = false
-                it.isLinkedWithSavedLinks = false
-                true
+            CoroutineScope(coroutineJob).launch {
+                val listOfData = localDB.localDBData()
+                    .getThisFolderData(folderName = archivedFolders.archiveFolderName).toList()
+                Log.d("archive data", listOfData.toString())
+                listOfData[0].forEach {
+                    it.isLinkedWithFolders = false
+                    it.isLinkedWithArchivedFolder = true
+                    it.keyOfArchiveLinkedFolder = archivedFolders.archiveFolderName
+                    it.keyOfLinkedFolder = ""
+                    it.keyOfImpLinkedFolder = ""
+                    it.isLinkedWithImpFolder = false
+                    it.isLinkedWithSavedLinks = false
+                }
+                localDB.localDBData().addListOfDataInLinksTable(listOfData[0])
+                Log.d("archive data", listOfData[0].toString())
+            }.invokeOnCompletion {
+                CoroutineScope(coroutineJob).launch {
+                    awaitAll(async {
+                        localDB.localDBData()
+                            .deleteAFolder(folderName = archivedFolders.archiveFolderName)
+                    }, async {
+                        localDB.localDBData()
+                            .deleteThisFolderData(folderName = archivedFolders.archiveFolderName)
+                    }
+                    )
+                }
             }
-            localDB.localDBData().addListOfDataInLinksTable(listOfData)
-            localDB.localDBData()
-                .deleteAFolder(folderName = archivedFolders.archiveFolderName)
-            localDB.localDBData()
-                .deleteThisFolderData(folderName = archivedFolders.archiveFolderName)
         }
         OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
     }

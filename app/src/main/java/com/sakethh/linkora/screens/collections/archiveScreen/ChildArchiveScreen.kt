@@ -143,8 +143,10 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName.value)
                     }.invokeOnCompletion {
-                        Toast.makeText(context,"removed the link from archive permanently",
-                            Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context, "removed the link from archive permanently",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
@@ -152,7 +154,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             ArchivedFolders(
                                 archiveFolderName = selectedURLOrFolderName.value,
                                 infoForSaving = ""
-                            ),context=context
+                            ), context = context
                         )
                     }
                 }

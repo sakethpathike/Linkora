@@ -525,8 +525,9 @@ fun HomeScreen() {
                         webURL = webURL,
                         noteForSaving = note,
                         folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    ,context=context)
+                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                        context = context
+                    )
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
@@ -598,7 +599,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -618,7 +619,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -638,7 +639,7 @@ fun HomeScreen() {
                                         HomeScreenVM.tempImpLinkData.baseURL,
                                         HomeScreenVM.tempImpLinkData.imgURL,
                                         HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -779,8 +780,9 @@ fun HomeScreen() {
                     webURL = webURL,
                     noteForSaving = note,
                     folderName = selectedFolder,
-                    savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                    ,context=context)
+                    savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                    context = context
+                )
             }.invokeOnCompletion {
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = false

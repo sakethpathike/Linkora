@@ -272,7 +272,7 @@ class SettingsScreenVM : ViewModel() {
             }
         }
 
-        suspend fun latestAppVersionRetriever(){
+        suspend fun latestAppVersionRetriever() {
             val ktorClient = HttpClient(Android)
             val latestVersionOfTheApp = ktorClient.get("")
         }

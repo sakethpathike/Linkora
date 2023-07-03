@@ -107,8 +107,10 @@ fun GeneralCard(
                             localClipBoardManager.setText(
                                 AnnotatedString(webURL)
                             )
-                            Toast.makeText(context,"Link copied to the clipboard",
-                                Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context, "Link copied to the clipboard",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         })
                     Icon(imageVector = Icons.Outlined.Share,
                         contentDescription = null,

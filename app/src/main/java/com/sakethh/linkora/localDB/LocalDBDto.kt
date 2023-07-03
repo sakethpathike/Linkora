@@ -16,10 +16,10 @@ data class LinksTable(
     var isLinkedWithSavedLinks: Boolean,
 
     var isLinkedWithFolders: Boolean,
-    val keyOfLinkedFolder: String,
+    var keyOfLinkedFolder: String,
 
     var isLinkedWithImpFolder: Boolean,
-    val keyOfImpLinkedFolder: String,
+    var keyOfImpLinkedFolder: String,
 
     var isLinkedWithArchivedFolder: Boolean,
     var keyOfArchiveLinkedFolder: String,

@@ -371,7 +371,7 @@ fun SpecificScreen(navController: NavController) {
                                     webURL = webURL,
                                     infoForSaving = note, baseURL = "", imgURL = ""
                                 ),
-                                context=context
+                                context = context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -391,8 +391,9 @@ fun SpecificScreen(navController: NavController) {
                                 webURL = webURL,
                                 noteForSaving = note,
                                 folderName = selectedFolder,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS
-                            ,context=context)
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                context = context
+                            )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromLink.value = false
@@ -407,8 +408,9 @@ fun SpecificScreen(navController: NavController) {
                                 webURL = webURL,
                                 noteForSaving = note,
                                 folderName = selectedFolder,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS
-                            ,context=context)
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                context = context
+                            )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromLink.value = false
@@ -450,7 +452,7 @@ fun SpecificScreen(navController: NavController) {
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
                                     ),
-                                    context=context
+                                    context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -469,7 +471,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             })
                         }
@@ -485,7 +487,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -504,7 +506,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    ),context=context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
@@ -513,8 +515,10 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(context,"moved to archives successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "moved to archives successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             noteForSaving = selectedURLOrFolderNote.value
         )
@@ -550,8 +554,10 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(context,"deleted the link successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "deleted the link successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             deleteDialogBoxType = DataDialogBoxType.LINK
         )
@@ -600,8 +606,10 @@ fun SpecificScreen(navController: NavController) {
                         Unit
                     }
                 }
-                Toast.makeText(context,"renamed link's data successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "renamed link's data successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 when (SpecificScreenVM.screenType.value) {
@@ -642,8 +650,10 @@ fun SpecificScreen(navController: NavController) {
                         Unit
                     }
                 }
-                Toast.makeText(context,"renamed link's data successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "renamed link's data successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         )
         AddNewLinkDialogBox(
@@ -662,7 +672,7 @@ fun SpecificScreen(navController: NavController) {
                                     baseURL = "",
                                     imgURL = "",
                                     infoForSaving = note
-                                ),context=context
+                                ), context = context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -683,7 +693,8 @@ fun SpecificScreen(navController: NavController) {
                                 webURL = webURL,
                                 noteForSaving = note,
                                 folderName = null,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,context=context
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                context = context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -700,7 +711,8 @@ fun SpecificScreen(navController: NavController) {
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,context=context
+                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                context = context
                             )
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -710,8 +722,10 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(context,"saved the link successfully",
-                    Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context, "saved the link successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
             },
             isDataExtractingForTheLink = isDataExtractingFromTheLink,
             inCollectionBasedFolder = mutableStateOf(true)

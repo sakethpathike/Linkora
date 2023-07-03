@@ -132,7 +132,11 @@ fun AddNewFolderDialogBox(
                                             )
                                         )
                                 }.invokeOnCompletion {
-                                    Toast.makeText(context,"\"${folderNameTextFieldValue.value}\" folder created successfully",Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(
+                                        context,
+                                        "\"${folderNameTextFieldValue.value}\" folder created successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                                 shouldDialogBoxAppear.value = false
                             }
