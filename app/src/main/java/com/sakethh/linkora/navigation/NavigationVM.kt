@@ -19,6 +19,8 @@ data class BtmNavigationItem(
 
 class NavigationVM : ViewModel() {
 
+    val startDestination =
+        mutableStateOf(NavigationRoutes.HOME_SCREEN.name)
     val btmBarList = listOf(
         BtmNavigationItem(
             selectedIcon = Icons.Filled.CollectionsBookmark,

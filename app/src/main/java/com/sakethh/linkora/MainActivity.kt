@@ -16,7 +16,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.createDataStore
+import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
@@ -28,6 +30,8 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -41,6 +45,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val context = LocalContext.current
+            val navigationVM: NavigationVM = viewModel()
+
             LinkoraTheme {
                 val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
@@ -87,6 +93,17 @@ class MainActivity : ComponentActivity() {
                 }
             }
             CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)
+            CoroutineScope(Dispatchers.Main).launch{
+                navigationVM.startDestination.value =
+                    if (SettingsScreenVM.Settings.readPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = SettingsScreenVM.Settings.dataStore
+                        ) == true
+                    )
+                        NavigationRoutes.HOME_SCREEN.name
+                    else
+                        NavigationRoutes.COLLECTIONS_SCREEN.name
+            }.start()
         }
     }
 }

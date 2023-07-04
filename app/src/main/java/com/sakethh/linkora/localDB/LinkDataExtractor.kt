@@ -12,15 +12,20 @@ data class LinkDataExtractor(
 )
 
 suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
-    val urlHost =
-        webURL.split("/")[2]
     var errorInGivenURL = false
+    val urlHost =
+        try {
+            errorInGivenURL = false
+            webURL.split("/")[2]
+        } catch (_: Exception) {
+            errorInGivenURL = true
+            ""
+        }
     val imgURL =
         withContext(Dispatchers.IO) {
             try {
-                Jsoup.connect(webURL).get().getElementsByTag("img").first()?.ownText()
-                    ?: Jsoup.connect(webURL).get().head().select("link[href~=.*\\.ico]").first()
-                        ?.attr("href")
+                Jsoup.connect(webURL).get().head().select("link[href~=.*\\.ico]").first()
+                    ?.attr("href")
             } catch (e: Exception) {
                 ""
             }

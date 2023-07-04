@@ -66,7 +66,7 @@ fun SpecificScreen(navController: NavController) {
     val linksData = specificScreenVM.linksTable.collectAsState().value
     val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
     val archiveLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
-    var tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
+    val tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLink = androidx.compose.material3.rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
@@ -113,23 +113,25 @@ fun SpecificScreen(navController: NavController) {
     }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
-            FloatingActionButton(
-                shape = RoundedCornerShape(10.dp),
-                onClick = {
-                    if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
-                        shouldNewLinkDialogBoxBeVisible.value = true
-                    } else {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                btmModalSheetStateForSavingLink.expand()
-                            }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
+            if(SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVE_SCREEN){
+                FloatingActionButton(
+                    shape = RoundedCornerShape(10.dp),
+                    onClick = {
+                        if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                            shouldNewLinkDialogBoxBeVisible.value = true
+                        } else {
+                            coroutineScope.launch {
+                                awaitAll(async {
+                                    btmModalSheetStateForSavingLink.expand()
+                                }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
+                            }
                         }
-                    }
-                }) {
-                Icon(
-                    imageVector = Icons.Default.AddLink,
-                    contentDescription = null
-                )
+                    }) {
+                    Icon(
+                        imageVector = Icons.Default.AddLink,
+                        contentDescription = null
+                    )
+                }
             }
         }, modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -148,51 +150,61 @@ fun SpecificScreen(navController: NavController) {
             ) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-                        items(foldersData) {
-                            LinkUIComponent(
-                                title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconCLick = {
-                                    selectedWebURL.value = it.webURL
-                                    selectedURLOrFolderNote.value = it.infoForSaving
-                                    tempImpLinkData.apply {
-                                        this.webURL = it.webURL
-                                        this.baseURL = it.baseURL
-                                        this.imgURL = it.imgURL
-                                        this.title = it.title
-                                        this.infoForSaving = it.infoForSaving
-                                    }
-                                    tempImpLinkData.webURL =
-                                        it.webURL
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    coroutineScope.launch {
-                                        awaitAll(
-                                            async {
-                                                optionsBtmSheetVM.updateImportantCardData(
-                                                    url = selectedWebURL.value
-                                                )
-                                            },
-                                            async { optionsBtmSheetVM.updateArchiveLinkCardData(url = selectedWebURL.value) })
-                                    }
-                                },
-                                onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler
-                                        )
-                                    }
-                                },
-                                webURL = it.webURL
-                            )
+                        if (foldersData.isNotEmpty()) {
+                            items(foldersData) {
+                                LinkUIComponent(
+                                    title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconCLick = {
+                                        selectedWebURL.value = it.webURL
+                                        selectedURLOrFolderNote.value = it.infoForSaving
+                                        tempImpLinkData.apply {
+                                            this.webURL = it.webURL
+                                            this.baseURL = it.baseURL
+                                            this.imgURL = it.imgURL
+                                            this.title = it.title
+                                            this.infoForSaving = it.infoForSaving
+                                        }
+                                        tempImpLinkData.webURL =
+                                            it.webURL
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                        coroutineScope.launch {
+                                            awaitAll(
+                                                async {
+                                                    optionsBtmSheetVM.updateImportantCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                },
+                                                async {
+                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                        url = selectedWebURL.value
+                                                    )
+                                                })
+                                        }
+                                    },
+                                    onLinkClick = {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
+                                    },
+                                    webURL = it.webURL
+                                )
+                            }
+                        } else {
+                            item {
+                                DataEmptyScreen()
+                            }
                         }
                     }
 
@@ -314,33 +326,39 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-                        items(archiveLinksData) {
-                            LinkUIComponent(
-                                title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconCLick = {
-                                    selectedWebURL.value = it.webURL
-                                    selectedURLOrFolderNote.value = it.infoForSaving
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                },
-                                onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler
-                                        )
-                                    }
-                                },
-                                webURL = it.webURL
-                            )
+                        if (archiveLinksData.isNotEmpty()) {
+                            items(archiveLinksData) {
+                                LinkUIComponent(
+                                    title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconCLick = {
+                                        selectedWebURL.value = it.webURL
+                                        selectedURLOrFolderNote.value = it.infoForSaving
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                    },
+                                    onLinkClick = {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler
+                                            )
+                                        }
+                                    },
+                                    webURL = it.webURL
+                                )
+                            }
+                        } else {
+                            item {
+                                DataEmptyScreen()
+                            }
                         }
                     }
                 }
@@ -515,10 +533,6 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(
-                    context, "moved to archives successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             noteForSaving = selectedURLOrFolderNote.value
         )
@@ -722,10 +736,6 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 }
-                Toast.makeText(
-                    context, "saved the link successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             isDataExtractingForTheLink = isDataExtractingFromTheLink,
             inCollectionBasedFolder = mutableStateOf(true)

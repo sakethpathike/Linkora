@@ -532,10 +532,7 @@ fun HomeScreen() {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
-                    Toast.makeText(
-                        context, "saved the link successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    shouldDialogForNewLinkAppear.value = false
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -667,6 +664,7 @@ fun HomeScreen() {
                                 webURL = selectedWebURL.value
                             )
                     }.invokeOnCompletion {
+                        shouldDeleteBoxAppear.value=false
                         Toast.makeText(
                             context, "deleted the link successfully",
                             Toast.LENGTH_SHORT
@@ -787,10 +785,6 @@ fun HomeScreen() {
                 if (webURL.isNotEmpty()) {
                     isDataExtractingFromLink.value = false
                 }
-                Toast.makeText(
-                    context, "saved the link successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         },
         shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled

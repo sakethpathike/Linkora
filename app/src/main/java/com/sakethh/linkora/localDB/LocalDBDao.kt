@@ -105,6 +105,11 @@ interface LocalDBDao {
         newFolderName: String,
     )
 
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 1 , isLinkedWithFolders = 0, keyOfArchiveLinkedFolder = :folderName, keyOfLinkedFolder = \"\" WHERE keyOfLinkedFolder = :folderName")
+    suspend fun moveFolderDataToArchive(
+        folderName: String,
+    )
+
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
     suspend fun renameAFolderNote(folderName: String, newNote: String)
 

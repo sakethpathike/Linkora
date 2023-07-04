@@ -2,7 +2,6 @@ package com.sakethh.linkora.btmSheet
 
 import android.app.Activity
 import android.content.Intent
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -225,11 +224,6 @@ fun NewLinkBtmSheet(
                                                         activity?.finishAndRemoveTask()
                                                     }
                                                 }
-                                                Toast.makeText(
-                                                    context,
-                                                    "saved to the linkora successfully",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
                                             }
                                         } else {
                                             coroutineScope.launch {
@@ -256,11 +250,6 @@ fun NewLinkBtmSheet(
                                                         activity?.finishAndRemoveTask()
                                                     }
                                                 }
-                                                Toast.makeText(
-                                                    context,
-                                                    "saved to the linkora successfully",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
                                             }
                                         }
                                     }

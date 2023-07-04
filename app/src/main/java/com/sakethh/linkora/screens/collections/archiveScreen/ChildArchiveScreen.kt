@@ -27,6 +27,7 @@ import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
@@ -111,7 +112,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
                                 }
                             }, onFolderClick = {
-                                SpecificScreenVM.currentClickedFolderName.value =
+                                SpecificScreenVM.selectedArchiveFolderName.value =
                                     it.archiveFolderName
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVE_SCREEN

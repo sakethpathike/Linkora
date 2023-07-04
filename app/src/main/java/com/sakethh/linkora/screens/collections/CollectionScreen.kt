@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.collections
 
+import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -98,6 +99,7 @@ fun CollectionScreen(navController: NavController) {
     val shouldDeleteDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val activity = LocalContext.current as? Activity
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsState().value
@@ -558,6 +560,8 @@ fun CollectionScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
+        } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+            activity?.finish()
         } else {
             navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                 popUpTo(0)

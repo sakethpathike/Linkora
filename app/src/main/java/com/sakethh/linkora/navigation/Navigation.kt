@@ -5,6 +5,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.datastore.preferences.preferencesKey
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -17,23 +18,11 @@ import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 @Composable
 fun MainNavigation(navController: NavHostController) {
-    val startDestination = rememberSaveable {
-        mutableStateOf(NavigationRoutes.HOME_SCREEN.name)
-    }
-    LaunchedEffect(key1 = Unit) {
-        startDestination.value = if (SettingsScreenVM.Settings.readPreferenceValue(
-                preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                dataStore = SettingsScreenVM.Settings.dataStore
-            ) == true
-        )
-            NavigationRoutes.HOME_SCREEN.name
-        else
-            NavigationRoutes.COLLECTIONS_SCREEN.name
-    }
+val navigationVM:NavigationVM= viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = NavigationRoutes.HOME_SCREEN.name
+        startDestination = navigationVM.startDestination.value
     ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
             HomeScreen()
@@ -51,4 +40,5 @@ fun MainNavigation(navController: NavHostController) {
             ParentArchiveScreen(navController = navController)
         }
     }
+
 }
