@@ -739,7 +739,7 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkInfoFromSavedLinksOrInFolders(
+                            .renameALinkInfoFromSavedLinks(
                                 webURL = webURL, newInfo = newNote
                             )
                     }
@@ -770,7 +770,7 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromSavedLinksOrInFolders(
+                            .renameALinkTitleFromSavedLinks(
                                 webURL = webURL, newTitle = newTitle
                             )
                     }

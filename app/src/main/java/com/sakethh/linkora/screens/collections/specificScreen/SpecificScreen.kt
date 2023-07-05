@@ -541,7 +541,7 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkInfoFromSavedLinksOrInFolders(
+                                .renameALinkInfoFromSavedLinks(
                                     webURL = webURL,
                                     newInfo = newNote
                                 )
@@ -552,9 +552,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkInfoFromSavedLinksOrInFolders(
+                                .renameALinkInfoFromFolders(
                                     webURL = webURL,
-                                    newInfo = newNote
+                                    newInfo = newNote,
+                                    folderName = topBarText
                                 )
                         }.start()
                         Unit
@@ -585,7 +586,7 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromSavedLinksOrInFolders(
+                                .renameALinkTitleFromSavedLinks(
                                     webURL = webURL,
                                     newTitle = newTitle
                                 )
@@ -596,9 +597,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameALinkTitleFromSavedLinksOrInFolders(
+                                .renameALinkTitleFromFolders(
                                     webURL = webURL,
-                                    newTitle = newTitle
+                                    newTitle = newTitle,
+                                    folderName = topBarText
                                 )
                         }.start()
                         Unit

@@ -53,6 +53,7 @@ fun OptionsBtmSheetUI(
     onDeleteCardClick: () -> Unit,
     onRenameClick: () -> Unit,
     onArchiveClick: () -> Unit,
+    onUnarchiveClick: () -> Unit = {},
     onImportantLinkAdditionInTheTable: (() -> Unit?)? = null,
     importantLinks: ImportantLinks?,
     inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
@@ -78,65 +79,63 @@ fun OptionsBtmSheetUI(
             }
         }) {
             if (!isNoteBtnSelected.value) {
-                if (!inArchiveScreen.value) {
-                    OptionsBtmSheetIndividualComponent(
-                        onClick = {
-                            coroutineScope.launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
-                                }
-                            }.invokeOnCompletion {
-                                isNoteBtnSelected.value = true
-                                coroutineScope.launch {
-                                    btmModalSheetState.show()
-                                }
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
                             }
-                        },
-                        elementName = "View Note",
-                        elementImageVector = Icons.Outlined.TextSnippet
-                    )
+                        }.invokeOnCompletion {
+                            isNoteBtnSelected.value = true
+                            coroutineScope.launch {
+                                btmModalSheetState.show()
+                            }
+                        }
+                    },
+                    elementName = "View Note",
+                    elementImageVector = Icons.Outlined.TextSnippet
+                )
+                OptionsBtmSheetIndividualComponent(
+                    onClick = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
+                        }.invokeOnCompletion {
+                            shouldBtmModalSheetBeVisible.value = false
+                        }
+                        onRenameClick()
+                    },
+                    elementName = "Rename",
+                    elementImageVector = Icons.Outlined.DriveFileRenameOutline
+                )
+
+                if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {
                                 if (btmModalSheetState.isVisible) {
                                     btmModalSheetState.hide()
+                                }
+                                if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
+                                    CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                        importantLinks = importantLinks,
+                                        context = context
+                                    )
+                                } else {
+                                    if (onImportantLinkAdditionInTheTable != null) {
+                                        onImportantLinkAdditionInTheTable()
+                                    }
                                 }
                             }.invokeOnCompletion {
                                 shouldBtmModalSheetBeVisible.value = false
                             }
-                            onRenameClick()
                         },
-                        elementName = "Rename",
-                        elementImageVector = Icons.Outlined.DriveFileRenameOutline
+                        elementName = optionsBtmSheetVM.importantCardText.value,
+                        elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                     )
-
-                    if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                        OptionsBtmSheetIndividualComponent(
-                            onClick = {
-                                coroutineScope.launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                    if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
-                                        CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                            importantLinks = importantLinks,
-                                            context = context
-                                        )
-                                    } else {
-                                        if (onImportantLinkAdditionInTheTable != null) {
-                                            onImportantLinkAdditionInTheTable()
-                                        }
-                                    }
-                                }.invokeOnCompletion {
-                                    shouldBtmModalSheetBeVisible.value = false
-                                }
-                            },
-                            elementName = optionsBtmSheetVM.importantCardText.value,
-                            elementImageVector = optionsBtmSheetVM.importantCardIcon.value
-                        )
-                    }
                 }
-                if (optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || inArchiveScreen.value) {
+                if (optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || !inArchiveScreen.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {
@@ -152,7 +151,23 @@ fun OptionsBtmSheetUI(
                         elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
                     )
                 }
-                if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN && !inArchiveScreen.value) {
+                if (inArchiveScreen.value) {
+                    OptionsBtmSheetIndividualComponent(
+                        onClick = {
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }.invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
+                            onUnarchiveClick()
+                        },
+                        elementName = "Unarchive",
+                        elementImageVector = Icons.Outlined.Unarchive
+                    )
+                }
+                if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {

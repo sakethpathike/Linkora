@@ -116,14 +116,38 @@ interface LocalDBDao {
         folderName: String,
     )
 
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolder = \"\", keyOfLinkedFolder =  :folderName WHERE keyOfArchiveLinkedFolder = :folderName")
+    suspend fun moveArchiveFolderBackToFolder(
+        folderName: String,
+    )
+
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
     suspend fun renameAFolderNote(folderName: String, newNote: String)
 
-    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL")
-    suspend fun renameALinkTitleFromSavedLinksOrInFolders(webURL: String, newTitle: String)
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
+    suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)
 
-    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
-    suspend fun renameALinkInfoFromSavedLinksOrInFolders(webURL: String, newInfo: String)
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
+    suspend fun renameALinkTitleFromFolders(webURL: String, newTitle: String, folderName: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
+    suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
+    suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
+    suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
+    suspend fun renameALinkInfoFromFolders(webURL: String, newInfo: String, folderName: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName AND isLinkedWithArchivedFolder=1")
+    suspend fun renameALinkInfoFromArchiveFolders(
+        webURL: String,
+        newInfo: String,
+        folderName: String,
+    )
 
 
     @Query("UPDATE important_links_table SET title = :newTitle WHERE webURL = :webURL")
