@@ -13,6 +13,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.LocalDataBase
 
 class IntentActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -44,6 +46,8 @@ class IntentActivity : ComponentActivity() {
                 inASpecificFolder = false,
                 btmSheetState = btmSheetState
             )
+            CustomLocalDBDaoFunctionsDecl.localDB =
+                LocalDataBase.getLocalDB(this)
         }
     }
 }

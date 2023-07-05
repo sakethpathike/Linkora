@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings
 
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -188,10 +189,17 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 items(themeSectionData) { settingsUIElement ->
-                    SettingComponent(
-                        settingsUIElement = settingsUIElement,
-                        data = themeSectionData
-                    )
+                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming"){
+                        SettingComponent(
+                            settingsUIElement = settingsUIElement,
+                            data = themeSectionData
+                        )
+                    } else if(settingsUIElement.title != "Use dynamic theming"){
+                        SettingComponent(
+                            settingsUIElement = settingsUIElement,
+                            data = themeSectionData
+                        )
+                    }
                 }
                 item {
                     Text(

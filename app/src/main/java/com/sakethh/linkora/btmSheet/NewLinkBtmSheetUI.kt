@@ -144,12 +144,6 @@ fun NewLinkBtmSheet(
                     if (inIntentActivity.value) {
                         SettingsScreenVM.Settings.readAllPreferencesValues()
                     }
-                },
-                async {
-                    if (inIntentActivity.value) {
-                        CustomLocalDBDaoFunctionsDecl.localDB =
-                            LocalDataBase.getLocalDB(context = context)
-                    }
                 })
         }
     }

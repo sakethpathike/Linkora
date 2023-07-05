@@ -74,7 +74,8 @@ object CustomLocalDBDaoFunctionsDecl {
                     .show()
             }
         } else {
-            val linkDataExtractor = linkDataExtractor(importantLinks.webURL)
+            val linkDataExtractor =
+                linkDataExtractor(webURL = importantLinks.webURL, context = context)
             val linksData = ImportantLinks(
                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else importantLinks.title,
                 webURL = importantLinks.webURL,
@@ -82,7 +83,15 @@ object CustomLocalDBDaoFunctionsDecl {
                 imgURL = linkDataExtractor.imgURL,
                 infoForSaving = importantLinks.infoForSaving
             )
-            if (linkDataExtractor.errorInGivenURL) {
+            if (linkDataExtractor.networkError) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "network error, check your network connection and try again",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else if (linkDataExtractor.errorInGivenURL) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                 }
@@ -113,7 +122,6 @@ object CustomLocalDBDaoFunctionsDecl {
         OptionsBtmSheetVM().updateArchiveLinkCardData(url = archivedLinks.webURL)
     }
 
-    @OptIn(FlowPreview::class)
     suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders, context: Context) {
         if (localDB.localDBData()
                 .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
@@ -173,8 +181,16 @@ object CustomLocalDBDaoFunctionsDecl {
     ) {
         when (savingFor) {
             ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS -> {
-                val linkDataExtractor = linkDataExtractor(webURL)
-                if (linkDataExtractor.errorInGivenURL) {
+                val linkDataExtractor = linkDataExtractor(context, webURL)
+                if (linkDataExtractor.networkError) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "network error, check your network connection and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (linkDataExtractor.errorInGivenURL) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
@@ -208,8 +224,16 @@ object CustomLocalDBDaoFunctionsDecl {
             }
 
             ModifiedLocalDbFunctionsType.ARCHIVE_FOLDER_LINKS -> {
-                val linkDataExtractor = linkDataExtractor(webURL)
-                if (linkDataExtractor.errorInGivenURL) {
+                val linkDataExtractor = linkDataExtractor(context, webURL)
+                if (linkDataExtractor.networkError) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "network error, check your network connection and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (linkDataExtractor.errorInGivenURL) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
@@ -241,8 +265,16 @@ object CustomLocalDBDaoFunctionsDecl {
             }
 
             ModifiedLocalDbFunctionsType.SAVED_LINKS -> {
-                val linkDataExtractor = linkDataExtractor(webURL)
-                if (linkDataExtractor.errorInGivenURL) {
+                val linkDataExtractor = linkDataExtractor(context, webURL)
+                if (linkDataExtractor.networkError) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "network error, check your network connection and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                } else if (linkDataExtractor.errorInGivenURL) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }

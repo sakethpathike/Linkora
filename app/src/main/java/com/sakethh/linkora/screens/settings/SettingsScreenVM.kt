@@ -32,26 +32,6 @@ class SettingsScreenVM : ViewModel() {
     }
 
     val themeSection = listOf(
-        SettingsUIElement(title = "Use dynamic theming",
-            doesDescriptionExists = true,
-            description = "Change colour themes within the app based on your wallpaper.",
-            isSwitchNeeded = true,
-            isSwitchEnabled = Settings.shouldFollowDynamicTheming,
-            onSwitchStateChange = {
-                viewModelScope.launch {
-                    Settings.changePreferenceValue(
-                        preferenceKey = preferencesKey(
-                            SettingsPreferences.DYNAMIC_THEMING.name
-                        ),
-                        dataStore = Settings.dataStore,
-                        newValue = !Settings.shouldFollowDynamicTheming.value
-                    )
-                    Settings.shouldFollowDynamicTheming.value = Settings.readPreferenceValue(
-                        preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
-                        dataStore = Settings.dataStore
-                    ) == true
-                }
-            }),
         SettingsUIElement(title = "Follow System Theme",
             doesDescriptionExists = false,
             description = null,
@@ -68,6 +48,26 @@ class SettingsScreenVM : ViewModel() {
                     )
                     Settings.shouldFollowSystemTheme.value = Settings.readPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
+                        dataStore = Settings.dataStore
+                    ) == true
+                }
+            }),
+        SettingsUIElement(title = "Use dynamic theming",
+            doesDescriptionExists = true,
+            description = "Change colour themes within the app based on your wallpaper.",
+            isSwitchNeeded = true,
+            isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+            onSwitchStateChange = {
+                viewModelScope.launch {
+                    Settings.changePreferenceValue(
+                        preferenceKey = preferencesKey(
+                            SettingsPreferences.DYNAMIC_THEMING.name
+                        ),
+                        dataStore = Settings.dataStore,
+                        newValue = !Settings.shouldFollowDynamicTheming.value
+                    )
+                    Settings.shouldFollowDynamicTheming.value = Settings.readPreferenceValue(
+                        preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
                         dataStore = Settings.dataStore
                     ) == true
                 }
@@ -224,7 +224,7 @@ class SettingsScreenVM : ViewModel() {
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: true
                     },
                     async {
                         shouldDarkThemeBeEnabled.value =
@@ -238,35 +238,35 @@ class SettingsScreenVM : ViewModel() {
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: false
                     },
                     async {
                         isInAppWebTabEnabled.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.CUSTOM_TABS.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: true
                     },
                     async {
                         isAutoDetectTitleForLinksEnabled.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: true
                     },
                     async {
                         isHomeScreenEnabled.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: true
                     },
                     async {
                         isBtmSheetEnabledForSavingLinks.value =
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                                 dataStore = dataStore
-                            ) == true
+                            ) ?: true
                     }
                 )
             }
