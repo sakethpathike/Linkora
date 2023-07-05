@@ -44,7 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.btmSheet.OptionsBtmSheetIndividualComponent
+import com.sakethh.linkora.btmSheet.FolderForBtmSheetIndividualComponent
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -322,7 +322,7 @@ fun AddNewLinkDialogBox(
                                         start = 20.dp
                                     )
                             )
-                            OptionsBtmSheetIndividualComponent(
+                            FolderForBtmSheetIndividualComponent(
                                 onClick = {
                                     selectedFolderName.value = "Saved Links"
                                     coroutineScope.launch {
@@ -333,17 +333,19 @@ fun AddNewLinkDialogBox(
                                         isDropDownMenuIconClicked.value = false
                                     }
                                 },
-                                elementName = "Saved Links",
-                                elementImageVector = Icons.Outlined.Link
+                                folderName = "Saved Links",
+                                imageVector = Icons.Outlined.Link,
+                                _isComponentSelected = selectedFolderName.value == "Saved Links"
                             )
                             foldersTableData.forEach {
-                                OptionsBtmSheetIndividualComponent(
+                                FolderForBtmSheetIndividualComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
                                         isDropDownMenuIconClicked.value = false
                                     },
-                                    elementName = it.folderName,
-                                    elementImageVector = Icons.Outlined.Folder
+                                    folderName = it.folderName,
+                                    imageVector = Icons.Outlined.Folder,
+                                    _isComponentSelected = selectedFolderName.value == it.folderName
                                 )
                             }
                             Spacer(modifier = Modifier.height(20.dp))

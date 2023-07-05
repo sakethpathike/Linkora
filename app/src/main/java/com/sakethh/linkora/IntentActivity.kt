@@ -38,18 +38,11 @@ class IntentActivity : ComponentActivity() {
                 mutableStateOf(true)
             }
             val btmSheetState = rememberModalBottomSheetState()
-            val isDataExtracting = rememberSaveable {
-                mutableStateOf(false)
-            }
             NewLinkBtmSheet(
                 _inIntentActivity = true,
                 shouldUIBeVisible = shouldUIBeVisible,
                 inASpecificFolder = false,
-                onSaveBtnClick = { _, _, _, _ ->
-
-                },
-                btmSheetState = btmSheetState,
-                isDataExtractingForTheLink = isDataExtracting
+                btmSheetState = btmSheetState
             )
         }
     }

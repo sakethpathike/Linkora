@@ -50,9 +50,11 @@ import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -113,7 +115,7 @@ fun SpecificScreen(navController: NavController) {
     }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
-            if(SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVE_SCREEN){
+            if (SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVE_SCREEN) {
                 FloatingActionButton(
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
@@ -371,72 +373,10 @@ fun SpecificScreen(navController: NavController) {
             mutableStateOf(false)
         }
         NewLinkBtmSheet(
-            isDataExtractingForTheLink = isDataExtractingFromLink,
             btmSheetState = btmModalSheetStateForSavingLink,
             _inIntentActivity = false,
             inASpecificFolder = true,
             _folderName = topBarText,
-            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
-                if (webURL.isNotEmpty()) {
-                    isDataExtractingFromLink.value = true
-                }
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                ImportantLinks(
-                                    title = title,
-                                    webURL = webURL,
-                                    infoForSaving = note, baseURL = "", imgURL = ""
-                                ),
-                                context = context
-                            )
-                        }.invokeOnCompletion {
-                            if (webURL.isNotEmpty()) {
-                                isDataExtractingFromLink.value = false
-                            }
-                        }
-                    }
-
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
-
-                    }
-
-                    SpecificScreenType.LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                folderName = selectedFolder,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                context = context
-                            )
-                        }.invokeOnCompletion {
-                            if (webURL.isNotEmpty()) {
-                                isDataExtractingFromLink.value = false
-                            }
-                        }
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                folderName = selectedFolder,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                context = context
-                            )
-                        }.invokeOnCompletion {
-                            if (webURL.isNotEmpty()) {
-                                isDataExtractingFromLink.value = false
-                            }
-                        }
-                    }
-                }
-            },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
         OptionsBtmSheetUI(
@@ -679,15 +619,27 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                importantLinks = ImportantLinks(
-                                    title = title,
-                                    webURL = webURL,
-                                    baseURL = "",
-                                    imgURL = "",
-                                    infoForSaving = note
-                                ), context = context
-                            )
+                            if (!CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .doesThisExistsInImpLinks(webURL = webURL)
+                            ) {
+                                CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                    importantLinks = ImportantLinks(
+                                        title = title,
+                                        webURL = webURL,
+                                        baseURL = "",
+                                        imgURL = "",
+                                        infoForSaving = note
+                                    ), context = context
+                                )
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "given link already exists in \"Important Links\"",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
@@ -702,14 +654,26 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                folderName = null,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                context = context
-                            )
+                            if (!CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .doesThisExistsInSavedLinks(webURL)
+                            ) {
+                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                    title = title,
+                                    webURL = webURL,
+                                    noteForSaving = note,
+                                    folderName = null,
+                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                    context = context
+                                )
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "given link already exists in the \"Saved Links\"",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false
@@ -720,14 +684,29 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                folderName = SpecificScreenVM.currentClickedFolderName.value,
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                context = context
-                            )
+                            if (!CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .doesThisLinkExistsInAFolder(
+                                        webURL = webURL,
+                                        folderName = SpecificScreenVM.currentClickedFolderName.value
+                                    )
+                            ) {
+                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                    folderName = SpecificScreenVM.currentClickedFolderName.value,
+                                    title = title,
+                                    webURL = webURL,
+                                    noteForSaving = note,
+                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                    context = context
+                                )
+                            } else {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "given link already exists in the \"${SpecificScreenVM.currentClickedFolderName.value}\"",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
                                 isDataExtractingFromTheLink.value = false

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -80,10 +81,12 @@ import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -414,7 +417,7 @@ fun CollectionScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(65.dp))
+                    Spacer(modifier = Modifier.height(165.dp))
                 }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
@@ -485,6 +488,7 @@ fun CollectionScreen(navController: NavController) {
             },
             deleteDialogBoxType = DataDialogBoxType.FOLDER
         )
+
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
@@ -492,18 +496,54 @@ fun CollectionScreen(navController: NavController) {
                     isDataExtractingFromLink.value = true
                 }
                 coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                        context = context
-                    )
+                    if (selectedFolder == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .doesThisExistsInSavedLinks(webURL)
+                    ) {
+                        CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            folderName = selectedFolder,
+                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                            context = context
+                        )
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "given link already exists in the \"Saved Links\"",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                    if (selectedFolder != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .doesThisLinkExistsInAFolder(
+                                folderName = selectedFolder,
+                                webURL = webURL
+                            )
+                    ) {
+                        CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            folderName = selectedFolder,
+                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                            context = context
+                        )
+                    } else {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "given link already exists in the \"$selectedFolder\"",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {
                         isDataExtractingFromLink.value = false
                     }
+                    shouldDialogForNewLinkAppear.value = false
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromLink,
@@ -513,29 +553,9 @@ fun CollectionScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope
         )
         NewLinkBtmSheet(
-            isDataExtractingForTheLink = isDataExtractingFromLink,
             btmSheetState = btmModalSheetStateForSavingLinks,
             _inIntentActivity = false,
             inASpecificFolder = false,
-            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
-                if (webURL.isNotEmpty()) {
-                    isDataExtractingFromLink.value = true
-                }
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        folderName = selectedFolder,
-                        savingFor = if (selectedFolder == "Saved Links") CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS else CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                        context = context
-                    )
-                }.invokeOnCompletion {
-                    if (webURL.isNotEmpty()) {
-                        isDataExtractingFromLink.value = false
-                    }
-                }
-            },
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
     }

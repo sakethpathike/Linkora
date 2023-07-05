@@ -30,8 +30,6 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -93,7 +91,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)
-            CoroutineScope(Dispatchers.Main).launch{
+            LaunchedEffect(key1 = Unit) {
                 navigationVM.startDestination.value =
                     if (SettingsScreenVM.Settings.readPreferenceValue(
                             preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
@@ -103,7 +101,7 @@ class MainActivity : ComponentActivity() {
                         NavigationRoutes.HOME_SCREEN.name
                     else
                         NavigationRoutes.COLLECTIONS_SCREEN.name
-            }.start()
+            }
         }
     }
 }

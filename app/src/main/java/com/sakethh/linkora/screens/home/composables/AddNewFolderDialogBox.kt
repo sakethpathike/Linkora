@@ -118,7 +118,13 @@ fun AddNewFolderDialogBox(
                             if (folderNameTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
                                     context,
-                                    "where's the folder name bruhh?",
+                                    "folder name can't be empty",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else if (folderNameTextFieldValue.value == "Saved Links") {
+                                Toast.makeText(
+                                    context,
+                                    "\"Saved Links\" already exists by default, choose another name :)",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {

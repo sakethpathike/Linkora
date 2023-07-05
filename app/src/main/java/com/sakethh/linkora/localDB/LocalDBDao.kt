@@ -87,6 +87,12 @@ interface LocalDBDao {
     @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInImpLinks(webURL: String): Boolean
 
+    @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks=1)")
+    suspend fun doesThisExistsInSavedLinks(webURL: String): Boolean
+
+    @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND keyOfLinkedFolder=:folderName)")
+    suspend fun doesThisLinkExistsInAFolder(webURL: String, folderName: String): Boolean
+
     @Query("SELECT EXISTS(SELECT * FROM archived_links_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInArchiveLinks(webURL: String): Boolean
 
