@@ -29,6 +29,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -50,11 +51,9 @@ import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -141,7 +140,10 @@ fun SpecificScreen(navController: NavController) {
                     text = topBarText,
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp
+                    fontSize = 24.sp,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.padding(end = 30.dp)
                 )
             })
         }) {
@@ -634,13 +636,11 @@ fun SpecificScreen(navController: NavController) {
                                     ), context = context
                                 )
                             } else {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context,
-                                        "given link already exists in \"Important Links\"",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    "given link already exists in \"Important Links\"",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -668,13 +668,11 @@ fun SpecificScreen(navController: NavController) {
                                     context = context
                                 )
                             } else {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context,
-                                        "given link already exists in the \"Saved Links\"",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    "given link already exists in the \"Saved Links\"",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {
@@ -701,13 +699,11 @@ fun SpecificScreen(navController: NavController) {
                                     context = context
                                 )
                             } else {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context,
-                                        "given link already exists in the \"${SpecificScreenVM.currentClickedFolderName.value}\"",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+                                Toast.makeText(
+                                    context,
+                                    "given link already exists in the \"${SpecificScreenVM.currentClickedFolderName.value}\"",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }.invokeOnCompletion {
                             if (webURL.isNotEmpty()) {

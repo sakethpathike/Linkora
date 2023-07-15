@@ -1,9 +1,9 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CollectionsBookmark
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.outlined.CollectionsBookmark
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -19,12 +19,11 @@ data class BtmNavigationItem(
 
 class NavigationVM : ViewModel() {
 
-    val startDestination =
-        mutableStateOf(NavigationRoutes.HOME_SCREEN.name)
+
     val btmBarList = listOf(
         BtmNavigationItem(
-            selectedIcon = Icons.Filled.CollectionsBookmark,
-            nonSelectedIcon = Icons.Outlined.CollectionsBookmark,
+            selectedIcon = Icons.Filled.Folder,
+            nonSelectedIcon = Icons.Outlined.Folder,
             navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
         ),
         BtmNavigationItem(
@@ -36,5 +35,8 @@ class NavigationVM : ViewModel() {
 
     companion object {
         val btmNavBarContainerColor = mutableStateOf(Color(Color.Transparent.value))
+        val startDestination =
+            mutableStateOf(NavigationRoutes.HOME_SCREEN.name)
     }
+
 }

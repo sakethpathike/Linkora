@@ -96,6 +96,7 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.1.0")
 
     implementation 'org.jsoup:jsoup:1.16.1'
+
     implementation 'com.vladsch.flexmark:flexmark-html2md-converter:0.64.0'
     implementation 'com.halilibo.compose-richtext:richtext-commonmark:0.16.0'
 
@@ -111,6 +112,4 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     annotationProcessor "androidx.room:room-compiler:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-
-    implementation 'com.github.Priyansh-Kedia:OpenGraphParser:2.5.5'
 }

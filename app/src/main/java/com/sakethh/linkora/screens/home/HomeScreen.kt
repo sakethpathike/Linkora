@@ -73,12 +73,10 @@ import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -534,13 +532,11 @@ fun HomeScreen() {
                             context = context
                         )
                     } else {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "given link already exists in the \"Saved Links\"",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"Saved Links\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                     if (selectedFolder != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .doesThisLinkExistsInAFolder(
@@ -557,13 +553,11 @@ fun HomeScreen() {
                             context = context
                         )
                     } else {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "given link already exists in the \"$selectedFolder\"",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"$selectedFolder\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }.invokeOnCompletion {
                     if (webURL.isNotEmpty()) {

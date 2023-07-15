@@ -330,7 +330,13 @@ fun AddNewLinkDialogBox(
                                             btmModalSheetState.hide()
                                         }
                                     }.invokeOnCompletion {
-                                        isDropDownMenuIconClicked.value = false
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
                                     }
                                 },
                                 folderName = "Saved Links",
@@ -341,7 +347,13 @@ fun AddNewLinkDialogBox(
                                 FolderForBtmSheetIndividualComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
-                                        isDropDownMenuIconClicked.value = false
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
                                     },
                                     folderName = it.folderName,
                                     imageVector = Icons.Outlined.Folder,

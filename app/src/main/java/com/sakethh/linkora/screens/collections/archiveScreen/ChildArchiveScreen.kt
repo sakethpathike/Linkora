@@ -23,8 +23,8 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedFolders
-import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -37,6 +37,8 @@ import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -65,9 +67,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedArchivedLinkData = rememberSaveable {
-        mutableStateOf(ArchivedLinks("", "", "", "", ""))
-    }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     LinkoraTheme {
         LazyColumn(
@@ -83,7 +82,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             webBaseURL = it.baseURL,
                             imgURL = it.imgURL,
                             onMoreIconCLick = {
-                                selectedArchivedLinkData.value = it
+                                archiveScreenVM.selectedArchivedLinkData.value = it
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.webURL
                                 selectedURLOrFolderNote.value = it.infoForSaving
@@ -151,9 +150,21 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .deleteAnArchiveFolder(folderName = selectedURLOrFolderName.value)
                     }.invokeOnCompletion {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .addANewFolder(
+                                        foldersTable = FoldersTable(
+                                            selectedURLOrFolderName.value,
+                                            selectedURLOrFolderNote.value
+                                        )
+                                    )
+                            }, async {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteAnArchiveFolder(folderName = selectedURLOrFolderName.value)
+                            })
+                        }
                         Toast.makeText(
                             context, "Unarchived successfully", Toast.LENGTH_SHORT
                         ).show()
@@ -163,11 +174,11 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .addANewLinkToSavedLinksOrInFolders(
                                 LinksTable(
-                                    title = selectedArchivedLinkData.value.title,
-                                    webURL = selectedArchivedLinkData.value.webURL,
-                                    baseURL = selectedArchivedLinkData.value.baseURL,
-                                    imgURL = selectedArchivedLinkData.value.imgURL,
-                                    infoForSaving = selectedArchivedLinkData.value.infoForSaving,
+                                    title = archiveScreenVM.selectedArchivedLinkData.value.title,
+                                    webURL = archiveScreenVM.selectedArchivedLinkData.value.webURL,
+                                    baseURL = archiveScreenVM.selectedArchivedLinkData.value.baseURL,
+                                    imgURL = archiveScreenVM.selectedArchivedLinkData.value.imgURL,
+                                    infoForSaving = archiveScreenVM.selectedArchivedLinkData.value.infoForSaving,
                                     isLinkedWithSavedLinks = true,
                                     isLinkedWithFolders = false,
                                     keyOfLinkedFolder = "",
@@ -178,7 +189,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 )
                             )
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .deleteALinkFromArchiveLinks(selectedArchivedLinkData.value.webURL)
+                            .deleteALinkFromArchiveLinks(archiveScreenVM.selectedArchivedLinkData.value.webURL)
                     }.invokeOnCompletion {
                         Toast.makeText(
                             context,
@@ -223,6 +234,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             })
         RenameDialogBox(
+            renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,
             existingFolderName = "",
@@ -230,7 +242,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkInfoFromArchiveLinks(webURL, newNote)
+                            .renameALinkInfoFromArchiveLinks(selectedURLOrFolderName.value, newNote)
                     }.invokeOnCompletion {
                         Toast.makeText(
                             context,
@@ -242,7 +254,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkInfoFromArchiveFolders(
-                                webURL = webURL,
                                 newInfo = newNote,
                                 folderName = selectedURLOrFolderName.value
                             )

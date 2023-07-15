@@ -1,7 +1,6 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -13,11 +12,10 @@ import com.sakethh.linkora.screens.settings.SettingsScreen
 
 @Composable
 fun MainNavigation(navController: NavHostController) {
-    val navigationVM: NavigationVM = viewModel()
 
     NavHost(
         navController = navController,
-        startDestination = navigationVM.startDestination.value
+        startDestination = NavigationVM.startDestination.value
     ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
             HomeScreen()

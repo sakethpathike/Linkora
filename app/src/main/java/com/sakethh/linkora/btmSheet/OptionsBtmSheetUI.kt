@@ -110,7 +110,7 @@ fun OptionsBtmSheetUI(
                     elementImageVector = Icons.Outlined.DriveFileRenameOutline
                 )
 
-                if (btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                if ((btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !inArchiveScreen.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {

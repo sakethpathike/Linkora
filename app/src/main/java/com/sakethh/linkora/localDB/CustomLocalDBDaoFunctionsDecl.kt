@@ -6,7 +6,6 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -34,8 +33,6 @@ object CustomLocalDBDaoFunctionsDecl {
                 awaitAll(
                     async {
                         localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
-                    },
-                    async {
                         localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
                     },
                     async {
@@ -65,13 +62,32 @@ object CustomLocalDBDaoFunctionsDecl {
         }
     }
 
-    suspend fun importantLinkTableUpdater(importantLinks: ImportantLinks, context: Context) {
+    suspend fun importantLinkTableUpdater(
+        importantLinks: ImportantLinks,
+        context: Context,
+        inImportantLinksScreen: Boolean = false,
+    ) {
 
         if (localDB.localDBData().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
-            localDB.localDBData().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, "deleted the link from Important Links", Toast.LENGTH_SHORT)
-                    .show()
+            if (inImportantLinksScreen) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "given link already exists in the \"Important Links\"",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
+            } else {
+                localDB.localDBData().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "deleted the link from Important Links",
+                        Toast.LENGTH_SHORT
+                    )
+                        .show()
+                }
             }
         } else {
             val linkDataExtractor =

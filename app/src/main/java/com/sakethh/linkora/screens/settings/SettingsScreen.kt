@@ -189,12 +189,12 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 items(themeSectionData) { settingsUIElement ->
-                    if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming"){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming") {
                         SettingComponent(
                             settingsUIElement = settingsUIElement,
                             data = themeSectionData
                         )
-                    } else if(settingsUIElement.title != "Use dynamic theming"){
+                    } else if (settingsUIElement.title != "Use dynamic theming") {
                         SettingComponent(
                             settingsUIElement = settingsUIElement,
                             data = themeSectionData
@@ -274,8 +274,12 @@ fun SettingsScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
-        } else {
+        } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
             navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                popUpTo(0)
+            }
+        } else {
+            navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
                 popUpTo(0)
             }
         }

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
@@ -23,6 +24,8 @@ enum class ArchiveScreenType {
 }
 
 class ArchiveScreenVM : ViewModel() {
+    val selectedArchivedLinkData = mutableStateOf(ArchivedLinks("", "", "", "", ""))
+
     val parentArchiveScreenData = listOf(
         ArchiveScreenModal(name = "Links", screen = { navController ->
             ChildArchiveScreen(
