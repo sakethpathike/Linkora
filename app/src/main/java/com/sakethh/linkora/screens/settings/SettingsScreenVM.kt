@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.DataStore
@@ -12,11 +13,15 @@ import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 data class SettingsUIElement(
     val title: String,
@@ -269,10 +274,18 @@ class SettingsScreenVM : ViewModel() {
                     },
                     async {
                         isHomeScreenEnabled.value =
-                            readPreferenceValue(
-                                preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                                dataStore = dataStore
-                            ) ?: true
+                            if (readPreferenceValue(
+                                    preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                                    dataStore = dataStore
+                                ) == null
+                            ) {
+                                true
+                            } else {
+                                readPreferenceValue(
+                                    preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                                    dataStore = dataStore
+                                ) == true
+                            }
                     },
                     async {
                         isBtmSheetEnabledForSavingLinks.value =
@@ -286,21 +299,27 @@ class SettingsScreenVM : ViewModel() {
         }
 
         suspend fun latestAppVersionRetriever() {
-            val ktorClient = HttpClient(Android)
+            val ktorClient = HttpClient(Android) {
+                install(ContentNegotiation) {
+                    json(Json {
+                        ignoreUnknownKeys = true
+                    })
+                }
+            }
+            val rawData = ktorClient.get(appInfoURL)
+            Log.d("ktor client", rawData.bodyAsText())
             val retrievedData =
-                ktorClient.get("https://64b38a3fe4fdea7cae88f072--whimsical-gingersnap-139623.netlify.app/")
-            val latestAppData =
-                retrievedData.body<AppInfoDTO>()
+                rawData.body<AppInfoDTO>()
             latestAppInfoFromServer.apply {
-                this.latestVersion.value = latestAppData.latestVersion
-                this.latestStableVersion.value = latestAppData.latestStableVersion
+                this.latestVersion.value = retrievedData.latestVersion
+                this.latestStableVersion.value = retrievedData.latestStableVersion
                 this.latestStableVersionReleaseURL.value =
-                    latestAppData.latestStableVersionReleaseURL
-                this.latestVersionReleaseURL.value = latestAppData.latestVersionReleaseURL
-                this.changeLogForLatestVersion.value = latestAppData.changeLogForLatestVersion
+                    retrievedData.latestStableVersionReleaseURL
+                this.latestVersionReleaseURL.value = retrievedData.latestVersionReleaseURL
+                this.changeLogForLatestVersion.value = retrievedData.changeLogForLatestVersion
                 this.changeLogForLatestStableVersion.value =
-                    latestAppData.changeLogForLatestStableVersion
-                this.httpStatusCodeFromServer.value = retrievedData.status.value.toString()
+                    retrievedData.changeLogForLatestStableVersion
+                this.httpStatusCodeFromServer.value = rawData.status.value.toString()
             }
             ktorClient.close()
         }

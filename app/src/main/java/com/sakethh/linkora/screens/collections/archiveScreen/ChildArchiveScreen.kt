@@ -247,12 +247,13 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,
-            existingFolderName = "",
+            existingFolderName = selectedURLOrFolderName.value,
+            webURLForTitle = selectedURLOrFolderName.value,
             onNoteChangeClickForLinks = { webURL: String, newNote: String ->
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkInfoFromArchiveLinks(selectedURLOrFolderName.value, newNote)
+                            .renameALinkInfoFromArchiveLinks(webURL, newNote)
                     }.invokeOnCompletion {
                         Toast.makeText(
                             context,
@@ -264,8 +265,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameArchivedFolderNote(
-                                newNote = newNote,
-                                folderName = selectedURLOrFolderName.value
+                                folderName = selectedURLOrFolderName.value,
+                                newNote = newNote
                             )
                     }.invokeOnCompletion {
                         Toast.makeText(
@@ -280,21 +281,19 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromArchiveLinks(webURL, newTitle)
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        CustomLocalDBDaoFunctionsDecl.updateArchivedLinksDetails(
+                            webURL = webURL,
+                            infoForSaving = selectedURLOrFolderNote.value,
+                            title = newTitle,
+                            context = context
+                        )
                     }
                 } else {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.updateArchivedFoldersDetails(
                             existingFolderName = selectedURLOrFolderName.value,
-                            newFolderName = newTitle,
                             infoForFolder = selectedURLOrFolderNote.value,
+                            newFolderName = newTitle,
                             context = context
                         )
                     }

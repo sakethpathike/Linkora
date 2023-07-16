@@ -69,10 +69,21 @@ object CustomLocalDBDaoFunctionsDecl {
         context: Context,
     ) {
         if (infoForFolder.isNotEmpty()) {
-            localDB.localDBData().renameAFolderArchiveName(existingFolderName, newFolderName)
-            localDB.localDBData().renameArchivedFolderNote(existingFolderName, infoForFolder)
-            localDB.localDBData()
-                .renameFolderNameForExistingArchivedFolderData(existingFolderName, newFolderName)
+            coroutineScope {
+                awaitAll(
+                    async {
+                        localDB.localDBData()
+                            .renameAFolderArchiveName(existingFolderName, newFolderName)
+                        localDB.localDBData().renameArchivedFolderNote(newFolderName, infoForFolder)
+                    },
+                    async {
+                        localDB.localDBData()
+                            .renameFolderNameForExistingArchivedFolderData(
+                                existingFolderName,
+                                newFolderName
+                            )
+                    })
+            }
         } else {
             coroutineScope {
                 awaitAll(
@@ -91,6 +102,63 @@ object CustomLocalDBDaoFunctionsDecl {
         }
         withContext(Dispatchers.Main) {
             Toast.makeText(context, "updated archived folder data", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    suspend fun updateArchivedFolderBasedLinksDetails(
+        title: String,
+        infoForLink: String,
+        webURL: String,
+        folderName: String,
+        context: Context,
+    ) {
+        if (infoForLink.isNotEmpty()) {
+            localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
+                webURL = webURL,
+                newTitle = title,
+                folderName = folderName
+            )
+            localDB.localDBData().renameALinkInfoFromArchiveBasedFolderLinks(
+                webURL = webURL,
+                newInfo = infoForLink,
+                folderName = folderName
+            )
+        } else {
+            coroutineScope {
+                localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
+                    webURL = webURL,
+                    newTitle = title,
+                    folderName = folderName
+                )
+            }
+        }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "updated archived link data", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    suspend fun updateArchivedLinksDetails(
+        webURL: String,
+        infoForSaving: String,
+        title: String,
+        context: Context,
+    ) {
+        if (infoForSaving.isNotEmpty()) {
+            coroutineScope {
+                awaitAll(async {
+                    localDB.localDBData()
+                        .renameALinkInfoFromArchiveLinks(webURL = webURL, newInfo = infoForSaving)
+                }, async {
+                    localDB.localDBData()
+                        .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = title)
+                })
+            }
+        } else {
+            localDB.localDBData()
+                .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = title)
+        }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "updated archived link data", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -350,7 +418,9 @@ object CustomLocalDBDaoFunctionsDecl {
         }
     }
 
-    fun deleteEntireLinksAndFoldersData() {
-        localDB.clearAllTables()
+    suspend fun deleteEntireLinksAndFoldersData() {
+        withContext(Dispatchers.Default) {
+            localDB.clearAllTables()
+        }
     }
 }

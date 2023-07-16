@@ -452,7 +452,7 @@ fun SpecificScreen(navController: NavController) {
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                    .deleteALinkFromSavedLinksOrInFolders(webURL = tempImpLinkData.webURL)
+                                    .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                             })
                         }
                     }
@@ -471,7 +471,10 @@ fun SpecificScreen(navController: NavController) {
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                    .deleteALinkFromSavedLinksOrInFolders(webURL = tempImpLinkData.webURL)
+                                    .deleteALinkFromSpecificFolder(
+                                        folderName = topBarText,
+                                        webURL = tempImpLinkData.webURL
+                                    )
                             })
                         }
                     }
@@ -500,14 +503,17 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .deleteALinkFromSavedLinksOrInFolders(webURL = selectedWebURL.value)
+                                .deleteALinkFromSavedLinks(webURL = selectedWebURL.value)
                         }
                     }
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .deleteALinkFromSavedLinksOrInFolders(webURL = selectedWebURL.value)
+                                .deleteALinkFromSpecificFolder(
+                                    folderName = topBarText,
+                                    webURL = selectedWebURL.value
+                                )
                         }
                     }
                 }
@@ -540,9 +546,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .renameArchivedFolderNote(
-                                    folderName = SpecificScreenVM.selectedArchiveFolderName.value,
-                                    newNote = newNote
+                                .renameALinkInfoFromArchiveBasedFolderLinks(
+                                    webURL = webURL,
+                                    newInfo = newNote,
+                                    folderName = topBarText
                                 )
                         }.start()
                         Unit
@@ -591,10 +598,11 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.updateArchivedFoldersDetails(
-                                existingFolderName = SpecificScreenVM.selectedArchiveFolderName.value,
-                                newFolderName = newTitle,
-                                infoForFolder = selectedURLOrFolderNote.value,
+                            CustomLocalDBDaoFunctionsDecl.updateArchivedFolderBasedLinksDetails(
+                                title = newTitle,
+                                infoForLink = selectedURLOrFolderNote.value,
+                                webURL = webURL,
+                                folderName = topBarText,
                                 context = context
                             )
                         }.start()

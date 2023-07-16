@@ -631,7 +631,7 @@ fun HomeScreen() {
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                    .deleteALinkFromSavedLinksOrInFolders(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                                    .deleteALinkFromSavedLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                             })
                         }
                         Unit
@@ -691,7 +691,7 @@ fun HomeScreen() {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .deleteALinkFromSavedLinksOrInFolders(
+                            .deleteALinkFromSavedLinks(
                                 webURL = selectedWebURL.value
                             )
                     }.invokeOnCompletion {

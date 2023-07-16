@@ -136,7 +136,7 @@ fun OptionsBtmSheetUI(
                         elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                     )
                 }
-                if (!inSpecificArchiveScreen.value || optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || !inArchiveScreen.value) {
+                if (!inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !inArchiveScreen.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {

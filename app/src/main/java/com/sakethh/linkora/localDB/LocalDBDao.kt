@@ -29,14 +29,21 @@ interface LocalDBDao {
     @Insert
     suspend fun addANewLinkInRecentlyVisited(recentlyVisited: RecentlyVisited)
 
-    @Query("DELETE from links_table WHERE webURL = :webURL")
-    suspend fun deleteALinkFromSavedLinksOrInFolders(webURL: String)
+    @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
+    suspend fun deleteALinkFromSavedLinks(webURL: String)
 
     @Query("DELETE from important_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromImpLinks(webURL: String)
 
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromArchiveLinks(webURL: String)
+
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :archiveFolderName AND isLinkedWithArchivedFolder=1 AND isLinkedWithSavedLinks = 0 AND isLinkedWithSavedLinks=0")
+    suspend fun deleteALinkFromArchiveFolderBasedLinks(webURL: String, archiveFolderName: String)
+
+
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithSavedLinks=0")
+    suspend fun deleteALinkFromSpecificFolder(webURL: String, folderName: String)
 
     @Query("DELETE from recently_visited_table WHERE webURL = :webURL")
     suspend fun deleteARecentlyVisitedLink(webURL: String)
@@ -147,6 +154,12 @@ interface LocalDBDao {
 
     @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinks(webURL: String, newInfo: String, folderName:String)
+
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinks(webURL: String, newTitle: String, folderName:String)
 
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
