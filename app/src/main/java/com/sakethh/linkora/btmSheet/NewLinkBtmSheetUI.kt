@@ -144,7 +144,6 @@ fun NewLinkBtmSheet(
                 })
         }
     }
-    var doesThisLinkAlreadyExists = false
     LinkoraTheme {
         if (shouldUIBeVisible.value) {
             ModalBottomSheet(onDismissRequest = {
@@ -186,19 +185,20 @@ fun NewLinkBtmSheet(
                                     modifier = Modifier.fillMaxWidth(0.50f)
                                 )
                             }
-                            Button(modifier = Modifier.padding(
-                                start = 20.dp, bottom = 10.dp
-                            ), shape = RoundedCornerShape(10.dp), onClick = {
-                                if (!inASpecificFolder && !inIntentActivity.value) {
-                                    coroutineScope.launch {
-                                        doesThisLinkAlreadyExists =
-                                            selectedFolder.value == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                .doesThisExistsInSavedLinks(
-                                                    linkTextFieldValue.value
-                                                )
-                                    }.invokeOnCompletion {
+                            Button(
+                                modifier = Modifier.padding(
+                                    start = 20.dp, bottom = 10.dp
+                                ), shape = RoundedCornerShape(10.dp), onClick = {
+                                    if (!inASpecificFolder && !inIntentActivity.value) {
+                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                            isDataExtractingForTheLink.value = true
+                                        }
                                         coroutineScope.launch {
-                                            if (doesThisLinkAlreadyExists) {
+                                            if (selectedFolder.value == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                    .doesThisExistsInSavedLinks(
+                                                        linkTextFieldValue.value
+                                                    )
+                                            ) {
                                                 CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                     title = titleTextFieldValue.value,
                                                     webURL = linkTextFieldValue.value,
@@ -229,18 +229,13 @@ fun NewLinkBtmSheet(
                                                 }
                                             }
                                         }
-                                    }
-
-                                    coroutineScope.launch {
-                                        doesThisLinkAlreadyExists =
-                                            selectedFolder.value != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                .doesThisLinkExistsInAFolder(
-                                                    folderName = selectedFolder.value,
-                                                    webURL = linkTextFieldValue.value
-                                                )
-                                    }.invokeOnCompletion {
                                         coroutineScope.launch {
-                                            if (doesThisLinkAlreadyExists) {
+                                            if (selectedFolder.value != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                    .doesThisLinkExistsInAFolder(
+                                                        folderName = selectedFolder.value,
+                                                        webURL = linkTextFieldValue.value
+                                                    )
+                                            ) {
                                                 CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                     title = titleTextFieldValue.value,
                                                     webURL = linkTextFieldValue.value,
@@ -269,54 +264,50 @@ fun NewLinkBtmSheet(
                                                 }
                                             }
                                         }
-                                    }
-                                } else if (inASpecificFolder && !inIntentActivity.value) {
-                                    if (linkTextFieldValue.value.isNotEmpty()) {
-                                        isDataExtractingForTheLink.value = true
-                                    }
-                                    when (SpecificScreenVM.screenType.value) {
-                                        SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                            coroutineScope.launch {
-                                                CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                                    ImportantLinks(
-                                                        title = titleTextFieldValue.value,
-                                                        webURL = linkTextFieldValue.value,
-                                                        infoForSaving = noteTextFieldValue.value,
-                                                        baseURL = "",
-                                                        imgURL = ""
-                                                    ),
-                                                    context = context,
-                                                    inImportantLinksScreen = true
-                                                )
-                                            }.invokeOnCompletion {
-                                                isDataExtractingForTheLink.value = false
+                                    } else if (inASpecificFolder && !inIntentActivity.value) {
+                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                            isDataExtractingForTheLink.value = true
+                                        }
+                                        when (SpecificScreenVM.screenType.value) {
+                                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                                                 coroutineScope.launch {
-                                                    if (btmSheetState.isVisible) {
-                                                        btmSheetState.hide()
-                                                    }
+                                                    CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                                        ImportantLinks(
+                                                            title = titleTextFieldValue.value,
+                                                            webURL = linkTextFieldValue.value,
+                                                            infoForSaving = noteTextFieldValue.value,
+                                                            baseURL = "",
+                                                            imgURL = ""
+                                                        ),
+                                                        context = context,
+                                                        inImportantLinksScreen = true
+                                                    )
                                                 }.invokeOnCompletion {
-                                                    shouldUIBeVisible.value = false
-                                                    if (inIntentActivity.value) {
-                                                        activity?.finishAndRemoveTask()
+                                                    isDataExtractingForTheLink.value = false
+                                                    coroutineScope.launch {
+                                                        if (btmSheetState.isVisible) {
+                                                            btmSheetState.hide()
+                                                        }
+                                                    }.invokeOnCompletion {
+                                                        shouldUIBeVisible.value = false
+                                                        if (inIntentActivity.value) {
+                                                            activity?.finishAndRemoveTask()
+                                                        }
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        SpecificScreenType.ARCHIVE_SCREEN -> {
+                                            SpecificScreenType.ARCHIVE_SCREEN -> {
 
-                                        }
+                                            }
 
-                                        SpecificScreenType.LINKS_SCREEN -> {
-                                            coroutineScope.launch {
-                                                doesThisLinkAlreadyExists =
-                                                    selectedFolder.value == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                        .doesThisExistsInSavedLinks(
-                                                            linkTextFieldValue.value
-                                                        )
-                                            }.invokeOnCompletion {
+                                            SpecificScreenType.LINKS_SCREEN -> {
                                                 coroutineScope.launch {
-                                                    if (doesThisLinkAlreadyExists) {
+                                                    if (selectedFolder.value == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                            .doesThisExistsInSavedLinks(
+                                                                linkTextFieldValue.value
+                                                            )
+                                                    ) {
                                                         CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                             title = titleTextFieldValue.value,
                                                             webURL = linkTextFieldValue.value,
@@ -332,6 +323,7 @@ fun NewLinkBtmSheet(
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
+
                                                 }.invokeOnCompletion {
                                                     if (linkTextFieldValue.value.isNotEmpty()) {
                                                         isDataExtractingForTheLink.value = false
@@ -348,19 +340,15 @@ fun NewLinkBtmSheet(
                                                     }
                                                 }
                                             }
-                                        }
 
-                                        SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
-                                            coroutineScope.launch {
-                                                doesThisLinkAlreadyExists =
-                                                    selectedFolder.value != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                        .doesThisLinkExistsInAFolder(
-                                                            folderName = selectedFolder.value,
-                                                            webURL = linkTextFieldValue.value
-                                                        )
-                                            }.invokeOnCompletion {
+                                            SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                                                 coroutineScope.launch {
-                                                    if (doesThisLinkAlreadyExists) {
+                                                    if (selectedFolder.value != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                            .doesThisLinkExistsInAFolder(
+                                                                webURL = linkTextFieldValue.value,
+                                                                folderName = SpecificScreenVM.currentClickedFolderName.value
+                                                            )
+                                                    ) {
                                                         CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                             title = titleTextFieldValue.value,
                                                             webURL = linkTextFieldValue.value,
@@ -372,7 +360,7 @@ fun NewLinkBtmSheet(
                                                     } else {
                                                         Toast.makeText(
                                                             context,
-                                                            "given link already exists in the \"${selectedFolder.value}\"",
+                                                            "given link already exists in the \"${SpecificScreenVM.currentClickedFolderName.value}\"",
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
@@ -393,105 +381,97 @@ fun NewLinkBtmSheet(
                                                 }
                                             }
                                         }
-                                    }
-                                } else {
-                                    if (Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
-                                        isDataExtractingForTheLink.value = true
-                                        if (selectedFolder.value == "Saved Links") {
+                                    } else {
+                                        if (Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
+                                            isDataExtractingForTheLink.value = true
                                             coroutineScope.launch {
-                                                intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
-                                                    ?.let {
-                                                        doesThisLinkAlreadyExists =
+                                                if (selectedFolder.value == "Saved Links" && intentData.value!!.getStringExtra(
+                                                        Intent.EXTRA_TEXT
+                                                    )
+                                                        ?.let {
                                                             !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                                                 .doesThisExistsInSavedLinks(
                                                                     it
                                                                 )
-                                                    }
+                                                        } == true
+                                                ) {
+                                                    intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
+                                                        ?.let {
+                                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                                title = titleTextFieldValue.value,
+                                                                webURL = it,
+                                                                folderName = selectedFolder.value,
+                                                                noteForSaving = noteTextFieldValue.value,
+                                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                                                context = context
+                                                            )
+                                                        }
+
+                                                } else {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "given link already exists in the \"Saved Links\"",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
                                             }.invokeOnCompletion {
+                                                isDataExtractingForTheLink.value = false
                                                 coroutineScope.launch {
-                                                    if (doesThisLinkAlreadyExists) {
-                                                        intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
-                                                            ?.let {
-                                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                                    title = titleTextFieldValue.value,
-                                                                    webURL = it,
-                                                                    folderName = selectedFolder.value,
-                                                                    noteForSaving = noteTextFieldValue.value,
-                                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                                    context = context
-                                                                )
-                                                            }
-                                                    } else {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "given link already exists in the \"Saved Links\"",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
+                                                    if (btmSheetState.isVisible) {
+                                                        btmSheetState.hide()
                                                     }
                                                 }.invokeOnCompletion {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
+                                                    shouldUIBeVisible.value = false
+                                                    if (inIntentActivity.value) {
+                                                        activity?.finishAndRemoveTask()
                                                     }
                                                 }
                                             }
                                         } else {
                                             coroutineScope.launch {
-                                                intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
-                                                    ?.let {
-                                                        doesThisLinkAlreadyExists =
+                                                if (intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
+                                                        ?.let {
                                                             !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                                                                 .doesThisLinkExistsInAFolder(
                                                                     webURL = it,
                                                                     folderName = selectedFolder.value
                                                                 )
-                                                    }
+                                                        } == true
+                                                ) {
+                                                    intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
+                                                        ?.let {
+                                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                                title = titleTextFieldValue.value,
+                                                                webURL = it,
+                                                                folderName = selectedFolder.value,
+                                                                noteForSaving = noteTextFieldValue.value,
+                                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                                                context = context
+                                                            )
+                                                        }
+                                                } else {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "given link already exists in the \"${selectedFolder.value}\"",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
                                             }.invokeOnCompletion {
+                                                isDataExtractingForTheLink.value = false
                                                 coroutineScope.launch {
-                                                    if (doesThisLinkAlreadyExists) {
-                                                        intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
-                                                            ?.let {
-                                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                                    title = titleTextFieldValue.value,
-                                                                    webURL = it,
-                                                                    folderName = selectedFolder.value,
-                                                                    noteForSaving = noteTextFieldValue.value,
-                                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                                    context = context
-                                                                )
-                                                            }
-                                                    } else {
-                                                        Toast.makeText(
-                                                            context,
-                                                            "given link already exists in the \"${selectedFolder.value}\"",
-                                                            Toast.LENGTH_SHORT
-                                                        ).show()
+                                                    if (btmSheetState.isVisible) {
+                                                        btmSheetState.hide()
                                                     }
                                                 }.invokeOnCompletion {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
+                                                    shouldUIBeVisible.value = false
+                                                    if (inIntentActivity.value) {
+                                                        activity?.finishAndRemoveTask()
                                                     }
                                                 }
                                             }
                                         }
                                     }
-                                }
-                            }) {
+                                }) {
                                 if (isDataExtractingForTheLink.value) {
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(20.dp),

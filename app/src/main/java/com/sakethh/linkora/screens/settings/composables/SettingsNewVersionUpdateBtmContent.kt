@@ -59,9 +59,22 @@ fun SettingsNewVersionUpdateBtmContent(
             title = "version you're using",
             value = "v${SettingsScreenVM.currentAppVersion}"
         )
+        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+            VersionCardForBtmSheetContent(
+                title = "latest stable version which you should be using",
+                value = SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value
+            )
+        }
+
+        Divider(
+            color = MaterialTheme.colorScheme.outline,
+            thickness = 0.5.dp,
+            modifier = Modifier.padding(20.dp)
+        )
+
         VersionCardForBtmSheetContent(
-            title = "latest version which you should be using",
-            value = SettingsScreenVM.latestAppVersionFromServer.value
+            title = "latest version which is available for usage (not stable)",
+            value = "v${SettingsScreenVM.latestAppInfoFromServer.latestVersion.value}"
         )
 
         Divider(
@@ -70,19 +83,56 @@ fun SettingsNewVersionUpdateBtmContent(
             modifier = Modifier.padding(20.dp)
         )
         Text(
-            text = "You can find what's new in the latest release and can download latest release from Github:)",
+            text = "You can find what's new in the latest release(s) and can download latest release(s) from Github:)",
             style = MaterialTheme.typography.titleSmall,
             fontSize = 16.sp,
             textAlign = TextAlign.Start,
             lineHeight = 20.sp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
         )
-
-        Button(
+        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+            Button(
+                shape = RoundedCornerShape(10.dp),
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                    .fillMaxWidth(),
+                onClick = {
+                    coroutineScope.launch {
+                        if (modalBtmSheetState.isVisible) {
+                            modalBtmSheetState.hide()
+                        }
+                    }.invokeOnCompletion {
+                        shouldBtmModalSheetBeVisible.value = false
+                    }
+                    coroutineScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Linkora Stable Release on Github",
+                                webURL = SettingsScreenVM.latestAppInfoFromServer.latestStableVersionReleaseURL.value,
+                                baseURL = "github.com",
+                                imgURL = "it.imgURL",
+                                infoForSaving = "Linkora Stable Release on Github"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler
+                        )
+                    }
+                }) {
+                Text(
+                    text = "Redirect me to latest Stable Release page",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp,
+                    modifier = Modifier
+                        .padding(10.dp)
+                        .fillMaxWidth()
+                )
+            }
+        }
+        OutlinedButton(
+            modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
             shape = RoundedCornerShape(10.dp),
-            modifier = Modifier
-                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                .fillMaxWidth(),
             onClick = {
                 coroutineScope.launch {
                     if (modalBtmSheetState.isVisible) {
@@ -94,11 +144,11 @@ fun SettingsNewVersionUpdateBtmContent(
                 coroutineScope.launch {
                     openInWeb(
                         recentlyVisitedData = RecentlyVisited(
-                            title = "Linkora Releases on Github",
-                            webURL = "https://www.github.com/sakethpathike/Linkora",
+                            title = "Linkora Release on Github",
+                            webURL = SettingsScreenVM.latestAppInfoFromServer.latestVersionReleaseURL.value,
                             baseURL = "github.com",
                             imgURL = "it.imgURL",
-                            infoForSaving = "Linkora Releases on Github"
+                            infoForSaving = "Linkora Release on Github"
                         ),
                         context = context,
                         uriHandler = uriHandler
@@ -106,7 +156,7 @@ fun SettingsNewVersionUpdateBtmContent(
                 }
             }) {
             Text(
-                text = "Redirect me to Github Releases",
+                text = "Redirect me to latest Release page",
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,

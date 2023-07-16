@@ -148,8 +148,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onUnarchiveClick = {
                 if (archiveScreenType == ArchiveScreenType.FOLDERS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
+                        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .doesThisFolderExists(folderName = selectedURLOrFolderName.value)
+                        ) {
+                            Toast.makeText(
+                                context,
+                                "folder name already exists, rename any one either to unarchive this folder",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
+                        }
                     }.invokeOnCompletion {
                         coroutineScope.launch {
                             awaitAll(async {
@@ -253,14 +263,14 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 } else {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkInfoFromArchiveFolders(
-                                newInfo = newNote,
+                            .renameArchivedFolderNote(
+                                newNote = newNote,
                                 folderName = selectedURLOrFolderName.value
                             )
                     }.invokeOnCompletion {
                         Toast.makeText(
                             context,
-                            "updated data successfully",
+                            "updated archived data successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -281,18 +291,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .renameALinkTitleFromFolders(
-                                webURL = webURL,
-                                newTitle = newTitle,
-                                folderName = selectedURLOrFolderName.value
-                            )
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        CustomLocalDBDaoFunctionsDecl.updateArchivedFoldersDetails(
+                            existingFolderName = selectedURLOrFolderName.value,
+                            newFolderName = newTitle,
+                            infoForFolder = selectedURLOrFolderNote.value,
+                            context = context
+                        )
                     }
                 }
                 Unit

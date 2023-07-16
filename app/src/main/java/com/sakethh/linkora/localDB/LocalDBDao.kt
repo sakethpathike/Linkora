@@ -105,6 +105,15 @@ interface LocalDBDao {
     @Query("UPDATE folders_table SET folderName = :newFolderName WHERE folderName = :existingFolderName")
     suspend fun renameAFolderName(existingFolderName: String, newFolderName: String)
 
+    @Query("UPDATE archived_folders_table SET archiveFolderName = :newFolderName WHERE archiveFolderName = :existingFolderName")
+    suspend fun renameAFolderArchiveName(existingFolderName: String, newFolderName: String)
+
+    @Query("UPDATE links_table SET keyOfArchiveLinkedFolder = :newFolderName WHERE keyOfArchiveLinkedFolder = :existingFolderName")
+    suspend fun renameFolderNameForExistingArchivedFolderData(
+        existingFolderName: String,
+        newFolderName: String,
+    )
+
     @Query("UPDATE links_table SET keyOfLinkedFolder = :newFolderName WHERE keyOfLinkedFolder = :existingFolderName")
     suspend fun renameFolderNameForExistingFolderData(
         existingFolderName: String,
@@ -123,6 +132,9 @@ interface LocalDBDao {
 
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE folderName = :folderName")
     suspend fun renameAFolderNote(folderName: String, newNote: String)
+
+    @Query("UPDATE archived_folders_table SET infoForSaving = :newNote WHERE archiveFolderName = :folderName")
+    suspend fun renameArchivedFolderNote(folderName: String, newNote: String)
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)

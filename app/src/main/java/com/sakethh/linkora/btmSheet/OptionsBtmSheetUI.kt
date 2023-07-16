@@ -57,6 +57,7 @@ fun OptionsBtmSheetUI(
     onImportantLinkAdditionInTheTable: (() -> Unit?)? = null,
     importantLinks: ImportantLinks?,
     inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
+    inSpecificArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
     noteForSaving: String,
 ) {
     val context = LocalContext.current
@@ -135,7 +136,7 @@ fun OptionsBtmSheetUI(
                         elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                     )
                 }
-                if (optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || !inArchiveScreen.value) {
+                if (!inSpecificArchiveScreen.value || optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive || !inArchiveScreen.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {
@@ -151,7 +152,7 @@ fun OptionsBtmSheetUI(
                         elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
                     )
                 }
-                if (inArchiveScreen.value) {
+                if (inArchiveScreen.value && !inSpecificArchiveScreen.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {
@@ -167,7 +168,7 @@ fun OptionsBtmSheetUI(
                         elementImageVector = Icons.Outlined.Unarchive
                     )
                 }
-                if (btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                if (inSpecificArchiveScreen.value || btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.settings
 
 import android.os.Build
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,14 +39,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
+import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
@@ -107,14 +110,22 @@ fun SettingsScreen(navController: NavController) {
                             onClick = {
                                 shouldVersionCheckerDialogAppear.value = true
                                 coroutineScope.launch {
-                                    delay(1000L)
+                                    SettingsScreenVM.Settings.latestAppVersionRetriever()
                                 }.invokeOnCompletion {
                                     shouldVersionCheckerDialogAppear.value = false
-                                    shouldBtmModalSheetBeVisible.value = true
-                                    coroutineScope.launch {
-                                        if (!btmModalSheetState.isVisible) {
-                                            btmModalSheetState.show()
+                                    if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+                                        shouldBtmModalSheetBeVisible.value = true
+                                        coroutineScope.launch {
+                                            if (!btmModalSheetState.isVisible) {
+                                                btmModalSheetState.show()
+                                            }
                                         }
+                                    } else {
+                                        Toast.makeText(
+                                            context,
+                                            "you're already on latest version",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                                 }
                             }
@@ -268,6 +279,19 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
         }
+        DeleteDialogBox(
+            shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+            deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
+            onDeleteClick = {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.deleteEntireLinksAndFoldersData()
+                }
+                Toast.makeText(
+                    context,
+                    "Deleted entire data from the local database",
+                    Toast.LENGTH_SHORT
+                ).show()
+            })
     }
     BackHandler {
         if (btmModalSheetState.isVisible) {

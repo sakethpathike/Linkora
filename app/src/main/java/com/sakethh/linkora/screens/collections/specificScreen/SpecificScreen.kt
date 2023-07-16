@@ -382,6 +382,7 @@ fun SpecificScreen(navController: NavController) {
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
         OptionsBtmSheetUI(
+            inSpecificArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
             inArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
@@ -537,7 +538,14 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameArchivedFolderNote(
+                                    folderName = SpecificScreenVM.selectedArchiveFolderName.value,
+                                    newNote = newNote
+                                )
+                        }.start()
+                        Unit
                     }
 
                     SpecificScreenType.LINKS_SCREEN -> {
@@ -582,7 +590,15 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
-
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.updateArchivedFoldersDetails(
+                                existingFolderName = SpecificScreenVM.selectedArchiveFolderName.value,
+                                newFolderName = newTitle,
+                                infoForFolder = selectedURLOrFolderNote.value,
+                                context = context
+                            )
+                        }.start()
+                        Unit
                     }
 
                     SpecificScreenType.LINKS_SCREEN -> {

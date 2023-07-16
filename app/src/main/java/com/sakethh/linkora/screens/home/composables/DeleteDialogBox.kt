@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 enum class DataDialogBoxType {
-    LINK, FOLDER
+    LINK, FOLDER, REMOVE_ENTIRE_DATA
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -43,7 +43,7 @@ fun DeleteDialogBox(
                     onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                     Column {
                         Text(
-                            text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else "Are you sure want to delete the folder?",
+                            text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,

@@ -7,7 +7,10 @@ import androidx.datastore.preferences.edit
 import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
+import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.request.get
 import kotlinx.coroutines.async
@@ -26,9 +29,19 @@ data class SettingsUIElement(
 
 class SettingsScreenVM : ViewModel() {
 
+    val shouldDeleteDialogBoxAppear = mutableStateOf(false)
+
     companion object {
         const val currentAppVersion = "0.0.1"
-        val latestAppVersionFromServer = mutableStateOf("0.0.1")
+        val latestAppInfoFromServer = MutableStateAppInfoDTO(
+            mutableStateOf(""),
+            mutableStateOf(""),
+            mutableStateOf(""),
+            mutableStateOf(""),
+            mutableStateOf(""),
+            mutableStateOf(""),
+            mutableStateOf("")
+        )
     }
 
     val themeSection = listOf(
@@ -180,7 +193,7 @@ class SettingsScreenVM : ViewModel() {
             isSwitchNeeded = false,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
-
+                shouldDeleteDialogBoxAppear.value = true
             })
     )
 
@@ -274,7 +287,22 @@ class SettingsScreenVM : ViewModel() {
 
         suspend fun latestAppVersionRetriever() {
             val ktorClient = HttpClient(Android)
-            val latestVersionOfTheApp = ktorClient.get("")
+            val retrievedData =
+                ktorClient.get("https://64b38a3fe4fdea7cae88f072--whimsical-gingersnap-139623.netlify.app/")
+            val latestAppData =
+                retrievedData.body<AppInfoDTO>()
+            latestAppInfoFromServer.apply {
+                this.latestVersion.value = latestAppData.latestVersion
+                this.latestStableVersion.value = latestAppData.latestStableVersion
+                this.latestStableVersionReleaseURL.value =
+                    latestAppData.latestStableVersionReleaseURL
+                this.latestVersionReleaseURL.value = latestAppData.latestVersionReleaseURL
+                this.changeLogForLatestVersion.value = latestAppData.changeLogForLatestVersion
+                this.changeLogForLatestStableVersion.value =
+                    latestAppData.changeLogForLatestStableVersion
+                this.httpStatusCodeFromServer.value = retrievedData.status.value.toString()
+            }
+            ktorClient.close()
         }
     }
 }

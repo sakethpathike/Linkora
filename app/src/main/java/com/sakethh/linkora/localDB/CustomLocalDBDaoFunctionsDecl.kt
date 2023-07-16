@@ -33,7 +33,7 @@ object CustomLocalDBDaoFunctionsDecl {
                 awaitAll(
                     async {
                         localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
-                        localDB.localDBData().renameAFolderNote(existingFolderName, infoForFolder)
+                        localDB.localDBData().renameAFolderNote(newFolderName, infoForFolder)
                     },
                     async {
                         localDB.localDBData().renameFolderNameForExistingFolderData(
@@ -59,6 +59,38 @@ object CustomLocalDBDaoFunctionsDecl {
         }
         withContext(Dispatchers.Main) {
             Toast.makeText(context, "updated folder data", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    suspend fun updateArchivedFoldersDetails(
+        existingFolderName: String,
+        newFolderName: String,
+        infoForFolder: String,
+        context: Context,
+    ) {
+        if (infoForFolder.isNotEmpty()) {
+            localDB.localDBData().renameAFolderArchiveName(existingFolderName, newFolderName)
+            localDB.localDBData().renameArchivedFolderNote(existingFolderName, infoForFolder)
+            localDB.localDBData()
+                .renameFolderNameForExistingArchivedFolderData(existingFolderName, newFolderName)
+        } else {
+            coroutineScope {
+                awaitAll(
+                    async {
+                        localDB.localDBData()
+                            .renameAFolderArchiveName(existingFolderName, newFolderName)
+                    },
+                    async {
+                        localDB.localDBData()
+                            .renameFolderNameForExistingArchivedFolderData(
+                                existingFolderName,
+                                newFolderName
+                            )
+                    })
+            }
+        }
+        withContext(Dispatchers.Main) {
+            Toast.makeText(context, "updated archived folder data", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -316,5 +348,9 @@ object CustomLocalDBDaoFunctionsDecl {
                 }
             }
         }
+    }
+
+    fun deleteEntireLinksAndFoldersData() {
+        localDB.clearAllTables()
     }
 }
