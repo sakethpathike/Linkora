@@ -608,17 +608,19 @@ fun SpecificScreen(navController: NavController) {
                                     newTitle = newTitle
                                 )
                         }.start()
+                        Toast.makeText(
+                            context, "renamed link's data successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Unit
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.updateArchivedFolderBasedLinksDetails(
-                                title = newTitle,
-                                infoForLink = selectedURLOrFolderNote.value,
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
                                 webURL = webURL,
-                                folderName = topBarText,
-                                context = context
+                                newTitle = newTitle,
+                                folderName = topBarText
                             )
                         }.start()
                         Unit
@@ -632,6 +634,10 @@ fun SpecificScreen(navController: NavController) {
                                     newTitle = newTitle
                                 )
                         }.start()
+                        Toast.makeText(
+                            context, "renamed link's data successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Unit
                     }
 
@@ -644,15 +650,15 @@ fun SpecificScreen(navController: NavController) {
                                     folderName = topBarText
                                 )
                         }.start()
+                        Toast.makeText(
+                            context, "renamed link's data successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                         Unit
                     }
 
                     else -> {}
                 }
-                Toast.makeText(
-                    context, "renamed link's data successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         )
         AddNewLinkDialogBox(

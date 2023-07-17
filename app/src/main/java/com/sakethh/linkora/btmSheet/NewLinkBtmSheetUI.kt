@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -139,6 +140,11 @@ fun NewLinkBtmSheet(
                     if (inIntentActivity.value) {
                         SettingsScreenVM.Settings.readAllPreferencesValues()
                     }
+                },
+                async {
+                    if (inIntentActivity.value) {
+                        CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context)
+                    }
                 })
         }
     }
@@ -170,13 +176,13 @@ fun NewLinkBtmSheet(
                             Column {
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if (inIntentActivity.value || screenType != SpecificScreenType.SPECIFIC_FOLDER_SCREEN) "Selected folder:" else "Will be saved in:",
+                                    text = if (inIntentActivity.value || screenType == SpecificScreenType.ROOT_SCREEN) "Selected folder:" else "Will be saved in:",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp,
                                 )
                                 Spacer(modifier = Modifier.height(5.dp))
                                 Text(
-                                    text = if (inIntentActivity.value || screenType != SpecificScreenType.SPECIFIC_FOLDER_SCREEN) selectedFolder.value else folderName.value,
+                                    text = if (inIntentActivity.value || screenType == SpecificScreenType.ROOT_SCREEN) selectedFolder.value else folderName.value,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 20.sp,
                                     maxLines = 1,
@@ -285,9 +291,10 @@ fun NewLinkBtmSheet(
                                                 coroutineScope.launch {
                                                     intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                         ?.let {
+                                                            linkTextFieldValue.value=it
                                                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                                 title = titleTextFieldValue.value,
-                                                                webURL = it,
+                                                                webURL = linkTextFieldValue.value,
                                                                 folderName = selectedFolder.value,
                                                                 noteForSaving = noteTextFieldValue.value,
                                                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
@@ -311,9 +318,10 @@ fun NewLinkBtmSheet(
                                                 coroutineScope.launch {
                                                     intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                         ?.let {
+                                                            linkTextFieldValue.value = it
                                                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                                 title = titleTextFieldValue.value,
-                                                                webURL = it,
+                                                                webURL = linkTextFieldValue.value,
                                                                 folderName = selectedFolder.value,
                                                                 noteForSaving = noteTextFieldValue.value,
                                                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
@@ -532,7 +540,7 @@ fun NewLinkBtmSheet(
                                 }
                             }
                         }
-                        if (inIntentActivity.value || screenType != SpecificScreenType.SPECIFIC_FOLDER_SCREEN) {
+                        if (inIntentActivity.value || screenType == SpecificScreenType.ROOT_SCREEN) {
                             item {
                                 Text(
                                     text = "Save in:",

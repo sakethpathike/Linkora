@@ -69,7 +69,7 @@ fun SettingsNewVersionUpdateBtmContent(
         Divider(
             color = MaterialTheme.colorScheme.outline,
             thickness = 0.5.dp,
-            modifier = Modifier.padding(20.dp)
+            modifier = Modifier.padding(start=20.dp,top=20.dp,end=20.dp)
         )
 
         VersionCardForBtmSheetContent(
@@ -83,11 +83,11 @@ fun SettingsNewVersionUpdateBtmContent(
             modifier = Modifier.padding(20.dp)
         )
         Text(
-            text = "You can find what's new in the latest release(s) and can download latest release(s) from Github:)",
+            text = "You can find what's new in the latest release(s) and can download them from Github:)",
             style = MaterialTheme.typography.titleSmall,
             fontSize = 16.sp,
             textAlign = TextAlign.Start,
-            lineHeight = 20.sp,
+            lineHeight = 24.sp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
         )
         if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
@@ -214,7 +214,7 @@ fun VersionCardForBtmSheetContent(title: String, value: String) {
             style = MaterialTheme.typography.titleMedium,
             fontSize = 18.sp,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 20.dp, bottom = 20.dp)
+            modifier = Modifier.padding(start = 20.dp, bottom = 20.dp,end=20.dp)
         )
     }
 }

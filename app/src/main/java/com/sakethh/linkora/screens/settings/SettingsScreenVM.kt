@@ -11,7 +11,6 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
 import io.ktor.client.HttpClient
-import io.ktor.client.call.body
 import io.ktor.client.engine.android.Android
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
@@ -21,6 +20,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 data class SettingsUIElement(
@@ -114,7 +114,7 @@ class SettingsScreenVM : ViewModel() {
 
     val generalSection = listOf(
         SettingsUIElement(title = "Use in-app browser",
-            doesDescriptionExists = true,
+            doesDescriptionExists = false,
             description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will open every time you click on a link when using this app.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isInAppWebTabEnabled,
@@ -134,7 +134,7 @@ class SettingsScreenVM : ViewModel() {
                 }
             }),
         SettingsUIElement(title = "Enable Home Screen",
-            doesDescriptionExists = true,
+            doesDescriptionExists = false,
             description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isHomeScreenEnabled,
@@ -154,7 +154,7 @@ class SettingsScreenVM : ViewModel() {
                 }
             }),
         SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
-            doesDescriptionExists = true,
+            doesDescriptionExists = false,
             description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a dialog box will be shown instead of bottom sheet.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
@@ -175,7 +175,7 @@ class SettingsScreenVM : ViewModel() {
             }),
         SettingsUIElement(title = "Auto-Detect Title",
             doesDescriptionExists = true,
-            description = "If this is enabled, title for the links you save will be detected automatically.\n\nNote: This may not detect every website.\n\nIf this is disabled, you'll get an option while saving link(s) to give a title to the respective link you're saving.",
+            description = "Note: This may not detect every website.",
             isSwitchNeeded = true,
             isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
             onSwitchStateChange = {
@@ -194,7 +194,7 @@ class SettingsScreenVM : ViewModel() {
                 }
             }), SettingsUIElement(title = "Delete entire data permanently",
             doesDescriptionExists = true,
-            description = "Delete all links and folders permanently.",
+            description = "Delete all links and folders permanently including archive(s).",
             isSwitchNeeded = false,
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
@@ -307,9 +307,12 @@ class SettingsScreenVM : ViewModel() {
                 }
             }
             val rawData = ktorClient.get(appInfoURL)
-            Log.d("ktor client", rawData.bodyAsText())
-            val retrievedData =
-                rawData.body<AppInfoDTO>()
+            Log.d("ktor client", rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
+                .trim())
+            val retrievedData = Json.decodeFromString<AppInfoDTO>(
+                rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
+                    .trim()
+            )
             latestAppInfoFromServer.apply {
                 this.latestVersion.value = retrievedData.latestVersion
                 this.latestStableVersion.value = retrievedData.latestStableVersion

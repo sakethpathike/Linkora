@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 
 class IntentActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
@@ -43,11 +44,9 @@ class IntentActivity : ComponentActivity() {
             NewLinkBtmSheet(
                 _inIntentActivity = true,
                 shouldUIBeVisible = shouldUIBeVisible,
-                inASpecificFolder = false,
+                screenType = SpecificScreenType.INTENT_ACTIVITY,
                 btmSheetState = btmSheetState
             )
-            CustomLocalDBDaoFunctionsDecl.localDB =
-                LocalDataBase.getLocalDB(this)
         }
     }
 }

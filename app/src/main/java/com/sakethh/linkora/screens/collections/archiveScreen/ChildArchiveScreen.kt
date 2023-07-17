@@ -244,6 +244,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             })
         RenameDialogBox(
+            inChildArchiveFolderScreen = mutableStateOf(true),
             renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,
@@ -254,12 +255,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkInfoFromArchiveLinks(webURL, newNote)
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
@@ -281,21 +276,13 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.updateArchivedLinksDetails(
-                            webURL = webURL,
-                            infoForSaving = selectedURLOrFolderNote.value,
-                            title = newTitle,
-                            context = context
-                        )
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.updateArchivedFoldersDetails(
-                            existingFolderName = selectedURLOrFolderName.value,
-                            infoForFolder = selectedURLOrFolderNote.value,
-                            newFolderName = newTitle,
-                            context = context
-                        )
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .renameAFolderArchiveName(selectedURLOrFolderName.value, newTitle)
                     }
                 }
                 Unit

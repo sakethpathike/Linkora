@@ -43,7 +43,7 @@ fun RenameDialogBox(
     renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
     onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
-    inChildArchiveFolderScreen: Boolean = false,
+    inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
 ) {
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
@@ -114,7 +114,6 @@ fun RenameDialogBox(
                         onValueChange = {
                             newNote.value = it
                         })
-                    if (renameDialogBoxFor != OptionsBtmSheetType.LINK) {
                         Text(
                             text = "Leave above field empty, if you don't want to change the note.",
                             color = AlertDialogDefaults.textContentColor,
@@ -123,7 +122,6 @@ fun RenameDialogBox(
                             modifier = Modifier.padding(start = 20.dp, top = 10.dp, end = 20.dp),
                             lineHeight = 16.sp
                         )
-                    }
                     Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
                         shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
@@ -133,7 +131,7 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK) {
+                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK || inChildArchiveFolderScreen.value) {
                                 if (onTitleChangeClickForLinks != null && webURLForTitle != null) {
                                     onTitleChangeClickForLinks(
                                         webURLForTitle,
@@ -150,7 +148,6 @@ fun RenameDialogBox(
                                 }
                                 shouldDialogBoxAppear.value = false
                             } else {
-                                if (!inChildArchiveFolderScreen) {
                                     if (newFolderOrTitleName.value.isEmpty()) {
                                         Toast.makeText(
                                             localContext,
@@ -187,25 +184,9 @@ fun RenameDialogBox(
                                                 }
                                             }
                                         }
-                                    }
-                                } else {
-                                    if (onTitleChangeClickForLinks != null && webURLForTitle != null) {
-                                        onTitleChangeClickForLinks(
-                                            webURLForTitle,
-                                            newFolderOrTitleName.value
-                                        )
-                                    }
-                                    if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
-                                        if (newNote.value.isNotEmpty()) {
-                                            onNoteChangeClickForLinks(
-                                                webURLForTitle,
-                                                newNote.value
-                                            )
-                                        }
-                                    }
-                                }
+
                             }
-                        }) {
+                        }}) {
                         Text(
                             text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title data",
                             color = AlertDialogDefaults.containerColor,
@@ -222,7 +203,7 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK) {
+                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK || inChildArchiveFolderScreen.value) {
                                 if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
                                     onNoteChangeClickForLinks(
                                         webURLForTitle,
