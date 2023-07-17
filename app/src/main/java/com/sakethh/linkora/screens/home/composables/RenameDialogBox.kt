@@ -48,6 +48,7 @@ fun RenameDialogBox(
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
     }
+    val context = LocalContext.current
     val newNote = rememberSaveable {
         mutableStateOf("")
     }
@@ -146,6 +147,10 @@ fun RenameDialogBox(
                                         )
                                     }
                                 }
+                                Toast.makeText(
+                                    context, "renamed link's data successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                                 shouldDialogBoxAppear.value = false
                             } else {
                                 if (newFolderOrTitleName.value.isEmpty()) {
