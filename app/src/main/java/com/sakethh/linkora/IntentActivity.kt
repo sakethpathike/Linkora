@@ -12,15 +12,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
+import androidx.datastore.preferences.createDataStore
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 class IntentActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        SettingsScreenVM.Settings.dataStore = createDataStore("linkoraDataStore")
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v, insets ->
             v.setPadding(0, 0, 0, 0)
@@ -49,4 +51,8 @@ class IntentActivity : ComponentActivity() {
             )
         }
     }
+}
+
+object IntentActivityData {
+    val foldersData = mutableStateOf(emptyList<FoldersTable>())
 }

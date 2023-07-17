@@ -69,7 +69,7 @@ fun SettingsNewVersionUpdateBtmContent(
         Divider(
             color = MaterialTheme.colorScheme.outline,
             thickness = 0.5.dp,
-            modifier = Modifier.padding(start=20.dp,top=20.dp,end=20.dp)
+            modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp)
         )
 
         VersionCardForBtmSheetContent(
@@ -214,7 +214,7 @@ fun VersionCardForBtmSheetContent(title: String, value: String) {
             style = MaterialTheme.typography.titleMedium,
             fontSize = 18.sp,
             textAlign = TextAlign.Start,
-            modifier = Modifier.padding(start = 20.dp, bottom = 20.dp,end=20.dp)
+            modifier = Modifier.padding(start = 20.dp, bottom = 20.dp, end = 20.dp)
         )
     }
 }

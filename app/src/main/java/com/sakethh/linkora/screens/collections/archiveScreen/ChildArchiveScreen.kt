@@ -244,7 +244,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             })
         RenameDialogBox(
-            inChildArchiveFolderScreen = mutableStateOf(true),
+            inChildArchiveFolderScreen = mutableStateOf(archiveScreenType != ArchiveScreenType.LINKS),
             renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,

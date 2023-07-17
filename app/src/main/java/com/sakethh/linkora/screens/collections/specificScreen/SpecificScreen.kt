@@ -41,7 +41,6 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
@@ -593,10 +592,6 @@ fun SpecificScreen(navController: NavController) {
 
                     else -> {}
                 }
-                Toast.makeText(
-                    context, "renamed link's data successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 when (SpecificScreenVM.screenType.value) {
@@ -617,11 +612,12 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
-                                webURL = webURL,
-                                newTitle = newTitle,
-                                folderName = topBarText
-                            )
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameALinkTitleFromArchiveBasedFolderLinks(
+                                    webURL = webURL,
+                                    newTitle = newTitle,
+                                    folderName = topBarText
+                                )
                         }.start()
                         Unit
                     }

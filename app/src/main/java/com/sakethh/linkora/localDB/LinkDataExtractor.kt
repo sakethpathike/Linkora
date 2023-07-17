@@ -38,11 +38,9 @@ suspend fun linkDataExtractor(context: Context, webURL: String): LinkDataExtract
             }
         val title = withContext(Dispatchers.IO) {
             try {
-                errorInGivenURL = false
                 Jsoup.connect(webURL).get().title()
             } catch (e: Exception) {
-                errorInGivenURL = true
-                ""
+                "Couldn't fetch title:("
             }
         }
         return LinkDataExtractor(

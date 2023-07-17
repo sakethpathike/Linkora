@@ -58,7 +58,7 @@ import okhttp3.internal.trimSubstring
 fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     screenType: SpecificScreenType,
-    specificFolderName:String
+    specificFolderName: String,
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -175,7 +175,7 @@ fun AddNewLinkDialogBox(
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    if (screenType==SpecificScreenType.ROOT_SCREEN) {
+                    if (screenType == SpecificScreenType.ROOT_SCREEN) {
                         Row(
                             Modifier.padding(
                                 start = 20.dp,
@@ -264,7 +264,7 @@ fun AddNewLinkDialogBox(
                                         }.invokeOnCompletion {
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value=false
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         }
                                     }
@@ -286,7 +286,7 @@ fun AddNewLinkDialogBox(
                                         }.invokeOnCompletion {
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value=false
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         }
                                     }
@@ -304,7 +304,7 @@ fun AddNewLinkDialogBox(
                                         }.invokeOnCompletion {
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value=false
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         }
                                     }
@@ -327,7 +327,7 @@ fun AddNewLinkDialogBox(
                                                 )
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value=false
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         } else {
                                             coroutineScope.launch {
@@ -341,7 +341,7 @@ fun AddNewLinkDialogBox(
                                                 )
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value=false
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         }
                                     }
@@ -401,65 +401,65 @@ fun AddNewLinkDialogBox(
                         }
                     }
                 }
-            }
-            if (isDropDownMenuIconClicked.value) {
-                ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
-                    coroutineScope.launch {
-                        if (btmModalSheetState.isVisible) {
-                            btmModalSheetState.hide()
-                        }
-                    }.invokeOnCompletion {
-                        isDropDownMenuIconClicked.value = false
-                    }
-                }) {
-                    Text(
-                        text = "Save in :",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 24.sp,
-                        modifier = Modifier
-                            .padding(
-                                start = 20.dp
-                            )
-                    )
-                    FolderForBtmSheetIndividualComponent(
-                        onClick = {
-                            selectedFolderName.value = "Saved Links"
-                            coroutineScope.launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
-                                }
-                            }.invokeOnCompletion {
-                                coroutineScope.launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                }.invokeOnCompletion {
-                                    isDropDownMenuIconClicked.value = false
-                                }
+                if (isDropDownMenuIconClicked.value) {
+                    ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
                             }
-                        },
-                        folderName = "Saved Links",
-                        imageVector = Icons.Outlined.Link,
-                        _isComponentSelected = selectedFolderName.value == "Saved Links"
-                    )
-                    foldersTableData.forEach {
+                        }.invokeOnCompletion {
+                            isDropDownMenuIconClicked.value = false
+                        }
+                    }) {
+                        Text(
+                            text = "Save in :",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 24.sp,
+                            modifier = Modifier
+                                .padding(
+                                    start = 20.dp
+                                )
+                        )
                         FolderForBtmSheetIndividualComponent(
                             onClick = {
-                                selectedFolderName.value = it.folderName
+                                selectedFolderName.value = "Saved Links"
                                 coroutineScope.launch {
                                     if (btmModalSheetState.isVisible) {
                                         btmModalSheetState.hide()
                                     }
                                 }.invokeOnCompletion {
-                                    isDropDownMenuIconClicked.value = false
+                                    coroutineScope.launch {
+                                        if (btmModalSheetState.isVisible) {
+                                            btmModalSheetState.hide()
+                                        }
+                                    }.invokeOnCompletion {
+                                        isDropDownMenuIconClicked.value = false
+                                    }
                                 }
                             },
-                            folderName = it.folderName,
-                            imageVector = Icons.Outlined.Folder,
-                            _isComponentSelected = selectedFolderName.value == it.folderName
+                            folderName = "Saved Links",
+                            imageVector = Icons.Outlined.Link,
+                            _isComponentSelected = selectedFolderName.value == "Saved Links"
                         )
+                        foldersTableData.forEach {
+                            FolderForBtmSheetIndividualComponent(
+                                onClick = {
+                                    selectedFolderName.value = it.folderName
+                                    coroutineScope.launch {
+                                        if (btmModalSheetState.isVisible) {
+                                            btmModalSheetState.hide()
+                                        }
+                                    }.invokeOnCompletion {
+                                        isDropDownMenuIconClicked.value = false
+                                    }
+                                },
+                                folderName = it.folderName,
+                                imageVector = Icons.Outlined.Folder,
+                                _isComponentSelected = selectedFolderName.value == it.folderName
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
-                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

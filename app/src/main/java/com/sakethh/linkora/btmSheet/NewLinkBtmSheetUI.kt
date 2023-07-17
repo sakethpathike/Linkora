@@ -44,7 +44,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LocalDataBase
@@ -134,20 +134,28 @@ fun NewLinkBtmSheet(
                 },
                 async {
                     if (inIntentActivity.value) {
-                        SettingsScreenVM.Settings.readAllPreferencesValues()
+                        coroutineScope.launch {
+                            SettingsScreenVM.Settings.readAllPreferencesValues()
+                        }
                     }
                 },
                 async {
-                    if (inIntentActivity.value) {
-                        CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context)
+                    coroutineScope.launch {
+                        if (inIntentActivity.value) {
+                            CustomLocalDBDaoFunctionsDecl.localDB =
+                                LocalDataBase.getLocalDB(context)
+                        }
+                    }.invokeOnCompletion {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders()
+                                .collect {
+                                    IntentActivityData.foldersData.value = it
+                                }
+                        }
                     }
                 })
         }
     }
-    val foldersData =
-        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collectAsState(
-            initial = emptyList()
-        ).value
     LinkoraTheme {
         if (shouldUIBeVisible.value) {
             ModalBottomSheet(onDismissRequest = {
@@ -264,7 +272,7 @@ fun NewLinkBtmSheet(
                                                     title = titleTextFieldValue.value,
                                                     webURL = linkTextFieldValue.value,
                                                     noteForSaving = noteTextFieldValue.value,
-                                                    folderName = selectedFolder.value,
+                                                    folderName = folderName.value,
                                                     savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
                                                     context = context
                                                 )
@@ -286,12 +294,12 @@ fun NewLinkBtmSheet(
                                         }
 
                                         SpecificScreenType.INTENT_ACTIVITY -> {
-                                            if (folderName.value == "Saved Links" && Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
+                                            if (selectedFolder.value == "Saved Links" && Intent.ACTION_SEND == intentData.value?.action && intentData.value?.type != null && intentData.value!!.type == "text/plain") {
                                                 isDataExtractingForTheLink.value = true
                                                 coroutineScope.launch {
                                                     intentData.value!!.getStringExtra(Intent.EXTRA_TEXT)
                                                         ?.let {
-                                                            linkTextFieldValue.value=it
+                                                            linkTextFieldValue.value = it
                                                             CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                                 title = titleTextFieldValue.value,
                                                                 webURL = linkTextFieldValue.value,
@@ -345,27 +353,29 @@ fun NewLinkBtmSheet(
                                         }
 
                                         SpecificScreenType.ROOT_SCREEN -> {
-                                            if (folderName.value == "Saved Links") {
+                                            if (selectedFolder.value == "Saved Links") {
                                                 isDataExtractingForTheLink.value = true
                                                 coroutineScope.launch {
                                                     CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                         title = titleTextFieldValue.value,
                                                         webURL = linkTextFieldValue.value,
-                                                        folderName = selectedFolder.value,
                                                         noteForSaving = noteTextFieldValue.value,
+                                                        folderName = selectedFolder.value,
                                                         savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
                                                         context = context
                                                     )
                                                 }.invokeOnCompletion {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
+                                                    if (linkTextFieldValue.value.isNotEmpty()) {
+                                                        isDataExtractingForTheLink.value = false
+                                                        coroutineScope.launch {
+                                                            if (btmSheetState.isVisible) {
+                                                                btmSheetState.hide()
+                                                            }
+                                                        }.invokeOnCompletion {
+                                                            shouldUIBeVisible.value = false
+                                                            if (inIntentActivity.value) {
+                                                                activity?.finishAndRemoveTask()
+                                                            }
                                                         }
                                                     }
                                                 }
@@ -590,7 +600,7 @@ fun NewLinkBtmSheet(
                                     _isComponentSelected = selectedFolder.value == "Saved Links"
                                 )
                             }
-                            items(foldersData) {
+                            items(IntentActivityData.foldersData.value) {
                                 FolderForBtmSheetIndividualComponent(
                                     onClick = { selectedFolder.value = it.folderName },
                                     folderName = it.folderName,

@@ -307,8 +307,11 @@ class SettingsScreenVM : ViewModel() {
                 }
             }
             val rawData = ktorClient.get(appInfoURL)
-            Log.d("ktor client", rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
-                .trim())
+            Log.d(
+                "ktor client",
+                rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
+                    .trim()
+            )
             val retrievedData = Json.decodeFromString<AppInfoDTO>(
                 rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
                     .trim()

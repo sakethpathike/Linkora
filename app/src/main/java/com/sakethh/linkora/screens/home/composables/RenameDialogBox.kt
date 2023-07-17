@@ -66,8 +66,8 @@ fun RenameDialogBox(
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp),
-                        lineHeight = 24.sp,
+                        modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 25.dp),
+                        lineHeight = 27.sp,
                         textAlign = TextAlign.Start
                     )
                     OutlinedTextField(

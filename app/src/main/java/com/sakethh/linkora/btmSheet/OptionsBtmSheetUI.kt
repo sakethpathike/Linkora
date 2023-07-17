@@ -213,7 +213,7 @@ fun OptionsBtmSheetUI(
                 } else {
                     Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
                         Text(
-                            text = "You didn't added a note for this.",
+                            text = "You didn't add a note for this.",
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 15.sp,
                             textAlign = TextAlign.Start,
