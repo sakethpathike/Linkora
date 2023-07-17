@@ -255,12 +255,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkInfoFromArchiveLinks(webURL, newNote)
+                    }.invokeOnCompletion {
+                        Toast.makeText(
+                            context,
+                            "updated archived data successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameArchivedFolderNote(
-                                folderName = selectedURLOrFolderName.value,
+                                folderName = webURL,
                                 newNote = newNote
                             )
                     }.invokeOnCompletion {
@@ -278,11 +284,31 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
+                    }.invokeOnCompletion {
+                        Toast.makeText(
+                            context,
+                            "updated archived data successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameAFolderArchiveName(selectedURLOrFolderName.value, newTitle)
+                    }.invokeOnCompletion {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .renameFolderNameForExistingArchivedFolderData(
+                                    selectedURLOrFolderName.value,
+                                    newTitle
+                                )
+                        }.invokeOnCompletion {
+                            Toast.makeText(
+                                context,
+                                "updated archived data successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
                 Unit

@@ -114,14 +114,14 @@ fun RenameDialogBox(
                         onValueChange = {
                             newNote.value = it
                         })
-                        Text(
-                            text = "Leave above field empty, if you don't want to change the note.",
-                            color = AlertDialogDefaults.textContentColor,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(start = 20.dp, top = 10.dp, end = 20.dp),
-                            lineHeight = 16.sp
-                        )
+                    Text(
+                        text = "Leave above field empty, if you don't want to change the note.",
+                        color = AlertDialogDefaults.textContentColor,
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 20.dp, top = 10.dp, end = 20.dp),
+                        lineHeight = 16.sp
+                    )
                     Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
                         shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
@@ -141,52 +141,53 @@ fun RenameDialogBox(
                                 if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
                                     if (newNote.value.isNotEmpty()) {
                                         onNoteChangeClickForLinks(
-                                            webURLForTitle,
+                                            if (inChildArchiveFolderScreen.value) newFolderOrTitleName.value else webURLForTitle,
                                             newNote.value
                                         )
                                     }
                                 }
                                 shouldDialogBoxAppear.value = false
                             } else {
-                                    if (newFolderOrTitleName.value.isEmpty()) {
-                                        Toast.makeText(
-                                            localContext,
-                                            if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                                            coroutineScope.launch {
-                                                doesFolderNameAlreadyExists =
-                                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                        .doesThisFolderExists(
-                                                            newFolderOrTitleName.value
+                                if (newFolderOrTitleName.value.isEmpty()) {
+                                    Toast.makeText(
+                                        localContext,
+                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
+                                        coroutineScope.launch {
+                                            doesFolderNameAlreadyExists =
+                                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                    .doesThisFolderExists(
+                                                        newFolderOrTitleName.value
+                                                    )
+                                        }.invokeOnCompletion {
+                                            if (doesFolderNameAlreadyExists) {
+                                                Toast.makeText(
+                                                    localContext,
+                                                    "Folder name already exists",
+                                                    Toast.LENGTH_SHORT
+                                                ).show()
+                                            } else {
+                                                coroutineScope.launch {
+                                                    if (existingFolderName != null) {
+                                                        CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
+                                                            existingFolderName = existingFolderName,
+                                                            newFolderName = newFolderOrTitleName.value,
+                                                            infoForFolder = newNote.value,
+                                                            context = localContext
                                                         )
-                                            }.invokeOnCompletion {
-                                                if (doesFolderNameAlreadyExists) {
-                                                    Toast.makeText(
-                                                        localContext,
-                                                        "Folder name already exists",
-                                                        Toast.LENGTH_SHORT
-                                                    ).show()
-                                                } else {
-                                                    coroutineScope.launch {
-                                                        if (existingFolderName != null) {
-                                                            CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
-                                                                existingFolderName = existingFolderName,
-                                                                newFolderName = newFolderOrTitleName.value,
-                                                                infoForFolder = newNote.value,
-                                                                context = localContext
-                                                            )
-                                                        }
                                                     }
-                                                    shouldDialogBoxAppear.value = false
                                                 }
+                                                shouldDialogBoxAppear.value = false
                                             }
                                         }
+                                    }
 
+                                }
                             }
-                        }}) {
+                        }) {
                         Text(
                             text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title data",
                             color = AlertDialogDefaults.containerColor,

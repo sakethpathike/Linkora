@@ -77,11 +77,7 @@ object CustomLocalDBDaoFunctionsDecl {
                         localDB.localDBData().renameArchivedFolderNote(newFolderName, infoForFolder)
                     },
                     async {
-                        localDB.localDBData()
-                            .renameFolderNameForExistingArchivedFolderData(
-                                existingFolderName,
-                                newFolderName
-                            )
+
                     })
             }
         } else {

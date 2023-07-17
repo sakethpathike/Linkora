@@ -119,10 +119,6 @@ fun NewLinkBtmSheet(
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val foldersData =
-        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collectAsState(
-            initial = emptyList()
-        ).value
     LaunchedEffect(key1 = Unit) {
         this.launch {
             awaitAll(async {
@@ -148,6 +144,10 @@ fun NewLinkBtmSheet(
                 })
         }
     }
+    val foldersData =
+        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collectAsState(
+            initial = emptyList()
+        ).value
     LinkoraTheme {
         if (shouldUIBeVisible.value) {
             ModalBottomSheet(onDismissRequest = {

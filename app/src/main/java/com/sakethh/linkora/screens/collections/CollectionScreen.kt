@@ -489,59 +489,8 @@ fun CollectionScreen(navController: NavController) {
 
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            onSaveBtnClick = { title: String, webURL: String, note: String, selectedFolder: String ->
-                if (webURL.isNotEmpty()) {
-                    isDataExtractingFromLink.value = true
-                }
-                coroutineScope.launch {
-                    if (selectedFolder == "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .doesThisExistsInSavedLinks(webURL)
-                    ) {
-                        CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
-                            folderName = selectedFolder,
-                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                            context = context
-                        )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "given link already exists in the \"Saved Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    if (selectedFolder != "Saved Links" && !CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .doesThisLinkExistsInAFolder(
-                                folderName = selectedFolder,
-                                webURL = webURL
-                            )
-                    ) {
-                        CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
-                            folderName = selectedFolder,
-                            savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                            context = context
-                        )
-                    } else {
-                        Toast.makeText(
-                            context,
-                            "given link already exists in the \"$selectedFolder\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.invokeOnCompletion {
-                    if (webURL.isNotEmpty()) {
-                        isDataExtractingFromLink.value = false
-                    }
-                    shouldDialogForNewLinkAppear.value = false
-                }
-            },
-            isDataExtractingForTheLink = isDataExtractingFromLink,
-            inCollectionBasedFolder = mutableStateOf(false)
+            specificFolderName = "hi lol",
+            screenType = SpecificScreenType.ROOT_SCREEN
         )
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope

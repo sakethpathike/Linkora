@@ -46,6 +46,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.btmSheet.FolderForBtmSheetIndividualComponent
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
@@ -55,10 +57,12 @@ import okhttp3.internal.trimSubstring
 @Composable
 fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
-    onSaveBtnClick: (title: String, webURL: String, note: String, selectedFolder: String) -> Unit,
-    isDataExtractingForTheLink: MutableState<Boolean>,
-    inCollectionBasedFolder: MutableState<Boolean>,
+    screenType: SpecificScreenType,
+    specificFolderName:String
 ) {
+    val isDataExtractingForTheLink = rememberSaveable {
+        mutableStateOf(false)
+    }
     val selectedFolderName = rememberSaveable {
         mutableStateOf("Saved Links")
     }
@@ -70,7 +74,7 @@ fun AddNewLinkDialogBox(
     val linkTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
-    val titleTextField = rememberSaveable {
+    val titleTextFieldValue = rememberSaveable {
         mutableStateOf("")
     }
     val noteTextFieldValue = rememberSaveable {
@@ -144,9 +148,9 @@ fun AddNewLinkDialogBox(
                             textStyle = MaterialTheme.typography.titleSmall,
                             singleLine = true,
                             shape = RoundedCornerShape(5.dp),
-                            value = titleTextField.value,
+                            value = titleTextFieldValue.value,
                             onValueChange = {
-                                titleTextField.value = it
+                                titleTextFieldValue.value = it
                             })
                     }
                     OutlinedTextField(
@@ -171,7 +175,7 @@ fun AddNewLinkDialogBox(
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    if (!inCollectionBasedFolder.value) {
+                    if (screenType==SpecificScreenType.ROOT_SCREEN) {
                         Row(
                             Modifier.padding(
                                 start = 20.dp,
@@ -243,12 +247,105 @@ fun AddNewLinkDialogBox(
                                 ).show()
                             } else {
                                 isDataExtractingForTheLink.value = true
-                                onSaveBtnClick(
-                                    titleTextField.value,
-                                    linkTextFieldValue.value,
-                                    noteTextFieldValue.value,
-                                    selectedFolderName.value
-                                )
+                                when (screenType) {
+                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                        coroutineScope.launch {
+                                            CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                                ImportantLinks(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    infoForSaving = noteTextFieldValue.value,
+                                                    baseURL = "",
+                                                    imgURL = ""
+                                                ),
+                                                context = context,
+                                                inImportantLinksScreen = true
+                                            )
+                                        }.invokeOnCompletion {
+                                            if (linkTextFieldValue.value.isNotEmpty()) {
+                                                isDataExtractingForTheLink.value = false
+                                                shouldDialogBoxAppear.value=false
+                                            }
+                                        }
+                                    }
+
+                                    SpecificScreenType.ARCHIVE_SCREEN -> {
+
+                                    }
+
+                                    SpecificScreenType.LINKS_SCREEN -> {
+                                        coroutineScope.launch {
+                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                title = titleTextFieldValue.value,
+                                                webURL = linkTextFieldValue.value,
+                                                noteForSaving = noteTextFieldValue.value,
+                                                folderName = selectedFolderName.value,
+                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                                context = context
+                                            )
+                                        }.invokeOnCompletion {
+                                            if (linkTextFieldValue.value.isNotEmpty()) {
+                                                isDataExtractingForTheLink.value = false
+                                                shouldDialogBoxAppear.value=false
+                                            }
+                                        }
+                                    }
+
+                                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                                        coroutineScope.launch {
+                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                title = titleTextFieldValue.value,
+                                                webURL = linkTextFieldValue.value,
+                                                noteForSaving = noteTextFieldValue.value,
+                                                folderName = specificFolderName,
+                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                                context = context
+                                            )
+                                        }.invokeOnCompletion {
+                                            if (linkTextFieldValue.value.isNotEmpty()) {
+                                                isDataExtractingForTheLink.value = false
+                                                shouldDialogBoxAppear.value=false
+                                            }
+                                        }
+                                    }
+
+                                    SpecificScreenType.INTENT_ACTIVITY -> {
+
+                                    }
+
+                                    SpecificScreenType.ROOT_SCREEN -> {
+                                        if (selectedFolderName.value == "Saved Links") {
+                                            isDataExtractingForTheLink.value = true
+                                            coroutineScope.launch {
+                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    folderName = selectedFolderName.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
+                                                    context = context
+                                                )
+                                            }.invokeOnCompletion {
+                                                isDataExtractingForTheLink.value = false
+                                                shouldDialogBoxAppear.value=false
+                                            }
+                                        } else {
+                                            coroutineScope.launch {
+                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    folderName = selectedFolderName.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
+                                                    context = context
+                                                )
+                                            }.invokeOnCompletion {
+                                                isDataExtractingForTheLink.value = false
+                                                shouldDialogBoxAppear.value=false
+                                            }
+                                        }
+                                    }
+                                }
                                 if (!isDataExtractingForTheLink.value) {
                                     shouldDialogBoxAppear.value = false
                                 }
@@ -303,66 +400,66 @@ fun AddNewLinkDialogBox(
                             )
                         }
                     }
-                    if (isDropDownMenuIconClicked.value) {
-                        ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                }
+            }
+            if (isDropDownMenuIconClicked.value) {
+                ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                    coroutineScope.launch {
+                        if (btmModalSheetState.isVisible) {
+                            btmModalSheetState.hide()
+                        }
+                    }.invokeOnCompletion {
+                        isDropDownMenuIconClicked.value = false
+                    }
+                }) {
+                    Text(
+                        text = "Save in :",
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 24.sp,
+                        modifier = Modifier
+                            .padding(
+                                start = 20.dp
+                            )
+                    )
+                    FolderForBtmSheetIndividualComponent(
+                        onClick = {
+                            selectedFolderName.value = "Saved Links"
                             coroutineScope.launch {
                                 if (btmModalSheetState.isVisible) {
                                     btmModalSheetState.hide()
                                 }
                             }.invokeOnCompletion {
-                                isDropDownMenuIconClicked.value = false
-                            }
-                        }) {
-                            Text(
-                                text = "Save in :",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 24.sp,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 20.dp
-                                    )
-                            )
-                            FolderForBtmSheetIndividualComponent(
-                                onClick = {
-                                    selectedFolderName.value = "Saved Links"
-                                    coroutineScope.launch {
-                                        if (btmModalSheetState.isVisible) {
-                                            btmModalSheetState.hide()
-                                        }
-                                    }.invokeOnCompletion {
-                                        coroutineScope.launch {
-                                            if (btmModalSheetState.isVisible) {
-                                                btmModalSheetState.hide()
-                                            }
-                                        }.invokeOnCompletion {
-                                            isDropDownMenuIconClicked.value = false
-                                        }
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
                                     }
-                                },
-                                folderName = "Saved Links",
-                                imageVector = Icons.Outlined.Link,
-                                _isComponentSelected = selectedFolderName.value == "Saved Links"
-                            )
-                            foldersTableData.forEach {
-                                FolderForBtmSheetIndividualComponent(
-                                    onClick = {
-                                        selectedFolderName.value = it.folderName
-                                        coroutineScope.launch {
-                                            if (btmModalSheetState.isVisible) {
-                                                btmModalSheetState.hide()
-                                            }
-                                        }.invokeOnCompletion {
-                                            isDropDownMenuIconClicked.value = false
-                                        }
-                                    },
-                                    folderName = it.folderName,
-                                    imageVector = Icons.Outlined.Folder,
-                                    _isComponentSelected = selectedFolderName.value == it.folderName
-                                )
+                                }.invokeOnCompletion {
+                                    isDropDownMenuIconClicked.value = false
+                                }
                             }
-                            Spacer(modifier = Modifier.height(20.dp))
-                        }
+                        },
+                        folderName = "Saved Links",
+                        imageVector = Icons.Outlined.Link,
+                        _isComponentSelected = selectedFolderName.value == "Saved Links"
+                    )
+                    foldersTableData.forEach {
+                        FolderForBtmSheetIndividualComponent(
+                            onClick = {
+                                selectedFolderName.value = it.folderName
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    isDropDownMenuIconClicked.value = false
+                                }
+                            },
+                            folderName = it.folderName,
+                            imageVector = Icons.Outlined.Folder,
+                            _isComponentSelected = selectedFolderName.value == it.folderName
+                        )
                     }
+                    Spacer(modifier = Modifier.height(20.dp))
                 }
             }
         }

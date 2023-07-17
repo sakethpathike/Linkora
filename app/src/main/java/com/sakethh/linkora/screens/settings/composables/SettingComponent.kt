@@ -44,7 +44,7 @@ fun SettingComponent(settingsUIElement: SettingsUIElement, data: List<SettingsUI
         ), modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = if (settingsUIElement.title == data[0].title) 20.dp else 2.dp,
+                top = if (settingsUIElement.title == data[0].title) 20.dp else 1.dp,
                 start = 15.dp,
                 end = 15.dp
             )
