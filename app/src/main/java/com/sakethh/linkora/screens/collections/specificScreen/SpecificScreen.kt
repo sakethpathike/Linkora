@@ -102,6 +102,10 @@ fun SpecificScreen(navController: NavController) {
         SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
             SpecificScreenVM.currentClickedFolderName.value
         }
+
+        else -> {
+            ""
+        }
     }
     val shouldNewLinkDialogBoxBeVisible = rememberSaveable {
         mutableStateOf(false)
@@ -365,6 +369,8 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                     }
+
+                    else -> {}
                 }
                 item {
                     Spacer(modifier = Modifier.height(175.dp))
@@ -377,7 +383,7 @@ fun SpecificScreen(navController: NavController) {
         NewLinkBtmSheet(
             btmSheetState = btmModalSheetStateForSavingLink,
             _inIntentActivity = false,
-            inASpecificFolder = true,
+            screenType = SpecificScreenVM.screenType.value,
             _folderName = topBarText,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
@@ -392,6 +398,9 @@ fun SpecificScreen(navController: NavController) {
                 SpecificScreenType.ARCHIVE_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
                 SpecificScreenType.LINKS_SCREEN -> OptionsBtmSheetType.LINK
                 SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> OptionsBtmSheetType.LINK
+                else -> {
+                    OptionsBtmSheetType.LINK
+                }
             },
             onDeleteCardClick = {
                 shouldDeleteDialogBeVisible.value = true
@@ -478,6 +487,8 @@ fun SpecificScreen(navController: NavController) {
                             })
                         }
                     }
+
+                    else -> {}
                 }
             },
             noteForSaving = selectedURLOrFolderNote.value
@@ -516,6 +527,8 @@ fun SpecificScreen(navController: NavController) {
                                 )
                         }
                     }
+
+                    else -> {}
                 }
                 Toast.makeText(
                     context, "deleted the link successfully",
@@ -577,6 +590,8 @@ fun SpecificScreen(navController: NavController) {
                         }.start()
                         Unit
                     }
+
+                    else -> {}
                 }
                 Toast.makeText(
                     context, "renamed link's data successfully",
@@ -631,6 +646,8 @@ fun SpecificScreen(navController: NavController) {
                         }.start()
                         Unit
                     }
+
+                    else -> {}
                 }
                 Toast.makeText(
                     context, "renamed link's data successfully",
@@ -736,6 +753,8 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                     }
+
+                    else -> {}
                 }
             },
             isDataExtractingForTheLink = isDataExtractingFromTheLink,

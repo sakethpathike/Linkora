@@ -43,6 +43,7 @@ fun RenameDialogBox(
     renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
     onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
+    inChildArchiveFolderScreen: Boolean = false,
 ) {
     val newFolderOrTitleName = rememberSaveable {
         mutableStateOf("")
@@ -149,40 +150,57 @@ fun RenameDialogBox(
                                 }
                                 shouldDialogBoxAppear.value = false
                             } else {
-                                if (newFolderOrTitleName.value.isEmpty()) {
-                                    Toast.makeText(
-                                        localContext,
-                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                                        coroutineScope.launch {
-                                            doesFolderNameAlreadyExists =
-                                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                                    .doesThisFolderExists(
-                                                        newFolderOrTitleName.value
-                                                    )
-                                        }.invokeOnCompletion {
-                                            if (doesFolderNameAlreadyExists) {
-                                                Toast.makeText(
-                                                    localContext,
-                                                    "Folder name already exists",
-                                                    Toast.LENGTH_SHORT
-                                                ).show()
-                                            } else {
-                                                coroutineScope.launch {
-                                                    if (existingFolderName != null) {
-                                                        CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
-                                                            existingFolderName = existingFolderName,
-                                                            newFolderName = newFolderOrTitleName.value,
-                                                            infoForFolder = newNote.value,
-                                                            context = localContext
+                                if (!inChildArchiveFolderScreen) {
+                                    if (newFolderOrTitleName.value.isEmpty()) {
+                                        Toast.makeText(
+                                            localContext,
+                                            if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
+                                            coroutineScope.launch {
+                                                doesFolderNameAlreadyExists =
+                                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                        .doesThisFolderExists(
+                                                            newFolderOrTitleName.value
                                                         )
+                                            }.invokeOnCompletion {
+                                                if (doesFolderNameAlreadyExists) {
+                                                    Toast.makeText(
+                                                        localContext,
+                                                        "Folder name already exists",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                } else {
+                                                    coroutineScope.launch {
+                                                        if (existingFolderName != null) {
+                                                            CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
+                                                                existingFolderName = existingFolderName,
+                                                                newFolderName = newFolderOrTitleName.value,
+                                                                infoForFolder = newNote.value,
+                                                                context = localContext
+                                                            )
+                                                        }
                                                     }
+                                                    shouldDialogBoxAppear.value = false
                                                 }
-                                                shouldDialogBoxAppear.value = false
                                             }
+                                        }
+                                    }
+                                } else {
+                                    if (onTitleChangeClickForLinks != null && webURLForTitle != null) {
+                                        onTitleChangeClickForLinks(
+                                            webURLForTitle,
+                                            newFolderOrTitleName.value
+                                        )
+                                    }
+                                    if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
+                                        if (newNote.value.isNotEmpty()) {
+                                            onNoteChangeClickForLinks(
+                                                webURLForTitle,
+                                                newNote.value
+                                            )
                                         }
                                     }
                                 }

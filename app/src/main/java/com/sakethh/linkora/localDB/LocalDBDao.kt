@@ -156,10 +156,18 @@ interface LocalDBDao {
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
-    suspend fun renameALinkInfoFromArchiveBasedFolderLinks(webURL: String, newInfo: String, folderName:String)
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinks(
+        webURL: String,
+        newInfo: String,
+        folderName: String,
+    )
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
-    suspend fun renameALinkTitleFromArchiveBasedFolderLinks(webURL: String, newTitle: String, folderName:String)
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinks(
+        webURL: String,
+        newTitle: String,
+        folderName: String,
+    )
 
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)

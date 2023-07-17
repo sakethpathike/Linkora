@@ -69,10 +69,12 @@ class SpecificScreenVM : ViewModel() {
                     }
                 }
             }
+
+            else -> {}
         }
     }
 }
 
 enum class SpecificScreenType {
-    IMPORTANT_LINKS_SCREEN, ARCHIVE_SCREEN, LINKS_SCREEN, SPECIFIC_FOLDER_SCREEN
+    IMPORTANT_LINKS_SCREEN, ARCHIVE_SCREEN, LINKS_SCREEN, SPECIFIC_FOLDER_SCREEN, INTENT_ACTIVITY, ROOT_SCREEN
 }

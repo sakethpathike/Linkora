@@ -310,6 +310,18 @@ object CustomLocalDBDaoFunctionsDecl {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
+                } else if (localDB.localDBData()
+                        .doesThisLinkExistsInAFolder(
+                            webURL, folderName.toString()
+                        )
+                ) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"${folderName.toString()}\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } else {
                     val linkData = folderName?.let {
                         LinksTable(
@@ -353,6 +365,19 @@ object CustomLocalDBDaoFunctionsDecl {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
+                } else if (localDB.localDBData()
+                        .doesThisLinkExistsInAFolder(
+                            folderName = folderName.toString(),
+                            webURL = webURL
+                        )
+                ) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"${folderName.toString()}\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 } else {
                     val linkData = folderName?.let {
                         LinksTable(
@@ -393,6 +418,18 @@ object CustomLocalDBDaoFunctionsDecl {
                 } else if (linkDataExtractor.errorInGivenURL) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                    }
+                } else if (localDB.localDBData()
+                        .doesThisExistsInSavedLinks(
+                            webURL
+                        )
+                ) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"Saved Links\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 } else {
                     val linkData = LinksTable(

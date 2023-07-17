@@ -549,7 +549,7 @@ fun CollectionScreen(navController: NavController) {
         NewLinkBtmSheet(
             btmSheetState = btmModalSheetStateForSavingLinks,
             _inIntentActivity = false,
-            inASpecificFolder = false,
+            screenType = SpecificScreenType.ROOT_SCREEN,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
     }

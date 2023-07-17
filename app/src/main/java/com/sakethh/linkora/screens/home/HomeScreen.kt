@@ -64,6 +64,7 @@ import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
 import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
@@ -797,7 +798,7 @@ fun HomeScreen() {
     NewLinkBtmSheet(
         btmSheetState = btmModalSheetStateForSavingLinks,
         _inIntentActivity = false,
-        inASpecificFolder = false,
+        screenType = SpecificScreenType.ROOT_SCREEN,
         shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
     )
     BackHandler {
