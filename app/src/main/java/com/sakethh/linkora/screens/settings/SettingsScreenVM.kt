@@ -1,6 +1,5 @@
 package com.sakethh.linkora.screens.settings
 
-import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.DataStore
@@ -307,11 +306,6 @@ class SettingsScreenVM : ViewModel() {
                 }
             }
             val rawData = ktorClient.get(appInfoURL)
-            Log.d(
-                "ktor client",
-                rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
-                    .trim()
-            )
             val retrievedData = Json.decodeFromString<AppInfoDTO>(
                 rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
                     .trim()

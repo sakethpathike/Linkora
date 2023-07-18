@@ -506,7 +506,10 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .deleteALinkFromArchiveLinks(webURL = selectedWebURL.value)
+                                .deleteALinkFromArchiveFolderBasedLinks(
+                                    webURL = selectedWebURL.value,
+                                    archiveFolderName = topBarText
+                                )
                         }
                     }
 
