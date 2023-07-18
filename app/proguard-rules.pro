@@ -25,6 +25,13 @@
 -keep class androidx.datastore.*.**{*;}
 -keeppackagenames org.jsoup.nodes
 
+-dontwarn java.lang.management.**
+-dontwarn org.bouncycastle.jsse.**
+-dontwarn org.conscrypt.**
+-dontwarn org.openjsse.javax.net.ssl.**
+-dontwarn org.openjsse.net.ssl.**
+-dontwarn org.slf4j.impl.**
+
 # Keep `Companion` object fields of serializable classes.
 # This avoids serializer lookup through `getDeclaredClasses` as done for named companion objects.
 -if @kotlinx.serialization.Serializable class **

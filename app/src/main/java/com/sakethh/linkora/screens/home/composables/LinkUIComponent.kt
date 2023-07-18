@@ -96,11 +96,11 @@ fun LinkUIComponent(
                         .width(95.dp)
                         .height(60.dp)
                         .clip(RoundedCornerShape(15.dp))
-                        .background(MaterialTheme.colorScheme.secondary),
+                        .background(MaterialTheme.colorScheme.primary),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        tint = MaterialTheme.colorScheme.onSecondary,
+                        tint = MaterialTheme.colorScheme.onPrimary,
                         imageVector = Icons.Rounded.ImageNotSupported,
                         contentDescription = null,
                         modifier = Modifier

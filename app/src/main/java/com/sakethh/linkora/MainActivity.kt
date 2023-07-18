@@ -16,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.createDataStore
-import androidx.datastore.preferences.preferencesKey
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -91,14 +90,11 @@ class MainActivity : ComponentActivity() {
             }
             CoroutineScope(Dispatchers.Main).launch {
                 NavigationVM.startDestination.value =
-                    if (SettingsScreenVM.Settings.readPreferenceValue(
-                            preferenceKey = preferencesKey(SettingsScreenVM.SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = SettingsScreenVM.Settings.dataStore
-                        ) == true
-                    )
+                    if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                         NavigationRoutes.HOME_SCREEN.name
-                    else
+                    } else {
                         NavigationRoutes.COLLECTIONS_SCREEN.name
+                    }
             }.start()
             CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)
         }

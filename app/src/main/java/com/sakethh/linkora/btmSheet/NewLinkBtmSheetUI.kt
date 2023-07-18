@@ -219,17 +219,15 @@ fun NewLinkBtmSheet(
                                                     inImportantLinksScreen = true
                                                 )
                                             }.invokeOnCompletion {
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
+                                                isDataExtractingForTheLink.value = false
+                                                coroutineScope.launch {
+                                                    if (btmSheetState.isVisible) {
+                                                        btmSheetState.hide()
+                                                    }
+                                                }.invokeOnCompletion {
+                                                    shouldUIBeVisible.value = false
+                                                    if (inIntentActivity.value) {
+                                                        activity?.finishAndRemoveTask()
                                                     }
                                                 }
                                             }
@@ -250,17 +248,15 @@ fun NewLinkBtmSheet(
                                                     context = context
                                                 )
                                             }.invokeOnCompletion {
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
+                                                isDataExtractingForTheLink.value = false
+                                                coroutineScope.launch {
+                                                    if (btmSheetState.isVisible) {
+                                                        btmSheetState.hide()
+                                                    }
+                                                }.invokeOnCompletion {
+                                                    shouldUIBeVisible.value = false
+                                                    if (inIntentActivity.value) {
+                                                        activity?.finishAndRemoveTask()
                                                     }
                                                 }
                                             }
@@ -277,17 +273,15 @@ fun NewLinkBtmSheet(
                                                     context = context
                                                 )
                                             }.invokeOnCompletion {
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
+                                                isDataExtractingForTheLink.value = false
+                                                coroutineScope.launch {
+                                                    if (btmSheetState.isVisible) {
+                                                        btmSheetState.hide()
+                                                    }
+                                                }.invokeOnCompletion {
+                                                    shouldUIBeVisible.value = false
+                                                    if (inIntentActivity.value) {
+                                                        activity?.finishAndRemoveTask()
                                                     }
                                                 }
                                             }
@@ -365,17 +359,15 @@ fun NewLinkBtmSheet(
                                                         context = context
                                                     )
                                                 }.invokeOnCompletion {
-                                                    if (linkTextFieldValue.value.isNotEmpty()) {
-                                                        isDataExtractingForTheLink.value = false
-                                                        coroutineScope.launch {
-                                                            if (btmSheetState.isVisible) {
-                                                                btmSheetState.hide()
-                                                            }
-                                                        }.invokeOnCompletion {
-                                                            shouldUIBeVisible.value = false
-                                                            if (inIntentActivity.value) {
-                                                                activity?.finishAndRemoveTask()
-                                                            }
+                                                    isDataExtractingForTheLink.value = false
+                                                    coroutineScope.launch {
+                                                        if (btmSheetState.isVisible) {
+                                                            btmSheetState.hide()
+                                                        }
+                                                    }.invokeOnCompletion {
+                                                        shouldUIBeVisible.value = false
+                                                        if (inIntentActivity.value) {
+                                                            activity?.finishAndRemoveTask()
                                                         }
                                                     }
                                                 }

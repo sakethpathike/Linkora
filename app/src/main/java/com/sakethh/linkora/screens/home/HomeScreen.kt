@@ -627,10 +627,6 @@ fun HomeScreen() {
                         Unit
                     }
                 }
-                Toast.makeText(
-                    context, "archived the link successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
             }, noteForSaving = selectedURLNote.value
         )
     }

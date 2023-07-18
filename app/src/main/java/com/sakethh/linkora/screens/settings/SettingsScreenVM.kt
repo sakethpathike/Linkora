@@ -9,18 +9,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
-import io.ktor.serialization.kotlinx.json.json
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
+import org.jsoup.Jsoup
 
 data class SettingsUIElement(
     val title: String,
@@ -298,18 +295,10 @@ class SettingsScreenVM : ViewModel() {
         }
 
         suspend fun latestAppVersionRetriever() {
-            val ktorClient = HttpClient(Android) {
-                install(ContentNegotiation) {
-                    json(Json {
-                        ignoreUnknownKeys = true
-                    })
-                }
+            val rawData = withContext(Dispatchers.Default) {
+                Jsoup.connect(appInfoURL).get().body().ownText()
             }
-            val rawData = ktorClient.get(appInfoURL)
-            val retrievedData = Json.decodeFromString<AppInfoDTO>(
-                rawData.bodyAsText().removePrefix("<!DOCTYPE html><body>").removeSuffix("</body>")
-                    .trim()
-            )
+            val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
             latestAppInfoFromServer.apply {
                 this.latestVersion.value = retrievedData.latestVersion
                 this.latestStableVersion.value = retrievedData.latestStableVersion
@@ -319,9 +308,8 @@ class SettingsScreenVM : ViewModel() {
                 this.changeLogForLatestVersion.value = retrievedData.changeLogForLatestVersion
                 this.changeLogForLatestStableVersion.value =
                     retrievedData.changeLogForLatestStableVersion
-                this.httpStatusCodeFromServer.value = rawData.status.value.toString()
+                this.httpStatusCodeFromServer.value = ""
             }
-            ktorClient.close()
         }
     }
 }
