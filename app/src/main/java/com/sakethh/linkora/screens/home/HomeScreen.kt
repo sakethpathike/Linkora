@@ -739,10 +739,6 @@ fun HomeScreen() {
                     Unit
                 }
             }
-            Toast.makeText(
-                context, "renamed the link's data successfully",
-                Toast.LENGTH_SHORT
-            ).show()
         })
     NewLinkBtmSheet(
         btmSheetState = btmModalSheetStateForSavingLinks,

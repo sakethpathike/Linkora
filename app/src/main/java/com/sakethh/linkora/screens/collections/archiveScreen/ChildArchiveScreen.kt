@@ -157,55 +157,70 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 Toast.LENGTH_SHORT
                             ).show()
                         } else {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
-                        }
-                    }.invokeOnCompletion {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                    .addANewFolder(
-                                        foldersTable = FoldersTable(
-                                            selectedURLOrFolderName.value,
-                                            selectedURLOrFolderNote.value
+                            coroutineScope.launch {
+                                awaitAll(async {
+                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                        .addANewFolder(
+                                            foldersTable = FoldersTable(
+                                                selectedURLOrFolderName.value,
+                                                selectedURLOrFolderNote.value
+                                            )
                                         )
-                                    )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                    .deleteAnArchiveFolder(folderName = selectedURLOrFolderName.value)
-                            })
+                                }, async {
+                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                        .deleteAnArchiveFolder(folderName = selectedURLOrFolderName.value)
+                                })
+                            }.invokeOnCompletion {
+                                coroutineScope.launch {
+                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                        .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
+                                }.invokeOnCompletion {
+                                    Toast.makeText(
+                                        context, "Unarchived successfully", Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }
-                        Toast.makeText(
-                            context, "Unarchived successfully", Toast.LENGTH_SHORT
-                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .addANewLinkToSavedLinksOrInFolders(
-                                LinksTable(
-                                    title = archiveScreenVM.selectedArchivedLinkData.value.title,
-                                    webURL = archiveScreenVM.selectedArchivedLinkData.value.webURL,
-                                    baseURL = archiveScreenVM.selectedArchivedLinkData.value.baseURL,
-                                    imgURL = archiveScreenVM.selectedArchivedLinkData.value.imgURL,
-                                    infoForSaving = archiveScreenVM.selectedArchivedLinkData.value.infoForSaving,
-                                    isLinkedWithSavedLinks = true,
-                                    isLinkedWithFolders = false,
-                                    keyOfLinkedFolder = "",
-                                    isLinkedWithImpFolder = false,
-                                    keyOfImpLinkedFolder = "",
-                                    isLinkedWithArchivedFolder = false,
-                                    keyOfArchiveLinkedFolder = ""
-                                )
-                            )
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                            .deleteALinkFromArchiveLinks(archiveScreenVM.selectedArchivedLinkData.value.webURL)
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "Unarchived and moved the link to \"Saved Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
+                        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .doesThisExistsInSavedLinks(webURL = archiveScreenVM.selectedArchivedLinkData.value.webURL)
+                        ) {
+                            Toast.makeText(
+                                context,
+                                "Link already exists in \"Saved Links\"",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        } else {
+                            coroutineScope.launch {
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .addANewLinkToSavedLinksOrInFolders(
+                                        LinksTable(
+                                            title = archiveScreenVM.selectedArchivedLinkData.value.title,
+                                            webURL = archiveScreenVM.selectedArchivedLinkData.value.webURL,
+                                            baseURL = archiveScreenVM.selectedArchivedLinkData.value.baseURL,
+                                            imgURL = archiveScreenVM.selectedArchivedLinkData.value.imgURL,
+                                            infoForSaving = archiveScreenVM.selectedArchivedLinkData.value.infoForSaving,
+                                            isLinkedWithSavedLinks = true,
+                                            isLinkedWithFolders = false,
+                                            keyOfLinkedFolder = "",
+                                            isLinkedWithImpFolder = false,
+                                            keyOfImpLinkedFolder = "",
+                                            isLinkedWithArchivedFolder = false,
+                                            keyOfArchiveLinkedFolder = ""
+                                        )
+                                    )
+                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    .deleteALinkFromArchiveLinks(archiveScreenVM.selectedArchivedLinkData.value.webURL)
+                            }.invokeOnCompletion {
+                                Toast.makeText(
+                                    context,
+                                    "Unarchived and moved the link to \"Saved Links\"",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
                     }
                 }
             },
@@ -255,12 +270,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkInfoFromArchiveLinks(webURL, newNote)
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated archived data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
@@ -269,12 +278,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 folderName = webURL,
                                 newNote = newNote
                             )
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated archived data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 }
                 Unit
@@ -284,12 +287,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     coroutineScope.launch {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
-                    }.invokeOnCompletion {
-                        Toast.makeText(
-                            context,
-                            "updated archived data successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
                     }
                 } else {
                     coroutineScope.launch {
@@ -302,12 +299,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     selectedURLOrFolderName.value,
                                     newTitle
                                 )
-                        }.invokeOnCompletion {
-                            Toast.makeText(
-                                context,
-                                "updated archived data successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
                         }
                     }
                 }

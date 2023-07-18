@@ -130,19 +130,28 @@ fun AddNewFolderDialogBox(
                             } else {
                                 newFolderName(folderNameTextFieldValue.value)
                                 coroutineScope.launch {
-                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                                        .addANewFolder(
-                                            FoldersTable(
-                                                folderName = folderNameTextFieldValue.value,
-                                                infoForSaving = noteTextFieldValue.value
+                                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                            .doesThisFolderExists(folderName = folderNameTextFieldValue.value)
+                                    ) {
+                                        Toast.makeText(
+                                            context,
+                                            "\"${folderNameTextFieldValue.value}\" already exists",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                            .addANewFolder(
+                                                FoldersTable(
+                                                    folderName = folderNameTextFieldValue.value,
+                                                    infoForSaving = noteTextFieldValue.value
+                                                )
                                             )
-                                        )
-                                }.invokeOnCompletion {
-                                    Toast.makeText(
-                                        context,
-                                        "\"${folderNameTextFieldValue.value}\" folder created successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                        Toast.makeText(
+                                            context,
+                                            "\"${folderNameTextFieldValue.value}\" folder created successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
                                 }
                                 shouldDialogBoxAppear.value = false
                             }
