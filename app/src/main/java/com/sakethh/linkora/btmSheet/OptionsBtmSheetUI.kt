@@ -2,13 +2,16 @@ package com.sakethh.linkora.btmSheet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
@@ -79,150 +82,157 @@ fun OptionsBtmSheetUI(
                 isNoteBtnSelected.value = false
             }
         }) {
-            if (!isNoteBtnSelected.value) {
-                OptionsBtmSheetIndividualComponent(
-                    onClick = {
-                        coroutineScope.launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
-                            }
-                        }.invokeOnCompletion {
-                            isNoteBtnSelected.value = true
-                            coroutineScope.launch {
-                                btmModalSheetState.show()
-                            }
-                        }
-                    },
-                    elementName = "View Note",
-                    elementImageVector = Icons.Outlined.TextSnippet
-                )
-                OptionsBtmSheetIndividualComponent(
-                    onClick = {
-                        coroutineScope.launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
-                            }
-                        }.invokeOnCompletion {
-                            shouldBtmModalSheetBeVisible.value = false
-                        }
-                        onRenameClick()
-                    },
-                    elementName = "Rename",
-                    elementImageVector = Icons.Outlined.DriveFileRenameOutline
-                )
-
-                if ((btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !inArchiveScreen.value) {
+            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                if (!isNoteBtnSelected.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
                             coroutineScope.launch {
                                 if (btmModalSheetState.isVisible) {
                                     btmModalSheetState.hide()
                                 }
-                                if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
-                                    CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                        importantLinks = importantLinks,
-                                        context = context
-                                    )
-                                } else {
-                                    if (onImportantLinkAdditionInTheTable != null) {
-                                        onImportantLinkAdditionInTheTable()
+                            }.invokeOnCompletion {
+                                isNoteBtnSelected.value = true
+                                coroutineScope.launch {
+                                    btmModalSheetState.show()
+                                }
+                            }
+                        },
+                        elementName = "View Note",
+                        elementImageVector = Icons.Outlined.TextSnippet
+                    )
+                    OptionsBtmSheetIndividualComponent(
+                        onClick = {
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }.invokeOnCompletion {
+                                shouldBtmModalSheetBeVisible.value = false
+                            }
+                            onRenameClick()
+                        },
+                        elementName = "Rename",
+                        elementImageVector = Icons.Outlined.DriveFileRenameOutline
+                    )
+
+                    if ((btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !inArchiveScreen.value) {
+                        OptionsBtmSheetIndividualComponent(
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
+                                        CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
+                                            importantLinks = importantLinks,
+                                            context = context
+                                        )
+                                    } else {
+                                        if (onImportantLinkAdditionInTheTable != null) {
+                                            onImportantLinkAdditionInTheTable()
+                                        }
+                                    }
+                                }.invokeOnCompletion {
+                                    coroutineScope.launch {
+                                        if (btmModalSheetState.isVisible) {
+                                            btmModalSheetState.hide()
+                                        }
+                                        shouldBtmModalSheetBeVisible.value = false
                                     }
                                 }
-                            }.invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
-                        },
-                        elementName = optionsBtmSheetVM.importantCardText.value,
-                        elementImageVector = optionsBtmSheetVM.importantCardIcon.value
-                    )
-                }
-                if (!inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !inArchiveScreen.value) {
-                    OptionsBtmSheetIndividualComponent(
-                        onClick = {
-                            coroutineScope.launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
+                            },
+                            elementName = optionsBtmSheetVM.importantCardText.value,
+                            elementImageVector = optionsBtmSheetVM.importantCardIcon.value
+                        )
+                    }
+                    if (!inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !inArchiveScreen.value) {
+                        OptionsBtmSheetIndividualComponent(
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
                                 }
-                            }.invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
-                            onArchiveClick()
-                        },
-                        elementName = optionsBtmSheetVM.archiveCardText.value,
-                        elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
-                    )
-                }
-                if (inArchiveScreen.value && !inSpecificArchiveScreen.value) {
-                    OptionsBtmSheetIndividualComponent(
-                        onClick = {
-                            coroutineScope.launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
+                                onArchiveClick()
+                            },
+                            elementName = optionsBtmSheetVM.archiveCardText.value,
+                            elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
+                        )
+                    }
+                    if (inArchiveScreen.value && !inSpecificArchiveScreen.value) {
+                        OptionsBtmSheetIndividualComponent(
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
                                 }
-                            }.invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
-                            onUnarchiveClick()
-                        },
-                        elementName = "Unarchive",
-                        elementImageVector = Icons.Outlined.Unarchive
-                    )
-                }
-                if (inSpecificArchiveScreen.value || btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                    OptionsBtmSheetIndividualComponent(
-                        onClick = {
-                            coroutineScope.launch {
-                                if (btmModalSheetState.isVisible) {
-                                    btmModalSheetState.hide()
+                                onUnarchiveClick()
+                            },
+                            elementName = "Unarchive",
+                            elementImageVector = Icons.Outlined.Unarchive
+                        )
+                    }
+                    if (inSpecificArchiveScreen.value || btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                        OptionsBtmSheetIndividualComponent(
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
                                 }
-                            }.invokeOnCompletion {
-                                shouldBtmModalSheetBeVisible.value = false
-                            }
-                            onDeleteCardClick()
-                        },
-                        elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
-                        elementImageVector = if (btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
-                    )
-                }
-            } else {
-                if (noteText.value.isNotEmpty()) {
-                    Text(
-                        text = "Saved note :",
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 24.sp,
-                        modifier = Modifier
-                            .padding(
-                                start = 20.dp
-                            )
-                    )
-                    Divider(
-                        modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 65.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                    )
-                    Text(
-                        text = noteText.value,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 20.sp,
-                        modifier = Modifier
-                            .padding(
-                                start = 20.dp, top = 15.dp, end = 25.dp
-                            ),
-                        textAlign = TextAlign.Start,
-                        lineHeight = 24.sp
-                    )
+                                onDeleteCardClick()
+                            },
+                            elementName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
+                            elementImageVector = if (btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
+                        )
+                    }
                 } else {
-                    Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) {
+                    if (noteText.value.isNotEmpty()) {
                         Text(
-                            text = "You didn't add a note for this.",
+                            text = "Saved note :",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 24.sp,
+                            modifier = Modifier
+                                .padding(
+                                    start = 20.dp
+                                )
+                        )
+                        Divider(
+                            modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 65.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                        )
+                        Text(
+                            text = noteText.value,
                             style = MaterialTheme.typography.titleSmall,
-                            fontSize = 15.sp,
+                            fontSize = 20.sp,
+                            modifier = Modifier
+                                .padding(
+                                    start = 20.dp, top = 15.dp, end = 25.dp
+                                ),
                             textAlign = TextAlign.Start,
                             lineHeight = 24.sp
                         )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = "You didn't add a note for this.",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 15.sp,
+                                textAlign = TextAlign.Start,
+                                lineHeight = 24.sp
+                            )
+                        }
                     }
                 }
+                Spacer(modifier = Modifier.height(20.dp))
             }
-            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }

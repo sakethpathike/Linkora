@@ -41,8 +41,10 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
@@ -407,7 +409,40 @@ fun SpecificScreen(navController: NavController) {
             onRenameClick = {
                 shouldRenameDialogBeVisible.value = true
             },
-            importantLinks = tempImpLinkData,
+            onImportantLinkAdditionInTheTable = {
+                coroutineScope.launch {
+                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
+                    ) {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
+                        Toast.makeText(
+                            context, "removed link from the \"Important Links\" successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    } else {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().addANewLinkToImpLinks(
+                            ImportantLinks(
+                                tempImpLinkData.title,
+                                tempImpLinkData.webURL,
+                                tempImpLinkData.baseURL,
+                                tempImpLinkData.imgURL,
+                                tempImpLinkData.infoForSaving
+                            )
+                        )
+                        Toast.makeText(
+                            context, "added to the \"Important Links\" successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }.invokeOnCompletion {
+                    coroutineScope.launch {
+                        optionsBtmSheetVM.updateImportantCardData(tempImpLinkData.webURL)
+                    }
+                }
+                Unit
+            },
+            importantLinks = null,
             onArchiveClick = {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {

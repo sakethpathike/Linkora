@@ -543,6 +543,10 @@ fun HomeScreen() {
                     ) {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
                             .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                        Toast.makeText(
+                            context, "removed link from the \"Important Links\" successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     } else {
                         CustomLocalDBDaoFunctionsDecl.localDB.localDBData().addANewLinkToImpLinks(
                             ImportantLinks(
@@ -553,16 +557,17 @@ fun HomeScreen() {
                                 HomeScreenVM.tempImpLinkData.infoForSaving
                             )
                         )
+                        Toast.makeText(
+                            context, "added to the \"Important Links\" successfully",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }.invokeOnCompletion {
                     coroutineScope.launch {
                         optionsBtmSheetVM.updateImportantCardData(HomeScreenVM.tempImpLinkData.webURL)
                     }
                 }
-                Toast.makeText(
-                    context, "added to the \"Important Links\" successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
+                Unit
             },
             importantLinks = null,
             onArchiveClick = {

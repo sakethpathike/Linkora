@@ -41,6 +41,7 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
@@ -109,24 +110,32 @@ fun SettingsScreen(navController: NavController) {
                             title = "Check for latest version",
                             onClick = {
                                 shouldVersionCheckerDialogAppear.value = true
-                                coroutineScope.launch {
-                                    SettingsScreenVM.Settings.latestAppVersionRetriever()
-                                }.invokeOnCompletion {
-                                    shouldVersionCheckerDialogAppear.value = false
-                                    if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
-                                        shouldBtmModalSheetBeVisible.value = true
-                                        coroutineScope.launch {
-                                            if (!btmModalSheetState.isVisible) {
-                                                btmModalSheetState.show()
+                                if (isNetworkAvailable(context)) {
+                                    coroutineScope.launch {
+                                        SettingsScreenVM.Settings.latestAppVersionRetriever()
+                                    }.invokeOnCompletion {
+                                        shouldVersionCheckerDialogAppear.value = false
+                                        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+                                            shouldBtmModalSheetBeVisible.value = true
+                                            coroutineScope.launch {
+                                                if (!btmModalSheetState.isVisible) {
+                                                    btmModalSheetState.show()
+                                                }
                                             }
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "you're already on latest version",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
                                         }
-                                    } else {
-                                        Toast.makeText(
-                                            context,
-                                            "you're already on latest version",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
                                     }
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "network error, check your network connection and try again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
                         )

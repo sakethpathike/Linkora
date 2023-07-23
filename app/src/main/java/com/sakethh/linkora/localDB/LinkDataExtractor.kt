@@ -61,7 +61,7 @@ suspend fun linkDataExtractor(context: Context, webURL: String): LinkDataExtract
     }
 }
 
-private fun isNetworkAvailable(context: Context): Boolean {
+fun isNetworkAvailable(context: Context): Boolean {
     var result = false
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager

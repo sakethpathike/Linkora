@@ -20,12 +20,14 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -81,6 +83,9 @@ fun AddNewLinkDialogBox(
         mutableStateOf("")
     }
     val isDropDownMenuIconClicked = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isCreateANewFolderIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
@@ -355,15 +360,8 @@ fun AddNewLinkDialogBox(
                             Row {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
-                                    strokeWidth = 2.5.dp
-                                )
-                                Spacer(modifier = Modifier.width(15.dp))
-                                Text(
-                                    text = "Extracting the data...",
-                                    color = AlertDialogDefaults.containerColor,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp,
-                                    modifier = Modifier.padding(top = 2.dp)
+                                    strokeWidth = 2.5.dp,
+                                    color = AlertDialogDefaults.containerColor
                                 )
                             }
                         } else {
@@ -411,14 +409,31 @@ fun AddNewLinkDialogBox(
                             isDropDownMenuIconClicked.value = false
                         }
                     }) {
-                        Text(
-                            text = "Save in :",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 24.sp,
-                            modifier = Modifier
-                                .padding(
-                                    start = 20.dp
-                                )
+                        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
+                            Text(
+                                text = "Save in :",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 24.sp,
+                                modifier = Modifier
+                                    .padding(
+                                        start = 20.dp
+                                    )
+                            )
+                            Icon(
+                                imageVector = Icons.Outlined.CreateNewFolder,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .clickable {
+                                        isCreateANewFolderIconClicked.value = true
+                                    }
+                                    .padding(
+                                        end = 20.dp
+                                    )
+                            )
+                        }
+                        Divider(
+                            modifier = Modifier.padding(start = 20.dp, top = 15.dp, end = 65.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                         FolderForBtmSheetIndividualComponent(
                             onClick = {
@@ -461,6 +476,12 @@ fun AddNewLinkDialogBox(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
+                AddNewFolderDialogBox(
+                    coroutineScope = coroutineScope,
+                    shouldDialogBoxAppear = isCreateANewFolderIconClicked,
+                    newFolderName = {
+                        selectedFolderName.value = it
+                    })
             }
         }
     }
