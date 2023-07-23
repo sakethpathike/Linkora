@@ -28,7 +28,11 @@ import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsUIElement
 
 @Composable
-fun SettingComponent(settingsUIElement: SettingsUIElement, data: List<SettingsUIElement>) {
+fun SettingComponent(
+    isSingleComponent: Boolean,
+    settingsUIElement: SettingsUIElement,
+    data: List<SettingsUIElement>,
+) {
     val coroutineScope = rememberCoroutineScope()
     val cardHeight = remember {
         mutableStateOf(0.dp)
@@ -37,14 +41,14 @@ fun SettingComponent(settingsUIElement: SettingsUIElement, data: List<SettingsUI
     val localDensity = LocalDensity.current
     Card(
         shape = RoundedCornerShape(
-            topStart = if (settingsUIElement.title == data[0].title) 10.dp else 0.dp,
-            topEnd = if (settingsUIElement.title == data[0].title) 10.dp else 0.dp,
+            topStart = if (settingsUIElement.title == data[0].title || isSingleComponent) 10.dp else 0.dp,
+            topEnd = if (settingsUIElement.title == data[0].title || isSingleComponent) 10.dp else 0.dp,
             bottomStart = if (settingsUIElement.title == data.last().title) 10.dp else 0.dp,
             bottomEnd = if (settingsUIElement.title == data.last().title) 10.dp else 0.dp
         ), modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = if (settingsUIElement.title == data[0].title) 20.dp else 1.dp,
+                top = if (settingsUIElement.title == data[0].title || isSingleComponent) 20.dp else 1.dp,
                 start = 15.dp,
                 end = 15.dp
             )

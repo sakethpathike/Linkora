@@ -40,15 +40,15 @@ fun AddNewFolderDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     newFolderName: (String) -> Unit = {},
 ) {
-    val folderNameTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
-    val noteTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     if (shouldDialogBoxAppear.value) {
+        val folderNameTextFieldValue = rememberSaveable {
+            mutableStateOf("")
+        }
+        val noteTextFieldValue = rememberSaveable {
+            mutableStateOf("")
+        }
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))

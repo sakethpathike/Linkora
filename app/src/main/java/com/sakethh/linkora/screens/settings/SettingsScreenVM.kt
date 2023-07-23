@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings
 
+import android.os.Build
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.DataStore
@@ -33,7 +34,7 @@ class SettingsScreenVM : ViewModel() {
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
 
     companion object {
-        const val currentAppVersion = "0.0.1"
+        const val currentAppVersion = "0.0.2"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
@@ -238,7 +239,7 @@ class SettingsScreenVM : ViewModel() {
                             readPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                                 dataStore = dataStore
-                            ) ?: true
+                            ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     },
                     async {
                         shouldDarkThemeBeEnabled.value =

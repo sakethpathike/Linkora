@@ -209,15 +209,17 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 items(themeSectionData) { settingsUIElement ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming") {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming" || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && settingsUIElement.title == "Follow System Theme") {
                         SettingComponent(
                             settingsUIElement = settingsUIElement,
-                            data = themeSectionData
+                            data = themeSectionData,
+                            isSingleComponent = false
                         )
-                    } else if (settingsUIElement.title != "Use dynamic theming") {
+                    } else if (settingsUIElement.title != "Use dynamic theming" && settingsUIElement.title != "Follow System Theme") {
                         SettingComponent(
                             settingsUIElement = settingsUIElement,
-                            data = themeSectionData
+                            data = themeSectionData,
+                            isSingleComponent = Build.VERSION.SDK_INT < Build.VERSION_CODES.S && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
                         )
                     }
                 }
@@ -233,7 +235,8 @@ fun SettingsScreen(navController: NavController) {
                 items(generalSectionData) { settingsUIElement ->
                     SettingComponent(
                         settingsUIElement = settingsUIElement,
-                        data = generalSectionData
+                        data = generalSectionData,
+                        isSingleComponent = false
                     )
                 }
                 item {

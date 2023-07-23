@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,23 +66,11 @@ fun AddNewLinkDialogBox(
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
     }
-    val selectedFolderName = rememberSaveable {
-        mutableStateOf("Saved Links")
-    }
     val foldersTableData =
         CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collectAsState(
             initial = emptyList()
         ).value
     val context = LocalContext.current
-    val linkTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
-    val titleTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
-    val noteTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
     val isDropDownMenuIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
@@ -95,6 +84,18 @@ fun AddNewLinkDialogBox(
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     if (shouldDialogBoxAppear.value) {
+        val linkTextFieldValue = rememberSaveable {
+            mutableStateOf("")
+        }
+        val titleTextFieldValue = rememberSaveable {
+            mutableStateOf("")
+        }
+        val noteTextFieldValue = rememberSaveable {
+            mutableStateOf("")
+        }
+        val selectedFolderName = rememberSaveable {
+            mutableStateOf("Saved Links")
+        }
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
@@ -409,71 +410,78 @@ fun AddNewLinkDialogBox(
                             isDropDownMenuIconClicked.value = false
                         }
                     }) {
-                        Row(horizontalArrangement = Arrangement.SpaceEvenly) {
-                            Text(
-                                text = "Save in :",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 24.sp,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 20.dp
-                                    )
-                            )
-                            Icon(
-                                imageVector = Icons.Outlined.CreateNewFolder,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        isCreateANewFolderIconClicked.value = true
-                                    }
-                                    .padding(
-                                        end = 20.dp
-                                    )
-                            )
-                        }
-                        Divider(
-                            modifier = Modifier.padding(start = 20.dp, top = 15.dp, end = 65.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                        )
-                        FolderForBtmSheetIndividualComponent(
-                            onClick = {
-                                selectedFolderName.value = "Saved Links"
-                                coroutineScope.launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                }.invokeOnCompletion {
-                                    coroutineScope.launch {
-                                        if (btmModalSheetState.isVisible) {
-                                            btmModalSheetState.hide()
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                                Text(
+                                    text = "Save in :",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 20.dp
+                                        )
+                                )
+                                Icon(
+                                    imageVector = Icons.Outlined.CreateNewFolder,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable {
+                                            isCreateANewFolderIconClicked.value = true
                                         }
-                                    }.invokeOnCompletion {
-                                        isDropDownMenuIconClicked.value = false
-                                    }
-                                }
-                            },
-                            folderName = "Saved Links",
-                            imageVector = Icons.Outlined.Link,
-                            _isComponentSelected = selectedFolderName.value == "Saved Links"
-                        )
-                        foldersTableData.forEach {
+                                        .size(28.dp)
+                                        .padding(
+                                            end = 20.dp
+                                        )
+                                )
+                            }
+                            Divider(
+                                modifier = Modifier.padding(
+                                    start = 20.dp,
+                                    top = 15.dp,
+                                    end = 65.dp
+                                ),
+                                color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                            )
                             FolderForBtmSheetIndividualComponent(
                                 onClick = {
-                                    selectedFolderName.value = it.folderName
+                                    selectedFolderName.value = "Saved Links"
                                     coroutineScope.launch {
                                         if (btmModalSheetState.isVisible) {
                                             btmModalSheetState.hide()
                                         }
                                     }.invokeOnCompletion {
-                                        isDropDownMenuIconClicked.value = false
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
                                     }
                                 },
-                                folderName = it.folderName,
-                                imageVector = Icons.Outlined.Folder,
-                                _isComponentSelected = selectedFolderName.value == it.folderName
+                                folderName = "Saved Links",
+                                imageVector = Icons.Outlined.Link,
+                                _isComponentSelected = selectedFolderName.value == "Saved Links"
                             )
+                            foldersTableData.forEach {
+                                FolderForBtmSheetIndividualComponent(
+                                    onClick = {
+                                        selectedFolderName.value = it.folderName
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
+                                    },
+                                    folderName = it.folderName,
+                                    imageVector = Icons.Outlined.Folder,
+                                    _isComponentSelected = selectedFolderName.value == it.folderName
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
                 AddNewFolderDialogBox(

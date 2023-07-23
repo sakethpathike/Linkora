@@ -92,30 +92,6 @@ fun NewLinkBtmSheet(
     val intentData = rememberSaveable(inputs = arrayOf(intent)) {
         mutableStateOf(intent)
     }
-    val noteTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
-    val linkTextFieldValue = if (inIntentActivity.value) {
-        rememberSaveable(
-            inputs = arrayOf(
-                intentData.value?.getStringExtra(
-                    Intent.EXTRA_TEXT
-                ).toString()
-            )
-        ) {
-            mutableStateOf(intentData.value?.getStringExtra(Intent.EXTRA_TEXT).toString())
-        }
-    } else {
-        rememberSaveable {
-            mutableStateOf("")
-        }
-    }
-    val titleTextFieldValue = rememberSaveable {
-        mutableStateOf("")
-    }
-    val selectedFolder = rememberSaveable {
-        mutableStateOf("Saved Links")
-    }
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -158,6 +134,30 @@ fun NewLinkBtmSheet(
     }
     LinkoraTheme {
         if (shouldUIBeVisible.value) {
+            val noteTextFieldValue = rememberSaveable {
+                mutableStateOf("")
+            }
+            val linkTextFieldValue = if (inIntentActivity.value) {
+                rememberSaveable(
+                    inputs = arrayOf(
+                        intentData.value?.getStringExtra(
+                            Intent.EXTRA_TEXT
+                        ).toString()
+                    )
+                ) {
+                    mutableStateOf(intentData.value?.getStringExtra(Intent.EXTRA_TEXT).toString())
+                }
+            } else {
+                rememberSaveable {
+                    mutableStateOf("")
+                }
+            }
+            val titleTextFieldValue = rememberSaveable {
+                mutableStateOf("")
+            }
+            val selectedFolder = rememberSaveable {
+                mutableStateOf("Saved Links")
+            }
             ModalBottomSheet(onDismissRequest = {
                 if (!isDataExtractingForTheLink.value) {
                     shouldUIBeVisible.value = false

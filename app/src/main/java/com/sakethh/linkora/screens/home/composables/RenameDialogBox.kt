@@ -45,17 +45,17 @@ fun RenameDialogBox(
     onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
     inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
 ) {
-    val newFolderOrTitleName = rememberSaveable {
-        mutableStateOf("")
-    }
     val context = LocalContext.current
-    val newNote = rememberSaveable {
-        mutableStateOf("")
-    }
     val scrollState = rememberScrollState()
     var doesFolderNameAlreadyExists = false
     val localContext = LocalContext.current
     if (shouldDialogBoxAppear.value) {
+        val newFolderOrTitleName = rememberSaveable {
+            mutableStateOf("")
+        }
+        val newNote = rememberSaveable {
+            mutableStateOf("")
+        }
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
