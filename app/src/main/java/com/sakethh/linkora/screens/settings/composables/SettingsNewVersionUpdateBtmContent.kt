@@ -62,7 +62,7 @@ fun SettingsNewVersionUpdateBtmContent(
         if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
             VersionCardForBtmSheetContent(
                 title = "latest stable version which you should be using",
-                value = SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value
+                value = "v${SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value}"
             )
         }
 
@@ -73,7 +73,7 @@ fun SettingsNewVersionUpdateBtmContent(
         )
 
         VersionCardForBtmSheetContent(
-            title = "latest version which is available for usage (not stable)",
+            title = "latest version which is available for usage",
             value = "v${SettingsScreenVM.latestAppInfoFromServer.latestVersion.value}"
         )
 
@@ -92,7 +92,6 @@ fun SettingsNewVersionUpdateBtmContent(
         )
         if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
             Button(
-                shape = RoundedCornerShape(10.dp),
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                     .fillMaxWidth(),
@@ -119,7 +118,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     }
                 }) {
                 Text(
-                    text = "Redirect me to latest Stable Release page",
+                    text = "Redirect me to latest stable release page",
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -130,9 +129,8 @@ fun SettingsNewVersionUpdateBtmContent(
                 )
             }
         }
-        OutlinedButton(
+        Button(
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-            shape = RoundedCornerShape(10.dp),
             onClick = {
                 coroutineScope.launch {
                     if (modalBtmSheetState.isVisible) {
@@ -156,7 +154,7 @@ fun SettingsNewVersionUpdateBtmContent(
                 }
             }) {
             Text(
-                text = "Redirect me to latest Release page",
+                text = "Redirect me to latest release page",
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 textAlign = TextAlign.Center,
@@ -168,7 +166,6 @@ fun SettingsNewVersionUpdateBtmContent(
         }
         OutlinedButton(
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp),
-            shape = RoundedCornerShape(10.dp),
             onClick = {
                 coroutineScope.launch {
                     if (modalBtmSheetState.isVisible) {

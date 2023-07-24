@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,20 +38,19 @@ fun DeleteDialogBox(
             LinkoraTheme {
                 AlertDialog(modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
-                    .background(AlertDialogDefaults.containerColor),
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
                     onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                     Column {
                         Text(
                             text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
-                            color = AlertDialogDefaults.textContentColor,
+                            color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,
                             modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
                             lineHeight = 27.sp,
                             textAlign = TextAlign.Start
                         )
-                        Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
-                            shape = RoundedCornerShape(5.dp),
+                        Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             modifier = Modifier
                                 .padding(
                                     end = 20.dp,
@@ -65,7 +63,7 @@ fun DeleteDialogBox(
                             }) {
                             Text(
                                 text = "Delete it",
-                                color = AlertDialogDefaults.containerColor,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -73,9 +71,8 @@ fun DeleteDialogBox(
                         OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = AlertDialogDefaults.textContentColor
+                                color = MaterialTheme.colorScheme.secondary
                             ),
-                            shape = RoundedCornerShape(5.dp),
                             modifier = Modifier
                                 .padding(
                                     end = 20.dp,
@@ -88,7 +85,7 @@ fun DeleteDialogBox(
                             }) {
                             Text(
                                 text = "Never-mind",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.secondary,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )

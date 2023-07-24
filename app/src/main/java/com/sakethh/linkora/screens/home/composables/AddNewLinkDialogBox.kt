@@ -99,7 +99,7 @@ fun AddNewLinkDialogBox(
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(AlertDialogDefaults.containerColor),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
                 onDismissRequest = {
                     if (!isDataExtractingForTheLink.value) {
                         shouldDialogBoxAppear.value = false
@@ -108,7 +108,7 @@ fun AddNewLinkDialogBox(
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Save new link",
-                        color = AlertDialogDefaults.textContentColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
@@ -123,7 +123,7 @@ fun AddNewLinkDialogBox(
                         label = {
                             Text(
                                 text = "Link",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -146,7 +146,7 @@ fun AddNewLinkDialogBox(
                             label = {
                                 Text(
                                     text = "Title for the link",
-                                    color = AlertDialogDefaults.textContentColor,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -169,7 +169,7 @@ fun AddNewLinkDialogBox(
                         label = {
                             Text(
                                 text = "Note for why you're saving this link",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -192,7 +192,7 @@ fun AddNewLinkDialogBox(
                         ) {
                             Text(
                                 text = "Save in",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(top = 15.dp)
@@ -203,7 +203,7 @@ fun AddNewLinkDialogBox(
                                 .border(
                                     shape = RoundedCornerShape(50.dp),
                                     width = 1.dp,
-                                    color = AlertDialogDefaults.textContentColor
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
                                 .clickable {
                                     if (!isDataExtractingForTheLink.value) {
@@ -216,7 +216,7 @@ fun AddNewLinkDialogBox(
                                         0,
                                         6
                                     ) + "...",
-                                    color = AlertDialogDefaults.textContentColor,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 18.sp,
                                     maxLines = 1,
@@ -229,15 +229,14 @@ fun AddNewLinkDialogBox(
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
                                         contentDescription = null,
-                                        tint = AlertDialogDefaults.textContentColor
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))
                             }
                         }
                     }
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
-                        shape = RoundedCornerShape(5.dp),
+                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .padding(
                                 end = 20.dp,
@@ -368,7 +367,7 @@ fun AddNewLinkDialogBox(
                         } else {
                             Text(
                                 text = "Save",
-                                color = AlertDialogDefaults.containerColor,
+                                color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -378,9 +377,8 @@ fun AddNewLinkDialogBox(
                         androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                             border = BorderStroke(
                                 width = 1.dp,
-                                color = AlertDialogDefaults.textContentColor
+                                color = MaterialTheme.colorScheme.secondary
                             ),
-                            shape = RoundedCornerShape(5.dp),
                             modifier = Modifier
                                 .padding(
                                     end = 20.dp,
@@ -393,7 +391,7 @@ fun AddNewLinkDialogBox(
                             }) {
                             Text(
                                 text = "Cancel",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.secondary,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -411,7 +409,10 @@ fun AddNewLinkDialogBox(
                         }
                     }) {
                         Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                            Row(horizontalArrangement = Arrangement.SpaceEvenly, modifier = Modifier.fillMaxWidth()) {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
                                 Text(
                                     text = "Save in :",
                                     style = MaterialTheme.typography.titleMedium,
@@ -428,16 +429,14 @@ fun AddNewLinkDialogBox(
                                         .clickable {
                                             isCreateANewFolderIconClicked.value = true
                                         }
-                                        .size(28.dp)
-                                        .padding(
-                                            end = 20.dp
-                                        )
+                                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                        .size(30.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
                                 )
                             }
                             Divider(
                                 modifier = Modifier.padding(
                                     start = 20.dp,
-                                    top = 15.dp,
                                     end = 65.dp
                                 ),
                                 color = MaterialTheme.colorScheme.outline.copy(0.25f)

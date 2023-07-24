@@ -10,7 +10,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -52,12 +51,12 @@ fun AddNewFolderDialogBox(
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(AlertDialogDefaults.containerColor),
+                .background(MaterialTheme.colorScheme.surfaceVariant),
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Create new folder",
-                        color = AlertDialogDefaults.textContentColor,
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
@@ -72,7 +71,7 @@ fun AddNewFolderDialogBox(
                         label = {
                             Text(
                                 text = "Folder name",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -94,7 +93,7 @@ fun AddNewFolderDialogBox(
                         label = {
                             Text(
                                 text = "Note for why you're creating this folder",
-                                color = AlertDialogDefaults.textContentColor,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -106,8 +105,7 @@ fun AddNewFolderDialogBox(
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = AlertDialogDefaults.titleContentColor),
-                        shape = RoundedCornerShape(5.dp),
+                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .padding(
                                 end = 20.dp,
@@ -158,7 +156,7 @@ fun AddNewFolderDialogBox(
                         }) {
                         Text(
                             text = "Create",
-                            color = AlertDialogDefaults.containerColor,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -166,9 +164,8 @@ fun AddNewFolderDialogBox(
                     androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                         border = BorderStroke(
                             width = 1.dp,
-                            color = AlertDialogDefaults.textContentColor
+                            color = MaterialTheme.colorScheme.secondary
                         ),
-                        shape = RoundedCornerShape(5.dp),
                         modifier = Modifier
                             .padding(
                                 end = 20.dp,
@@ -181,7 +178,7 @@ fun AddNewFolderDialogBox(
                         }) {
                         Text(
                             text = "Cancel",
-                            color = AlertDialogDefaults.textContentColor,
+                            color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )

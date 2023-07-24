@@ -200,7 +200,7 @@ fun NewLinkBtmSheet(
                             Button(
                                 modifier = Modifier.padding(
                                     start = 20.dp, bottom = 10.dp
-                                ), shape = RoundedCornerShape(10.dp), onClick = {
+                                ), onClick = {
                                     if (linkTextFieldValue.value.isNotEmpty()) {
                                         isDataExtractingForTheLink.value = true
                                     }
@@ -559,7 +559,7 @@ fun NewLinkBtmSheet(
                             item {
                                 OutlinedButton(modifier = Modifier.padding(
                                     start = 20.dp, end = 20.dp
-                                ), shape = RoundedCornerShape(10.dp), onClick = {
+                                ), onClick = {
                                     shouldNewFolderDialogBoxAppear.value = true
                                 }) {
                                     Text(
