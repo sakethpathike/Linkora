@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -25,10 +25,11 @@ fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boole
     if (shouldDialogBoxAppear.value) {
         AlertDialog(modifier = Modifier
             .clip(RoundedCornerShape(20.dp))
-            .background(AlertDialogDefaults.containerColor),
+            .background(MaterialTheme.colorScheme.surfaceVariant),
             onDismissRequest = { }) {
             Row {
                 CircularProgressIndicator(
+                    color = LocalContentColor.current,
                     modifier = Modifier
                         .padding(20.dp)
                         .align(Alignment.CenterVertically),
@@ -36,7 +37,7 @@ fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boole
                 )
                 Text(
                     text = "Retrieving latest information, this may take sometime; drink water until then \uD83D\uDC4D",
-                    color = AlertDialogDefaults.textContentColor,
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 20.sp,
                     lineHeight = 22.sp,

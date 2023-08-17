@@ -13,9 +13,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderDelete
+import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Card
@@ -54,6 +57,7 @@ fun OptionsBtmSheetUI(
     coroutineScope: CoroutineScope,
     btmSheetFor: OptionsBtmSheetType,
     onDeleteCardClick: () -> Unit,
+    onNoteDeleteCardClick: () -> Unit,
     onRenameClick: () -> Unit,
     onArchiveClick: () -> Unit,
     onUnarchiveClick: () -> Unit = {},
@@ -62,9 +66,11 @@ fun OptionsBtmSheetUI(
     inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
     inSpecificArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
     noteForSaving: String,
+    folderName: String,
+    linkTitle: String,
 ) {
     val context = LocalContext.current
-    val noteText = rememberSaveable(inputs = arrayOf(noteForSaving)) {
+    val mutableStateNote = rememberSaveable(inputs = arrayOf(noteForSaving)) {
         mutableStateOf(noteForSaving)
     }
     val isNoteBtnSelected = rememberSaveable {
@@ -83,6 +89,25 @@ fun OptionsBtmSheetUI(
             }
         }) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                if (btmSheetFor == OptionsBtmSheetType.FOLDER) {
+                    SelectableFolderUIComponent(
+                        onClick = { },
+                        folderName = folderName,
+                        imageVector = Icons.Outlined.Folder,
+                        _isComponentSelected = false,
+                        showNote = mutableStateNote.value.isNotEmpty(),
+                        note = mutableStateNote.value
+                    )
+                } else {
+                    SelectableFolderUIComponent(
+                        onClick = { },
+                        folderName = linkTitle,
+                        imageVector = Icons.Outlined.Link,
+                        _isComponentSelected = false,
+                        showNote = mutableStateNote.value.isNotEmpty(),
+                        note = mutableStateNote.value
+                    )
+                }
                 if (!isNoteBtnSelected.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
@@ -174,6 +199,22 @@ fun OptionsBtmSheetUI(
                             elementImageVector = Icons.Outlined.Unarchive
                         )
                     }
+                    if (mutableStateNote.value.isNotEmpty()) {
+                        OptionsBtmSheetIndividualComponent(
+                            onClick = {
+                                coroutineScope.launch {
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    shouldBtmModalSheetBeVisible.value = false
+                                }
+                                onNoteDeleteCardClick()
+                            },
+                            elementName = "Delete the note",
+                            elementImageVector = Icons.Outlined.Delete
+                        )
+                    }
                     if (inSpecificArchiveScreen.value || btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
@@ -191,7 +232,7 @@ fun OptionsBtmSheetUI(
                         )
                     }
                 } else {
-                    if (noteText.value.isNotEmpty()) {
+                    if (mutableStateNote.value.isNotEmpty()) {
                         Text(
                             text = "Saved note :",
                             style = MaterialTheme.typography.titleMedium,
@@ -206,7 +247,7 @@ fun OptionsBtmSheetUI(
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                         Text(
-                            text = noteText.value,
+                            text = mutableStateNote.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
                             modifier = Modifier

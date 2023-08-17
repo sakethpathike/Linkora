@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
@@ -461,7 +462,17 @@ fun CollectionScreen(navController: NavController) {
                     )
                 }
             },
-            noteForSaving = clickedFolderNote.value
+            noteForSaving = clickedFolderNote.value,
+            onNoteDeleteCardClick = {
+                coroutineScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        .deleteAFolderNote(folderName = CollectionsScreenVM.selectedFolderData.folderName)
+                }.invokeOnCompletion {
+                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                }
+            },
+            linkTitle = "",
+            folderName = CollectionsScreenVM.selectedFolderData.folderName
         )
         RenameDialogBox(
             onNoteChangeClickForLinks = null,

@@ -7,6 +7,11 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LocalDBDao {
+    @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1 LIMIT 8")
+    suspend fun getLatestSavedLinks(): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM important_links_table LIMIT 8")
+    suspend fun getLatestImportantLinks(): Flow<List<ImportantLinks>>
 
     @Insert
     suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
@@ -31,6 +36,9 @@ interface LocalDBDao {
 
     @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
     suspend fun deleteALinkFromSavedLinks(webURL: String)
+
+    @Query("UPDATE folders_table SET infoForSaving = \"\" WHERE folderName = :folderName")
+    suspend fun deleteAFolderNote(folderName: String)
 
     @Query("DELETE from important_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromImpLinks(webURL: String)
@@ -149,8 +157,14 @@ interface LocalDBDao {
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
     suspend fun renameALinkTitleFromFolders(webURL: String, newTitle: String, folderName: String)
 
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
+    suspend fun deleteALinkInfoOfFolders(webURL: String, folderName: String)
+
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
+    suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
 
     @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
@@ -169,8 +183,17 @@ interface LocalDBDao {
         folderName: String,
     )
 
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
+    suspend fun deleteALinkNoteFromArchiveBasedFolderLinks(
+        webURL: String,
+        folderName: String,
+    )
+
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
+
+    @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
+    suspend fun deleteANoteFromArchiveLinks(webURL: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
     suspend fun renameALinkInfoFromFolders(webURL: String, newInfo: String, folderName: String)
@@ -178,6 +201,11 @@ interface LocalDBDao {
     @Query("UPDATE archived_folders_table SET infoForSaving = :newInfo  WHERE archiveFolderName= :folderName")
     suspend fun renameALinkInfoFromArchiveFolders(
         newInfo: String,
+        folderName: String,
+    )
+
+    @Query("UPDATE archived_folders_table SET infoForSaving = \"\"  WHERE archiveFolderName= :folderName")
+    suspend fun deleteArchiveFolderNote(
         folderName: String,
     )
 
@@ -194,9 +222,15 @@ interface LocalDBDao {
     @Query("UPDATE important_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromImpLinks(webURL: String, newInfo: String)
 
+    @Query("UPDATE important_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
+    suspend fun deleteANoteFromImportantLinks(webURL: String)
+
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 
     @Query("UPDATE recently_visited_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE recently_visited_table SET infoForSaving = \"\" WHERE webURL = :webURL")
+    suspend fun deleteANoteFromRecentlyVisited(webURL: String)
 }

@@ -67,6 +67,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedURLTitle = rememberSaveable {
+        mutableStateOf("")
+    }
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
@@ -89,6 +92,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.webURL
                                 selectedURLOrFolderNote.value = it.infoForSaving
+                                selectedURLTitle.value = it.title
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
                                 }
@@ -238,7 +242,26 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             },
             onArchiveClick = {},
             importantLinks = null,
-            noteForSaving = selectedURLOrFolderNote.value
+            noteForSaving = selectedURLOrFolderNote.value,
+            onNoteDeleteCardClick = {
+                if (archiveScreenType == ArchiveScreenType.FOLDERS) {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteArchiveFolderNote(folderName = selectedURLOrFolderName.value)
+                    }.invokeOnCompletion {
+                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    coroutineScope.launch {
+                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName.value)
+                    }.invokeOnCompletion {
+                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            },
+            folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
+            linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else ""
         )
 
         DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,

@@ -137,9 +137,6 @@ fun HomeScreen() {
     val shouldDialogForNewFolderAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val isDataExtractingFromLink = rememberSaveable {
-        mutableStateOf(false)
-    }
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
@@ -632,7 +629,42 @@ fun HomeScreen() {
                         Unit
                     }
                 }
-            }, noteForSaving = selectedURLNote.value
+            }, noteForSaving = selectedURLNote.value,
+            onNoteDeleteCardClick = {
+                when (selectedCardType.value) {
+                    HomeScreenBtmSheetType.RECENT_SAVES.name -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                        Unit
+                    }
+
+                    HomeScreenBtmSheetType.RECENT_VISITS.name -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteANoteFromRecentlyVisited(webURL = selectedWebURL.value)
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                        Unit
+                    }
+
+                    HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                        Unit
+                    }
+                }
+            },
+            folderName = "",
+            linkTitle = HomeScreenVM.tempImpLinkData.title
         )
     }
     DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteBoxAppear,

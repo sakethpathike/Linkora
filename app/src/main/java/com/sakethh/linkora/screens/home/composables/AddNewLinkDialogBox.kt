@@ -19,13 +19,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
+import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -47,7 +47,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.btmSheet.FolderForBtmSheetIndividualComponent
+import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
@@ -244,13 +244,13 @@ fun AddNewLinkDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (linkTextFieldValue.value.isEmpty()) {
+                            if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
                                     context,
                                     "where's the link bruhh?",
                                     Toast.LENGTH_SHORT
                                 ).show()
-                            } else {
+                            } else if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isNotEmpty()) {
                                 isDataExtractingForTheLink.value = true
                                 when (screenType) {
                                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -357,11 +357,11 @@ fun AddNewLinkDialogBox(
                             }
                         }) {
                         if (isDataExtractingForTheLink.value) {
-                            Row {
+                            Column {
                                 CircularProgressIndicator(
                                     modifier = Modifier.size(20.dp),
                                     strokeWidth = 2.5.dp,
-                                    color = AlertDialogDefaults.containerColor
+                                    color = LocalContentColor.current
                                 )
                             }
                         } else {
@@ -396,6 +396,9 @@ fun AddNewLinkDialogBox(
                                 fontSize = 16.sp
                             )
                         }
+                    }
+                    if (isDataExtractingForTheLink.value) {
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
                 if (isDropDownMenuIconClicked.value) {
@@ -441,7 +444,7 @@ fun AddNewLinkDialogBox(
                                 ),
                                 color = MaterialTheme.colorScheme.outline.copy(0.25f)
                             )
-                            FolderForBtmSheetIndividualComponent(
+                            SelectableFolderUIComponent(
                                 onClick = {
                                     selectedFolderName.value = "Saved Links"
                                     coroutineScope.launch {
@@ -463,7 +466,7 @@ fun AddNewLinkDialogBox(
                                 _isComponentSelected = selectedFolderName.value == "Saved Links"
                             )
                             foldersTableData.forEach {
-                                FolderForBtmSheetIndividualComponent(
+                                SelectableFolderUIComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
                                         coroutineScope.launch {

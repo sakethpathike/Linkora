@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.ImageNotSupported
 import androidx.compose.material3.Divider
@@ -30,6 +31,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -49,6 +51,7 @@ fun LinkUIComponent(
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
+    val localURIHandler = LocalUriHandler.current
     Column(
         modifier = Modifier
             .clickable {
@@ -113,7 +116,7 @@ fun LinkUIComponent(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
-                .padding(top = 15.dp),
+                .padding(top = 20.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
@@ -131,6 +134,10 @@ fun LinkUIComponent(
             Row(
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
+                Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
+                    modifier = Modifier.clickable {
+                        localURIHandler.openUri(webURL)
+                    })
                 Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
                     modifier = Modifier.clickable {
                         localClipBoardManager.setText(

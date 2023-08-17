@@ -82,6 +82,9 @@ fun SpecificScreen(navController: NavController) {
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedURLTitle = rememberSaveable {
+        mutableStateOf("")
+    }
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -165,6 +168,7 @@ fun SpecificScreen(navController: NavController) {
                                     webBaseURL = it.baseURL,
                                     imgURL = it.imgURL,
                                     onMoreIconCLick = {
+                                        selectedURLTitle.value = it.title
                                         selectedWebURL.value = it.webURL
                                         selectedURLOrFolderNote.value = it.infoForSaving
                                         tempImpLinkData.apply {
@@ -524,7 +528,56 @@ fun SpecificScreen(navController: NavController) {
                     else -> {}
                 }
             },
-            noteForSaving = selectedURLOrFolderNote.value
+            noteForSaving = selectedURLOrFolderNote.value,
+            onNoteDeleteCardClick = {
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteALinkNoteFromArchiveBasedFolderLinks(
+                                    folderName = topBarText,
+                                    webURL = selectedWebURL.value
+                                )
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    SpecificScreenType.LINKS_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                        coroutineScope.launch {
+                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                .deleteALinkInfoOfFolders(
+                                    folderName = topBarText,
+                                    webURL = selectedWebURL.value
+                                )
+                        }.invokeOnCompletion {
+                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    else -> {}
+                }
+            },
+            folderName = topBarText,
+            linkTitle = selectedURLTitle.value
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBeVisible,

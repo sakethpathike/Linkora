@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.ImageNotSupported
 import androidx.compose.material3.Card
@@ -31,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -50,6 +52,7 @@ fun GeneralCard(
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
+    val localURIHandler = LocalUriHandler.current
     Card(
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .height(155.dp)
@@ -62,7 +65,7 @@ fun GeneralCard(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.55f),
+                    .fillMaxWidth(0.44f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -134,6 +137,10 @@ fun GeneralCard(
                     modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
+                    Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
+                        modifier = Modifier.clickable {
+                            localURIHandler.openUri(webURL)
+                        })
                     Icon(imageVector = Icons.Outlined.ContentCopy,
                         contentDescription = null,
                         modifier = Modifier.clickable {

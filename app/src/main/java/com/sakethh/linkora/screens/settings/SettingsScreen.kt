@@ -131,6 +131,7 @@ fun SettingsScreen(navController: NavController) {
                                         }
                                     }
                                 } else {
+                                    shouldVersionCheckerDialogAppear.value = false
                                     Toast.makeText(
                                         context,
                                         "network error, check your network connection and try again",

@@ -56,14 +56,14 @@ class HomeScreenVM : ViewModel() {
         }
 
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllImpLinks().collect {
-                _impLinksData.emit(it.reversed().take(8))
+            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getLatestImportantLinks().collect {
+                _impLinksData.emit(it.reversed())
             }
         }
 
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllSavedLinks().collect {
-                _linksData.emit(it.reversed().take(8))
+            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getLatestSavedLinks().collect {
+                _linksData.emit(it.reversed())
             }
         }
 
