@@ -162,8 +162,8 @@ object CustomLocalDBDaoFunctionsDecl {
         importantLinks: ImportantLinks,
         context: Context,
         inImportantLinksScreen: Boolean = false,
+        autoDetectTitle: Boolean = false,
     ) {
-
         if (localDB.localDBData().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
             if (inImportantLinksScreen) {
                 withContext(Dispatchers.Main) {
@@ -189,7 +189,7 @@ object CustomLocalDBDaoFunctionsDecl {
             val linkDataExtractor =
                 linkDataExtractor(webURL = importantLinks.webURL, context = context)
             val linksData = ImportantLinks(
-                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else importantLinks.title,
+                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else importantLinks.title,
                 webURL = importantLinks.webURL,
                 baseURL = linkDataExtractor.baseURL,
                 imgURL = linkDataExtractor.imgURL,
@@ -290,6 +290,7 @@ object CustomLocalDBDaoFunctionsDecl {
         folderName: String?,
         savingFor: ModifiedLocalDbFunctionsType,
         context: Context,
+        autotDetectTitle: Boolean = false,
     ) {
         when (savingFor) {
             ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS -> {
@@ -321,7 +322,7 @@ object CustomLocalDBDaoFunctionsDecl {
                 } else {
                     val linkData = folderName?.let {
                         LinksTable(
-                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
+                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autotDetectTitle) linkDataExtractor.title else title,
                             webURL = webURL,
                             baseURL = linkDataExtractor.baseURL,
                             imgURL = linkDataExtractor.imgURL,

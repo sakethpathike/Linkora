@@ -10,8 +10,10 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -338,7 +340,11 @@ fun CollectionScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Divider(thickness = 0.5.dp, modifier = Modifier.padding(25.dp))
+                    Divider(
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(25.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                    )
                 }
                 item {
                     Card(
@@ -371,7 +377,11 @@ fun CollectionScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Divider(thickness = 0.5.dp, modifier = Modifier.padding(25.dp))
+                    Divider(
+                        thickness = 0.5.dp,
+                        modifier = Modifier.padding(25.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                    )
                 }
                 item {
                     Text(
@@ -543,6 +553,7 @@ fun CollectionScreen(navController: NavController) {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FolderIndividualComponent(
     folderName: String,
@@ -553,9 +564,9 @@ fun FolderIndividualComponent(
     Column {
         Row(
             modifier = Modifier
-                .clickable {
-                    onFolderClick()
-                }
+                .combinedClickable(
+                    onClick = { onFolderClick() },
+                    onLongClick = { onMoreIconClick() })
                 .fillMaxWidth()
                 .requiredHeight(75.dp)
         ) {
@@ -617,7 +628,8 @@ fun FolderIndividualComponent(
         }
         Divider(
             thickness = 1.dp,
-            modifier = Modifier.padding(start = 25.dp, end = 25.dp)
+            modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }
 }

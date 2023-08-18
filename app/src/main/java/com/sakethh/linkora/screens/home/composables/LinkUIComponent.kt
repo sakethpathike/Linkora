@@ -2,8 +2,10 @@ package com.sakethh.linkora.screens.home.composables
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LinkUIComponent(
     title: String,
@@ -54,12 +57,13 @@ fun LinkUIComponent(
     val localURIHandler = LocalUriHandler.current
     Column(
         modifier = Modifier
-            .clickable {
-                onLinkClick()
-            }
+            .combinedClickable(
+                onClick = { onLinkClick() },
+                onLongClick = { onMoreIconCLick() })
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
-            .wrapContentHeight()
+            .wrapContentHeight(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
         Row(
             modifier = Modifier
@@ -129,15 +133,18 @@ fun LinkUIComponent(
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
                     .padding(top = 5.dp)
-                    .fillMaxWidth(0.65f)
+                    .fillMaxWidth(0.45f)
             )
             Row(
                 horizontalArrangement = Arrangement.spacedBy(15.dp)
             ) {
                 Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
-                    modifier = Modifier.clickable {
-                        localURIHandler.openUri(webURL)
-                    })
+                    modifier = Modifier
+                        .clickable {
+                            localURIHandler.openUri(webURL)
+                        }
+                        .size(28.dp)
+                )
                 Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
                     modifier = Modifier.clickable {
                         localClipBoardManager.setText(
@@ -164,9 +171,10 @@ fun LinkUIComponent(
                     modifier = Modifier.clickable { onMoreIconCLick() })
             }
         }
+        Divider(
+            thickness = 0.5.dp,
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+        )
     }
-    Divider(
-        thickness = 0.5.dp,
-        modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 15.dp)
-    )
 }

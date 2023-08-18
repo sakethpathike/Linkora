@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface LocalDBDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1 LIMIT 8")
-    suspend fun getLatestSavedLinks(): Flow<List<LinksTable>>
+    fun getLatestSavedLinks(): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM important_links_table LIMIT 8")
-    suspend fun getLatestImportantLinks(): Flow<List<ImportantLinks>>
+    fun getLatestImportantLinks(): Flow<List<ImportantLinks>>
 
     @Insert
     suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
@@ -110,6 +110,9 @@ interface LocalDBDao {
 
     @Query("SELECT EXISTS(SELECT * FROM archived_links_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInArchiveLinks(webURL: String): Boolean
+
+    @Query("SELECT EXISTS(SELECT * FROM recently_visited_table WHERE webURL = :webURL)")
+    suspend fun doesThisExistsInRecentlyVisitedLinks(webURL: String): Boolean
 
     @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName)")
     suspend fun doesThisFolderExists(folderName: String): Boolean

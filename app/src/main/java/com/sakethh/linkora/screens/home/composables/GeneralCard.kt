@@ -2,19 +2,19 @@ package com.sakethh.linkora.screens.home.composables
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.MoreVert
@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun GeneralCard(
     title: String,
@@ -57,116 +58,117 @@ fun GeneralCard(
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .height(155.dp)
             .width(275.dp)
-            .clickable {
-                onCardClick()
-            }
+            .combinedClickable(onClick = { onCardClick() }, onLongClick = { onMoreIconClick() })
     ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(0.44f),
-                verticalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 15.dp, top = 20.dp, end = 15.dp),
-                    maxLines = 4,
-                    lineHeight = 20.sp,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Text(
-                    text = webBaseURL,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp,
-                    maxLines = 1,
-                    textAlign = TextAlign.Start,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(start = 15.dp, bottom = 20.dp)
-                )
-            }
-            Column(
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 16.sp,
                 modifier = Modifier
                     .padding(start = 15.dp, top = 20.dp)
-                    .fillMaxHeight()
-                    .fillMaxWidth(),
-                verticalArrangement = Arrangement.SpaceBetween,
-                horizontalAlignment = Alignment.End
+                    .fillMaxWidth(0.50f),
+                maxLines = 4,
+                lineHeight = 20.sp,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (imgURL.startsWith("https://") && imgURL.endsWith(".webp") || imgURL.startsWith("https://") && imgURL.endsWith(
+                    ".jpeg"
+                ) || imgURL.startsWith("https://") && imgURL.endsWith(
+                    ".jpg"
+                ) || imgURL.startsWith("https://") && imgURL.endsWith(".png") || imgURL.startsWith(
+                    "https://"
+                ) && imgURL.endsWith(
+                    ".ico"
+                )
             ) {
-                if (imgURL.startsWith("https://") && imgURL.endsWith(".webp") || imgURL.startsWith("https://") && imgURL.endsWith(
-                        ".jpeg"
-                    ) || imgURL.startsWith("https://") && imgURL.endsWith(
-                        ".jpg"
-                    ) || imgURL.startsWith("https://") && imgURL.endsWith(".png") || imgURL.startsWith(
-                        "https://"
-                    ) && imgURL.endsWith(
-                        ".ico"
-                    )
+                CoilImage(
+                    modifier = Modifier
+                        .padding(end = 15.dp)
+                        .width(95.dp)
+                        .height(60.dp)
+                        .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .padding(end = 15.dp)
+                        .width(95.dp)
+                        .height(60.dp)
+                        .clip(RoundedCornerShape(15.dp))
+                        .background(MaterialTheme.colorScheme.secondary),
+                    contentAlignment = Alignment.Center
                 ) {
-                    CoilImage(
+                    Icon(
+                        tint = MaterialTheme.colorScheme.onSecondary,
+                        imageVector = Icons.Rounded.ImageNotSupported,
+                        contentDescription = null,
                         modifier = Modifier
-                            .padding(end = 15.dp)
-                            .width(95.dp)
-                            .height(60.dp)
-                            .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+                            .size(32.dp)
                     )
-                } else {
-                    Box(
-                        modifier = Modifier
-                            .padding(end = 15.dp)
-                            .width(95.dp)
-                            .height(60.dp)
-                            .clip(RoundedCornerShape(15.dp))
-                            .background(MaterialTheme.colorScheme.secondary),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            tint = MaterialTheme.colorScheme.onSecondary,
-                            imageVector = Icons.Rounded.ImageNotSupported,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(32.dp)
-                        )
-                    }
                 }
-                Row(
-                    modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
-                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                ) {
-                    Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
-                        modifier = Modifier.clickable {
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = webBaseURL,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                maxLines = 1,
+                textAlign = TextAlign.Start,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier
+                    .padding(start = 15.dp, bottom = 20.dp)
+                    .fillMaxWidth(0.35f)
+            )
+            Row(
+                modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
+                    modifier = Modifier
+                        .clickable {
                             localURIHandler.openUri(webURL)
-                        })
-                    Icon(imageVector = Icons.Outlined.ContentCopy,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            localClipBoardManager.setText(
-                                AnnotatedString(webURL)
-                            )
-                            Toast.makeText(
-                                context, "Link copied to the clipboard",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        })
-                    Icon(imageVector = Icons.Outlined.Share,
-                        contentDescription = null,
-                        modifier = Modifier.clickable {
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, webURL)
-                                type = "text/plain"
-                            }
-                            val shareIntent = Intent.createChooser(intent, null)
-                            context.startActivity(shareIntent)
-                        })
-                    Icon(imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier.clickable { onMoreIconClick() })
-                }
+                        }
+                        .size(28.dp)
+                )
+                Icon(imageVector = Icons.Outlined.ContentCopy,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        localClipBoardManager.setText(
+                            AnnotatedString(webURL)
+                        )
+                        Toast.makeText(
+                            context, "Link copied to the clipboard",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    })
+                Icon(imageVector = Icons.Outlined.Share,
+                    contentDescription = null,
+                    modifier = Modifier.clickable {
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, webURL)
+                            type = "text/plain"
+                        }
+                        val shareIntent = Intent.createChooser(intent, null)
+                        context.startActivity(shareIntent)
+                    })
+                Icon(imageVector = Icons.Filled.MoreVert,
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onMoreIconClick() })
             }
         }
     }

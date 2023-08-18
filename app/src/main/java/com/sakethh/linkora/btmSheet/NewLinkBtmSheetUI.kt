@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -132,6 +133,9 @@ fun NewLinkBtmSheet(
                 })
         }
     }
+    val isAutoDetectTitleEnabled = rememberSaveable {
+        mutableStateOf(SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value)
+    }
     LinkoraTheme {
         if (shouldUIBeVisible.value) {
             val noteTextFieldValue = rememberSaveable {
@@ -174,7 +178,9 @@ fun NewLinkBtmSheet(
             }, sheetState = btmSheetState) {
                 Scaffold(bottomBar = {
                     BottomAppBar(
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
                     ) {
                         Row(
                             modifier = Modifier.fillMaxWidth()
@@ -196,15 +202,36 @@ fun NewLinkBtmSheet(
                                     modifier = Modifier.fillMaxWidth(),
                                     overflow = TextOverflow.Ellipsis
                                 )
-                                Spacer(modifier = Modifier.height(15.dp))
-                                Box(modifier = Modifier.fillMaxWidth()) {
-                                    if (_inIntentActivity) {
-
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(25.dp),
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                )
+                                Box(modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()) {
+                                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                                        Row(
+                                            modifier = Modifier
+                                                .align(Alignment.CenterStart)
+                                        ) {
+                                            androidx.compose.material3.Checkbox(
+                                                checked = isAutoDetectTitleEnabled.value,
+                                                onCheckedChange = {
+                                                    isAutoDetectTitleEnabled.value = it
+                                                })
+                                            Spacer(modifier = Modifier.width(10.dp))
+                                            Text(
+                                                text = "Force Auto-detect title",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp,
+                                            )
+                                        }
                                     }
                                     Button(
                                         modifier = Modifier
                                             .padding(
-                                                start = 20.dp, bottom = 10.dp
+                                                start = 20.dp, bottom = 10.dp, end = 20.dp
                                             )
                                             .align(Alignment.CenterEnd), onClick = {
                                             if (linkTextFieldValue.value.isNotEmpty()) {
@@ -222,7 +249,8 @@ fun NewLinkBtmSheet(
                                                                 imgURL = ""
                                                             ),
                                                             context = context,
-                                                            inImportantLinksScreen = true
+                                                            inImportantLinksScreen = true,
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value
                                                         )
                                                     }.invokeOnCompletion {
                                                         isDataExtractingForTheLink.value = false
@@ -251,7 +279,8 @@ fun NewLinkBtmSheet(
                                                             noteForSaving = noteTextFieldValue.value,
                                                             folderName = selectedFolder.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                            context = context
+                                                            context = context,
+                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
                                                         )
                                                     }.invokeOnCompletion {
                                                         isDataExtractingForTheLink.value = false
@@ -276,7 +305,8 @@ fun NewLinkBtmSheet(
                                                             noteForSaving = noteTextFieldValue.value,
                                                             folderName = folderName.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                            context = context
+                                                            context = context,
+                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
                                                         )
                                                     }.invokeOnCompletion {
                                                         isDataExtractingForTheLink.value = false
@@ -310,7 +340,8 @@ fun NewLinkBtmSheet(
                                                                             folderName = selectedFolder.value,
                                                                             noteForSaving = noteTextFieldValue.value,
                                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                                            context = context
+                                                                            context = context,
+                                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
                                                                         )
                                                                     }
                                                             }.invokeOnCompletion {
@@ -341,7 +372,8 @@ fun NewLinkBtmSheet(
                                                                             folderName = selectedFolder.value,
                                                                             noteForSaving = noteTextFieldValue.value,
                                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                                            context = context
+                                                                            context = context,
+                                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
                                                                         )
                                                                     }
                                                             }.invokeOnCompletion {
@@ -372,7 +404,8 @@ fun NewLinkBtmSheet(
                                                                 noteForSaving = noteTextFieldValue.value,
                                                                 folderName = selectedFolder.value,
                                                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                                context = context
+                                                                context = context,
+                                                                autotDetectTitle = isAutoDetectTitleEnabled.value
                                                             )
                                                         }.invokeOnCompletion {
                                                             isDataExtractingForTheLink.value = false
@@ -395,7 +428,8 @@ fun NewLinkBtmSheet(
                                                                 folderName = selectedFolder.value,
                                                                 noteForSaving = noteTextFieldValue.value,
                                                                 savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                                context = context
+                                                                context = context,
+                                                                autotDetectTitle = isAutoDetectTitleEnabled.value
                                                             )
                                                         }.invokeOnCompletion {
                                                             isDataExtractingForTheLink.value = false
@@ -429,6 +463,7 @@ fun NewLinkBtmSheet(
                                         }
                                     }
                                 }
+                                Spacer(modifier = Modifier.height(25.dp))
                             }
                             Spacer(modifier = Modifier.width(15.dp))
                         }
@@ -656,11 +691,13 @@ fun SelectableFolderUIComponent(
     folderName: String,
     imageVector: ImageVector,
     _isComponentSelected: Boolean,
-    showNote: Boolean = false,
-    note: String = "",
+    _forBtmSheetUI: Boolean = false,
 ) {
     val isComponentSelected = rememberSaveable(inputs = arrayOf(_isComponentSelected)) {
         mutableStateOf(_isComponentSelected)
+    }
+    val forBtmSheetUI = rememberSaveable(inputs = arrayOf(_forBtmSheetUI)) {
+        mutableStateOf(_forBtmSheetUI)
     }
     Column {
         Row(modifier = Modifier
@@ -676,7 +713,12 @@ fun SelectableFolderUIComponent(
                     imageVector = imageVector,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(20.dp)
+                        .padding(
+                            start = 20.dp,
+                            bottom = 20.dp,
+                            end = 20.dp,
+                            top = if (forBtmSheetUI.value) 0.dp else 20.dp
+                        )
                         .size(28.dp)
                 )
             }
@@ -691,21 +733,10 @@ fun SelectableFolderUIComponent(
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
-                    modifier = Modifier.padding(top = if (note.isNotEmpty()) 10.dp else 0.dp),
-                    maxLines = 1,
+                    lineHeight = 20.sp,
+                    maxLines = if (forBtmSheetUI.value) 6 else 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                if (note.isNotEmpty() && showNote) {
-                    Text(
-                        text = note,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(bottom = 10.dp),
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
             }
             if (isComponentSelected.value) {
                 Box(
@@ -726,7 +757,9 @@ fun SelectableFolderUIComponent(
             }
         }
         Divider(
-            thickness = 1.dp, modifier = Modifier.padding(start = 25.dp, end = 25.dp)
+            thickness = 1.dp,
+            modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }
 }

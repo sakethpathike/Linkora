@@ -20,8 +20,12 @@ suspend fun openInWeb(
 ) {
     coroutineScope {
         awaitAll(async {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
-                .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
+            if (!CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisitedData.webURL)
+            ) {
+                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
+            }
         }, async {
             if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value) {
                 uriHandler.openUri(recentlyVisitedData.webURL)

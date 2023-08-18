@@ -22,7 +22,6 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -95,8 +94,7 @@ fun OptionsBtmSheetUI(
                         folderName = folderName,
                         imageVector = Icons.Outlined.Folder,
                         _isComponentSelected = false,
-                        showNote = mutableStateNote.value.isNotEmpty(),
-                        note = mutableStateNote.value
+                        _forBtmSheetUI = true
                     )
                 } else {
                     SelectableFolderUIComponent(
@@ -104,8 +102,7 @@ fun OptionsBtmSheetUI(
                         folderName = linkTitle,
                         imageVector = Icons.Outlined.Link,
                         _isComponentSelected = false,
-                        showNote = mutableStateNote.value.isNotEmpty(),
-                        note = mutableStateNote.value
+                        _forBtmSheetUI = true
                     )
                 }
                 if (!isNoteBtnSelected.value) {
@@ -238,13 +235,7 @@ fun OptionsBtmSheetUI(
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 24.sp,
                             modifier = Modifier
-                                .padding(
-                                    start = 20.dp
-                                )
-                        )
-                        Divider(
-                            modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 65.dp),
-                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                .padding(20.dp)
                         )
                         Text(
                             text = mutableStateNote.value,
@@ -252,12 +243,13 @@ fun OptionsBtmSheetUI(
                             fontSize = 20.sp,
                             modifier = Modifier
                                 .padding(
-                                    start = 20.dp, top = 15.dp, end = 25.dp
+                                    start = 20.dp, end = 25.dp
                                 ),
                             textAlign = TextAlign.Start,
                             lineHeight = 24.sp
                         )
                     } else {
+                        Spacer(modifier = Modifier.height(15.dp))
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center
