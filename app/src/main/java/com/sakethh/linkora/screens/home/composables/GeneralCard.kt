@@ -8,7 +8,9 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -60,6 +62,7 @@ fun GeneralCard(
             .width(275.dp)
             .combinedClickable(onClick = { onCardClick() }, onLongClick = { onMoreIconClick() })
     ) {
+        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -71,8 +74,8 @@ fun GeneralCard(
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 modifier = Modifier
-                    .padding(start = 15.dp, top = 20.dp)
-                    .fillMaxWidth(0.50f),
+                    .padding(start = 15.dp, top = 15.dp)
+                    .fillMaxWidth(0.55f),
                 maxLines = 4,
                 lineHeight = 20.sp,
                 textAlign = TextAlign.Start,
@@ -90,7 +93,7 @@ fun GeneralCard(
             ) {
                 CoilImage(
                     modifier = Modifier
-                        .padding(end = 15.dp)
+                        .padding(end = 15.dp, top = 15.dp)
                         .width(95.dp)
                         .height(60.dp)
                         .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
@@ -98,7 +101,7 @@ fun GeneralCard(
             } else {
                 Box(
                     modifier = Modifier
-                        .padding(end = 15.dp)
+                        .padding(end = 15.dp, top = 15.dp)
                         .width(95.dp)
                         .height(60.dp)
                         .clip(RoundedCornerShape(15.dp))
@@ -130,11 +133,11 @@ fun GeneralCard(
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier
-                    .padding(start = 15.dp, bottom = 20.dp)
+                    .padding(start = 15.dp,top=5.dp)
                     .fillMaxWidth(0.35f)
             )
             Row(
-                modifier = Modifier.padding(end = 10.dp, bottom = 15.dp),
+                modifier = Modifier.padding(end = 15.dp, bottom = 10.dp),
                 horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
@@ -142,7 +145,6 @@ fun GeneralCard(
                         .clickable {
                             localURIHandler.openUri(webURL)
                         }
-                        .size(28.dp)
                 )
                 Icon(imageVector = Icons.Outlined.ContentCopy,
                     contentDescription = null,
@@ -170,6 +172,6 @@ fun GeneralCard(
                     contentDescription = null,
                     modifier = Modifier.clickable { onMoreIconClick() })
             }
-        }
+        }}
     }
 }

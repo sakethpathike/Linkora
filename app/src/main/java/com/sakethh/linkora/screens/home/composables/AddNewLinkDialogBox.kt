@@ -493,6 +493,14 @@ fun AddNewLinkDialogBox(
                     shouldDialogBoxAppear = isCreateANewFolderIconClicked,
                     newFolderName = {
                         selectedFolderName.value = it
+                    }, onCreateClick = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
+                        }.invokeOnCompletion {
+                            isDropDownMenuIconClicked.value = false
+                        }
                     })
             }
         }

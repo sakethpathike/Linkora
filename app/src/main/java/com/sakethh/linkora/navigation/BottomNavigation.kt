@@ -6,9 +6,11 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -26,7 +28,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
-                .requiredHeight(55.dp)
+                /*.requiredHeight(55.dp)*/
         ) {
             NavigationVM.btmNavBarContainerColor.value = NavigationBarDefaults.containerColor
             if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
@@ -44,7 +46,11 @@ fun BottomNavigationBar(navController: NavController) {
                                 Icons.Outlined.Home
                             }, contentDescription = null
                         )
-                    })
+                    },
+                    label = {
+                        Text(text = "Home", style= MaterialTheme.typography.titleSmall)
+                    }
+                )
             }
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
@@ -61,6 +67,8 @@ fun BottomNavigationBar(navController: NavController) {
                                 it.nonSelectedIcon
                             }, contentDescription = null
                         )
+                    }, label = {
+                        Text(text = it.itemName, style= MaterialTheme.typography.titleSmall)
                     })
             }
         }

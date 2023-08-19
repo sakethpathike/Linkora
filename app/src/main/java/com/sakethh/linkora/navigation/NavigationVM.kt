@@ -15,6 +15,7 @@ data class BtmNavigationItem(
     val selectedIcon: ImageVector,
     val nonSelectedIcon: ImageVector,
     val navigationRoute: NavigationRoutes,
+    val itemName: String,
 )
 
 class NavigationVM : ViewModel() {
@@ -22,11 +23,13 @@ class NavigationVM : ViewModel() {
 
     val btmBarList = listOf(
         BtmNavigationItem(
+            itemName = "Collections",
             selectedIcon = Icons.Filled.Folder,
             nonSelectedIcon = Icons.Outlined.Folder,
             navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
         ),
         BtmNavigationItem(
+            itemName = "Settings",
             selectedIcon = Icons.Filled.Settings,
             nonSelectedIcon = Icons.Outlined.Settings,
             navigationRoute = NavigationRoutes.SETTINGS_SCREEN

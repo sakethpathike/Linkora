@@ -149,7 +149,7 @@ fun HomeScreen() {
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             floatingActionButton = {
                 if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
-                    Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                    Column(modifier = Modifier.padding(bottom = 82.dp)) {
                         FloatingActionButton(
                             shape = RoundedCornerShape(10.dp),
                             onClick = {
@@ -259,6 +259,7 @@ fun HomeScreen() {
                                 )
                             }
                         }
+                        Spacer(modifier = Modifier.height(22.dp))
                     }
                 }
             },
@@ -486,7 +487,7 @@ fun HomeScreen() {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(175.dp))
+                    Spacer(modifier = Modifier.height(200.dp))
                 }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {

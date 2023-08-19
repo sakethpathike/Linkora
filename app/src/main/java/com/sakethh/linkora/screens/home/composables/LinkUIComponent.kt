@@ -143,7 +143,6 @@ fun LinkUIComponent(
                         .clickable {
                             localURIHandler.openUri(webURL)
                         }
-                        .size(28.dp)
                 )
                 Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
                     modifier = Modifier.clickable {

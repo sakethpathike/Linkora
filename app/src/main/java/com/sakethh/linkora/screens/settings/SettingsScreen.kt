@@ -271,7 +271,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(65.dp))
+                    Spacer(modifier = Modifier.height(100.dp))
                 }
             }
         }

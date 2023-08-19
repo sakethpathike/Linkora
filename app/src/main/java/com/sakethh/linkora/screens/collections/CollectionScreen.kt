@@ -149,7 +149,7 @@ fun CollectionScreen(navController: NavController) {
         Scaffold(floatingActionButton = {
             if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
                 FloatingActionButton(
-                    modifier = Modifier.padding(bottom = 60.dp),
+                    modifier = Modifier.padding(bottom = 82.dp),
                     shape = RoundedCornerShape(10.dp),
                     onClick = {
                         coroutineScope.launch {
@@ -162,6 +162,7 @@ fun CollectionScreen(navController: NavController) {
                         imageVector = Icons.Default.AddLink, contentDescription = null
                     )
                 }
+                Spacer(modifier = Modifier.height(22.dp))
             } else {
                 Column(modifier = Modifier.padding(bottom = 60.dp)) {
                     Row(
@@ -254,6 +255,7 @@ fun CollectionScreen(navController: NavController) {
                             )
                         }
                     }
+                    Spacer(modifier = Modifier.height(22.dp))
                 }
             }
         },
@@ -425,7 +427,7 @@ fun CollectionScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.height(165.dp))
+                    Spacer(modifier = Modifier.height(225.dp))
                 }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
