@@ -1,7 +1,6 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
@@ -13,7 +12,6 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -28,7 +26,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationBar(
             modifier = Modifier
                 .fillMaxWidth()
-                /*.requiredHeight(55.dp)*/
+            /*.requiredHeight(55.dp)*/
         ) {
             NavigationVM.btmNavBarContainerColor.value = NavigationBarDefaults.containerColor
             if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
@@ -48,7 +46,7 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     },
                     label = {
-                        Text(text = "Home", style= MaterialTheme.typography.titleSmall)
+                        Text(text = "Home", style = MaterialTheme.typography.titleSmall)
                     }
                 )
             }
@@ -68,7 +66,7 @@ fun BottomNavigationBar(navController: NavController) {
                             }, contentDescription = null
                         )
                     }, label = {
-                        Text(text = it.itemName, style= MaterialTheme.typography.titleSmall)
+                        Text(text = it.itemName, style = MaterialTheme.typography.titleSmall)
                     })
             }
         }

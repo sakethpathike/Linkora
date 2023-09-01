@@ -10,6 +10,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,7 +39,7 @@ fun AddNewFolderDialogBox(
     coroutineScope: CoroutineScope,
     shouldDialogBoxAppear: MutableState<Boolean>,
     newFolderName: (String) -> Unit = {},
-    onCreateClick:()->Unit={}
+    onCreateClick: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -52,12 +53,12 @@ fun AddNewFolderDialogBox(
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Create new folder",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
@@ -72,7 +73,7 @@ fun AddNewFolderDialogBox(
                         label = {
                             Text(
                                 text = "Folder name",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -94,7 +95,7 @@ fun AddNewFolderDialogBox(
                         label = {
                             Text(
                                 text = "Note for why you're creating this folder",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )

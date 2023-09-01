@@ -1,6 +1,9 @@
 package com.sakethh.linkora.btmSheet
 
+import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -37,8 +40,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,7 +54,7 @@ import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun OptionsBtmSheetUI(
     btmModalSheetState: SheetState,
@@ -77,6 +82,7 @@ fun OptionsBtmSheetUI(
         mutableStateOf(false)
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val localClipBoardManager = LocalClipboardManager.current
     if (shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
             coroutineScope.launch {
@@ -92,7 +98,11 @@ fun OptionsBtmSheetUI(
                 FolderIndividualComponent(
                     folderName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) folderName else linkTitle,
                     folderNote = "",
-                    onMoreIconClick = { },
+                    onMoreIconClick = {
+                        localClipBoardManager.setText(AnnotatedString(if (btmSheetFor == OptionsBtmSheetType.FOLDER) folderName else linkTitle))
+                        Toast.makeText(context, "Title copied to clipboard", Toast.LENGTH_SHORT)
+                            .show()
+                    },
                     onFolderClick = { },
                     maxLines = 8,
                     showMoreIcon = false,
@@ -235,6 +245,16 @@ fun OptionsBtmSheetUI(
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
                             modifier = Modifier
+                                .combinedClickable(onClick = {}, onLongClick = {
+                                    localClipBoardManager.setText(AnnotatedString(mutableStateNote.value))
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            "Note copied to clipboard",
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                })
                                 .padding(
                                     start = 20.dp, end = 25.dp
                                 ),
@@ -242,7 +262,7 @@ fun OptionsBtmSheetUI(
                             lineHeight = 24.sp
                         )
                     } else {
-                        Spacer(modifier = Modifier.height(15.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                         Box(
                             modifier = Modifier.fillMaxWidth(),
                             contentAlignment = Alignment.Center

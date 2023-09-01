@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,12 +39,12 @@ fun DeleteDialogBox(
             LinkoraTheme {
                 AlertDialog(modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                    .background(AlertDialogDefaults.containerColor),
                     onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                     Column {
                         Text(
                             text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
-                            color = MaterialTheme.colorScheme.onSurface,
+                            color = AlertDialogDefaults.titleContentColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,
                             modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),

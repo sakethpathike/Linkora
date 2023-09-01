@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.home.composables
 
 import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,6 +28,7 @@ import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
@@ -100,8 +102,9 @@ fun AddNewLinkDialogBox(
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .wrapContentHeight()
+                .animateContentSize()
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = {
                     if (!isDataExtractingForTheLink.value) {
                         shouldDialogBoxAppear.value = false
@@ -110,7 +113,7 @@ fun AddNewLinkDialogBox(
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Save new link",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
@@ -125,7 +128,7 @@ fun AddNewLinkDialogBox(
                         label = {
                             Text(
                                 text = "Link",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -148,7 +151,7 @@ fun AddNewLinkDialogBox(
                             label = {
                                 Text(
                                     text = "Title for the link",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = AlertDialogDefaults.textContentColor,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -171,7 +174,7 @@ fun AddNewLinkDialogBox(
                         label = {
                             Text(
                                 text = "Note for why you're saving this link",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -194,7 +197,7 @@ fun AddNewLinkDialogBox(
                         ) {
                             Text(
                                 text = "Save in",
-                                color = MaterialTheme.colorScheme.onSurface,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 18.sp,
                                 modifier = Modifier.padding(top = 15.dp)
@@ -205,7 +208,7 @@ fun AddNewLinkDialogBox(
                                 .border(
                                     shape = RoundedCornerShape(50.dp),
                                     width = 1.dp,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    color = AlertDialogDefaults.textContentColor
                                 )
                                 .clickable {
                                     if (!isDataExtractingForTheLink.value) {
@@ -218,7 +221,7 @@ fun AddNewLinkDialogBox(
                                         0,
                                         6
                                     ) + "...",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    color = AlertDialogDefaults.textContentColor,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 18.sp,
                                     maxLines = 1,
@@ -231,7 +234,7 @@ fun AddNewLinkDialogBox(
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
                                         contentDescription = null,
-                                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                        tint = AlertDialogDefaults.textContentColor
                                     )
                                 }
                                 Spacer(modifier = Modifier.width(10.dp))

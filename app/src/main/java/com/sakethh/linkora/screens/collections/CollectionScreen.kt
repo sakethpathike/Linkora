@@ -63,6 +63,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -401,6 +402,7 @@ fun CollectionScreen(navController: NavController) {
                 if (foldersData.isNotEmpty()) {
                     itemsIndexed(foldersData) { folderIndex, foldersData ->
                         FolderIndividualComponent(
+                            showMoreIcon = true,
                             folderName = foldersData.folderName,
                             folderNote = foldersData.infoForSaving,
                             onMoreIconClick = {
@@ -563,9 +565,9 @@ fun FolderIndividualComponent(
     folderNote: String,
     onMoreIconClick: () -> Unit,
     onFolderClick: () -> Unit,
-    maxLines:Int=1,
-    showMoreIcon:Boolean=true,
-    folderIcon:ImageVector = Icons.Outlined.Folder
+    maxLines: Int = 1,
+    showMoreIcon: Boolean = true,
+    folderIcon: ImageVector = Icons.Outlined.Folder,
 ) {
     Column {
         Row(
@@ -581,7 +583,7 @@ fun FolderIndividualComponent(
                 contentAlignment = Alignment.CenterStart
             ) {
                 Icon(
-                    imageVector = Icons.Outlined.Folder,
+                    imageVector = folderIcon,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(20.dp)
@@ -591,7 +593,7 @@ fun FolderIndividualComponent(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(0.80f),
+                    .fillMaxWidth(if (showMoreIcon) 0.80f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -599,9 +601,13 @@ fun FolderIndividualComponent(
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
-                    modifier = Modifier.padding(top = if (folderNote.isNotEmpty()) 10.dp else 0.dp),
+                    modifier = Modifier.padding(
+                        top = if (folderNote.isNotEmpty()) 10.dp else 0.dp,
+                        end = if (showMoreIcon) 0.dp else 20.dp
+                    ),
                     maxLines = maxLines,
-                    overflow = TextOverflow.Ellipsis
+                    overflow = TextOverflow.Ellipsis,
+                    lineHeight = if (!showMoreIcon) 20.sp else TextUnit.Unspecified
                 )
                 if (folderNote.isNotEmpty()) {
                     Text(
@@ -615,7 +621,7 @@ fun FolderIndividualComponent(
                     )
                 }
             }
-            if(showMoreIcon){
+            if (showMoreIcon) {
                 Box(
                     modifier = Modifier
                         .clickable {

@@ -169,7 +169,7 @@ fun HomeScreen() {
                         }
                     }
                 } else {
-                    Column(modifier = Modifier.padding(bottom = 60.dp)) {
+                    Column(modifier = Modifier.padding(bottom = 82.dp)) {
                         Row(
                             horizontalArrangement = Arrangement.Center,
                             modifier = Modifier.align(Alignment.End)
@@ -259,7 +259,6 @@ fun HomeScreen() {
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(42.dp))
                     }
                 }
             },
@@ -483,7 +482,7 @@ fun HomeScreen() {
                 }
                 if (recentlySavedImpsLinksData.isEmpty() && recentlySavedLinksData.isEmpty() && recentlyVisitedLinksData.isEmpty()) {
                     item {
-                        DataEmptyScreen(text="Welcome back to Linkora! No recent activity related to saving links has been found. Your recent links will show up here.")
+                        DataEmptyScreen(text = "Welcome back to Linkora! No recent activity related to saving links has been found. Your recent links will show up here.")
                     }
                 }
                 item {

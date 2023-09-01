@@ -215,7 +215,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text="This folder doesn't contain any links. Add links for further usage.")
+                                DataEmptyScreen(text = "This folder doesn't contain any links. Add links for further usage.")
                             }
                         }
                     }
@@ -273,7 +273,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text="No links found. To continue, please add links.")
+                                DataEmptyScreen(text = "No links found. To continue, please add links.")
                             }
                         }
                     }
@@ -369,7 +369,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text="No links were found in this archived folder.")
+                                DataEmptyScreen(text = "No links were found in this archived folder.")
                             }
                         }
                     }
@@ -577,7 +577,7 @@ fun SpecificScreen(navController: NavController) {
                 }
             },
             folderName = topBarText,
-            linkTitle = selectedURLTitle.value
+            linkTitle = tempImpLinkData.title
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBeVisible,

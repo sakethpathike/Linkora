@@ -63,115 +63,116 @@ fun GeneralCard(
             .combinedClickable(onClick = { onCardClick() }, onLongClick = { onMoreIconClick() })
     ) {
         Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.SpaceBetween) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleSmall,
-                fontSize = 16.sp,
+            Row(
                 modifier = Modifier
-                    .padding(start = 15.dp, top = 15.dp)
-                    .fillMaxWidth(0.50f),
-                maxLines = 4,
-                lineHeight = 20.sp,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis
-            )
-            if (imgURL.startsWith("https://") && imgURL.endsWith(".webp") || imgURL.startsWith("https://") && imgURL.endsWith(
-                    ".jpeg"
-                ) || imgURL.startsWith("https://") && imgURL.endsWith(
-                    ".jpg"
-                ) || imgURL.startsWith("https://") && imgURL.endsWith(".png") || imgURL.startsWith(
-                    "https://"
-                ) && imgURL.endsWith(
-                    ".ico"
-                )
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                CoilImage(
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp,
                     modifier = Modifier
-                        .padding(end = 15.dp, top = 15.dp)
-                        .width(95.dp)
-                        .height(60.dp)
-                        .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+                        .padding(start = 15.dp, top = 15.dp)
+                        .fillMaxWidth(0.50f),
+                    maxLines = 4,
+                    lineHeight = 20.sp,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Ellipsis
                 )
-            } else {
-                Box(
-                    modifier = Modifier
-                        .padding(end = 15.dp, top = 15.dp)
-                        .width(95.dp)
-                        .height(60.dp)
-                        .clip(RoundedCornerShape(15.dp))
-                        .background(MaterialTheme.colorScheme.secondary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        tint = MaterialTheme.colorScheme.onSecondary,
-                        imageVector = Icons.Rounded.ImageNotSupported,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .size(32.dp)
+                if (imgURL.startsWith("https://") && imgURL.endsWith(".webp") || imgURL.startsWith("https://") && imgURL.endsWith(
+                        ".jpeg"
+                    ) || imgURL.startsWith("https://") && imgURL.endsWith(
+                        ".jpg"
+                    ) || imgURL.startsWith("https://") && imgURL.endsWith(".png") || imgURL.startsWith(
+                        "https://"
+                    ) && imgURL.endsWith(
+                        ".ico"
                     )
+                ) {
+                    CoilImage(
+                        modifier = Modifier
+                            .padding(end = 15.dp, top = 15.dp)
+                            .width(95.dp)
+                            .height(60.dp)
+                            .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .padding(end = 15.dp, top = 15.dp)
+                            .width(95.dp)
+                            .height(60.dp)
+                            .clip(RoundedCornerShape(15.dp))
+                            .background(MaterialTheme.colorScheme.secondary),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            tint = MaterialTheme.colorScheme.onSecondary,
+                            imageVector = Icons.Rounded.ImageNotSupported,
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(32.dp)
+                        )
+                    }
+                }
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = webBaseURL,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    maxLines = 1,
+                    textAlign = TextAlign.Start,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier
+                        .padding(start = 15.dp, top = 5.dp)
+                        .fillMaxWidth(0.35f)
+                )
+                Row(
+                    modifier = Modifier.padding(end = 15.dp, bottom = 10.dp),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
+                        modifier = Modifier
+                            .clickable {
+                                localURIHandler.openUri(webURL)
+                            }
+                    )
+                    Icon(imageVector = Icons.Outlined.ContentCopy,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            localClipBoardManager.setText(
+                                AnnotatedString(webURL)
+                            )
+                            Toast.makeText(
+                                context, "Link copied to the clipboard",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        })
+                    Icon(imageVector = Icons.Outlined.Share,
+                        contentDescription = null,
+                        modifier = Modifier.clickable {
+                            val intent = Intent().apply {
+                                action = Intent.ACTION_SEND
+                                putExtra(Intent.EXTRA_TEXT, webURL)
+                                type = "text/plain"
+                            }
+                            val shareIntent = Intent.createChooser(intent, null)
+                            context.startActivity(shareIntent)
+                        })
+                    Icon(imageVector = Icons.Filled.MoreVert,
+                        contentDescription = null,
+                        modifier = Modifier.clickable { onMoreIconClick() })
                 }
             }
         }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text(
-                text = webBaseURL,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(start = 15.dp,top=5.dp)
-                    .fillMaxWidth(0.35f)
-            )
-            Row(
-                modifier = Modifier.padding(end = 15.dp, bottom = 10.dp),
-                horizontalArrangement = Arrangement.spacedBy(10.dp)
-            ) {
-                Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
-                    modifier = Modifier
-                        .clickable {
-                            localURIHandler.openUri(webURL)
-                        }
-                )
-                Icon(imageVector = Icons.Outlined.ContentCopy,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {
-                        localClipBoardManager.setText(
-                            AnnotatedString(webURL)
-                        )
-                        Toast.makeText(
-                            context, "Link copied to the clipboard",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    })
-                Icon(imageVector = Icons.Outlined.Share,
-                    contentDescription = null,
-                    modifier = Modifier.clickable {
-                        val intent = Intent().apply {
-                            action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, webURL)
-                            type = "text/plain"
-                        }
-                        val shareIntent = Intent.createChooser(intent, null)
-                        context.startActivity(shareIntent)
-                    })
-                Icon(imageVector = Icons.Filled.MoreVert,
-                    contentDescription = null,
-                    modifier = Modifier.clickable { onMoreIconClick() })
-            }
-        }}
     }
 }

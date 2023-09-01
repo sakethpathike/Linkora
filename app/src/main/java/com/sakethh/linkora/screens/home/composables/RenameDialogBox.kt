@@ -9,6 +9,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -58,12 +59,12 @@ fun RenameDialogBox(
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surfaceVariant),
+                .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = { shouldDialogBoxAppear.value = false }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = if (renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"$existingFolderName\" folder:" else "Change Link's Data:",
-                        color = MaterialTheme.colorScheme.onSurface,
+                        color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 25.dp),
@@ -77,7 +78,7 @@ fun RenameDialogBox(
                         label = {
                             Text(
                                 text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "New Name" else "New title",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -96,7 +97,7 @@ fun RenameDialogBox(
                         label = {
                             Text(
                                 text = "New note",
-                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -110,7 +111,7 @@ fun RenameDialogBox(
                         })
                     Text(
                         text = "Leave above field empty, if you don't want to change the note.",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 10.dp, end = 20.dp),
