@@ -115,7 +115,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 } else {
                     item {
-                        DataEmptyScreen()
+                        DataEmptyScreen(text = "No links were archived.")
                     }
                     item {
                         Spacer(modifier = Modifier.height(165.dp))
@@ -144,7 +144,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 } else {
                     item {
-                        DataEmptyScreen()
+                        DataEmptyScreen(text = "No folders were archived.")
                     }
                 }
             }

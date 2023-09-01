@@ -45,6 +45,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -88,23 +89,15 @@ fun OptionsBtmSheetUI(
             }
         }) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                if (btmSheetFor == OptionsBtmSheetType.FOLDER) {
-                    SelectableFolderUIComponent(
-                        onClick = { },
-                        folderName = folderName,
-                        imageVector = Icons.Outlined.Folder,
-                        _isComponentSelected = false,
-                        _forBtmSheetUI = true
-                    )
-                } else {
-                    SelectableFolderUIComponent(
-                        onClick = { },
-                        folderName = linkTitle,
-                        imageVector = Icons.Outlined.Link,
-                        _isComponentSelected = false,
-                        _forBtmSheetUI = true
-                    )
-                }
+                FolderIndividualComponent(
+                    folderName = if (btmSheetFor == OptionsBtmSheetType.FOLDER) folderName else linkTitle,
+                    folderNote = "",
+                    onMoreIconClick = { },
+                    onFolderClick = { },
+                    maxLines = 8,
+                    showMoreIcon = false,
+                    folderIcon = if (btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
+                )
                 if (!isNoteBtnSelected.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {

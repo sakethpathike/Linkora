@@ -215,7 +215,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen()
+                                DataEmptyScreen(text="This folder doesn't contain any links. Add links for further usage.")
                             }
                         }
                     }
@@ -273,7 +273,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen()
+                                DataEmptyScreen(text="No links found. To continue, please add links.")
                             }
                         }
                     }
@@ -332,7 +332,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen()
+                                DataEmptyScreen(text = "No important links were found. To continue, please add links.")
                             }
                         }
                     }
@@ -369,7 +369,7 @@ fun SpecificScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen()
+                                DataEmptyScreen(text="No links were found in this archived folder.")
                             }
                         }
                     }

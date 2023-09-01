@@ -75,7 +75,7 @@ fun GeneralCard(
                 fontSize = 16.sp,
                 modifier = Modifier
                     .padding(start = 15.dp, top = 15.dp)
-                    .fillMaxWidth(0.55f),
+                    .fillMaxWidth(0.50f),
                 maxLines = 4,
                 lineHeight = 20.sp,
                 textAlign = TextAlign.Start,

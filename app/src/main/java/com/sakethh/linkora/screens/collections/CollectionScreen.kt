@@ -58,6 +58,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -423,7 +424,7 @@ fun CollectionScreen(navController: NavController) {
                     }
                 } else {
                     item {
-                        DataEmptyScreen()
+                        DataEmptyScreen(text = "No folders are found, create folders for better organization of your links.")
                     }
                 }
                 item {
@@ -562,6 +563,9 @@ fun FolderIndividualComponent(
     folderNote: String,
     onMoreIconClick: () -> Unit,
     onFolderClick: () -> Unit,
+    maxLines:Int=1,
+    showMoreIcon:Boolean=true,
+    folderIcon:ImageVector = Icons.Outlined.Folder
 ) {
     Column {
         Row(
@@ -596,7 +600,7 @@ fun FolderIndividualComponent(
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(top = if (folderNote.isNotEmpty()) 10.dp else 0.dp),
-                    maxLines = 1,
+                    maxLines = maxLines,
                     overflow = TextOverflow.Ellipsis
                 )
                 if (folderNote.isNotEmpty()) {
@@ -611,21 +615,23 @@ fun FolderIndividualComponent(
                     )
                 }
             }
-            Box(
-                modifier = Modifier
-                    .clickable {
-                        onMoreIconClick()
-                    }
-                    .fillMaxWidth()
-                    .fillMaxHeight()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.MoreVert,
-                    contentDescription = null,
+            if(showMoreIcon){
+                Box(
                     modifier = Modifier
-                        .padding(end = 20.dp)
-                        .align(Alignment.CenterEnd)
-                )
+                        .clickable {
+                            onMoreIconClick()
+                        }
+                        .fillMaxWidth()
+                        .fillMaxHeight()
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.MoreVert,
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 20.dp)
+                            .align(Alignment.CenterEnd)
+                    )
+                }
             }
         }
         Divider(

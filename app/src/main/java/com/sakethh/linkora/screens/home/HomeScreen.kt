@@ -259,7 +259,7 @@ fun HomeScreen() {
                                 )
                             }
                         }
-                        Spacer(modifier = Modifier.height(22.dp))
+                        Spacer(modifier = Modifier.height(42.dp))
                     }
                 }
             },
@@ -483,7 +483,7 @@ fun HomeScreen() {
                 }
                 if (recentlySavedImpsLinksData.isEmpty() && recentlySavedLinksData.isEmpty() && recentlyVisitedLinksData.isEmpty()) {
                     item {
-                        DataEmptyScreen()
+                        DataEmptyScreen(text="Welcome back to Linkora! No recent activity related to saving links has been found. Your recent links will show up here.")
                     }
                 }
                 item {

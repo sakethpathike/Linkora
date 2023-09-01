@@ -186,13 +186,13 @@ fun NewLinkBtmSheet(
                     BottomAppBar(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .requiredHeight(bottomAppBarHeight.value)
-                    ) {
-                        Column(modifier = Modifier.fillMaxWidth().onGloballyPositioned {
-                            with(localDensity) {
-                                bottomAppBarHeight.value = it.size.height.toDp()
+                            .requiredHeight(bottomAppBarHeight.value).onGloballyPositioned {
+                                with(localDensity) {
+                                    bottomAppBarHeight.value = it.size.height.toDp()
+                                }
                             }
-                        }) {
+                    ) {
+                        Column(modifier = Modifier.fillMaxWidth()) {
                             Spacer(modifier = Modifier.requiredHeight(5.dp))
                             Text(
                                 text = if (inIntentActivity.value || screenType == SpecificScreenType.ROOT_SCREEN) "Selected folder:" else "Will be saved in:",
