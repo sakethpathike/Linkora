@@ -426,7 +426,7 @@ fun CollectionScreen(navController: NavController) {
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "No folders are found, create folders for better organization of your links.")
+                        DataEmptyScreen(text = "No folders are found. Create folders for better organization of your links.")
                     }
                 }
                 item {

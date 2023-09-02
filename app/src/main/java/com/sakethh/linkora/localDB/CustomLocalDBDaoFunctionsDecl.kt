@@ -290,7 +290,7 @@ object CustomLocalDBDaoFunctionsDecl {
         folderName: String?,
         savingFor: ModifiedLocalDbFunctionsType,
         context: Context,
-        autotDetectTitle: Boolean = false,
+        autoDetectTitle: Boolean = false,
     ) {
         when (savingFor) {
             ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS -> {
@@ -322,7 +322,7 @@ object CustomLocalDBDaoFunctionsDecl {
                 } else {
                     val linkData = folderName?.let {
                         LinksTable(
-                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autotDetectTitle) linkDataExtractor.title else title,
+                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
                             webURL = webURL,
                             baseURL = linkDataExtractor.baseURL,
                             imgURL = linkDataExtractor.imgURL,
@@ -378,7 +378,7 @@ object CustomLocalDBDaoFunctionsDecl {
                 } else {
                     val linkData = folderName?.let {
                         LinksTable(
-                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
+                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
                             webURL = webURL,
                             baseURL = linkDataExtractor.baseURL,
                             imgURL = linkDataExtractor.imgURL,
@@ -430,7 +430,7 @@ object CustomLocalDBDaoFunctionsDecl {
                     }
                 } else {
                     val linkData = LinksTable(
-                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) linkDataExtractor.title else title,
+                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
                         webURL = webURL,
                         baseURL = linkDataExtractor.baseURL,
                         imgURL = linkDataExtractor.imgURL,

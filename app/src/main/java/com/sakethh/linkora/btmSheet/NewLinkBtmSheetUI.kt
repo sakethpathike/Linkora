@@ -228,15 +228,21 @@ fun NewLinkBtmSheet(
                                 if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                                     Row(
                                         modifier = Modifier
+                                            .clickable {
+                                                if (!isDataExtractingForTheLink.value) {
+                                                    isAutoDetectTitleEnabled.value =
+                                                        !isAutoDetectTitleEnabled.value
+                                                }
+                                            }
                                             .align(Alignment.CenterStart)
                                     ) {
                                         androidx.compose.material3.Checkbox(
+                                            enabled = !isDataExtractingForTheLink.value,
                                             checked = isAutoDetectTitleEnabled.value,
                                             onCheckedChange = {
                                                 isAutoDetectTitleEnabled.value = it
                                             },
                                             modifier = Modifier.padding(
-                                                start = 10.dp,
                                                 bottom = 10.dp
                                             )
                                         )
@@ -244,14 +250,15 @@ fun NewLinkBtmSheet(
                                             text = "Force Auto-detect title",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 16.sp,
-                                            modifier = Modifier.padding(top = 16.dp)
+                                            modifier = Modifier
+                                                .padding(top = 17.dp)
                                         )
                                     }
                                 }
                                 Button(
                                     modifier = Modifier
                                         .padding(
-                                            start = 20.dp, bottom = 10.dp, end = 20.dp
+                                            start = 20.dp, end = 20.dp
                                         )
                                         .align(Alignment.CenterEnd), onClick = {
                                         if (linkTextFieldValue.value.isNotEmpty()) {
@@ -300,7 +307,7 @@ fun NewLinkBtmSheet(
                                                         folderName = selectedFolder.value,
                                                         savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
                                                         context = context,
-                                                        autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
                                                     )
                                                 }.invokeOnCompletion {
                                                     isDataExtractingForTheLink.value = false
@@ -326,7 +333,7 @@ fun NewLinkBtmSheet(
                                                         folderName = folderName.value,
                                                         savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
                                                         context = context,
-                                                        autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
                                                     )
                                                 }.invokeOnCompletion {
                                                     isDataExtractingForTheLink.value = false
@@ -361,7 +368,7 @@ fun NewLinkBtmSheet(
                                                                         noteForSaving = noteTextFieldValue.value,
                                                                         savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
                                                                         context = context,
-                                                                        autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
                                                                     )
                                                                 }
                                                         }.invokeOnCompletion {
@@ -393,7 +400,7 @@ fun NewLinkBtmSheet(
                                                                         noteForSaving = noteTextFieldValue.value,
                                                                         savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
                                                                         context = context,
-                                                                        autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
                                                                     )
                                                                 }
                                                         }.invokeOnCompletion {
@@ -425,7 +432,7 @@ fun NewLinkBtmSheet(
                                                             folderName = selectedFolder.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
                                                             context = context,
-                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value
                                                         )
                                                     }.invokeOnCompletion {
                                                         isDataExtractingForTheLink.value = false
@@ -449,7 +456,7 @@ fun NewLinkBtmSheet(
                                                             noteForSaving = noteTextFieldValue.value,
                                                             savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
                                                             context = context,
-                                                            autotDetectTitle = isAutoDetectTitleEnabled.value
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value
                                                         )
                                                     }.invokeOnCompletion {
                                                         isDataExtractingForTheLink.value = false
@@ -483,8 +490,7 @@ fun NewLinkBtmSheet(
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.requiredHeight(25.dp))
-                            Spacer(modifier = Modifier.width(15.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }) {
