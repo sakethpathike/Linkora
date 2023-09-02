@@ -445,89 +445,89 @@ fun AddNewLinkDialogBox(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-            }
-            if (isDropDownMenuIconClicked.value) {
-                ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
-                    coroutineScope.launch {
-                        if (btmModalSheetState.isVisible) {
-                            btmModalSheetState.hide()
+                if (isDropDownMenuIconClicked.value) {
+                    ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
+                        }.invokeOnCompletion {
+                            isDropDownMenuIconClicked.value = false
                         }
-                    }.invokeOnCompletion {
-                        isDropDownMenuIconClicked.value = false
-                    }
-                }) {
-                    Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
-                        Row(
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                text = "Save in :",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 24.sp,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 20.dp
-                                    )
-                            )
-                            Icon(
-                                imageVector = Icons.Outlined.CreateNewFolder,
-                                contentDescription = null,
-                                modifier = Modifier
-                                    .clickable {
-                                        isCreateANewFolderIconClicked.value = true
-                                    }
-                                    .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                                    .size(30.dp),
-                                tint = MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        Divider(
-                            modifier = Modifier.padding(
-                                start = 20.dp,
-                                end = 65.dp
-                            ),
-                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                        )
-                        SelectableFolderUIComponent(
-                            onClick = {
-                                selectedFolderName.value = "Saved Links"
-                                coroutineScope.launch {
-                                    if (btmModalSheetState.isVisible) {
-                                        btmModalSheetState.hide()
-                                    }
-                                }.invokeOnCompletion {
-                                    coroutineScope.launch {
-                                        if (btmModalSheetState.isVisible) {
-                                            btmModalSheetState.hide()
+                    }) {
+                        Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+                            Row(
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    text = "Save in :",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 24.sp,
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 20.dp
+                                        )
+                                )
+                                Icon(
+                                    imageVector = Icons.Outlined.CreateNewFolder,
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .clickable {
+                                            isCreateANewFolderIconClicked.value = true
                                         }
-                                    }.invokeOnCompletion {
-                                        isDropDownMenuIconClicked.value = false
-                                    }
-                                }
-                            },
-                            folderName = "Saved Links",
-                            imageVector = Icons.Outlined.Link,
-                            _isComponentSelected = selectedFolderName.value == "Saved Links"
-                        )
-                        foldersTableData.forEach {
+                                        .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                        .size(30.dp),
+                                    tint = MaterialTheme.colorScheme.onSurface
+                                )
+                            }
+                            Divider(
+                                modifier = Modifier.padding(
+                                    start = 20.dp,
+                                    end = 65.dp
+                                ),
+                                color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                            )
                             SelectableFolderUIComponent(
                                 onClick = {
-                                    selectedFolderName.value = it.folderName
+                                    selectedFolderName.value = "Saved Links"
                                     coroutineScope.launch {
                                         if (btmModalSheetState.isVisible) {
                                             btmModalSheetState.hide()
                                         }
                                     }.invokeOnCompletion {
-                                        isDropDownMenuIconClicked.value = false
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
                                     }
                                 },
-                                folderName = it.folderName,
-                                imageVector = Icons.Outlined.Folder,
-                                _isComponentSelected = selectedFolderName.value == it.folderName
+                                folderName = "Saved Links",
+                                imageVector = Icons.Outlined.Link,
+                                _isComponentSelected = selectedFolderName.value == "Saved Links"
                             )
+                            foldersTableData.forEach {
+                                SelectableFolderUIComponent(
+                                    onClick = {
+                                        selectedFolderName.value = it.folderName
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
+                                    },
+                                    folderName = it.folderName,
+                                    imageVector = Icons.Outlined.Folder,
+                                    _isComponentSelected = selectedFolderName.value == it.folderName
+                                )
+                            }
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
             }

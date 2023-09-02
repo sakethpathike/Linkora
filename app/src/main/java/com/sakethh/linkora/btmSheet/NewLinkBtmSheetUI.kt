@@ -223,7 +223,7 @@ fun NewLinkBtmSheet(
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .wrapContentHeight()
+                                    .height(40.dp)
                             ) {
                                 if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                                     Row(
@@ -234,6 +234,7 @@ fun NewLinkBtmSheet(
                                                         !isAutoDetectTitleEnabled.value
                                                 }
                                             }
+                                            .fillMaxHeight()
                                             .align(Alignment.CenterStart)
                                     ) {
                                         androidx.compose.material3.Checkbox(
@@ -242,16 +243,15 @@ fun NewLinkBtmSheet(
                                             onCheckedChange = {
                                                 isAutoDetectTitleEnabled.value = it
                                             },
-                                            modifier = Modifier.padding(
-                                                bottom = 10.dp
-                                            )
+                                            modifier = Modifier
+                                                .padding(top = 2.dp)
                                         )
                                         Text(
                                             text = "Force Auto-detect title",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 16.sp,
                                             modifier = Modifier
-                                                .padding(top = 17.dp)
+                                                .padding(top = 14.dp)
                                         )
                                     }
                                 }
@@ -260,6 +260,7 @@ fun NewLinkBtmSheet(
                                         .padding(
                                             start = 20.dp, end = 20.dp
                                         )
+                                        .fillMaxHeight()
                                         .align(Alignment.CenterEnd), onClick = {
                                         if (linkTextFieldValue.value.isNotEmpty()) {
                                             isDataExtractingForTheLink.value = true
