@@ -32,11 +32,11 @@ object CustomLocalDBDaoFunctionsDecl {
             coroutineScope {
                 awaitAll(
                     async {
-                        localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
-                        localDB.localDBData().renameAFolderNote(newFolderName, infoForFolder)
+                        localDB.crudDao().renameAFolderName(existingFolderName, newFolderName)
+                        localDB.crudDao().renameAFolderNote(newFolderName, infoForFolder)
                     },
                     async {
-                        localDB.localDBData().renameFolderNameForExistingFolderData(
+                        localDB.crudDao().renameFolderNameForExistingFolderData(
                             existingFolderName,
                             newFolderName
                         )
@@ -46,10 +46,10 @@ object CustomLocalDBDaoFunctionsDecl {
             coroutineScope {
                 awaitAll(
                     async {
-                        localDB.localDBData().renameAFolderName(existingFolderName, newFolderName)
+                        localDB.crudDao().renameAFolderName(existingFolderName, newFolderName)
                     },
                     async {
-                        localDB.localDBData()
+                        localDB.crudDao()
                             .renameFolderNameForExistingFolderData(
                                 existingFolderName,
                                 newFolderName
@@ -72,9 +72,9 @@ object CustomLocalDBDaoFunctionsDecl {
             coroutineScope {
                 awaitAll(
                     async {
-                        localDB.localDBData()
+                        localDB.crudDao()
                             .renameAFolderArchiveName(existingFolderName, newFolderName)
-                        localDB.localDBData().renameArchivedFolderNote(newFolderName, infoForFolder)
+                        localDB.crudDao().renameArchivedFolderNote(newFolderName, infoForFolder)
                     },
                     async {
 
@@ -84,11 +84,11 @@ object CustomLocalDBDaoFunctionsDecl {
             coroutineScope {
                 awaitAll(
                     async {
-                        localDB.localDBData()
+                        localDB.crudDao()
                             .renameAFolderArchiveName(existingFolderName, newFolderName)
                     },
                     async {
-                        localDB.localDBData()
+                        localDB.crudDao()
                             .renameFolderNameForExistingArchivedFolderData(
                                 existingFolderName,
                                 newFolderName
@@ -109,19 +109,19 @@ object CustomLocalDBDaoFunctionsDecl {
         context: Context,
     ) {
         if (infoForLink.isNotEmpty()) {
-            localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
+            localDB.crudDao().renameALinkTitleFromArchiveBasedFolderLinks(
                 webURL = webURL,
                 newTitle = title,
                 folderName = folderName
             )
-            localDB.localDBData().renameALinkInfoFromArchiveBasedFolderLinks(
+            localDB.crudDao().renameALinkInfoFromArchiveBasedFolderLinks(
                 webURL = webURL,
                 newInfo = infoForLink,
                 folderName = folderName
             )
         } else {
             coroutineScope {
-                localDB.localDBData().renameALinkTitleFromArchiveBasedFolderLinks(
+                localDB.crudDao().renameALinkTitleFromArchiveBasedFolderLinks(
                     webURL = webURL,
                     newTitle = title,
                     folderName = folderName
@@ -142,15 +142,15 @@ object CustomLocalDBDaoFunctionsDecl {
         if (infoForSaving.isNotEmpty()) {
             coroutineScope {
                 awaitAll(async {
-                    localDB.localDBData()
+                    localDB.crudDao()
                         .renameALinkInfoFromArchiveLinks(webURL = webURL, newInfo = infoForSaving)
                 }, async {
-                    localDB.localDBData()
+                    localDB.crudDao()
                         .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = title)
                 })
             }
         } else {
-            localDB.localDBData()
+            localDB.crudDao()
                 .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = title)
         }
         withContext(Dispatchers.Main) {
@@ -164,7 +164,7 @@ object CustomLocalDBDaoFunctionsDecl {
         inImportantLinksScreen: Boolean = false,
         autoDetectTitle: Boolean = false,
     ) {
-        if (localDB.localDBData().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
+        if (localDB.crudDao().doesThisExistsInImpLinks(webURL = importantLinks.webURL)) {
             if (inImportantLinksScreen) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -175,7 +175,7 @@ object CustomLocalDBDaoFunctionsDecl {
                         .show()
                 }
             } else {
-                localDB.localDBData().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
+                localDB.crudDao().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -208,7 +208,7 @@ object CustomLocalDBDaoFunctionsDecl {
                     Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                 }
             } else {
-                localDB.localDBData().addANewLinkToImpLinks(importantLinks = linksData)
+                localDB.crudDao().addANewLinkToImpLinks(importantLinks = linksData)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "added the link to Important Links", Toast.LENGTH_SHORT)
                         .show()
@@ -219,14 +219,14 @@ object CustomLocalDBDaoFunctionsDecl {
     }
 
     suspend fun archiveLinkTableUpdater(archivedLinks: ArchivedLinks, context: Context) {
-        if (localDB.localDBData().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
-            localDB.localDBData().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
+        if (localDB.crudDao().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
+            localDB.crudDao().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "removed the link from archive(s)", Toast.LENGTH_SHORT)
                     .show()
             }
         } else {
-            localDB.localDBData().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
+            localDB.crudDao().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "moved the link to archive(s)", Toast.LENGTH_SHORT).show()
             }
@@ -235,15 +235,15 @@ object CustomLocalDBDaoFunctionsDecl {
     }
 
     suspend fun archiveFolderTableUpdater(archivedFolders: ArchivedFolders, context: Context) {
-        if (localDB.localDBData()
+        if (localDB.crudDao()
                 .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
         ) {
             coroutineScope {
                 awaitAll(async {
-                    localDB.localDBData()
+                    localDB.crudDao()
                         .deleteAnArchiveFolder(folderName = archivedFolders.archiveFolderName)
                 }, async {
-                    localDB.localDBData()
+                    localDB.crudDao()
                         .deleteThisArchiveFolderData(folderName = archivedFolders.archiveFolderName)
                 })
             }
@@ -257,14 +257,14 @@ object CustomLocalDBDaoFunctionsDecl {
         } else {
             val coroutineJob = Job()
             CoroutineScope(coroutineJob).launch {
-                localDB.localDBData().addANewArchiveFolder(archivedFolders = archivedFolders)
+                localDB.crudDao().addANewArchiveFolder(archivedFolders = archivedFolders)
             }.invokeOnCompletion {
                 CoroutineScope(coroutineJob).launch {
-                    localDB.localDBData()
+                    localDB.crudDao()
                         .moveFolderDataToArchive(folderName = archivedFolders.archiveFolderName)
                 }.invokeOnCompletion {
                     CoroutineScope(coroutineJob).launch {
-                        localDB.localDBData()
+                        localDB.crudDao()
                             .deleteAFolder(folderName = archivedFolders.archiveFolderName)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
@@ -307,7 +307,7 @@ object CustomLocalDBDaoFunctionsDecl {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
-                } else if (localDB.localDBData()
+                } else if (localDB.crudDao()
                         .doesThisLinkExistsInAFolder(
                             webURL, folderName.toString()
                         )
@@ -337,7 +337,7 @@ object CustomLocalDBDaoFunctionsDecl {
                         )
                     }
                     if (linkData != null) {
-                        localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                        localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "added the url", Toast.LENGTH_SHORT).show()
                         }
@@ -362,7 +362,7 @@ object CustomLocalDBDaoFunctionsDecl {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
-                } else if (localDB.localDBData()
+                } else if (localDB.crudDao()
                         .doesThisLinkExistsInAFolder(
                             folderName = folderName.toString(),
                             webURL = webURL
@@ -393,7 +393,7 @@ object CustomLocalDBDaoFunctionsDecl {
                         )
                     }
                     if (linkData != null) {
-                        localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                        localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
                         }
@@ -416,7 +416,7 @@ object CustomLocalDBDaoFunctionsDecl {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
-                } else if (localDB.localDBData()
+                } else if (localDB.crudDao()
                         .doesThisExistsInSavedLinks(
                             webURL
                         )
@@ -443,7 +443,7 @@ object CustomLocalDBDaoFunctionsDecl {
                         isLinkedWithArchivedFolder = false,
                         keyOfArchiveLinkedFolder = ""
                     )
-                    localDB.localDBData().addANewLinkToSavedLinksOrInFolders(linkData)
+                    localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
                     }

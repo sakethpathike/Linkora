@@ -25,7 +25,13 @@ class HomeScreenVM : ViewModel() {
     val recentlyVisitedLinksData = _recentlyVisitedLinksData.asStateFlow()
 
     companion object {
-        val tempImpLinkData = ImportantLinks("", "", "", "", "")
+        val tempImpLinkData = ImportantLinks(
+            title = "",
+            webURL = "",
+            baseURL = "",
+            imgURL = "",
+            infoForSaving = ""
+        )
     }
 
     init {
@@ -56,19 +62,19 @@ class HomeScreenVM : ViewModel() {
         }
 
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getLatestImportantLinks().collect {
+            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getLatestImportantLinks().collect {
                 _impLinksData.emit(it.reversed())
             }
         }
 
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getLatestSavedLinks().collect {
+            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getLatestSavedLinks().collect {
                 _linksData.emit(it.reversed())
             }
         }
 
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllRecentlyVisitedLinks()
+            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllRecentlyVisitedLinks()
                 .collect {
                     _recentlyVisitedLinksData.emit(it.reversed())
                 }

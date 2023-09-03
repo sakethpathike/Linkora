@@ -158,7 +158,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onUnarchiveClick = {
                 if (archiveScreenType == ArchiveScreenType.FOLDERS) {
                     coroutineScope.launch {
-                        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .doesThisFolderExists(folderName = selectedURLOrFolderName.value)
                         ) {
                             Toast.makeText(
@@ -169,20 +169,20 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         } else {
                             coroutineScope.launch {
                                 awaitAll(async {
-                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                         .addANewFolder(
                                             foldersTable = FoldersTable(
-                                                selectedURLOrFolderName.value,
-                                                selectedURLOrFolderNote.value
+                                                folderName = selectedURLOrFolderName.value,
+                                                infoForSaving = selectedURLOrFolderNote.value
                                             )
                                         )
                                 }, async {
-                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                         .deleteAnArchiveFolder(folderName = selectedURLOrFolderName.value)
                                 })
                             }.invokeOnCompletion {
                                 coroutineScope.launch {
-                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                         .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName.value)
                                 }.invokeOnCompletion {
                                     Toast.makeText(
@@ -194,7 +194,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 } else {
                     coroutineScope.launch {
-                        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .doesThisExistsInSavedLinks(webURL = archiveScreenVM.selectedArchivedLinkData.value.webURL)
                         ) {
                             Toast.makeText(
@@ -204,7 +204,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             ).show()
                         } else {
                             coroutineScope.launch {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .addANewLinkToSavedLinksOrInFolders(
                                         LinksTable(
                                             title = archiveScreenVM.selectedArchivedLinkData.value.title,
@@ -221,7 +221,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                             keyOfArchiveLinkedFolder = ""
                                         )
                                     )
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromArchiveLinks(archiveScreenVM.selectedArchivedLinkData.value.webURL)
                             }.invokeOnCompletion {
                                 Toast.makeText(
@@ -246,14 +246,14 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onNoteDeleteCardClick = {
                 if (archiveScreenType == ArchiveScreenType.FOLDERS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteArchiveFolderNote(folderName = selectedURLOrFolderName.value)
                     }.invokeOnCompletion {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName.value)
                     }.invokeOnCompletion {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -269,7 +269,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onDeleteClick = {
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName.value)
                     }.invokeOnCompletion {
                         Toast.makeText(
@@ -297,12 +297,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onNoteChangeClickForLinks = { webURL: String, newNote: String ->
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkInfoFromArchiveLinks(webURL, newNote)
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameArchivedFolderNote(
                                 folderName = webURL,
                                 newNote = newNote
@@ -314,16 +314,16 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 if (archiveScreenType == ArchiveScreenType.LINKS) {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
                     }
                 } else {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameAFolderArchiveName(selectedURLOrFolderName.value, newTitle)
                     }.invokeOnCompletion {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameFolderNameForExistingArchivedFolderData(
                                     selectedURLOrFolderName.value,
                                     newTitle

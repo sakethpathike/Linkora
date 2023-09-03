@@ -24,7 +24,13 @@ class SpecificScreenVM : ViewModel() {
     private val _archiveFolderData = MutableStateFlow(emptyList<LinksTable>())
     val archiveFolderDataTable = _archiveFolderData.asStateFlow()
 
-    val impLinkDataForBtmSheet = ImportantLinks("", "", "", "", "")
+    val impLinkDataForBtmSheet = ImportantLinks(
+        title = "",
+        webURL = "",
+        baseURL = "",
+        imgURL = "",
+        infoForSaving = ""
+    )
 
     companion object {
         val currentClickedFolderName = mutableStateOf("")
@@ -36,7 +42,7 @@ class SpecificScreenVM : ViewModel() {
         when (screenType.value) {
             SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getThisFolderData(
+                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getThisFolderData(
                         currentClickedFolderName.value
                     ).collect {
                         _foldersData.emit(it)
@@ -46,7 +52,7 @@ class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllImpLinks().collect {
+                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllImpLinks().collect {
                         _impLinksData.emit(it)
                     }
                 }
@@ -54,7 +60,7 @@ class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVE_SCREEN -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                         .getThisArchiveFolderData(folderName = selectedArchiveFolderName.value)
                         .collect {
                             _archiveFolderData.emit(it)
@@ -64,7 +70,7 @@ class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllSavedLinks().collect {
+                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllSavedLinks().collect {
                         _linksData.emit(it)
                     }
                 }

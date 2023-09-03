@@ -24,7 +24,15 @@ enum class ArchiveScreenType {
 }
 
 class ArchiveScreenVM : ViewModel() {
-    val selectedArchivedLinkData = mutableStateOf(ArchivedLinks("", "", "", "", ""))
+    val selectedArchivedLinkData = mutableStateOf(
+        ArchivedLinks(
+            title = "",
+            webURL = "",
+            baseURL = "",
+            imgURL = "",
+            infoForSaving = ""
+        )
+    )
 
     val parentArchiveScreenData = listOf(
         ArchiveScreenModal(name = "Links", screen = { navController ->
@@ -53,13 +61,13 @@ class ArchiveScreenVM : ViewModel() {
     }
 
     private suspend fun getAllArchiveLinks() {
-        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllArchiveLinks().collect {
+        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllArchiveLinks().collect {
             _archiveLinksData.emit(it)
         }
     }
 
     private suspend fun getAllArchiveFolders() {
-        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllArchiveFolders().collect {
+        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllArchiveFolders().collect {
             _archiveFoldersData.emit(it)
         }
     }

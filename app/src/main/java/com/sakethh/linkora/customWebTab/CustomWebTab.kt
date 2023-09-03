@@ -24,10 +24,10 @@ suspend fun openInWeb(
 ) {
     coroutineScope {
         awaitAll(async {
-            if (!CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                     .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisitedData.webURL)
             ) {
-                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                     .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
             }
         }, async {

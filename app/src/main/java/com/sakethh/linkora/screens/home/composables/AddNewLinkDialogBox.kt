@@ -70,7 +70,7 @@ fun AddNewLinkDialogBox(
         mutableStateOf(false)
     }
     val foldersTableData =
-        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collectAsState(
+        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllFolders().collectAsState(
             initial = emptyList()
         ).value
     val context = LocalContext.current
@@ -304,7 +304,8 @@ fun AddNewLinkDialogBox(
                                                     imgURL = ""
                                                 ),
                                                 context = context,
-                                                inImportantLinksScreen = true
+                                                inImportantLinksScreen = true,
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value
                                             )
                                         }.invokeOnCompletion {
                                             if (linkTextFieldValue.value.isNotEmpty()) {

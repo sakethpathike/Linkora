@@ -1,12 +1,18 @@
-package com.sakethh.linkora.localDB
+package com.sakethh.linkora.localDB.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import com.sakethh.linkora.localDB.ArchivedFolders
+import com.sakethh.linkora.localDB.ArchivedLinks
+import com.sakethh.linkora.localDB.FoldersTable
+import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.LinksTable
+import com.sakethh.linkora.localDB.RecentlyVisited
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface LocalDBDao {
+interface CRUDDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1 LIMIT 8")
     fun getLatestSavedLinks(): Flow<List<LinksTable>>
 

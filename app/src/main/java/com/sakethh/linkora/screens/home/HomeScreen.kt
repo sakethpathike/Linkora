@@ -535,23 +535,23 @@ fun HomeScreen() {
             },
             onImportantLinkAdditionInTheTable = {
                 coroutineScope.launch {
-                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .doesThisExistsInImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     ) {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                         Toast.makeText(
                             context, "removed link from the \"Important Links\" successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().addANewLinkToImpLinks(
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().addANewLinkToImpLinks(
                             ImportantLinks(
-                                HomeScreenVM.tempImpLinkData.title,
-                                HomeScreenVM.tempImpLinkData.webURL,
-                                HomeScreenVM.tempImpLinkData.baseURL,
-                                HomeScreenVM.tempImpLinkData.imgURL,
-                                HomeScreenVM.tempImpLinkData.infoForSaving
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
                             )
                         )
                         Toast.makeText(
@@ -574,15 +574,15 @@ fun HomeScreen() {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
                                     archivedLinks = ArchivedLinks(
-                                        HomeScreenVM.tempImpLinkData.title,
-                                        HomeScreenVM.tempImpLinkData.webURL,
-                                        HomeScreenVM.tempImpLinkData.baseURL,
-                                        HomeScreenVM.tempImpLinkData.imgURL,
-                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                        title = HomeScreenVM.tempImpLinkData.title,
+                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
                                     ), context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromSavedLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                             })
                         }
@@ -594,15 +594,15 @@ fun HomeScreen() {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
                                     archivedLinks = ArchivedLinks(
-                                        HomeScreenVM.tempImpLinkData.title,
-                                        HomeScreenVM.tempImpLinkData.webURL,
-                                        HomeScreenVM.tempImpLinkData.baseURL,
-                                        HomeScreenVM.tempImpLinkData.imgURL,
-                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                        title = HomeScreenVM.tempImpLinkData.title,
+                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
                                     ), context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteARecentlyVisitedLink(webURL = HomeScreenVM.tempImpLinkData.webURL)
                             })
                         }
@@ -614,15 +614,15 @@ fun HomeScreen() {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
                                     archivedLinks = ArchivedLinks(
-                                        HomeScreenVM.tempImpLinkData.title,
-                                        HomeScreenVM.tempImpLinkData.webURL,
-                                        HomeScreenVM.tempImpLinkData.baseURL,
-                                        HomeScreenVM.tempImpLinkData.imgURL,
-                                        HomeScreenVM.tempImpLinkData.infoForSaving
+                                        title = HomeScreenVM.tempImpLinkData.title,
+                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
                                     ), context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                             })
                         }
@@ -634,7 +634,7 @@ fun HomeScreen() {
                 when (selectedCardType.value) {
                     HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -644,7 +644,7 @@ fun HomeScreen() {
 
                     HomeScreenBtmSheetType.RECENT_VISITS.name -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteANoteFromRecentlyVisited(webURL = selectedWebURL.value)
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -654,7 +654,7 @@ fun HomeScreen() {
 
                     HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -673,7 +673,7 @@ fun HomeScreen() {
             when (selectedCardType.value) {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromSavedLinks(
                                 webURL = selectedWebURL.value
                             )
@@ -689,7 +689,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_VISITS.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteARecentlyVisitedLink(
                                 webURL = selectedWebURL.value
                             )
@@ -699,7 +699,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = selectedWebURL.value)
                     }
                     Unit
@@ -715,7 +715,7 @@ fun HomeScreen() {
             when (selectedCardType.value) {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkInfoFromSavedLinks(
                                 webURL = webURL, newInfo = newNote
                             )
@@ -725,7 +725,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_VISITS.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkInfoFromRecentlyVisitedLinks(
                                 webURL = webURL, newInfo = newNote
                             )
@@ -735,7 +735,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkInfoFromImpLinks(webURL = webURL, newInfo = newNote)
                     }
                     Unit
@@ -746,7 +746,7 @@ fun HomeScreen() {
             when (selectedCardType.value) {
                 HomeScreenBtmSheetType.RECENT_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkTitleFromSavedLinks(
                                 webURL = webURL, newTitle = newTitle
                             )
@@ -756,7 +756,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_VISITS.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkTitleFromRecentlyVisited(
                                 webURL = webURL, newTitle = newTitle
                             )
@@ -766,7 +766,7 @@ fun HomeScreen() {
 
                 HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
                     coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
                     }
                     Unit

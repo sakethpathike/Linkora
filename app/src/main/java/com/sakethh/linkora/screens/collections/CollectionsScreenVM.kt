@@ -13,12 +13,12 @@ class CollectionsScreenVM : ViewModel() {
     val foldersData = _foldersData.asStateFlow()
 
     companion object {
-        val selectedFolderData = FoldersTable("", "")
+        val selectedFolderData = FoldersTable(folderName = "", infoForSaving = "")
     }
 
     init {
         viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders().collect {
+            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllFolders().collect {
                 _foldersData.emit(it)
             }
         }

@@ -480,7 +480,7 @@ fun CollectionScreen(navController: NavController) {
             noteForSaving = clickedFolderNote.value,
             onNoteDeleteCardClick = {
                 coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                         .deleteAFolderNote(folderName = CollectionsScreenVM.selectedFolderData.folderName)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -501,10 +501,10 @@ fun CollectionScreen(navController: NavController) {
             onDeleteClick = {
                 coroutineScope.launch {
                     awaitAll(async {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteAFolder(folderName = clickedFolderName.value)
                     }, async {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteThisFolderData(folderName = clickedFolderName.value)
                     })
                 }

@@ -163,7 +163,7 @@ fun RenameDialogBox(
                                         if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
                                             coroutineScope.launch {
                                                 doesFolderNameAlreadyExists =
-                                                    CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                                         .doesThisFolderExists(
                                                             newFolderOrTitleName.value
                                                         )
@@ -223,7 +223,7 @@ fun RenameDialogBox(
                                 } else {
                                     coroutineScope.launch {
                                         if (existingFolderName != null) {
-                                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                                 .renameAFolderNote(
                                                     folderName = existingFolderName,
                                                     newNote = newNote.value

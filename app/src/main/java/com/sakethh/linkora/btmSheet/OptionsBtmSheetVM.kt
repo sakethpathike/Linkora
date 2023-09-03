@@ -22,7 +22,7 @@ class OptionsBtmSheetVM : ViewModel() {
     val archiveCardIcon = mutableStateOf(Icons.Outlined.Archive)
     val archiveCardText = mutableStateOf("")
     suspend fun updateImportantCardData(url: String) {
-        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+        if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
@@ -34,7 +34,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveLinkCardData(url: String) {
-        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+        if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
@@ -46,7 +46,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveFolderCardData(folderName: String) {
-        if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+        if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                 .doesThisArchiveFolderExists(folderName = folderName)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive

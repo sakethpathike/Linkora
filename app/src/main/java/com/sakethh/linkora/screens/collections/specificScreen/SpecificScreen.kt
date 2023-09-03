@@ -414,23 +414,23 @@ fun SpecificScreen(navController: NavController) {
             },
             onImportantLinkAdditionInTheTable = {
                 coroutineScope.launch {
-                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
                     ) {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                         Toast.makeText(
                             context, "removed link from the \"Important Links\" successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
-                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData().addANewLinkToImpLinks(
+                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().addANewLinkToImpLinks(
                             ImportantLinks(
-                                tempImpLinkData.title,
-                                tempImpLinkData.webURL,
-                                tempImpLinkData.baseURL,
-                                tempImpLinkData.imgURL,
-                                tempImpLinkData.infoForSaving
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
                             )
                         )
                         Toast.makeText(
@@ -462,7 +462,7 @@ fun SpecificScreen(navController: NavController) {
                                     context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                             })
                         }
@@ -497,7 +497,7 @@ fun SpecificScreen(navController: NavController) {
                                     ), context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                             })
                         }
@@ -516,7 +516,7 @@ fun SpecificScreen(navController: NavController) {
                                     ), context = context
                                 )
                             }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromSpecificFolder(
                                         folderName = topBarText,
                                         webURL = tempImpLinkData.webURL
@@ -533,7 +533,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -542,7 +542,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkNoteFromArchiveBasedFolderLinks(
                                     folderName = topBarText,
                                     webURL = selectedWebURL.value
@@ -554,7 +554,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -563,7 +563,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkInfoOfFolders(
                                     folderName = topBarText,
                                     webURL = selectedWebURL.value
@@ -585,14 +585,14 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromImpLinks(webURL = selectedWebURL.value)
                         }
                     }
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromArchiveFolderBasedLinks(
                                     webURL = selectedWebURL.value,
                                     archiveFolderName = topBarText
@@ -602,14 +602,14 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromSavedLinks(webURL = selectedWebURL.value)
                         }
                     }
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromSpecificFolder(
                                     folderName = topBarText,
                                     webURL = selectedWebURL.value
@@ -636,7 +636,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromImpLinks(
                                     webURL = webURL,
                                     newInfo = newNote
@@ -647,7 +647,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromArchiveBasedFolderLinks(
                                     webURL = webURL,
                                     newInfo = newNote,
@@ -659,7 +659,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromSavedLinks(
                                     webURL = webURL,
                                     newInfo = newNote
@@ -670,7 +670,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromFolders(
                                     webURL = webURL,
                                     newInfo = newNote,
@@ -687,7 +687,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromImpLinks(
                                     webURL = webURL,
                                     newTitle = newTitle
@@ -698,7 +698,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVE_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromArchiveBasedFolderLinks(
                                     webURL = webURL,
                                     newTitle = newTitle,
@@ -710,7 +710,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.LINKS_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromSavedLinks(
                                     webURL = webURL,
                                     newTitle = newTitle
@@ -721,7 +721,7 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromFolders(
                                     webURL = webURL,
                                     newTitle = newTitle,

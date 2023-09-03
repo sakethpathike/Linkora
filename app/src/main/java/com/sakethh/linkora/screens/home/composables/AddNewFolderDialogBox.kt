@@ -130,7 +130,7 @@ fun AddNewFolderDialogBox(
                             } else {
                                 newFolderName(folderNameTextFieldValue.value)
                                 coroutineScope.launch {
-                                    if (CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                             .doesThisFolderExists(folderName = folderNameTextFieldValue.value)
                                     ) {
                                         Toast.makeText(
@@ -139,7 +139,7 @@ fun AddNewFolderDialogBox(
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        CustomLocalDBDaoFunctionsDecl.localDB.localDBData()
+                                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                             .addANewFolder(
                                                 FoldersTable(
                                                     folderName = folderNameTextFieldValue.value,

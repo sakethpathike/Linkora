@@ -133,7 +133,7 @@ fun NewLinkBtmSheet(
                         }
                     }.invokeOnCompletion {
                         coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.localDBData().getAllFolders()
+                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllFolders()
                                 .collect {
                                     IntentActivityData.foldersData.value = it
                                 }
