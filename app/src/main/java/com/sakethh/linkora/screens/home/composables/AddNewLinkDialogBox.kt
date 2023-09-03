@@ -256,31 +256,28 @@ fun AddNewLinkDialogBox(
                                 .fillMaxWidth()
                                 .padding(
                                     top = 20.dp, start = 10.dp
-                                )
+
+                                ),
+                            verticalAlignment = Alignment.CenterVertically
                         ) {
                             androidx.compose.material3.Checkbox(
                                 enabled = !isDataExtractingForTheLink.value,
                                 checked = isAutoDetectTitleEnabled.value,
                                 onCheckedChange = {
                                     isAutoDetectTitleEnabled.value = it
-                                },
-                                modifier = Modifier.padding(
-                                    bottom = 10.dp
-                                )
+                                }
                             )
                             Text(
                                 text = "Force Auto-detect title",
                                 style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp,
-                                modifier = Modifier
-                                    .padding(top = 17.dp)
+                                fontSize = 16.sp
                             )
                         }
                     }
                     Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
                             .padding(
-                                end = 20.dp,
+                                end = 20.dp, top = 20.dp
                             )
                             .align(Alignment.End),
                         onClick = {

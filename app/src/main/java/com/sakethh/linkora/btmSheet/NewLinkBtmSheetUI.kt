@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -220,10 +221,12 @@ fun NewLinkBtmSheet(
                                 modifier = Modifier.padding(15.dp),
                                 color = MaterialTheme.colorScheme.outline.copy(0.25f)
                             )
-                            Box(
+                            Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .height(40.dp)
+                                    .wrapContentHeight(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
                             ) {
                                 if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                                     Row(
@@ -234,24 +237,20 @@ fun NewLinkBtmSheet(
                                                         !isAutoDetectTitleEnabled.value
                                                 }
                                             }
-                                            .fillMaxHeight()
-                                            .align(Alignment.CenterStart)
+                                            .fillMaxHeight(),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         androidx.compose.material3.Checkbox(
                                             enabled = !isDataExtractingForTheLink.value,
                                             checked = isAutoDetectTitleEnabled.value,
                                             onCheckedChange = {
                                                 isAutoDetectTitleEnabled.value = it
-                                            },
-                                            modifier = Modifier
-                                                .padding(top = 2.dp)
+                                            }
                                         )
                                         Text(
                                             text = "Force Auto-detect title",
                                             style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 16.sp,
-                                            modifier = Modifier
-                                                .padding(top = 14.dp)
+                                            fontSize = 16.sp
                                         )
                                     }
                                 }
@@ -260,8 +259,7 @@ fun NewLinkBtmSheet(
                                         .padding(
                                             start = 20.dp, end = 20.dp
                                         )
-                                        .fillMaxHeight()
-                                        .align(Alignment.CenterEnd), onClick = {
+                                        .fillMaxHeight(), onClick = {
                                         if (linkTextFieldValue.value.isNotEmpty()) {
                                             isDataExtractingForTheLink.value = true
                                         }

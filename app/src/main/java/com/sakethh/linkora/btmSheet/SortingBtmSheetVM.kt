@@ -15,7 +15,7 @@ class SortingBtmSheetVM : ViewModel() {
     )
 
     val sortingBottomSheetData = listOf(
-        SortingBtmSheet(sortingName = "Name A -> Z", onClick = {
+        SortingBtmSheet(sortingName = "A to Z Sequence", onClick = {
             SettingsScreenVM.Settings.selectedSortingType.value =
                 SettingsScreenVM.SortingPreferences.A_TO_Z.name
             viewModelScope.launch {
@@ -30,7 +30,7 @@ class SortingBtmSheetVM : ViewModel() {
         }, sortingType = SettingsScreenVM.SortingPreferences.A_TO_Z),
         SortingBtmSheet(
             sortingType = SettingsScreenVM.SortingPreferences.Z_TO_A,
-            sortingName = "Name Z -> A",
+            sortingName = "Z to A Sequence",
             onClick = {
                 SettingsScreenVM.Settings.selectedSortingType.value =
                     SettingsScreenVM.SortingPreferences.Z_TO_A.name

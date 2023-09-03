@@ -236,7 +236,7 @@ fun OptionsBtmSheetUI(
                         Text(
                             text = "Saved note :",
                             style = MaterialTheme.typography.titleMedium,
-                            fontSize = 24.sp,
+                            fontSize = 16.sp,
                             modifier = Modifier
                                 .padding(20.dp)
                         )

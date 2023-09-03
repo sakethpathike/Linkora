@@ -540,7 +540,15 @@ fun CollectionScreen(navController: NavController) {
             screenType = SpecificScreenType.ROOT_SCREEN
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope
+            shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
+            coroutineScope = coroutineScope,
+            onCreateClick = {
+                collectionsScreenVM.changeRetrievedFoldersData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
+            }
         )
         NewLinkBtmSheet(
             btmSheetState = btmModalSheetStateForSavingLinks,
