@@ -54,14 +54,14 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.shouldFollowSystemTheme,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.FOLLOW_SYSTEM_THEME.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.shouldFollowSystemTheme.value
                     )
-                    Settings.shouldFollowSystemTheme.value = Settings.readPreferenceValue(
+                    Settings.shouldFollowSystemTheme.value = Settings.readSettingPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                         dataStore = Settings.dataStore
                     ) == true
@@ -74,14 +74,14 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.shouldFollowDynamicTheming,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.DYNAMIC_THEMING.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.shouldFollowDynamicTheming.value
                     )
-                    Settings.shouldFollowDynamicTheming.value = Settings.readPreferenceValue(
+                    Settings.shouldFollowDynamicTheming.value = Settings.readSettingPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
                         dataStore = Settings.dataStore
                     ) == true
@@ -94,14 +94,14 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.shouldDarkThemeBeEnabled,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.DARK_THEME.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.shouldDarkThemeBeEnabled.value
                     )
-                    Settings.shouldDarkThemeBeEnabled.value = Settings.readPreferenceValue(
+                    Settings.shouldDarkThemeBeEnabled.value = Settings.readSettingPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.DARK_THEME.name),
                         dataStore = Settings.dataStore
                     ) == true
@@ -117,14 +117,14 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.isInAppWebTabEnabled,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.CUSTOM_TABS.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.isInAppWebTabEnabled.value
                     )
-                    Settings.isInAppWebTabEnabled.value = Settings.readPreferenceValue(
+                    Settings.isInAppWebTabEnabled.value = Settings.readSettingPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.CUSTOM_TABS.name),
                         dataStore = Settings.dataStore
                     ) == true
@@ -137,14 +137,14 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.isHomeScreenEnabled,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.HOME_SCREEN_VISIBILITY.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.isHomeScreenEnabled.value
                     )
-                    Settings.isHomeScreenEnabled.value = Settings.readPreferenceValue(
+                    Settings.isHomeScreenEnabled.value = Settings.readSettingPreferenceValue(
                         preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
                         dataStore = Settings.dataStore
                     ) == true
@@ -157,17 +157,18 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.isBtmSheetEnabledForSavingLinks.value
                     )
-                    Settings.isBtmSheetEnabledForSavingLinks.value = Settings.readPreferenceValue(
-                        preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                        dataStore = Settings.dataStore
-                    ) == true
+                    Settings.isBtmSheetEnabledForSavingLinks.value =
+                        Settings.readSettingPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
+                            dataStore = Settings.dataStore
+                        ) == true
                 }
             }),
         SettingsUIElement(title = "Auto-Detect Title",
@@ -177,17 +178,18 @@ class SettingsScreenVM : ViewModel() {
             isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changePreferenceValue(
+                    Settings.changeSettingPreferenceValue(
                         preferenceKey = preferencesKey(
                             SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
                         ),
                         dataStore = Settings.dataStore,
                         newValue = !Settings.isAutoDetectTitleForLinksEnabled.value
                     )
-                    Settings.isAutoDetectTitleForLinksEnabled.value = Settings.readPreferenceValue(
-                        preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                        dataStore = Settings.dataStore
-                    ) == true
+                    Settings.isAutoDetectTitleForLinksEnabled.value =
+                        Settings.readSettingPreferenceValue(
+                            preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                            dataStore = Settings.dataStore
+                        ) == true
                 }
             }), SettingsUIElement(title = "Delete entire data permanently",
             doesDescriptionExists = true,
@@ -201,7 +203,11 @@ class SettingsScreenVM : ViewModel() {
 
     enum class SettingsPreferences {
         DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS,
-        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY
+        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE
+    }
+
+    enum class SortingPreferences {
+        A_TO_Z, Z_TO_A
     }
 
     object Settings {
@@ -215,14 +221,23 @@ class SettingsScreenVM : ViewModel() {
         val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
         val isBtmSheetEnabledForSavingLinks = mutableStateOf(true)
         val isHomeScreenEnabled = mutableStateOf(true)
-        suspend fun readPreferenceValue(
+        val selectedSortingType = mutableStateOf("")
+
+        suspend fun readSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.Preferences.Key<Boolean>,
             dataStore: DataStore<androidx.datastore.preferences.Preferences>,
         ): Boolean? {
             return dataStore.data.first()[preferenceKey]
         }
 
-        suspend fun changePreferenceValue(
+        suspend fun readSortingPreferenceValue(
+            preferenceKey: androidx.datastore.preferences.Preferences.Key<String>,
+            dataStore: DataStore<androidx.datastore.preferences.Preferences>,
+        ): String? {
+            return dataStore.data.first()[preferenceKey]
+        }
+
+        suspend fun changeSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.Preferences.Key<Boolean>,
             dataStore: DataStore<androidx.datastore.preferences.Preferences>, newValue: Boolean,
         ) {
@@ -231,54 +246,64 @@ class SettingsScreenVM : ViewModel() {
             }
         }
 
+        suspend fun changeSortingPreferenceValue(
+            preferenceKey: androidx.datastore.preferences.Preferences.Key<String>,
+            dataStore: DataStore<androidx.datastore.preferences.Preferences>,
+            newValue: SortingPreferences,
+        ) {
+            dataStore.edit {
+                it[preferenceKey] = newValue.name
+            }
+        }
+
         suspend fun readAllPreferencesValues() {
             coroutineScope {
                 kotlinx.coroutines.awaitAll(
                     async {
                         shouldFollowSystemTheme.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                                 dataStore = dataStore
                             ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                     },
                     async {
                         shouldDarkThemeBeEnabled.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.DARK_THEME.name),
                                 dataStore = dataStore
                             ) == true
                     },
                     async {
                         shouldFollowDynamicTheming.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
                                 dataStore = dataStore
                             ) ?: false
                     },
                     async {
                         isInAppWebTabEnabled.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.CUSTOM_TABS.name),
                                 dataStore = dataStore
                             ) ?: true
                     },
                     async {
                         isAutoDetectTitleForLinksEnabled.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
                                 dataStore = dataStore
                             ) ?: true
                     },
                     async {
                         isHomeScreenEnabled.value =
-                            if (readPreferenceValue(
+                            if (readSettingPreferenceValue(
                                     preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
                                     dataStore = dataStore
                                 ) == null
                             ) {
                                 true
                             } else {
-                                readPreferenceValue(
+                                readSettingPreferenceValue(
                                     preferenceKey = preferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
                                     dataStore = dataStore
                                 ) == true
@@ -286,10 +311,17 @@ class SettingsScreenVM : ViewModel() {
                     },
                     async {
                         isBtmSheetEnabledForSavingLinks.value =
-                            readPreferenceValue(
+                            readSettingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                                 dataStore = dataStore
                             ) ?: true
+                    },
+                    async {
+                        selectedSortingType.value =
+                            readSortingPreferenceValue(
+                                preferenceKey = preferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
+                                dataStore = dataStore
+                            ) ?: SortingPreferences.A_TO_Z.name
                     }
                 )
             }

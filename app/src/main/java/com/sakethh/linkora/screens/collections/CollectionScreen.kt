@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
@@ -45,10 +46,12 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -72,6 +75,7 @@ import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -109,11 +113,11 @@ fun CollectionScreen(navController: NavController) {
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState()
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
     val btmModalSheetStateForSavingLinks =
-        androidx.compose.material3.rememberModalBottomSheetState()
+        rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -141,8 +145,12 @@ fun CollectionScreen(navController: NavController) {
     val shouldDialogForNewFolderAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val isDataExtractingFromLink = rememberSaveable {
+    val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
+    }
+    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val selectedSortingType = rememberSaveable {
+        mutableStateOf(SettingsScreenVM.SortingPreferences.A_TO_Z.name)
     }
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
@@ -388,13 +396,27 @@ fun CollectionScreen(navController: NavController) {
                     )
                 }
                 item {
-                    Text(
-                        text = "Folders",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp)
-                    )
+                    Row(
+                        modifier = Modifier
+                            .clickable {
+                                shouldSortingBottomSheetAppear.value = true
+                            }
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "Folders",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(start = 15.dp)
+                        )
+                        IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                            Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        }
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.padding(top = 15.dp))
@@ -525,6 +547,13 @@ fun CollectionScreen(navController: NavController) {
             _inIntentActivity = false,
             screenType = SpecificScreenType.ROOT_SCREEN,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+        )
+        SortingBottomSheetUI(
+            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+            onSelectedAComponent = { sortingPreferences ->
+                collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
+            },
+            bottomModalSheetState = sortingBtmSheetState
         )
     }
     BackHandler {
