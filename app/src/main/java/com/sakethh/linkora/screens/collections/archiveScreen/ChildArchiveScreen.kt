@@ -138,7 +138,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 SpecificScreenVM.selectedArchiveFolderName.value =
                                     it.archiveFolderName
                                 SpecificScreenVM.screenType.value =
-                                    SpecificScreenType.ARCHIVE_SCREEN
+                                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             })
                     }

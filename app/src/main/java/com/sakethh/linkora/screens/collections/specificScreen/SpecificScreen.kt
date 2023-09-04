@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -13,14 +14,17 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -38,6 +42,7 @@ import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
@@ -63,13 +68,13 @@ fun SpecificScreen(navController: NavController) {
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
-    val foldersData = specificScreenVM.foldersData.collectAsState().value
-    val linksData = specificScreenVM.linksTable.collectAsState().value
+    val foldersData = specificScreenVM.folderLinksData.collectAsState().value
+    val linksData = specificScreenVM.savedLinksTable.collectAsState().value
     val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
     val archiveLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
     val tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
-    val btmModalSheetStateForSavingLink = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -79,6 +84,10 @@ fun SpecificScreen(navController: NavController) {
     val shouldDeleteDialogBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldSortingBottomSheetAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val sortingBtmSheetState = rememberModalBottomSheetState()
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
@@ -94,15 +103,15 @@ fun SpecificScreen(navController: NavController) {
             "Important Links"
         }
 
-        SpecificScreenType.ARCHIVE_SCREEN -> {
+        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
             SpecificScreenVM.selectedArchiveFolderName.value
         }
 
-        SpecificScreenType.LINKS_SCREEN -> {
+        SpecificScreenType.SAVED_LINKS_SCREEN -> {
             "Saved Links"
         }
 
-        SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
             SpecificScreenVM.currentClickedFolderName.value
         }
 
@@ -121,23 +130,20 @@ fun SpecificScreen(navController: NavController) {
     }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
-            if (SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVE_SCREEN) {
-                FloatingActionButton(
-                    shape = RoundedCornerShape(10.dp),
-                    onClick = {
-                        if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
-                            shouldNewLinkDialogBoxBeVisible.value = true
-                        } else {
-                            coroutineScope.launch {
-                                awaitAll(async {
-                                    btmModalSheetStateForSavingLink.expand()
-                                }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
-                            }
+            if (SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
+                FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
+                    if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                        shouldNewLinkDialogBoxBeVisible.value = true
+                    } else {
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                btmModalSheetStateForSavingLink.expand()
+                            }, async { shouldBtmSheetForNewLinkAdditionBeEnabled.value = true })
                         }
-                    }) {
+                    }
+                }) {
                     Icon(
-                        imageVector = Icons.Default.AddLink,
-                        contentDescription = null
+                        imageVector = Icons.Default.AddLink, contentDescription = null
                     )
                 }
             }
@@ -150,8 +156,12 @@ fun SpecificScreen(navController: NavController) {
                     fontSize = 24.sp,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.padding(end = 30.dp)
+                    modifier = Modifier.fillMaxWidth(0.75f)
                 )
+            }, actions = {
+                IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                    Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                }
             })
         }) {
             LazyColumn(
@@ -160,7 +170,7 @@ fun SpecificScreen(navController: NavController) {
                     .fillMaxSize()
             ) {
                 when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         if (foldersData.isNotEmpty()) {
                             items(foldersData) {
                                 LinkUIComponent(
@@ -178,21 +188,18 @@ fun SpecificScreen(navController: NavController) {
                                             this.title = it.title
                                             this.infoForSaving = it.infoForSaving
                                         }
-                                        tempImpLinkData.webURL =
-                                            it.webURL
+                                        tempImpLinkData.webURL = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         coroutineScope.launch {
-                                            awaitAll(
-                                                async {
-                                                    optionsBtmSheetVM.updateImportantCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                },
-                                                async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                })
+                                            awaitAll(async {
+                                                optionsBtmSheetVM.updateImportantCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            }, async {
+                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            })
                                         }
                                     },
                                     onLinkClick = {
@@ -204,9 +211,7 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler
                                             )
                                         }
                                     },
@@ -220,7 +225,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         if (linksData.isNotEmpty()) {
                             items(linksData) {
                                 LinkUIComponent(
@@ -240,17 +245,15 @@ fun SpecificScreen(navController: NavController) {
                                         tempImpLinkData.webURL = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         coroutineScope.launch {
-                                            awaitAll(
-                                                async {
-                                                    optionsBtmSheetVM.updateImportantCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                },
-                                                async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                })
+                                            awaitAll(async {
+                                                optionsBtmSheetVM.updateImportantCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            }, async {
+                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            })
                                         }
                                     },
                                     onLinkClick = {
@@ -262,9 +265,7 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler
                                             )
                                         }
                                     },
@@ -295,21 +296,18 @@ fun SpecificScreen(navController: NavController) {
                                             this.title = it.title
                                             this.infoForSaving = it.infoForSaving
                                         }
-                                        tempImpLinkData.webURL =
-                                            it.webURL
+                                        tempImpLinkData.webURL = it.webURL
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         coroutineScope.launch {
-                                            awaitAll(
-                                                async {
-                                                    optionsBtmSheetVM.updateImportantCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                },
-                                                async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                })
+                                            awaitAll(async {
+                                                optionsBtmSheetVM.updateImportantCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            }, async {
+                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                    url = selectedWebURL.value
+                                                )
+                                            })
                                         }
                                     },
                                     onLinkClick = {
@@ -321,9 +319,7 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler
                                             )
                                         }
                                     },
@@ -337,7 +333,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         if (archiveLinksData.isNotEmpty()) {
                             items(archiveLinksData) {
                                 LinkUIComponent(
@@ -358,9 +354,7 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler
                                             )
                                         }
                                     },
@@ -392,16 +386,16 @@ fun SpecificScreen(navController: NavController) {
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
         )
         OptionsBtmSheetUI(
-            inSpecificArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
-            inArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVE_SCREEN),
+            inSpecificArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
+            inArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
             btmSheetFor = when (SpecificScreenVM.screenType.value) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
-                SpecificScreenType.ARCHIVE_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
-                SpecificScreenType.LINKS_SCREEN -> OptionsBtmSheetType.LINK
-                SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> OptionsBtmSheetType.LINK
+                SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
+                SpecificScreenType.SAVED_LINKS_SCREEN -> OptionsBtmSheetType.LINK
+                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> OptionsBtmSheetType.LINK
                 else -> {
                     OptionsBtmSheetType.LINK
                 }
@@ -420,7 +414,8 @@ fun SpecificScreen(navController: NavController) {
                         CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                         Toast.makeText(
-                            context, "removed link from the \"Important Links\" successfully",
+                            context,
+                            "removed link from the \"Important Links\" successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     } else {
@@ -434,7 +429,8 @@ fun SpecificScreen(navController: NavController) {
                             )
                         )
                         Toast.makeText(
-                            context, "added to the \"Important Links\" successfully",
+                            context,
+                            "added to the \"Important Links\" successfully",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -458,8 +454,7 @@ fun SpecificScreen(navController: NavController) {
                                         baseURL = tempImpLinkData.baseURL,
                                         imgURL = tempImpLinkData.imgURL,
                                         infoForSaving = tempImpLinkData.infoForSaving
-                                    ),
-                                    context = context
+                                    ), context = context
                                 )
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
@@ -468,7 +463,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
@@ -484,7 +479,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
@@ -503,7 +498,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             awaitAll(async {
                                 CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
@@ -518,8 +513,7 @@ fun SpecificScreen(navController: NavController) {
                             }, async {
                                 CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                     .deleteALinkFromSpecificFolder(
-                                        folderName = topBarText,
-                                        webURL = tempImpLinkData.webURL
+                                        folderName = topBarText, webURL = tempImpLinkData.webURL
                                     )
                             })
                         }
@@ -540,19 +534,18 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkNoteFromArchiveBasedFolderLinks(
-                                    folderName = topBarText,
-                                    webURL = selectedWebURL.value
+                                    folderName = topBarText, webURL = selectedWebURL.value
                                 )
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                         }
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
@@ -561,12 +554,11 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkInfoOfFolders(
-                                    folderName = topBarText,
-                                    webURL = selectedWebURL.value
+                                    folderName = topBarText, webURL = selectedWebURL.value
                                 )
                         }.invokeOnCompletion {
                             Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -580,8 +572,7 @@ fun SpecificScreen(navController: NavController) {
             linkTitle = tempImpLinkData.title
         )
         DeleteDialogBox(
-            shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
-            onDeleteClick = {
+            shouldDialogBoxAppear = shouldDeleteDialogBeVisible, onDeleteClick = {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         coroutineScope.launch {
@@ -590,29 +581,27 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromArchiveFolderBasedLinks(
-                                    webURL = selectedWebURL.value,
-                                    archiveFolderName = topBarText
+                                    webURL = selectedWebURL.value, archiveFolderName = topBarText
                                 )
                         }
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromSavedLinks(webURL = selectedWebURL.value)
                         }
                     }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .deleteALinkFromSpecificFolder(
-                                    folderName = topBarText,
-                                    webURL = selectedWebURL.value
+                                    folderName = topBarText, webURL = selectedWebURL.value
                                 )
                         }
                     }
@@ -620,14 +609,11 @@ fun SpecificScreen(navController: NavController) {
                     else -> {}
                 }
                 Toast.makeText(
-                    context, "deleted the link successfully",
-                    Toast.LENGTH_SHORT
+                    context, "deleted the link successfully", Toast.LENGTH_SHORT
                 ).show()
-            },
-            deleteDialogBoxType = DataDialogBoxType.LINK
+            }, deleteDialogBoxType = DataDialogBoxType.LINK
         )
-        RenameDialogBox(
-            shouldDialogBoxAppear = shouldRenameDialogBeVisible,
+        RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBeVisible,
             coroutineScope = coroutineScope,
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
@@ -638,43 +624,37 @@ fun SpecificScreen(navController: NavController) {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromImpLinks(
-                                    webURL = webURL,
-                                    newInfo = newNote
+                                    webURL = webURL, newInfo = newNote
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromArchiveBasedFolderLinks(
-                                    webURL = webURL,
-                                    newInfo = newNote,
-                                    folderName = topBarText
+                                    webURL = webURL, newInfo = newNote, folderName = topBarText
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromSavedLinks(
-                                    webURL = webURL,
-                                    newInfo = newNote
+                                    webURL = webURL, newInfo = newNote
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkInfoFromFolders(
-                                    webURL = webURL,
-                                    newInfo = newNote,
-                                    folderName = topBarText
+                                    webURL = webURL, newInfo = newNote, folderName = topBarText
                                 )
                         }.start()
                         Unit
@@ -689,43 +669,37 @@ fun SpecificScreen(navController: NavController) {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromImpLinks(
-                                    webURL = webURL,
-                                    newTitle = newTitle
+                                    webURL = webURL, newTitle = newTitle
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.ARCHIVE_SCREEN -> {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromArchiveBasedFolderLinks(
-                                    webURL = webURL,
-                                    newTitle = newTitle,
-                                    folderName = topBarText
+                                    webURL = webURL, newTitle = newTitle, folderName = topBarText
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.LINKS_SCREEN -> {
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromSavedLinks(
-                                    webURL = webURL,
-                                    newTitle = newTitle
+                                    webURL = webURL, newTitle = newTitle
                                 )
                         }.start()
                         Unit
                     }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         coroutineScope.launch {
                             CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
                                 .renameALinkTitleFromFolders(
-                                    webURL = webURL,
-                                    newTitle = newTitle,
-                                    folderName = topBarText
+                                    webURL = webURL, newTitle = newTitle, folderName = topBarText
                                 )
                         }.start()
                         Unit
@@ -733,12 +707,19 @@ fun SpecificScreen(navController: NavController) {
 
                     else -> {}
                 }
-            }
-        )
+            })
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             specificFolderName = topBarText,
             screenType = SpecificScreenVM.screenType.value
+        )
+        SortingBottomSheetUI(
+            shouldBottomSheetVisible = shouldOptionsBtmModalSheetBeVisible, onSelectedAComponent = {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = it,
+                    folderName = topBarText
+                )
+            }, bottomModalSheetState = sortingBtmSheetState
         )
     }
     BackHandler {

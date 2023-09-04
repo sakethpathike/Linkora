@@ -149,9 +149,6 @@ fun CollectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val sortingBtmSheetState = rememberModalBottomSheetState()
-    val selectedSortingType = rememberSaveable {
-        mutableStateOf(SettingsScreenVM.SortingPreferences.A_TO_Z.name)
-    }
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
@@ -365,7 +362,8 @@ fun CollectionScreen(navController: NavController) {
                             .wrapContentHeight()
                             .fillMaxWidth()
                             .clickable {
-                                SpecificScreenVM.screenType.value = SpecificScreenType.LINKS_SCREEN
+                                SpecificScreenVM.screenType.value =
+                                    SpecificScreenType.SAVED_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             }
                     ) {
@@ -440,7 +438,7 @@ fun CollectionScreen(navController: NavController) {
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificScreenVM.screenType.value =
-                                    SpecificScreenType.SPECIFIC_FOLDER_SCREEN
+                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                 SpecificScreenVM.currentClickedFolderName.value =
                                     foldersData.folderName
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)

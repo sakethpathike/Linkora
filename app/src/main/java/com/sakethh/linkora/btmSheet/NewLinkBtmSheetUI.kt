@@ -293,11 +293,11 @@ fun NewLinkBtmSheet(
                                                 }
                                             }
 
-                                            SpecificScreenType.ARCHIVE_SCREEN -> {
+                                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
 
                                             }
 
-                                            SpecificScreenType.LINKS_SCREEN -> {
+                                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
                                                 coroutineScope.launch {
                                                     CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                         title = titleTextFieldValue.value,
@@ -323,7 +323,7 @@ fun NewLinkBtmSheet(
                                                 }
                                             }
 
-                                            SpecificScreenType.SPECIFIC_FOLDER_SCREEN -> {
+                                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                                                 coroutineScope.launch {
                                                     CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
                                                         title = titleTextFieldValue.value,
