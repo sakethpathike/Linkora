@@ -207,7 +207,7 @@ class SettingsScreenVM : ViewModel() {
     }
 
     enum class SortingPreferences {
-        A_TO_Z, Z_TO_A
+        A_TO_Z, Z_TO_A, NEW_TO_OLD, OLD_TO_NEW
     }
 
     object Settings {
@@ -230,7 +230,7 @@ class SettingsScreenVM : ViewModel() {
             return dataStore.data.first()[preferenceKey]
         }
 
-        suspend fun readSortingPreferenceValue(
+        private suspend fun readSortingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.Preferences.Key<String>,
             dataStore: DataStore<androidx.datastore.preferences.Preferences>,
         ): String? {
@@ -321,7 +321,7 @@ class SettingsScreenVM : ViewModel() {
                             readSortingPreferenceValue(
                                 preferenceKey = preferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
                                 dataStore = dataStore
-                            ) ?: SortingPreferences.A_TO_Z.name
+                            ) ?: SortingPreferences.NEW_TO_OLD.name
                     }
                 )
             }

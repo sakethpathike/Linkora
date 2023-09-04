@@ -14,4 +14,10 @@ interface ArchivedLinksSorting {
     @Query("SELECT * FROM archived_links_table ORDER BY title DESC")
     fun sortByZToA(): Flow<List<ArchivedLinks>>
 
+    @Query("SELECT * FROM archived_links_table ORDER BY id DESC")
+    fun sortByLatestToOldest(): Flow<List<ArchivedLinks>>
+
+    @Query("SELECT * FROM archived_links_table ORDER BY id ASC")
+    fun sortByOldestToLatest(): Flow<List<ArchivedLinks>>
+
 }

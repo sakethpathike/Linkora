@@ -14,4 +14,10 @@ interface RegularFoldersSorting {
     @Query("SELECT * FROM folders_table ORDER BY folderName DESC")
     fun sortByZToA(): Flow<List<FoldersTable>>
 
+    @Query("SELECT * FROM folders_table ORDER BY id DESC")
+    fun sortByLatestToOldest(): Flow<List<FoldersTable>>
+
+    @Query("SELECT * FROM folders_table ORDER BY id ASC")
+    fun sortByOldestToLatest(): Flow<List<FoldersTable>>
+
 }

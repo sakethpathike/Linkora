@@ -14,4 +14,9 @@ interface RegularFolderLinksSorting {
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks=1 AND keyOfLinkedFolder=:folderName ORDER BY title DESC")
     fun sortByZToA(folderName: String): Flow<List<LinksTable>>
 
+    @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks=1 AND keyOfLinkedFolder=:folderName ORDER BY id DESC")
+    fun sortByLatestToOldest(folderName: String): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks=1 AND keyOfLinkedFolder=:folderName ORDER BY id ASC")
+    fun sortByOldestToLatest(folderName: String): Flow<List<LinksTable>>
 }

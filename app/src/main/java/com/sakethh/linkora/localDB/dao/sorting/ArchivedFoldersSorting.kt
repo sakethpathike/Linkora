@@ -14,4 +14,10 @@ interface ArchivedFoldersSorting {
     @Query("SELECT * FROM archived_folders_table ORDER BY archiveFolderName DESC")
     fun sortByZToA(): Flow<List<ArchivedFolders>>
 
+    @Query("SELECT * FROM archived_folders_table ORDER BY id DESC")
+    fun sortByLatestToOldest(): Flow<List<ArchivedFolders>>
+
+    @Query("SELECT * FROM archived_folders_table ORDER BY id ASC")
+    fun sortByOldestToLatest(): Flow<List<ArchivedFolders>>
+
 }

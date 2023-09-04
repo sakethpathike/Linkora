@@ -14,4 +14,10 @@ interface ImportantLinksSorting {
     @Query("SELECT * FROM important_links_table ORDER BY title DESC")
     fun sortByZToA(): Flow<List<ImportantLinks>>
 
+    @Query("SELECT * FROM important_links_table ORDER BY id DESC")
+    fun sortByLatestToOldest(): Flow<List<ImportantLinks>>
+
+    @Query("SELECT * FROM important_links_table ORDER BY id ASC")
+    fun sortByOldestToLatest(): Flow<List<ImportantLinks>>
+
 }

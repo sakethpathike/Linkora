@@ -15,6 +15,32 @@ class SortingBtmSheetVM : ViewModel() {
     )
 
     val sortingBottomSheetData = listOf(
+        SortingBtmSheet(sortingName = "Newest to Oldest", onClick = {
+            SettingsScreenVM.Settings.selectedSortingType.value =
+                SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name
+            viewModelScope.launch {
+                SettingsScreenVM.Settings.changeSortingPreferenceValue(
+                    preferenceKey = preferencesKey(
+                        SettingsScreenVM.SettingsPreferences.SORTING_PREFERENCE.name
+                    ),
+                    dataStore = SettingsScreenVM.Settings.dataStore,
+                    newValue = SettingsScreenVM.SortingPreferences.NEW_TO_OLD
+                )
+            }
+        }, sortingType = SettingsScreenVM.SortingPreferences.NEW_TO_OLD),
+        SortingBtmSheet(sortingName = "Oldest to Newest", onClick = {
+            SettingsScreenVM.Settings.selectedSortingType.value =
+                SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name
+            viewModelScope.launch {
+                SettingsScreenVM.Settings.changeSortingPreferenceValue(
+                    preferenceKey = preferencesKey(
+                        SettingsScreenVM.SettingsPreferences.SORTING_PREFERENCE.name
+                    ),
+                    dataStore = SettingsScreenVM.Settings.dataStore,
+                    newValue = SettingsScreenVM.SortingPreferences.OLD_TO_NEW
+                )
+            }
+        }, sortingType = SettingsScreenVM.SortingPreferences.OLD_TO_NEW),
         SortingBtmSheet(sortingName = "A to Z Sequence", onClick = {
             SettingsScreenVM.Settings.selectedSortingType.value =
                 SettingsScreenVM.SortingPreferences.A_TO_Z.name

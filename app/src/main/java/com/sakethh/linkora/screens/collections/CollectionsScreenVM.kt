@@ -44,6 +44,26 @@ class CollectionsScreenVM : ViewModel() {
                         }
                 }
             }
+
+            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting()
+                        .sortByLatestToOldest()
+                        .collect {
+                            _foldersData.emit(it)
+                        }
+                }
+            }
+
+            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting()
+                        .sortByOldestToLatest()
+                        .collect {
+                            _foldersData.emit(it)
+                        }
+                }
+            }
         }
     }
 }
