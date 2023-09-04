@@ -100,14 +100,18 @@ fun SpecificScreen(navController: NavController) {
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val topBarText = when (SpecificScreenVM.screenType.value) {
         SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+            SpecificScreenVM.currentClickedFolderName.value = "Important Links"
             "Important Links"
         }
 
         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+            SpecificScreenVM.currentClickedFolderName.value =
+                SpecificScreenVM.selectedArchiveFolderName.value
             SpecificScreenVM.selectedArchiveFolderName.value
         }
 
         SpecificScreenType.SAVED_LINKS_SCREEN -> {
+            SpecificScreenVM.currentClickedFolderName.value = "Saved Links"
             "Saved Links"
         }
 

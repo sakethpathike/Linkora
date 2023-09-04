@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,20 +56,78 @@ class ArchiveScreenVM : ViewModel() {
     val archiveFoldersData = _archiveFoldersData.asStateFlow()
 
     init {
-        viewModelScope.launch {
-            awaitAll(async { getAllArchiveLinks() }, async { getAllArchiveFolders() })
-        }
+        changeRetrievedData(
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                SettingsScreenVM.Settings.selectedSortingType.value
+            )
+        )
     }
 
-    private suspend fun getAllArchiveLinks() {
-        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllArchiveLinks().collect {
-            _archiveLinksData.emit(it)
-        }
-    }
+    fun changeRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+        when (sortingPreferences) {
+            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                viewModelScope.launch {
+                    awaitAll(async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedLinksSorting().sortByAToZ()
+                            .collect {
+                                _archiveLinksData.emit(it)
+                            }
+                    }, async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedFolderSorting().sortByAToZ()
+                            .collect {
+                                _archiveFoldersData.emit(it)
+                            }
+                    })
+                }
+            }
 
-    private suspend fun getAllArchiveFolders() {
-        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllArchiveFolders().collect {
-            _archiveFoldersData.emit(it)
+            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                viewModelScope.launch {
+                    awaitAll(async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedLinksSorting().sortByZToA()
+                            .collect {
+                                _archiveLinksData.emit(it)
+                            }
+                    }, async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedFolderSorting().sortByZToA()
+                            .collect {
+                                _archiveFoldersData.emit(it)
+                            }
+                    })
+                }
+            }
+
+            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                viewModelScope.launch {
+                    awaitAll(async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedLinksSorting()
+                            .sortByLatestToOldest().collect {
+                                _archiveLinksData.emit(it)
+                            }
+                    }, async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedFolderSorting()
+                            .sortByLatestToOldest().collect {
+                                _archiveFoldersData.emit(it)
+                            }
+                    })
+                }
+            }
+
+            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                viewModelScope.launch {
+                    awaitAll(async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedLinksSorting()
+                            .sortByOldestToLatest().collect {
+                                _archiveLinksData.emit(it)
+                            }
+                    }, async {
+                        CustomLocalDBDaoFunctionsDecl.localDB.archivedFolderSorting()
+                            .sortByOldestToLatest().collect {
+                                _archiveFoldersData.emit(it)
+                            }
+                    })
+                }
+            }
         }
     }
 }

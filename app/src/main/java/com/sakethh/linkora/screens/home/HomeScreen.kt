@@ -32,14 +32,17 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
@@ -58,6 +61,7 @@ import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
@@ -86,10 +90,10 @@ fun HomeScreen() {
     val homeScreenVM: HomeScreenVM = viewModel()
     val recentlySavedImpsLinksData = homeScreenVM.recentlySavedImpLinksData.collectAsState().value
     val recentlySavedLinksData = homeScreenVM.recentlySavedLinksData.collectAsState().value
-    val recentlyVisitedLinksData = homeScreenVM.recentlyVisitedLinksData.collectAsState().value
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val recentlyVisitedLinksData = homeScreenVM.historyLinksData.collectAsState().value
+    val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLinks =
-        androidx.compose.material3.rememberModalBottomSheetState()
+        rememberModalBottomSheetState()
     val selectedCardType = rememberSaveable {
         mutableStateOf(HomeScreenBtmSheetType.RECENT_IMP_SAVES.name)
     }
@@ -140,6 +144,10 @@ fun HomeScreen() {
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
+    val shouldSortingBottomSheetAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val sortingBtmSheetState = rememberModalBottomSheetState()
     if (shouldDialogForNewFolderAppear.value || shouldDialogForNewLinkAppear.value) {
         shouldScreenTransparencyDecreasedBoxVisible.value = false
         isMainFabRotated.value = false
@@ -427,13 +435,27 @@ fun HomeScreen() {
 
                 if (recentlyVisitedLinksData.isNotEmpty()) {
                     item {
-                        Text(
-                            text = "Recently Visited",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 40.dp)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                text = "History",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 20.sp,
+                                modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                            )
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
+                        }
                     }
                     item {
                         Spacer(modifier = Modifier.height(5.dp))
@@ -778,6 +800,13 @@ fun HomeScreen() {
         _inIntentActivity = false,
         screenType = SpecificScreenType.ROOT_SCREEN,
         shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+    )
+    SortingBottomSheetUI(
+        shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+        onSelectedAComponent = {
+            homeScreenVM.changeHistoryRetrievedData(sortingPreferences = it)
+        },
+        bottomModalSheetState = sortingBtmSheetState
     )
     BackHandler {
         if (isMainFabRotated.value) {

@@ -10,6 +10,7 @@ import com.sakethh.linkora.localDB.dao.CRUDDao
 import com.sakethh.linkora.localDB.dao.sorting.ArchiveFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.HistoryLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.ImportantLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFoldersSorting
@@ -30,6 +31,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun regularFolderLinksSorting(): RegularFolderLinksSorting
     abstract fun regularFolderSorting(): RegularFoldersSorting
     abstract fun savedLinksSorting(): SavedLinksSorting
+    abstract fun historyLinksSorting(): HistoryLinksSorting
 
     companion object {
         @Volatile

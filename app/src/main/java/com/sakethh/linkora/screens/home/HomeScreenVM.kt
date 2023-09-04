@@ -7,6 +7,7 @@ import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -21,8 +22,8 @@ class HomeScreenVM : ViewModel() {
     private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
     val recentlySavedImpLinksData = _impLinksData.asStateFlow()
 
-    private val _recentlyVisitedLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
-    val recentlyVisitedLinksData = _recentlyVisitedLinksData.asStateFlow()
+    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
+    val historyLinksData = _historyLinksData.asStateFlow()
 
     companion object {
         val tempImpLinkData = ImportantLinks(
@@ -72,12 +73,52 @@ class HomeScreenVM : ViewModel() {
                 _linksData.emit(it.reversed())
             }
         }
+        changeHistoryRetrievedData(
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                SettingsScreenVM.Settings.selectedSortingType.value
+            )
+        )
+    }
 
-        viewModelScope.launch {
-            CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllRecentlyVisitedLinks()
-                .collect {
-                    _recentlyVisitedLinksData.emit(it.reversed())
+    fun changeHistoryRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+        when (sortingPreferences) {
+            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.historyLinksSorting().sortByAToZ()
+                        .collect {
+                            _historyLinksData.emit(it)
+                        }
                 }
+            }
+
+            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.historyLinksSorting().sortByZToA()
+                        .collect {
+                            _historyLinksData.emit(it)
+                        }
+                }
+            }
+
+            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.historyLinksSorting()
+                        .sortByLatestToOldest()
+                        .collect {
+                            _historyLinksData.emit(it)
+                        }
+                }
+            }
+
+            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                viewModelScope.launch {
+                    CustomLocalDBDaoFunctionsDecl.localDB.historyLinksSorting()
+                        .sortByOldestToLatest()
+                        .collect {
+                            _historyLinksData.emit(it)
+                        }
+                }
+            }
         }
     }
 }

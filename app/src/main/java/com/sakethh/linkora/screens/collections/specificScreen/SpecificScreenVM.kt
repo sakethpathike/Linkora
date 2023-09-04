@@ -41,13 +41,14 @@ class SpecificScreenVM : ViewModel() {
 
     init {
         changeRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value)
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+            folderName = currentClickedFolderName.value
         )
     }
 
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
-        folderName: String = "",
+        folderName: String,
     ) {
         when (screenType.value) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
