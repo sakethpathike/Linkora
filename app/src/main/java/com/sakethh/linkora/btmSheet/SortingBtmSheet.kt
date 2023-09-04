@@ -9,9 +9,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.material.ModalBottomSheetDefaults
-import androidx.compose.material.Text
-import androidx.compose.material.contentColorFor
+import androidx.compose.material.LocalTextStyle
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -47,12 +45,10 @@ fun SortingBottomSheetUI(
                 }
                 shouldBottomSheetVisible.value = false
             }) {
-                Text(
+                androidx.compose.material3.Text(
                     text = "Sort by",
                     style = MaterialTheme.typography.titleMedium,
-                    color = contentColorFor(
-                        backgroundColor = ModalBottomSheetDefaults.scrimColor
-                    ),
+                    color = MaterialTheme.colorScheme.primary,
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 15.dp)
                 )
@@ -78,13 +74,14 @@ fun SortingBottomSheetUI(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            Text(
+                            androidx.compose.material3.Text(
                                 text = it.sortingName,
                                 fontSize = 16.sp,
                                 style = MaterialTheme.typography.titleSmall,
-                                color = contentColorFor(
-                                    backgroundColor = ModalBottomSheetDefaults.scrimColor
-                                )
+                                color = if (it.sortingType == SettingsScreenVM.SortingPreferences.valueOf(
+                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    )
+                                ) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color
                             )
                             RadioButton(
                                 selected = it.sortingType.name == SettingsScreenVM.Settings.selectedSortingType.value,

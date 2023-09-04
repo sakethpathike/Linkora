@@ -304,7 +304,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 25.dp)
+                            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                         )
                     }
                     item {
@@ -372,7 +372,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                         )
                     }
                     item {
@@ -450,7 +450,7 @@ fun HomeScreen() {
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 20.sp,
-                                modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                             )
                             IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)

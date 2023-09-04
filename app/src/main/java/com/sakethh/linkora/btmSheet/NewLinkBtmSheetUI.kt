@@ -236,8 +236,7 @@ fun NewLinkBtmSheet(
                                                     isAutoDetectTitleEnabled.value =
                                                         !isAutoDetectTitleEnabled.value
                                                 }
-                                            }
-                                            .fillMaxHeight(),
+                                            },
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         androidx.compose.material3.Checkbox(
@@ -258,8 +257,7 @@ fun NewLinkBtmSheet(
                                     modifier = Modifier
                                         .padding(
                                             start = 20.dp, end = 20.dp
-                                        )
-                                        .fillMaxHeight(), onClick = {
+                                        ), onClick = {
                                         if (linkTextFieldValue.value.isNotEmpty()) {
                                             isDataExtractingForTheLink.value = true
                                         }

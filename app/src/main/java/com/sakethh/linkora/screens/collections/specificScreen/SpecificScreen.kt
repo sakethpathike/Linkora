@@ -718,7 +718,7 @@ fun SpecificScreen(navController: NavController) {
             screenType = SpecificScreenVM.screenType.value
         )
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldOptionsBtmModalSheetBeVisible, onSelectedAComponent = {
+            shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
                 specificScreenVM.changeRetrievedData(
                     sortingPreferences = it,
                     folderName = topBarText
