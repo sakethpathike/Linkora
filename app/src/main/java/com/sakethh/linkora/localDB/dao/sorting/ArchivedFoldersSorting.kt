@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ArchivedFoldersSorting {
 
-    @Query("SELECT * FROM archived_folders_table ORDER BY archiveFolderName ASC")
+    @Query("SELECT * FROM archived_folders_table ORDER BY archiveFolderName COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<ArchivedFolders>>
 
-    @Query("SELECT * FROM archived_folders_table ORDER BY archiveFolderName DESC")
+    @Query("SELECT * FROM archived_folders_table ORDER BY archiveFolderName COLLATE NOCASE DESC")
     fun sortByZToA(): Flow<List<ArchivedFolders>>
 
-    @Query("SELECT * FROM archived_folders_table ORDER BY id DESC")
+    @Query("SELECT * FROM archived_folders_table ORDER BY id COLLATE NOCASE DESC")
     fun sortByLatestToOldest(): Flow<List<ArchivedFolders>>
 
-    @Query("SELECT * FROM archived_folders_table ORDER BY id ASC")
+    @Query("SELECT * FROM archived_folders_table ORDER BY id COLLATE NOCASE ASC")
     fun sortByOldestToLatest(): Flow<List<ArchivedFolders>>
 
 }

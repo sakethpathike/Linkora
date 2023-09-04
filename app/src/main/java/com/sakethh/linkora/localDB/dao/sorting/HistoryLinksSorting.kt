@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface HistoryLinksSorting {
 
-    @Query("SELECT * FROM recently_visited_table ORDER BY title ASC")
+    @Query("SELECT * FROM recently_visited_table ORDER BY title COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<RecentlyVisited>>
 
-    @Query("SELECT * FROM recently_visited_table ORDER BY title DESC")
+    @Query("SELECT * FROM recently_visited_table ORDER BY title COLLATE NOCASE DESC")
     fun sortByZToA(): Flow<List<RecentlyVisited>>
 
-    @Query("SELECT * FROM recently_visited_table ORDER BY id DESC")
+    @Query("SELECT * FROM recently_visited_table ORDER BY id COLLATE NOCASE DESC")
     fun sortByLatestToOldest(): Flow<List<RecentlyVisited>>
 
-    @Query("SELECT * FROM recently_visited_table ORDER BY id ASC")
+    @Query("SELECT * FROM recently_visited_table ORDER BY id COLLATE NOCASE ASC")
     fun sortByOldestToLatest(): Flow<List<RecentlyVisited>>
 
 }

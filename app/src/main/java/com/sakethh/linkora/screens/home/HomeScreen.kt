@@ -368,7 +368,7 @@ fun HomeScreen() {
                     item {
                         Divider(
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp),
+                            modifier = Modifier.padding(start=20.dp,end=20.dp,top=20.dp),
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                     }
@@ -380,7 +380,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp)
+                            modifier = Modifier.padding(start = 15.dp, top=20.dp)
                         )
                     }
                     item {
@@ -442,7 +442,7 @@ fun HomeScreen() {
                     item {
                         Divider(
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp),
+                            modifier = Modifier.padding(top=20.dp,start=20.dp,end=20.dp),
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                     }

@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface ArchiveFolderLinksSorting {
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder = :folderName ORDER BY title ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder = :folderName ORDER BY title COLLATE NOCASE ASC")
     fun sortByAToZ(folderName: String): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY title DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY title COLLATE NOCASE DESC")
     fun sortByZToA(folderName: String): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY id DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY id COLLATE NOCASE DESC")
     fun sortByLatestToOldest(folderName: String): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY id ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderName ORDER BY id COLLATE NOCASE ASC")
     fun sortByOldestToLatest(folderName: String): Flow<List<LinksTable>>
 
 }

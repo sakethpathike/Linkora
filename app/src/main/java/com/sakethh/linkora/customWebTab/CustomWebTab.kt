@@ -24,7 +24,7 @@ suspend fun openInWeb(
     uriHandler: UriHandler,
     context: Context,
 ) {
-    fun launchWeb() {
+    val launchCustomWeb: () -> Unit = {
         val _customTabBuilder = CustomTabsIntent.Builder()
         _customTabBuilder.setInstantAppsEnabled(true)
         _customTabBuilder.setShowTitle(true)
@@ -50,14 +50,14 @@ suspend fun openInWeb(
                         it.packageName == "com.android.chrome"
                     } != null)
                 ) {
-                    launchWeb()
+                    launchCustomWeb()
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     try {
                         context.packageManager.getPackageInfo(
                             "com.android.chrome",
                             PackageManager.PackageInfoFlags.of(0.toLong())
                         )
-                        launchWeb()
+                        launchCustomWeb()
                     } catch (_: PackageManager.NameNotFoundException) {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "Chrome isn't installed", Toast.LENGTH_SHORT)

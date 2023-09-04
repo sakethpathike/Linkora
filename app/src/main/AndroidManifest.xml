@@ -3,18 +3,19 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="true"
+        android:hasFragileUserData="true"
         android:icon="@mipmap/logo_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/logo_launcher_round"
         android:supportsRtl="true"
-        android:usesCleartextTraffic="true"
-        android:hasFragileUserData="true"
         android:theme="@style/Theme.Linkora"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".MainActivity"
@@ -31,9 +32,9 @@
 
         <activity
             android:name=".IntentActivity"
+            android:excludeFromRecents="true"
             android:exported="true"
-            android:theme="@style/Theme.IntentActivity"
-            android:excludeFromRecents="true">
+            android:theme="@style/Theme.IntentActivity">
 
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
@@ -44,5 +45,7 @@
         </activity>
 
     </application>
-
+    <queries>
+        <package android:name="com.android.chrome" />
+    </queries>
 </manifest>

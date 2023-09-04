@@ -389,7 +389,12 @@ fun CollectionScreen(navController: NavController) {
                 item {
                     Divider(
                         thickness = 0.5.dp,
-                        modifier = Modifier.padding(25.dp),
+                        modifier = Modifier.padding(
+                            start = 25.dp,
+                            end = 25.dp,
+                            top = 25.dp,
+                            bottom = 15.dp
+                        ),
                         color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
                 }
