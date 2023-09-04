@@ -44,6 +44,7 @@ fun RenameDialogBox(
     onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
     onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
     inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
+    onTitleRenamed: () -> Unit = {},
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
@@ -151,6 +152,7 @@ fun RenameDialogBox(
                                         "renamed link's data successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    onTitleRenamed()
                                     shouldDialogBoxAppear.value = false
                                 } else {
                                     if (newFolderOrTitleName.value.isEmpty()) {
@@ -185,6 +187,7 @@ fun RenameDialogBox(
                                                             )
                                                         }
                                                     }
+                                                    onTitleRenamed()
                                                     shouldDialogBoxAppear.value = false
                                                 }
                                             }

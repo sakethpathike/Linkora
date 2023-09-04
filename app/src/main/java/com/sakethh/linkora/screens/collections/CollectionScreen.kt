@@ -393,11 +393,14 @@ fun CollectionScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
                 }
+
                 item {
                     Row(
                         modifier = Modifier
                             .clickable {
-                                shouldSortingBottomSheetAppear.value = true
+                                if (foldersData.isNotEmpty()) {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }
                             }
                             .fillMaxWidth()
                             .wrapContentHeight(),
@@ -411,8 +414,10 @@ fun CollectionScreen(navController: NavController) {
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                            Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        if (foldersData.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
                         }
                     }
                 }
@@ -514,7 +519,14 @@ fun CollectionScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
             coroutineScope = coroutineScope,
             existingFolderName = clickedFolderName.value,
-            onTitleChangeClickForLinks = null
+            onTitleChangeClickForLinks = null,
+            onTitleRenamed = {
+                collectionsScreenVM.changeRetrievedFoldersData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
+            }
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
@@ -529,7 +541,14 @@ fun CollectionScreen(navController: NavController) {
                     })
                 }
             },
-            deleteDialogBoxType = DataDialogBoxType.FOLDER
+            deleteDialogBoxType = DataDialogBoxType.FOLDER,
+            onDeleted = {
+                collectionsScreenVM.changeRetrievedFoldersData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
+            }
         )
 
         AddNewLinkDialogBox(
@@ -540,7 +559,7 @@ fun CollectionScreen(navController: NavController) {
         AddNewFolderDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
             coroutineScope = coroutineScope,
-            onCreateClick = {
+            onCreated = {
                 collectionsScreenVM.changeRetrievedFoldersData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
@@ -552,7 +571,14 @@ fun CollectionScreen(navController: NavController) {
             btmSheetState = btmModalSheetStateForSavingLinks,
             _inIntentActivity = false,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+            onFolderCreated = {
+                collectionsScreenVM.changeRetrievedFoldersData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
+            }
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

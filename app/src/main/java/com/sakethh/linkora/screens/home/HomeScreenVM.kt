@@ -37,11 +37,7 @@ class HomeScreenVM : ViewModel() {
 
     init {
         when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-            in 0..3 -> {
-                currentPhaseOfTheDay.value = "Didn't slept?"
-            }
-
-            in 4..11 -> {
+            in 0..11 -> {
                 currentPhaseOfTheDay.value = "Good Morning"
             }
 

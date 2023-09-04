@@ -39,7 +39,7 @@ fun AddNewFolderDialogBox(
     coroutineScope: CoroutineScope,
     shouldDialogBoxAppear: MutableState<Boolean>,
     newFolderName: (String) -> Unit = {},
-    onCreateClick: () -> Unit = {},
+    onCreated: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -153,7 +153,7 @@ fun AddNewFolderDialogBox(
                                         ).show()
                                     }
                                 }.invokeOnCompletion {
-                                    onCreateClick()
+                                    onCreated()
                                 }
                                 shouldDialogBoxAppear.value = false
                             }

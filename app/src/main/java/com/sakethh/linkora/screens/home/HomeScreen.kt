@@ -42,6 +42,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -283,18 +284,19 @@ fun HomeScreen() {
                     .background(MaterialTheme.colorScheme.surface)
             ) {
                 item {
-                    Text(
-                        text = currentPhaseOfTheDay,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 24.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 25.dp)
-                    )
+                    TopAppBar(title = {
+                        Text(
+                            text = currentPhaseOfTheDay,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontSize = 24.sp
+                        )
+                    })
                 }
                 item {
                     Divider(
                         thickness = 0.25.dp,
-                        modifier = Modifier.padding(top = 20.dp, start = 15.dp, end = 30.dp)
+                        modifier = Modifier.padding(start = 15.dp, end = 30.dp)
                     )
                 }
                 if (recentlySavedLinksData.isNotEmpty()) {
@@ -304,7 +306,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+                            modifier = Modifier.padding(start = 15.dp, top = 20.dp)
                         )
                     }
                     item {
@@ -363,8 +365,14 @@ fun HomeScreen() {
                             }
                         }
                     }
+                    item {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(20.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                        )
+                    }
                 }
-
                 if (recentlySavedImpsLinksData.isNotEmpty()) {
                     item {
                         Text(
@@ -372,7 +380,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+                            modifier = Modifier.padding(start = 15.dp)
                         )
                     }
                     item {
@@ -431,8 +439,14 @@ fun HomeScreen() {
                             }
                         }
                     }
+                    item {
+                        Divider(
+                            thickness = 0.5.dp,
+                            modifier = Modifier.padding(20.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                        )
+                    }
                 }
-
                 if (recentlyVisitedLinksData.isNotEmpty()) {
                     item {
                         Row(
@@ -450,7 +464,7 @@ fun HomeScreen() {
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 20.sp,
-                                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+                                modifier = Modifier.padding(start = 15.dp)
                             )
                             IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
@@ -715,6 +729,12 @@ fun HomeScreen() {
                             .deleteARecentlyVisitedLink(
                                 webURL = selectedWebURL.value
                             )
+                    }.invokeOnCompletion {
+                        homeScreenVM.changeHistoryRetrievedData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
                     }
                     Unit
                 }
@@ -772,6 +792,12 @@ fun HomeScreen() {
                             .renameALinkTitleFromSavedLinks(
                                 webURL = webURL, newTitle = newTitle
                             )
+                    }.invokeOnCompletion {
+                        homeScreenVM.changeHistoryRetrievedData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
                     }
                     Unit
                 }

@@ -68,10 +68,10 @@ fun SpecificScreen(navController: NavController) {
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
-    val foldersData = specificScreenVM.folderLinksData.collectAsState().value
-    val linksData = specificScreenVM.savedLinksTable.collectAsState().value
+    val specificFolderLinksData = specificScreenVM.folderLinksData.collectAsState().value
+    val savedLinksData = specificScreenVM.savedLinksTable.collectAsState().value
     val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
-    val archiveLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
+    val archivedFoldersLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
     val tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
@@ -163,8 +163,46 @@ fun SpecificScreen(navController: NavController) {
                     modifier = Modifier.fillMaxWidth(0.75f)
                 )
             }, actions = {
-                IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                    Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                when (SpecificScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        if (impLinksData.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                        if (archivedFoldersLinksData.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                        if (savedLinksData.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                        if (specificFolderLinksData.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                            }
+                        }
+                    }
+
+                    SpecificScreenType.INTENT_ACTIVITY -> {
+
+                    }
+
+                    SpecificScreenType.ROOT_SCREEN -> {
+
+                    }
                 }
             })
         }) {
@@ -175,8 +213,8 @@ fun SpecificScreen(navController: NavController) {
             ) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        if (foldersData.isNotEmpty()) {
-                            items(foldersData) {
+                        if (specificFolderLinksData.isNotEmpty()) {
+                            items(specificFolderLinksData) {
                                 LinkUIComponent(
                                     title = it.title,
                                     webBaseURL = it.baseURL,
@@ -230,8 +268,8 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        if (linksData.isNotEmpty()) {
-                            items(linksData) {
+                        if (savedLinksData.isNotEmpty()) {
+                            items(savedLinksData) {
                                 LinkUIComponent(
                                     title = it.title,
                                     webBaseURL = it.baseURL,
@@ -338,8 +376,8 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        if (archiveLinksData.isNotEmpty()) {
-                            items(archiveLinksData) {
+                        if (archivedFoldersLinksData.isNotEmpty()) {
+                            items(archivedFoldersLinksData) {
                                 LinkUIComponent(
                                     title = it.title,
                                     webBaseURL = it.baseURL,
@@ -387,7 +425,14 @@ fun SpecificScreen(navController: NavController) {
             _inIntentActivity = false,
             screenType = SpecificScreenVM.screenType.value,
             _folderName = topBarText,
-            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+            onLinkSaved = {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = topBarText
+                )
+            }
         )
         OptionsBtmSheetUI(
             inSpecificArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
@@ -615,7 +660,14 @@ fun SpecificScreen(navController: NavController) {
                 Toast.makeText(
                     context, "deleted the link successfully", Toast.LENGTH_SHORT
                 ).show()
-            }, deleteDialogBoxType = DataDialogBoxType.LINK
+            }, deleteDialogBoxType = DataDialogBoxType.LINK,
+            onDeleted = {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = topBarText
+                )
+            }
         )
         RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBeVisible,
             coroutineScope = coroutineScope,
@@ -711,11 +763,26 @@ fun SpecificScreen(navController: NavController) {
 
                     else -> {}
                 }
+            },
+            onTitleRenamed = {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = topBarText
+                )
             })
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             specificFolderName = topBarText,
-            screenType = SpecificScreenVM.screenType.value
+            screenType = SpecificScreenVM.screenType.value,
+            onSaveClick = {
+                specificScreenVM.changeRetrievedData(
+                    folderName = topBarText,
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
+            }
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {

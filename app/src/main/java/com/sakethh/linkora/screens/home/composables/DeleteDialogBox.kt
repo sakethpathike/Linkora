@@ -33,6 +33,7 @@ fun DeleteDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     deleteDialogBoxType: DataDialogBoxType,
     onDeleteClick: () -> Unit,
+    onDeleted: () -> Unit = {},
 ) {
     Column {
         if (shouldDialogBoxAppear.value) {
@@ -61,6 +62,7 @@ fun DeleteDialogBox(
                             onClick = {
                                 onDeleteClick()
                                 shouldDialogBoxAppear.value = false
+                                onDeleted()
                             }) {
                             Text(
                                 text = "Delete it",

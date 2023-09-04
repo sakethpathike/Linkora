@@ -4,7 +4,9 @@ package com.sakethh.linkora.customWebTab
 
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.UriHandler
@@ -22,6 +24,14 @@ suspend fun openInWeb(
     uriHandler: UriHandler,
     context: Context,
 ) {
+    fun launchWeb() {
+        val _customTabBuilder = CustomTabsIntent.Builder()
+        _customTabBuilder.setInstantAppsEnabled(true)
+        _customTabBuilder.setShowTitle(true)
+        val customTabBuilder = _customTabBuilder.build()
+        customTabBuilder.intent.setPackage("com.android.chrome")
+        customTabBuilder.launchUrl(context, Uri.parse(recentlyVisitedData.webURL))
+    }
     coroutineScope {
         awaitAll(async {
             if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
@@ -34,15 +44,26 @@ suspend fun openInWeb(
             if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value) {
                 uriHandler.openUri(recentlyVisitedData.webURL)
             } else {
-                if (context.packageManager.getInstalledApplications(0).find {
+                if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && context.packageManager.getInstalledApplications(
+                        0
+                    ).find {
                         it.packageName == "com.android.chrome"
-                    } != null) {
-                    val _customTabBuilder = CustomTabsIntent.Builder()
-                    _customTabBuilder.setInstantAppsEnabled(true)
-                    _customTabBuilder.setShowTitle(true)
-                    val customTabBuilder = _customTabBuilder.build()
-                    customTabBuilder.intent.setPackage("com.android.chrome")
-                    customTabBuilder.launchUrl(context, Uri.parse(recentlyVisitedData.webURL))
+                    } != null)
+                ) {
+                    launchWeb()
+                } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    try {
+                        context.packageManager.getPackageInfo(
+                            "com.android.chrome",
+                            PackageManager.PackageInfoFlags.of(0.toLong())
+                        )
+                        launchWeb()
+                    } catch (_: PackageManager.NameNotFoundException) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "Chrome isn't installed", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
                 } else {
                     val browserIntent =
                         Intent(Intent.ACTION_VIEW, Uri.parse(recentlyVisitedData.webURL))

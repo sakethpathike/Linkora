@@ -65,6 +65,7 @@ fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     screenType: SpecificScreenType,
     specificFolderName: String,
+    onSaveClick: () -> Unit = {},
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -232,7 +233,9 @@ fun AddNewLinkDialogBox(
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
                                 IconButton(onClick = {
-                                    isDropDownMenuIconClicked.value = true
+                                    if (!isDataExtractingForTheLink.value) {
+                                        isDropDownMenuIconClicked.value = true
+                                    }
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.ArrowDropDown,
@@ -308,6 +311,7 @@ fun AddNewLinkDialogBox(
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
                                                 shouldDialogBoxAppear.value = false
+                                                onSaveClick()
                                             }
                                         }
                                     }
@@ -331,6 +335,7 @@ fun AddNewLinkDialogBox(
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
                                                 shouldDialogBoxAppear.value = false
+                                                onSaveClick()
                                             }
                                         }
                                     }
@@ -350,6 +355,7 @@ fun AddNewLinkDialogBox(
                                             if (linkTextFieldValue.value.isNotEmpty()) {
                                                 isDataExtractingForTheLink.value = false
                                                 shouldDialogBoxAppear.value = false
+                                                onSaveClick()
                                             }
                                         }
                                     }
@@ -374,6 +380,7 @@ fun AddNewLinkDialogBox(
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
                                                 shouldDialogBoxAppear.value = false
+                                                onSaveClick()
                                             }
                                         } else {
                                             coroutineScope.launch {
@@ -389,12 +396,14 @@ fun AddNewLinkDialogBox(
                                             }.invokeOnCompletion {
                                                 isDataExtractingForTheLink.value = false
                                                 shouldDialogBoxAppear.value = false
+                                                onSaveClick()
                                             }
                                         }
                                     }
                                 }
                                 if (!isDataExtractingForTheLink.value) {
                                     shouldDialogBoxAppear.value = false
+                                    onSaveClick()
                                 }
                             }
                         }) {
@@ -534,7 +543,8 @@ fun AddNewLinkDialogBox(
                 shouldDialogBoxAppear = isCreateANewFolderIconClicked,
                 newFolderName = {
                     selectedFolderName.value = it
-                }, onCreateClick = {
+                }, onCreated = {
+                    onSaveClick()
                     coroutineScope.launch {
                         if (btmModalSheetState.isVisible) {
                             btmModalSheetState.hide()
