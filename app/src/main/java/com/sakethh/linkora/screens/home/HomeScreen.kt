@@ -398,7 +398,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
                         )
                     }
                     item {
@@ -483,6 +483,9 @@ fun HomeScreen() {
                     }
                 }
                 if (recentlyVisitedLinksData.isNotEmpty()) {
+                    item {
+                        Spacer(modifier = Modifier.height(5.dp))
+                    }
                     item {
                         Row(
                             modifier = Modifier

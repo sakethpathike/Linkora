@@ -390,10 +390,10 @@ fun CollectionScreen(navController: NavController) {
                     Divider(
                         thickness = 0.5.dp,
                         modifier = Modifier.padding(
-                            start = 25.dp,
-                            end = 25.dp,
-                            top = 25.dp,
-                            bottom = 15.dp
+                            top = 20.dp,
+                            start = 20.dp,
+                            end = 20.dp,
+                            bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
                         ),
                         color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
@@ -427,7 +427,7 @@ fun CollectionScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Spacer(modifier = Modifier.padding(top = 15.dp))
+                    Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
                 if (foldersData.isNotEmpty()) {
                     itemsIndexed(foldersData) { folderIndex, foldersData ->

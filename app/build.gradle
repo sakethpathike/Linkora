@@ -12,8 +12,8 @@ android {
         applicationId "com.sakethh.linkora"
         minSdk 21
         targetSdk 33
-        versionCode 4
-        versionName "0.0.3"
+        versionCode 5
+        versionName "0.1.0"
         kapt {
             arguments {
                 arg("room.schemaLocation", "$projectDir/schemas")
