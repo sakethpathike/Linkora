@@ -51,6 +51,7 @@ fun LinkUIComponent(
     onMoreIconCLick: () -> Unit,
     onLinkClick: () -> Unit,
     webURL: String,
+    onForceOpenInExternalBrowserClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
@@ -141,6 +142,7 @@ fun LinkUIComponent(
                 Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
                     modifier = Modifier
                         .clickable {
+                            onForceOpenInExternalBrowserClicked()
                             localURIHandler.openUri(webURL)
                         }
                 )

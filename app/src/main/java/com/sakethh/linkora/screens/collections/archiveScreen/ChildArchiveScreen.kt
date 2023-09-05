@@ -111,7 +111,25 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     )
                                 }
                             },
-                            webURL = it.webURL
+                            webURL = it.webURL,
+                            onForceOpenInExternalBrowserClicked = {
+                                coroutineScope.launch {
+                                    if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
+                                    ) {
+                                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                            .addANewLinkInRecentlyVisited(
+                                                recentlyVisited = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                )
+                                            )
+                                    }
+                                }
+                            }
                         )
                     }
                 } else {

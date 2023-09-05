@@ -74,7 +74,7 @@ import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
 import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
 import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
-import com.sakethh.linkora.screens.home.composables.GeneralCard
+import com.sakethh.linkora.screens.home.composables.LinkCard
 import com.sakethh.linkora.screens.home.composables.LinkUIComponent
 import com.sakethh.linkora.screens.home.composables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -320,7 +320,7 @@ fun HomeScreen() {
                                 Spacer(modifier = Modifier.width(10.dp))
                             }
                             items(recentlySavedLinksData) {
-                                GeneralCard(
+                                LinkCard(
                                     title = it.title,
                                     webBaseURL = it.webURL,
                                     imgURL = it.imgURL,
@@ -359,6 +359,24 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
+                                    },
+                                    onForceOpenInExternalBrowserClicked = {
+                                        coroutineScope.launch {
+                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
+                                            ) {
+                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                                    .addANewLinkInRecentlyVisited(
+                                                        recentlyVisited = RecentlyVisited(
+                                                            title = it.title,
+                                                            webURL = it.webURL,
+                                                            baseURL = it.baseURL,
+                                                            imgURL = it.imgURL,
+                                                            infoForSaving = it.infoForSaving
+                                                        )
+                                                    )
+                                            }
+                                        }
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -368,7 +386,7 @@ fun HomeScreen() {
                     item {
                         Divider(
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(start=20.dp,end=20.dp,top=20.dp),
+                            modifier = Modifier.padding(start = 20.dp, end = 20.dp, top = 20.dp),
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                     }
@@ -380,7 +398,7 @@ fun HomeScreen() {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp, top=20.dp)
+                            modifier = Modifier.padding(start = 15.dp, top = 20.dp)
                         )
                     }
                     item {
@@ -394,7 +412,7 @@ fun HomeScreen() {
                                 Spacer(modifier = Modifier.width(10.dp))
                             }
                             items(recentlySavedImpsLinksData) {
-                                GeneralCard(
+                                LinkCard(
                                     title = it.title,
                                     webBaseURL = it.webURL,
                                     imgURL = it.imgURL,
@@ -433,6 +451,23 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
+                                    }, onForceOpenInExternalBrowserClicked = {
+                                        coroutineScope.launch {
+                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
+                                            ) {
+                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                                    .addANewLinkInRecentlyVisited(
+                                                        recentlyVisited = RecentlyVisited(
+                                                            title = it.title,
+                                                            webURL = it.webURL,
+                                                            baseURL = it.baseURL,
+                                                            imgURL = it.imgURL,
+                                                            infoForSaving = it.infoForSaving
+                                                        )
+                                                    )
+                                            }
+                                        }
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -442,7 +477,7 @@ fun HomeScreen() {
                     item {
                         Divider(
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(top=20.dp,start=20.dp,end=20.dp),
+                            modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp),
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                     }
@@ -512,7 +547,25 @@ fun HomeScreen() {
                                     )
                                 }
                             },
-                            webURL = it.webURL
+                            webURL = it.webURL,
+                            onForceOpenInExternalBrowserClicked = {
+                                coroutineScope.launch {
+                                    if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
+                                    ) {
+                                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                            .addANewLinkInRecentlyVisited(
+                                                recentlyVisited = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                )
+                                            )
+                                    }
+                                }
+                            }
                         )
                     }
                 }

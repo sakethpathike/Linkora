@@ -45,13 +45,14 @@ import com.sakethh.linkora.screens.CoilImage
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun GeneralCard(
+fun LinkCard(
     title: String,
     webBaseURL: String,
     webURL: String,
     imgURL: String,
     onMoreIconClick: () -> Unit,
     onCardClick: () -> Unit,
+    onForceOpenInExternalBrowserClicked: () -> Unit,
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
@@ -143,6 +144,7 @@ fun GeneralCard(
                     Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
                         modifier = Modifier
                             .clickable {
+                                onForceOpenInExternalBrowserClicked()
                                 localURIHandler.openUri(webURL)
                             }
                     )
