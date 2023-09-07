@@ -19,8 +19,7 @@ import com.sakethh.linkora.localDB.dao.sorting.SavedLinksSorting
 @Database(
     version = 2,
     exportSchema = true,
-    entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class,
-        ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
+    entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
 abstract class LocalDataBase : RoomDatabase() {
     abstract fun crudDao(): CRUDDao
@@ -41,88 +40,82 @@ abstract class LocalDataBase : RoomDatabase() {
             override fun migrate(database: SupportSQLiteDatabase) {
                 database.execSQL(
                     """
-        CREATE TABLE IF NOT EXISTS new_folders_table (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            folderName TEXT,
-            infoForSaving TEXT
+    DROP TABLE IF EXISTS new_folders_table;
+    CREATE TABLE IF NOT EXISTS new_folders_table (     
+        folderName TEXT NOT NULL,
+        infoForSaving TEXT NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+    );
+    INSERT INTO new_folders_table (folderName, infoForSaving)
+    SELECT folderName, infoForSaving FROM folders_table;
+    DROP TABLE IF EXISTS folders_table;
+    ALTER TABLE new_folders_table RENAME TO folders_table;
+    """
+                )
+
+
+                database.execSQL(
+                    """
+    DROP TABLE IF EXISTS new_archived_links_table;
+    CREATE TABLE IF NOT EXISTS new_archived_links_table (
+    title TEXT NOT NULL,
+    webURL TEXT NOT NULL,
+    baseURL TEXT NOT NULL,
+    imgURL TEXT NOT NULL,
+    infoForSaving TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+    );
+    INSERT INTO new_archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)
+    SELECT title, webURL, baseURL, imgURL, infoForSaving FROM archived_links_table;
+    DROP TABLE IF EXISTS archived_links_table;
+    ALTER TABLE new_archived_links_table RENAME TO archived_links_table;
+    """
+                )
+
+                database.execSQL(
+                    """
+    DROP TABLE IF EXISTS new_archived_folders_table;
+    CREATE TABLE IF NOT EXISTS new_archived_folders_table (
+    archiveFolderName TEXT NOT NULL,
+    infoForSaving TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+    );
+    INSERT INTO new_archived_folders_table (archiveFolderName, infoForSaving)
+    SELECT archiveFolderName, infoForSaving FROM archived_folders_table;
+    DROP TABLE IF EXISTS archived_folders_table;
+    ALTER TABLE new_archived_folders_table RENAME TO archived_folders_table;
+    """
+                )
+
+                database.execSQL(
+                    """
+    DROP TABLE IF EXISTS new_important_links_table;
+    CREATE TABLE IF NOT EXISTS new_important_links_table (
+    title TEXT NOT NULL,
+    webURL TEXT NOT NULL,
+    baseURL TEXT NOT NULL,
+    imgURL TEXT NOT NULL,
+    infoForSaving TEXT NOT NULL,
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
         );
-
-        INSERT INTO new_folders_table (folderName, infoForSaving)
-        SELECT folderName, infoForSaving FROM folders_table;
-
-        DROP TABLE IF EXISTS folders_table;
-
-        ALTER TABLE new_folders_table RENAME TO folders_table;
+    INSERT INTO new_important_links_table (title, webURL, baseURL, imgURL, infoForSaving)
+    SELECT title, webURL, baseURL, imgURL, infoForSaving FROM important_links_table;
+    DROP TABLE IF EXISTS important_links_table;
+    ALTER TABLE new_important_links_table RENAME TO important_links_table;
     """
                 )
                 database.execSQL(
                     """
-        CREATE TABLE IF NOT EXISTS new_archived_links_table (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            webURL TEXT,
-            baseURL TEXT,
-            imgURL TEXT,
-            infoForSaving TEXT
-        );
-
-        INSERT INTO new_archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)
-        SELECT title, webURL, baseURL, imgURL, infoForSaving FROM archived_links_table;
-
-        DROP TABLE IF EXISTS archived_links_table;
-
-        ALTER TABLE new_archived_links_table RENAME TO archived_links_table;
-    """
-                )
-                database.execSQL(
-                    """
-        CREATE TABLE IF NOT EXISTS new_archived_folders_table (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            archiveFolderName TEXT,
-            infoForSaving TEXT
-        );
-
-        INSERT INTO new_archived_folders_table (archiveFolderName, infoForSaving)
-        SELECT archiveFolderName, infoForSaving FROM archived_folders_table;
-
-        DROP TABLE IF EXISTS archived_folders_table;
-
-        ALTER TABLE new_archived_folders_table RENAME TO archived_folders_table;
-    """
-                )
-                database.execSQL(
-                    """
-        CREATE TABLE IF NOT EXISTS new_important_links_table (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            webURL TEXT,
-            baseURL TEXT,
-            imgURL TEXT,
-            infoForSaving TEXT
-        );
-
-        INSERT INTO new_important_links_table (title, webURL, baseURL, imgURL, infoForSaving)
-        SELECT title, webURL, baseURL, imgURL, infoForSaving FROM important_links_table;
-
-        DROP TABLE IF EXISTS important_links_table;
-
-        ALTER TABLE new_important_links_table RENAME TO important_links_table;
-    """
-                )
-                database.execSQL(
-                    """
-        CREATE TABLE IF NOT EXISTS new_important_folders_table (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            impFolderName TEXT,
-            infoForSaving TEXT
-        );
-
-        INSERT INTO new_important_folders_table (impFolderName, infoForSaving)
-        SELECT impFolderName, infoForSaving FROM important_folders_table;
-
-        DROP TABLE IF EXISTS important_folders_table;
-
-        ALTER TABLE new_important_folders_table RENAME TO important_folders_table;
+     DROP TABLE IF EXISTS new_important_folders_table;
+     CREATE TABLE IF NOT EXISTS new_important_folders_table (
+         impFolderName TEXT NOT NULL,
+         infoForSaving TEXT NOT NULL,
+         id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+     );
+     INSERT INTO new_important_folders_table (impFolderName, infoForSaving)
+     SELECT impFolderName, infoForSaving FROM important_folders_table;
+     DROP TABLE IF EXISTS important_folders_table;
+     ALTER TABLE new_important_folders_table RENAME TO important_folders_table;
     """
                 )
             }
@@ -131,16 +124,13 @@ abstract class LocalDataBase : RoomDatabase() {
 
         fun getLocalDB(context: Context): LocalDataBase {
             val instance = dbInstance
-            return instance
-                ?: synchronized(this) {
-                    val roomDBInstance = Room.databaseBuilder(
-                        context.applicationContext,
-                        LocalDataBase::class.java,
-                        "linkora_db"
-                    ).addMigrations(MIGRATION_1_2).build()
-                    dbInstance = roomDBInstance
-                    return roomDBInstance
-                }
+            return instance ?: synchronized(this) {
+                val roomDBInstance = Room.databaseBuilder(
+                    context.applicationContext, LocalDataBase::class.java, "linkora_db"
+                ).addMigrations(MIGRATION_1_2).build()
+                dbInstance = roomDBInstance
+                return roomDBInstance
+            }
         }
     }
 }

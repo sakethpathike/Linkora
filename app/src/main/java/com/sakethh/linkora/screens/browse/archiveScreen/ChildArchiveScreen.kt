@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.collections.archiveScreen
+package com.sakethh.linkora.screens.browse.archiveScreen
 
 import android.annotation.SuppressLint
 import android.widget.Toast
@@ -32,13 +32,13 @@ import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
-import com.sakethh.linkora.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
-import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
-import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
-import com.sakethh.linkora.screens.home.composables.LinkUIComponent
-import com.sakethh.linkora.screens.home.composables.RenameDialogBox
+import com.sakethh.linkora.screens.browse.FolderIndividualComponent
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenVM
+import com.sakethh.linkora.customComposables.DataDialogBoxType
+import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.LinkUIComponent
+import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async

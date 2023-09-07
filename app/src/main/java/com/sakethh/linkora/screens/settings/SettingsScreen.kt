@@ -43,8 +43,8 @@ import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
-import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
-import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DataDialogBoxType
+import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -316,7 +316,7 @@ fun SettingsScreen(navController: NavController) {
                 popUpTo(0)
             }
         } else {
-            navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
+            navController.navigate(NavigationRoutes.BROWSE_SCREEN.name) {
                 popUpTo(0)
             }
         }

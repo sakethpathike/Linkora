@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.collections.specificScreen
+package com.sakethh.linkora.screens.browse.specificBrowsingScreen
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel

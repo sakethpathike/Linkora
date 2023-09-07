@@ -2,8 +2,10 @@ package com.sakethh.linkora.navigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -26,7 +28,7 @@ class NavigationVM : ViewModel() {
             itemName = "Collections",
             selectedIcon = Icons.Filled.Folder,
             nonSelectedIcon = Icons.Outlined.Folder,
-            navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
+            navigationRoute = NavigationRoutes.BROWSE_SCREEN
         ),
         BtmNavigationItem(
             itemName = "Settings",

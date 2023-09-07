@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.collections
+package com.sakethh.linkora.screens.browse
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class CollectionsScreenVM : ViewModel() {
+class BrowseScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
     val foldersData = _foldersData.asStateFlow()
 

@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.home.composables
+package com.sakethh.linkora.customComposables
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
@@ -53,7 +53,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch

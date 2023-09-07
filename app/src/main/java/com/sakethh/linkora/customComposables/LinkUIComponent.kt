@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.home.composables
+package com.sakethh.linkora.customComposables
 
 import android.content.Intent
 import android.widget.Toast

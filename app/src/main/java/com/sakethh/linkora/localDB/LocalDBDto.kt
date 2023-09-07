@@ -27,48 +27,53 @@ data class LinksTable(
 
 @Entity(tableName = "folders_table")
 data class FoldersTable(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
     var folderName: String,
     var infoForSaving: String,
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )
 
 @Entity(tableName = "archived_links_table")
 data class ArchivedLinks(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
     val title: String,
     val webURL: String,
     val baseURL: String,
     val imgURL: String,
     val infoForSaving: String,
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )
 
 @Entity(tableName = "archived_folders_table")
 data class ArchivedFolders(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
     val archiveFolderName: String,
     val infoForSaving: String,
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )
 
 @Entity(tableName = "important_links_table")
 data class ImportantLinks(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
     var title: String,
     var webURL: String,
     var baseURL: String,
     var imgURL: String,
     var infoForSaving: String,
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )
 
 @Entity(tableName = "important_folders_table")
 data class ImportantFolders(
-    @PrimaryKey(autoGenerate = true)
-    var id: Long = 0,
     val impFolderName: String,
     val infoForSaving: String,
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0
 )
 
 @Entity(tableName = "recently_visited_table")

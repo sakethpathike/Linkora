@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.collections.archiveScreen
+package com.sakethh.linkora.screens.browse.archiveScreen
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf

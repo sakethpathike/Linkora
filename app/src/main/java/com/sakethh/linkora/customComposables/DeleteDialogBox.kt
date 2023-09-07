@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.home.composables
+package com.sakethh.linkora.customComposables
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background

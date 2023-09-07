@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.collections
+package com.sakethh.linkora.screens.browse
 
 import android.app.Activity
 import android.widget.Toast
@@ -80,13 +80,13 @@ import com.sakethh.linkora.localDB.ArchivedFolders
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenVM
-import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
-import com.sakethh.linkora.screens.home.composables.AddNewLinkDialogBox
-import com.sakethh.linkora.screens.home.composables.DataDialogBoxType
-import com.sakethh.linkora.screens.home.composables.DeleteDialogBox
-import com.sakethh.linkora.screens.home.composables.RenameDialogBox
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenVM
+import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
+import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
+import com.sakethh.linkora.customComposables.DataDialogBoxType
+import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -110,8 +110,8 @@ fun CollectionScreen(navController: NavController) {
     }
     val activity = LocalContext.current as? Activity
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val collectionsScreenVM: CollectionsScreenVM = viewModel()
-    val foldersData = collectionsScreenVM.foldersData.collectAsState().value
+    val browseScreenVM: BrowseScreenVM = viewModel()
+    val foldersData = browseScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState()
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
@@ -436,9 +436,9 @@ fun CollectionScreen(navController: NavController) {
                             folderName = foldersData.folderName,
                             folderNote = foldersData.infoForSaving,
                             onMoreIconClick = {
-                                CollectionsScreenVM.selectedFolderData.folderName =
+                                BrowseScreenVM.selectedFolderData.folderName =
                                     foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.infoForSaving =
+                                BrowseScreenVM.selectedFolderData.infoForSaving =
                                     foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
@@ -501,8 +501,8 @@ fun CollectionScreen(navController: NavController) {
                 coroutineScope.launch {
                     CustomLocalDBDaoFunctionsDecl.archiveFolderTableUpdater(
                         archivedFolders = ArchivedFolders(
-                            archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
-                            infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
+                            archiveFolderName = BrowseScreenVM.selectedFolderData.folderName,
+                            infoForSaving = BrowseScreenVM.selectedFolderData.infoForSaving
                         ), context = context
                     )
                 }
@@ -511,13 +511,13 @@ fun CollectionScreen(navController: NavController) {
             onNoteDeleteCardClick = {
                 coroutineScope.launch {
                     CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                        .deleteAFolderNote(folderName = CollectionsScreenVM.selectedFolderData.folderName)
+                        .deleteAFolderNote(folderName = BrowseScreenVM.selectedFolderData.folderName)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
             },
             linkTitle = "",
-            folderName = CollectionsScreenVM.selectedFolderData.folderName
+            folderName = BrowseScreenVM.selectedFolderData.folderName
         )
         RenameDialogBox(
             onNoteChangeClickForLinks = null,
@@ -526,7 +526,7 @@ fun CollectionScreen(navController: NavController) {
             existingFolderName = clickedFolderName.value,
             onTitleChangeClickForLinks = null,
             onTitleRenamed = {
-                collectionsScreenVM.changeRetrievedFoldersData(
+                browseScreenVM.changeRetrievedFoldersData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
@@ -548,7 +548,7 @@ fun CollectionScreen(navController: NavController) {
             },
             deleteDialogBoxType = DataDialogBoxType.FOLDER,
             onDeleted = {
-                collectionsScreenVM.changeRetrievedFoldersData(
+                browseScreenVM.changeRetrievedFoldersData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
@@ -565,7 +565,7 @@ fun CollectionScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
             coroutineScope = coroutineScope,
             onCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
+                browseScreenVM.changeRetrievedFoldersData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
@@ -578,7 +578,7 @@ fun CollectionScreen(navController: NavController) {
             screenType = SpecificScreenType.ROOT_SCREEN,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
             onFolderCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
+                browseScreenVM.changeRetrievedFoldersData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
@@ -588,7 +588,7 @@ fun CollectionScreen(navController: NavController) {
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = { sortingPreferences ->
-                collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
+                browseScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
             },
             bottomModalSheetState = sortingBtmSheetState
         )

@@ -93,7 +93,7 @@ class MainActivity : ComponentActivity() {
                     if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                         NavigationRoutes.HOME_SCREEN.name
                     } else {
-                        NavigationRoutes.COLLECTIONS_SCREEN.name
+                        NavigationRoutes.BROWSE_SCREEN.name
                     }
             }.start()
             CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)

@@ -66,8 +66,8 @@ import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
-import com.sakethh.linkora.screens.home.composables.AddNewFolderDialogBox
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
+import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async

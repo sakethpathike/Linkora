@@ -15,7 +15,7 @@ import androidx.core.view.WindowCompat
 import androidx.datastore.preferences.createDataStore
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.localDB.FoldersTable
-import com.sakethh.linkora.screens.collections.specificScreen.SpecificScreenType
+import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 class IntentActivity : ComponentActivity() {
