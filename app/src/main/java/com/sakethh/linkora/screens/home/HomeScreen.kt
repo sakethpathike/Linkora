@@ -2,20 +2,13 @@ package com.sakethh.linkora.screens.home
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,16 +20,11 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddLink
-import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,7 +40,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
@@ -63,21 +50,20 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
-import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.ArchivedLinks
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.RecentlyVisited
-import com.sakethh.linkora.screens.DataEmptyScreen
-import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.LinkCard
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
-import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -127,15 +113,6 @@ fun HomeScreen() {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val currentIconForMainFAB = remember(isMainFabRotated.value) {
-        mutableStateOf(
-            if (isMainFabRotated.value) {
-                Icons.Default.AddLink
-            } else {
-                Icons.Default.Add
-            }
-        )
-    }
     val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -153,123 +130,20 @@ fun HomeScreen() {
         shouldScreenTransparencyDecreasedBoxVisible.value = false
         isMainFabRotated.value = false
     }
+    val specificScreenVM = viewModel<SpecificScreenVM>()
     LinkoraTheme {
         Scaffold(
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             floatingActionButton = {
-                if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
-                    Column(modifier = Modifier.padding(bottom = 82.dp)) {
-                        FloatingActionButton(
-                            shape = RoundedCornerShape(10.dp),
-                            onClick = {
-                                coroutineScope.launch {
-                                    awaitAll(
-                                        async {
-                                            btmModalSheetState.expand()
-                                        },
-                                        async {
-                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = true
-                                        })
-                                }
-                            }) {
-                            Icon(
-                                imageVector = Icons.Default.AddLink, contentDescription = null
-                            )
-                        }
-                    }
-                } else {
-                    Column(modifier = Modifier.padding(bottom = 82.dp)) {
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            if (isMainFabRotated.value) {
-                                AnimatedVisibility(
-                                    visible = isMainFabRotated.value,
-                                    enter = fadeIn(tween(200)),
-                                    exit = fadeOut(tween(200))
-                                ) {
-                                    Text(
-                                        text = "Create new folder",
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(top = 20.dp, end = 15.dp)
-                                    )
-                                }
-                            }
-                            AnimatedVisibility(
-                                visible = isMainFabRotated.value,
-                                enter = scaleIn(animationSpec = tween(300)),
-                                exit = scaleOut(
-                                    tween(300)
-                                )
-                            ) {
-                                FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
-                                    shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                    shouldDialogForNewFolderAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.CreateNewFolder,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-
-                        }
-                        Spacer(modifier = Modifier.height(15.dp))
-                        Row(
-                            horizontalArrangement = Arrangement.Center,
-                            modifier = Modifier.align(Alignment.End)
-                        ) {
-                            if (isMainFabRotated.value) {
-                                AnimatedVisibility(
-                                    visible = isMainFabRotated.value,
-                                    enter = fadeIn(tween(200)),
-                                    exit = fadeOut(tween(200))
-                                ) {
-                                    Text(
-                                        text = "Add new link",
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontSize = 20.sp,
-                                        modifier = Modifier.padding(top = 20.dp, end = 15.dp)
-                                    )
-                                }
-                            }
-                            FloatingActionButton(modifier = Modifier.rotate(rotationAnimation.value),
-                                shape = RoundedCornerShape(10.dp),
-                                onClick = {
-                                    if (isMainFabRotated.value) {
-                                        shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                        shouldDialogForNewLinkAppear.value = true
-                                    } else {
-                                        coroutineScope.launch {
-                                            awaitAll(async {
-                                                rotationAnimation.animateTo(
-                                                    360f, animationSpec = tween(300)
-                                                )
-                                            }, async {
-                                                shouldScreenTransparencyDecreasedBoxVisible.value =
-                                                    true
-                                                delay(10L)
-                                                isMainFabRotated.value = true
-                                            })
-                                        }.invokeOnCompletion {
-                                            coroutineScope.launch {
-                                                rotationAnimation.snapTo(0f)
-                                            }
-                                        }
-                                    }
-                                }) {
-                                Icon(
-                                    imageVector = currentIconForMainFAB.value,
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
-                }
+                FloatingActionBtn(
+                    newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                    shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                    shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                    shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                    shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
+                    isMainFabRotated = isMainFabRotated,
+                    rotationAnimation = rotationAnimation
+                )
             },
             floatingActionButtonPosition = FabPosition.End
         ) {
@@ -361,22 +235,15 @@ fun HomeScreen() {
                                         }
                                     },
                                     onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        homeScreenVM.onForceOpenInExternalBrowser(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -452,22 +319,15 @@ fun HomeScreen() {
                                             )
                                         }
                                     }, onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        homeScreenVM.onForceOpenInExternalBrowser(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
@@ -552,22 +412,15 @@ fun HomeScreen() {
                             },
                             webURL = it.webURL,
                             onForceOpenInExternalBrowserClicked = {
-                                coroutineScope.launch {
-                                    if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                    ) {
-                                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                            .addANewLinkInRecentlyVisited(
-                                                recentlyVisited = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                )
-                                            )
-                                    }
-                                }
+                                homeScreenVM.onForceOpenInExternalBrowser(
+                                    RecentlyVisited(
+                                        title = it.title,
+                                        webURL = it.webURL,
+                                        baseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        infoForSaving = it.infoForSaving
+                                    )
+                                )
                             }
                         )
                     }
@@ -609,7 +462,7 @@ fun HomeScreen() {
             specificFolderName = "Tea || Coffee ?"
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear, coroutineScope = coroutineScope
+            shouldDialogBoxAppear = shouldDialogForNewFolderAppear
         )
         OptionsBtmSheetUI(
             btmModalSheetState = btmModalSheetState,
@@ -626,134 +479,30 @@ fun HomeScreen() {
                 shouldDeleteBoxAppear.value = true
             },
             onImportantLinkAdditionInTheTable = {
-                coroutineScope.launch {
-                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .doesThisExistsInImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
-                    ) {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
-                        Toast.makeText(
-                            context, "removed link from the \"Important Links\" successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().addANewLinkToImpLinks(
-                            ImportantLinks(
-                                title = HomeScreenVM.tempImpLinkData.title,
-                                webURL = HomeScreenVM.tempImpLinkData.webURL,
-                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                            )
-                        )
-                        Toast.makeText(
-                            context, "added to the \"Important Links\" successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.invokeOnCompletion {
-                    coroutineScope.launch {
-                        optionsBtmSheetVM.updateImportantCardData(HomeScreenVM.tempImpLinkData.webURL)
-                    }
-                }
-                Unit
+                specificScreenVM.onImportantLinkAdditionInTheTable(
+                    context, ImportantLinks(
+                        title = HomeScreenVM.tempImpLinkData.title,
+                        webURL = HomeScreenVM.tempImpLinkData.webURL,
+                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                    )
+                )
             },
             importantLinks = null,
             onArchiveClick = {
-                when (selectedCardType.value) {
-                    HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = HomeScreenVM.tempImpLinkData.title,
-                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
-                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteALinkFromSavedLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
-                            })
-                        }
-                        Unit
-                    }
-
-                    HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = HomeScreenVM.tempImpLinkData.title,
-                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
-                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteARecentlyVisitedLink(webURL = HomeScreenVM.tempImpLinkData.webURL)
-                            })
-                        }
-                        Unit
-                    }
-
-                    HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = HomeScreenVM.tempImpLinkData.title,
-                                        webURL = HomeScreenVM.tempImpLinkData.webURL,
-                                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
-                            })
-                        }
-                        Unit
-                    }
-                }
+                homeScreenVM.onArchiveClick(
+                    selectedCardType = HomeScreenBtmSheetType.valueOf(
+                        selectedCardType.value
+                    ), context
+                )
             }, noteForSaving = selectedURLNote.value,
             onNoteDeleteCardClick = {
-                when (selectedCardType.value) {
-                    HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                        Unit
-                    }
-
-                    HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteANoteFromRecentlyVisited(webURL = selectedWebURL.value)
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                        Unit
-                    }
-
-                    HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                        Unit
-                    }
-                }
+                homeScreenVM.onNoteDeleteCardClick(
+                    selectedCardType = HomeScreenBtmSheetType.valueOf(
+                        selectedCardType.value
+                    ), selectedWebURL = selectedWebURL.value, context = context
+                )
             },
             folderName = "",
             linkTitle = HomeScreenVM.tempImpLinkData.title
@@ -762,47 +511,14 @@ fun HomeScreen() {
     DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteBoxAppear,
         deleteDialogBoxType = DataDialogBoxType.LINK,
         onDeleteClick = {
-            when (selectedCardType.value) {
-                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .deleteALinkFromSavedLinks(
-                                webURL = selectedWebURL.value
-                            )
-                    }.invokeOnCompletion {
-                        shouldDeleteBoxAppear.value = false
-                        Toast.makeText(
-                            context, "deleted the link successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .deleteARecentlyVisitedLink(
-                                webURL = selectedWebURL.value
-                            )
-                    }.invokeOnCompletion {
-                        homeScreenVM.changeHistoryRetrievedData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
-                            )
-                        )
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .deleteALinkFromImpLinks(webURL = selectedWebURL.value)
-                    }
-                    Unit
-                }
-            }
+            homeScreenVM.onDeleteClick(
+                selectedCardType = HomeScreenBtmSheetType.valueOf(
+                    selectedCardType.value
+                ),
+                selectedWebURL = selectedWebURL.value,
+                context = context,
+                shouldDeleteBoxAppear = shouldDeleteBoxAppear
+            )
         })
     RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
         coroutineScope = coroutineScope,
@@ -810,72 +526,18 @@ fun HomeScreen() {
         existingFolderName = "",
         renameDialogBoxFor = OptionsBtmSheetType.LINK,
         onNoteChangeClickForLinks = { webURL: String, newNote: String ->
-            when (selectedCardType.value) {
-                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkInfoFromSavedLinks(
-                                webURL = webURL, newInfo = newNote
-                            )
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkInfoFromRecentlyVisitedLinks(
-                                webURL = webURL, newInfo = newNote
-                            )
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkInfoFromImpLinks(webURL = webURL, newInfo = newNote)
-                    }
-                    Unit
-                }
-            }
+            homeScreenVM.onNoteChangeClickForLinks(
+                selectedCardType = HomeScreenBtmSheetType.valueOf(
+                    selectedCardType.value
+                ), webURL, newNote
+            )
         },
         onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
-            when (selectedCardType.value) {
-                HomeScreenBtmSheetType.RECENT_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkTitleFromSavedLinks(
-                                webURL = webURL, newTitle = newTitle
-                            )
-                    }.invokeOnCompletion {
-                        homeScreenVM.changeHistoryRetrievedData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
-                            )
-                        )
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_VISITS.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkTitleFromRecentlyVisited(
-                                webURL = webURL, newTitle = newTitle
-                            )
-                    }
-                    Unit
-                }
-
-                HomeScreenBtmSheetType.RECENT_IMP_SAVES.name -> {
-                    coroutineScope.launch {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
-                    }
-                    Unit
-                }
-            }
+            homeScreenVM.onTitleChangeClickForLinks(
+                selectedCardType = HomeScreenBtmSheetType.valueOf(
+                    selectedCardType.value
+                ), webURL, newTitle
+            )
         })
     NewLinkBtmSheet(
         btmSheetState = btmModalSheetStateForSavingLinks,

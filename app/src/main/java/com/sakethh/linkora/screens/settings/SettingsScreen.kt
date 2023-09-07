@@ -38,13 +38,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
+import com.sakethh.linkora.customComposables.DataDialogBoxType
+import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
-import com.sakethh.linkora.customComposables.DataDialogBoxType
-import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -296,9 +296,7 @@ fun SettingsScreen(navController: NavController) {
             shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
             onDeleteClick = {
-                coroutineScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.deleteEntireLinksAndFoldersData()
-                }
+                CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData()
                 Toast.makeText(
                     context,
                     "Deleted entire data from the local database",
@@ -316,7 +314,7 @@ fun SettingsScreen(navController: NavController) {
                 popUpTo(0)
             }
         } else {
-            navController.navigate(NavigationRoutes.BROWSE_SCREEN.name) {
+            navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
                 popUpTo(0)
             }
         }

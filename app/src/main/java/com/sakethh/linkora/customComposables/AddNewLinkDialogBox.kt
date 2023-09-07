@@ -50,10 +50,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.screens.browse.specificBrowsingScreen.SpecificScreenType
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
@@ -71,7 +72,7 @@ fun AddNewLinkDialogBox(
         mutableStateOf(false)
     }
     val foldersTableData =
-        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().getAllFolders().collectAsState(
+        CustomFunctionsForLocalDB.localDB.crudDao().getAllFolders().collectAsState(
             initial = emptyList()
         ).value
     val context = LocalContext.current
@@ -88,6 +89,7 @@ fun AddNewLinkDialogBox(
     if (isDataExtractingForTheLink.value) {
         isDropDownMenuIconClicked.value = false
     }
+    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
     if (shouldDialogBoxAppear.value) {
@@ -294,25 +296,22 @@ fun AddNewLinkDialogBox(
                                 isDataExtractingForTheLink.value = true
                                 when (screenType) {
                                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                        coroutineScope.launch {
-                                            CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                                ImportantLinks(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    infoForSaving = noteTextFieldValue.value,
-                                                    baseURL = "",
-                                                    imgURL = ""
-                                                ),
-                                                context = context,
-                                                inImportantLinksScreen = true,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value
-                                            )
-                                        }.invokeOnCompletion {
-                                            if (linkTextFieldValue.value.isNotEmpty()) {
-                                                isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value = false
-                                                onSaveClick()
-                                            }
+                                        customFunctionsForLocalDB.importantLinkTableUpdater(
+                                            ImportantLinks(
+                                                title = titleTextFieldValue.value,
+                                                webURL = linkTextFieldValue.value,
+                                                infoForSaving = noteTextFieldValue.value,
+                                                baseURL = "",
+                                                imgURL = ""
+                                            ),
+                                            context = context,
+                                            inImportantLinksScreen = true,
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                        )
+                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                            isDataExtractingForTheLink.value = false
+                                            shouldDialogBoxAppear.value = false
+                                            onSaveClick()
                                         }
                                     }
 
@@ -321,42 +320,36 @@ fun AddNewLinkDialogBox(
                                     }
 
                                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                        coroutineScope.launch {
-                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                folderName = selectedFolderName.value,
-                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value
-                                            )
-                                        }.invokeOnCompletion {
-                                            if (linkTextFieldValue.value.isNotEmpty()) {
-                                                isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value = false
-                                                onSaveClick()
-                                            }
+                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                            title = titleTextFieldValue.value,
+                                            webURL = linkTextFieldValue.value,
+                                            noteForSaving = noteTextFieldValue.value,
+                                            folderName = selectedFolderName.value,
+                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                            context = context,
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                        )
+                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                            isDataExtractingForTheLink.value = false
+                                            shouldDialogBoxAppear.value = false
+                                            onSaveClick()
                                         }
                                     }
 
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                        coroutineScope.launch {
-                                            CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                folderName = specificFolderName,
-                                                savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value
-                                            )
-                                        }.invokeOnCompletion {
-                                            if (linkTextFieldValue.value.isNotEmpty()) {
-                                                isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value = false
-                                                onSaveClick()
-                                            }
+                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                            title = titleTextFieldValue.value,
+                                            webURL = linkTextFieldValue.value,
+                                            noteForSaving = noteTextFieldValue.value,
+                                            folderName = specificFolderName,
+                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                            context = context,
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                        )
+                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                            isDataExtractingForTheLink.value = false
+                                            shouldDialogBoxAppear.value = false
+                                            onSaveClick()
                                         }
                                     }
 
@@ -367,37 +360,31 @@ fun AddNewLinkDialogBox(
                                     SpecificScreenType.ROOT_SCREEN -> {
                                         if (selectedFolderName.value == "Saved Links") {
                                             isDataExtractingForTheLink.value = true
-                                            coroutineScope.launch {
-                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    folderName = selectedFolderName.value,
-                                                    noteForSaving = noteTextFieldValue.value,
-                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.SAVED_LINKS,
-                                                    context = context,
-                                                    autoDetectTitle = isAutoDetectTitleEnabled.value
-                                                )
-                                            }.invokeOnCompletion {
-                                                isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value = false
-                                                onSaveClick()
-                                            }
+                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                title = titleTextFieldValue.value,
+                                                webURL = linkTextFieldValue.value,
+                                                folderName = selectedFolderName.value,
+                                                noteForSaving = noteTextFieldValue.value,
+                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                                context = context,
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value
+                                            )
+                                            isDataExtractingForTheLink.value = false
+                                            shouldDialogBoxAppear.value = false
+                                            onSaveClick()
                                         } else {
-                                            coroutineScope.launch {
-                                                CustomLocalDBDaoFunctionsDecl.addANewLinkSpecificallyInFolders(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    folderName = selectedFolderName.value,
-                                                    noteForSaving = noteTextFieldValue.value,
-                                                    savingFor = CustomLocalDBDaoFunctionsDecl.ModifiedLocalDbFunctionsType.FOLDER_BASED_LINKS,
-                                                    context = context,
-                                                    autoDetectTitle = isAutoDetectTitleEnabled.value
-                                                )
-                                            }.invokeOnCompletion {
-                                                isDataExtractingForTheLink.value = false
-                                                shouldDialogBoxAppear.value = false
-                                                onSaveClick()
-                                            }
+                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                title = titleTextFieldValue.value,
+                                                webURL = linkTextFieldValue.value,
+                                                folderName = selectedFolderName.value,
+                                                noteForSaving = noteTextFieldValue.value,
+                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                                context = context,
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value
+                                            )
+                                            isDataExtractingForTheLink.value = false
+                                            shouldDialogBoxAppear.value = false
+                                            onSaveClick()
                                         }
                                     }
                                 }
@@ -539,7 +526,6 @@ fun AddNewLinkDialogBox(
                 }
             }
             AddNewFolderDialogBox(
-                coroutineScope = coroutineScope,
                 shouldDialogBoxAppear = isCreateANewFolderIconClicked,
                 newFolderName = {
                     selectedFolderName.value = it

@@ -1,4 +1,4 @@
-package com.sakethh.linkora.screens.browse.archiveScreen
+package com.sakethh.linkora.screens.collections.archiveScreen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background

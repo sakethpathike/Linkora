@@ -4,7 +4,10 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
@@ -13,51 +16,49 @@ data class LinkDataExtractor(
     val imgURL: String,
     val title: String,
     val errorInGivenURL: Boolean,
-    val networkError: Boolean,
 )
 
-suspend fun linkDataExtractor(context: Context, webURL: String): LinkDataExtractor {
-    if (isNetworkAvailable(context)) {
-        var errorInGivenURL = false
-        val urlHost =
+fun linkDataExtractor(webURL: String): LinkDataExtractor {
+    val job = Job()
+    val coroutineScope = CoroutineScope(job)
+    var errorInGivenURL = false
+    val urlHost =
+        try {
+            errorInGivenURL = false
+            webURL.split("/")[2]
+        } catch (_: Exception) {
+            errorInGivenURL = true
+            ""
+        }
+    var imgURL = ""
+    coroutineScope.launch {
+        imgURL = withContext(Dispatchers.IO) {
             try {
-                errorInGivenURL = false
-                webURL.split("/")[2]
-            } catch (_: Exception) {
-                errorInGivenURL = true
-                ""
+                return@withContext Jsoup.connect(webURL).get().head()
+                    .select("link[href~=.*\\.ico]").first()
+                    ?.attr("href").toString()
+            } catch (e: Exception) {
+                return@withContext ""
             }
-        val imgURL =
-            withContext(Dispatchers.IO) {
-                try {
-                    Jsoup.connect(webURL).get().head().select("link[href~=.*\\.ico]").first()
-                        ?.attr("href")
-                } catch (e: Exception) {
-                    ""
-                }
-            }
-        val title = withContext(Dispatchers.IO) {
+        }
+    }
+    var title = ""
+    coroutineScope.launch {
+        title = withContext(Dispatchers.IO) {
             try {
                 Jsoup.connect(webURL).get().title()
             } catch (e: Exception) {
-                "Couldn't fetch title:("
+                "Couldn't fetch title"
             }
         }
-        return LinkDataExtractor(
-            baseURL = urlHost,
-            imgURL = imgURL ?: "",
-            title = title,
-            errorInGivenURL = errorInGivenURL,
-            networkError = false
-        )
-    } else {
-        return LinkDataExtractor(
-            baseURL = "",
-            imgURL = "",
-            title = "",
-            errorInGivenURL = false,
-            networkError = true
-        )
+    }
+    return LinkDataExtractor(
+        baseURL = urlHost,
+        imgURL = imgURL,
+        title = title,
+        errorInGivenURL = errorInGivenURL
+    ).also {
+        job.cancel()
     }
 }
 

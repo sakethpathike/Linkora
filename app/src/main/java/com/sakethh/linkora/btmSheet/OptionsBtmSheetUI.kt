@@ -48,9 +48,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.screens.browse.FolderIndividualComponent
+import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -82,6 +82,7 @@ fun OptionsBtmSheetUI(
         mutableStateOf(false)
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
     val localClipBoardManager = LocalClipboardManager.current
     if (shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
@@ -143,24 +144,21 @@ fun OptionsBtmSheetUI(
                     if ((btmSheetFor == OptionsBtmSheetType.LINK || btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !inArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
+                                if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
+                                    customFunctionsForLocalDB.importantLinkTableUpdater(
+                                        importantLinks = importantLinks,
+                                        context = context
+                                    )
+                                } else {
+                                    if (onImportantLinkAdditionInTheTable != null) {
+                                        onImportantLinkAdditionInTheTable()
+                                    }
+                                }
                                 coroutineScope.launch {
-                                    if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
-                                        CustomLocalDBDaoFunctionsDecl.importantLinkTableUpdater(
-                                            importantLinks = importantLinks,
-                                            context = context
-                                        )
-                                    } else {
-                                        if (onImportantLinkAdditionInTheTable != null) {
-                                            onImportantLinkAdditionInTheTable()
-                                        }
+                                    if (btmModalSheetState.isVisible) {
+                                        btmModalSheetState.hide()
                                     }
-                                }.invokeOnCompletion {
-                                    coroutineScope.launch {
-                                        if (btmModalSheetState.isVisible) {
-                                            btmModalSheetState.hide()
-                                        }
-                                        shouldBtmModalSheetBeVisible.value = false
-                                    }
+                                    shouldBtmModalSheetBeVisible.value = false
                                 }
                             },
                             elementName = optionsBtmSheetVM.importantCardText.value,

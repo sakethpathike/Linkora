@@ -28,8 +28,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -50,6 +51,7 @@ fun RenameDialogBox(
     val scrollState = rememberScrollState()
     var doesFolderNameAlreadyExists = false
     val localContext = LocalContext.current
+    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
     if (shouldDialogBoxAppear.value) {
         val newFolderOrTitleName = rememberSaveable {
             mutableStateOf("")
@@ -165,7 +167,7 @@ fun RenameDialogBox(
                                         if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
                                             coroutineScope.launch {
                                                 doesFolderNameAlreadyExists =
-                                                    CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                                    CustomFunctionsForLocalDB.localDB.crudDao()
                                                         .doesThisFolderExists(
                                                             newFolderOrTitleName.value
                                                         )
@@ -177,15 +179,13 @@ fun RenameDialogBox(
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                 } else {
-                                                    coroutineScope.launch {
-                                                        if (existingFolderName != null) {
-                                                            CustomLocalDBDaoFunctionsDecl.updateFoldersDetails(
-                                                                existingFolderName = existingFolderName,
-                                                                newFolderName = newFolderOrTitleName.value,
-                                                                infoForFolder = newNote.value,
-                                                                context = localContext
-                                                            )
-                                                        }
+                                                    if (existingFolderName != null) {
+                                                        customFunctionsForLocalDB.updateFoldersDetails(
+                                                            existingFolderName = existingFolderName,
+                                                            newFolderName = newFolderOrTitleName.value,
+                                                            infoForFolder = newNote.value,
+                                                            context = localContext
+                                                        )
                                                     }
                                                     onTitleRenamed()
                                                     shouldDialogBoxAppear.value = false
@@ -226,7 +226,7 @@ fun RenameDialogBox(
                                 } else {
                                     coroutineScope.launch {
                                         if (existingFolderName != null) {
-                                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
+                                            CustomFunctionsForLocalDB.localDB.crudDao()
                                                 .renameAFolderNote(
                                                     folderName = existingFolderName,
                                                     newNote = newNote.value

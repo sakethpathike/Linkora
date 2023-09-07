@@ -1,7 +1,6 @@
-package com.sakethh.linkora.screens.browse.specificBrowsingScreen
+package com.sakethh.linkora.screens.collections.specificCollectionScreen
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -43,17 +42,14 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
-import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.ArchivedLinks
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.RecentlyVisited
-import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -64,15 +60,16 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpecificScreen(navController: NavController) {
-    val specificScreenVM: SpecificScreenVM = viewModel()
+    val specificCollectionsScreenVM: SpecificScreenVM = viewModel()
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
-    val specificFolderLinksData = specificScreenVM.folderLinksData.collectAsState().value
-    val savedLinksData = specificScreenVM.savedLinksTable.collectAsState().value
-    val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
-    val archivedFoldersLinksData = specificScreenVM.archiveFolderDataTable.collectAsState().value
-    val tempImpLinkData = specificScreenVM.impLinkDataForBtmSheet.copy()
+    val specificFolderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
+    val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
+    val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsState().value
+    val archivedFoldersLinksData =
+        specificCollectionsScreenVM.archiveFolderDataTable.collectAsState().value
+    val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
@@ -259,22 +256,15 @@ fun SpecificScreen(navController: NavController) {
                                     },
                                     webURL = it.webURL,
                                     onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -330,22 +320,15 @@ fun SpecificScreen(navController: NavController) {
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -401,22 +384,15 @@ fun SpecificScreen(navController: NavController) {
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -453,22 +429,15 @@ fun SpecificScreen(navController: NavController) {
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        coroutineScope.launch {
-                                            if (!CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                            ) {
-                                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                                    .addANewLinkInRecentlyVisited(
-                                                        recentlyVisited = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        )
-                                                    )
-                                            }
-                                        }
+                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                            RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
                                     }
                                 )
                             }
@@ -496,7 +465,7 @@ fun SpecificScreen(navController: NavController) {
             _folderName = topBarText,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
             onLinkSaved = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ), folderName = topBarText
@@ -525,213 +494,33 @@ fun SpecificScreen(navController: NavController) {
                 shouldRenameDialogBeVisible.value = true
             },
             onImportantLinkAdditionInTheTable = {
-                coroutineScope.launch {
-                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
-                    ) {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                            .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
-                        Toast.makeText(
-                            context,
-                            "removed link from the \"Important Links\" successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    } else {
-                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao().addANewLinkToImpLinks(
-                            ImportantLinks(
-                                title = tempImpLinkData.title,
-                                webURL = tempImpLinkData.webURL,
-                                baseURL = tempImpLinkData.baseURL,
-                                imgURL = tempImpLinkData.imgURL,
-                                infoForSaving = tempImpLinkData.infoForSaving
-                            )
-                        )
-                        Toast.makeText(
-                            context,
-                            "added to the \"Important Links\" successfully",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.invokeOnCompletion {
-                    coroutineScope.launch {
-                        optionsBtmSheetVM.updateImportantCardData(tempImpLinkData.webURL)
-                    }
-                }
-                Unit
+                specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(context, tempImpLinkData)
             },
             importantLinks = null,
             onArchiveClick = {
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = tempImpLinkData.title,
-                                        webURL = tempImpLinkData.webURL,
-                                        baseURL = tempImpLinkData.baseURL,
-                                        imgURL = tempImpLinkData.imgURL,
-                                        infoForSaving = tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
-                            })
-                        }
-                    }
-
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = tempImpLinkData.title,
-                                        webURL = tempImpLinkData.webURL,
-                                        baseURL = tempImpLinkData.baseURL,
-                                        imgURL = tempImpLinkData.imgURL,
-                                        infoForSaving = tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            })
-                        }
-                    }
-
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = tempImpLinkData.title,
-                                        webURL = tempImpLinkData.webURL,
-                                        baseURL = tempImpLinkData.baseURL,
-                                        imgURL = tempImpLinkData.imgURL,
-                                        infoForSaving = tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
-                            })
-                        }
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            awaitAll(async {
-                                CustomLocalDBDaoFunctionsDecl.archiveLinkTableUpdater(
-                                    archivedLinks = ArchivedLinks(
-                                        title = tempImpLinkData.title,
-                                        webURL = tempImpLinkData.webURL,
-                                        baseURL = tempImpLinkData.baseURL,
-                                        imgURL = tempImpLinkData.imgURL,
-                                        infoForSaving = tempImpLinkData.infoForSaving
-                                    ), context = context
-                                )
-                            }, async {
-                                CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                    .deleteALinkFromSpecificFolder(
-                                        folderName = topBarText, webURL = tempImpLinkData.webURL
-                                    )
-                            })
-                        }
-                    }
-
-                    else -> {}
-                }
+                specificCollectionsScreenVM.onArchiveClick(tempImpLinkData, context, topBarText)
             },
             noteForSaving = selectedURLOrFolderNote.value,
             onNoteDeleteCardClick = {
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteANoteFromImportantLinks(webURL = selectedWebURL.value)
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkNoteFromArchiveBasedFolderLinks(
-                                    folderName = topBarText, webURL = selectedWebURL.value
-                                )
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL.value)
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkInfoOfFolders(
-                                    folderName = topBarText, webURL = selectedWebURL.value
-                                )
-                        }.invokeOnCompletion {
-                            Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-
-                    else -> {}
-                }
+                specificCollectionsScreenVM.onNoteDeleteCardClick(
+                    selectedWebURL.value,
+                    context,
+                    topBarText
+                )
             },
             folderName = topBarText,
             linkTitle = tempImpLinkData.title
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBeVisible, onDeleteClick = {
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkFromImpLinks(webURL = selectedWebURL.value)
-                        }
-                    }
-
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkFromArchiveFolderBasedLinks(
-                                    webURL = selectedWebURL.value, archiveFolderName = topBarText
-                                )
-                        }
-                    }
-
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkFromSavedLinks(webURL = selectedWebURL.value)
-                        }
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .deleteALinkFromSpecificFolder(
-                                    folderName = topBarText, webURL = selectedWebURL.value
-                                )
-                        }
-                    }
-
-                    else -> {}
-                }
-                Toast.makeText(
-                    context, "deleted the link successfully", Toast.LENGTH_SHORT
-                ).show()
+                specificCollectionsScreenVM.onDeleteClick(
+                    folderName = topBarText,
+                    selectedWebURL = selectedWebURL.value,
+                    context
+                )
             }, deleteDialogBoxType = DataDialogBoxType.LINK,
             onDeleted = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ), folderName = topBarText
@@ -744,97 +533,21 @@ fun SpecificScreen(navController: NavController) {
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             webURLForTitle = selectedWebURL.value,
             onNoteChangeClickForLinks = { webURL: String, newNote: String ->
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkInfoFromImpLinks(
-                                    webURL = webURL, newInfo = newNote
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkInfoFromArchiveBasedFolderLinks(
-                                    webURL = webURL, newInfo = newNote, folderName = topBarText
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkInfoFromSavedLinks(
-                                    webURL = webURL, newInfo = newNote
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkInfoFromFolders(
-                                    webURL = webURL, newInfo = newNote, folderName = topBarText
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    else -> {}
-                }
+                specificCollectionsScreenVM.onNoteChangeClickForLinks(
+                    folderName = topBarText,
+                    webURL,
+                    newNote
+                )
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkTitleFromImpLinks(
-                                    webURL = webURL, newTitle = newTitle
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkTitleFromArchiveBasedFolderLinks(
-                                    webURL = webURL, newTitle = newTitle, folderName = topBarText
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkTitleFromSavedLinks(
-                                    webURL = webURL, newTitle = newTitle
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        coroutineScope.launch {
-                            CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                .renameALinkTitleFromFolders(
-                                    webURL = webURL, newTitle = newTitle, folderName = topBarText
-                                )
-                        }.start()
-                        Unit
-                    }
-
-                    else -> {}
-                }
+                specificCollectionsScreenVM.onTitleChangeClickForLinks(
+                    folderName = topBarText,
+                    newTitle,
+                    webURL
+                )
             },
             onTitleRenamed = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ), folderName = topBarText
@@ -845,7 +558,7 @@ fun SpecificScreen(navController: NavController) {
             specificFolderName = topBarText,
             screenType = SpecificScreenVM.screenType.value,
             onSaveClick = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     folderName = topBarText,
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
@@ -855,7 +568,7 @@ fun SpecificScreen(navController: NavController) {
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = it,
                     folderName = topBarText
                 )

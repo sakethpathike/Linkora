@@ -20,7 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
@@ -93,10 +93,10 @@ class MainActivity : ComponentActivity() {
                     if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                         NavigationRoutes.HOME_SCREEN.name
                     } else {
-                        NavigationRoutes.BROWSE_SCREEN.name
+                        NavigationRoutes.COLLECTIONS_SCREEN.name
                     }
             }.start()
-            CustomLocalDBDaoFunctionsDecl.localDB = LocalDataBase.getLocalDB(context = context)
+            CustomFunctionsForLocalDB.localDB = LocalDataBase.getLocalDB(context = context)
         }
 
     }

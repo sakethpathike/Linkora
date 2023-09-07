@@ -1,15 +1,20 @@
-package com.sakethh.linkora.screens.browse
+package com.sakethh.linkora.screens.collections
 
+import android.content.Context
+import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class BrowseScreenVM : ViewModel() {
+class CollectionsScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
     val foldersData = _foldersData.asStateFlow()
 
@@ -29,7 +34,7 @@ class BrowseScreenVM : ViewModel() {
         when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting().sortByAToZ()
+                    CustomFunctionsForLocalDB.localDB.regularFolderSorting().sortByAToZ()
                         .collect {
                             _foldersData.emit(it)
                         }
@@ -38,7 +43,7 @@ class BrowseScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting().sortByZToA()
+                    CustomFunctionsForLocalDB.localDB.regularFolderSorting().sortByZToA()
                         .collect {
                             _foldersData.emit(it)
                         }
@@ -47,7 +52,7 @@ class BrowseScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting()
+                    CustomFunctionsForLocalDB.localDB.regularFolderSorting()
                         .sortByLatestToOldest()
                         .collect {
                             _foldersData.emit(it)
@@ -57,7 +62,7 @@ class BrowseScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
-                    CustomLocalDBDaoFunctionsDecl.localDB.regularFolderSorting()
+                    CustomFunctionsForLocalDB.localDB.regularFolderSorting()
                         .sortByOldestToLatest()
                         .collect {
                             _foldersData.emit(it)
@@ -65,5 +70,28 @@ class BrowseScreenVM : ViewModel() {
                 }
             }
         }
+    }
+
+    fun onNoteDeleteClick(context: Context) {
+        viewModelScope.launch {
+            CustomFunctionsForLocalDB.localDB.crudDao()
+                .deleteAFolderNote(folderName = selectedFolderData.folderName)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    fun onDeleteClick(clickedFolderName: String) {
+        viewModelScope.launch {
+            kotlinx.coroutines.awaitAll(async {
+                CustomFunctionsForLocalDB.localDB.crudDao()
+                    .deleteAFolder(folderName = clickedFolderName)
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao()
+                    .deleteThisFolderData(folderName = clickedFolderName)
+            })
+        }
+
     }
 }

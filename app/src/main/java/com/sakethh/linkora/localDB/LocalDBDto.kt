@@ -31,7 +31,7 @@ data class FoldersTable(
     var infoForSaving: String,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+    var id: Long = 0,
 )
 
 @Entity(tableName = "archived_links_table")
@@ -43,7 +43,7 @@ data class ArchivedLinks(
     val infoForSaving: String,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+    var id: Long = 0,
 )
 
 @Entity(tableName = "archived_folders_table")
@@ -52,7 +52,7 @@ data class ArchivedFolders(
     val infoForSaving: String,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+    var id: Long = 0,
 )
 
 @Entity(tableName = "important_links_table")
@@ -64,7 +64,7 @@ data class ImportantLinks(
     var infoForSaving: String,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+    var id: Long = 0,
 )
 
 @Entity(tableName = "important_folders_table")
@@ -73,7 +73,7 @@ data class ImportantFolders(
     val infoForSaving: String,
 
     @PrimaryKey(autoGenerate = true)
-    var id: Long = 0
+    var id: Long = 0,
 )
 
 @Entity(tableName = "recently_visited_table")

@@ -27,22 +27,21 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.localDB.CustomLocalDBDaoFunctionsDecl
-import com.sakethh.linkora.localDB.FoldersTable
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewFolderDialogBox(
-    coroutineScope: CoroutineScope,
     shouldDialogBoxAppear: MutableState<Boolean>,
     newFolderName: (String) -> Unit = {},
     onCreated: () -> Unit = {},
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
+    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+
     if (shouldDialogBoxAppear.value) {
         val folderNameTextFieldValue = rememberSaveable {
             mutableStateOf("")
@@ -129,32 +128,12 @@ fun AddNewFolderDialogBox(
                                 ).show()
                             } else {
                                 newFolderName(folderNameTextFieldValue.value)
-                                coroutineScope.launch {
-                                    if (CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                            .doesThisFolderExists(folderName = folderNameTextFieldValue.value)
-                                    ) {
-                                        Toast.makeText(
-                                            context,
-                                            "\"${folderNameTextFieldValue.value}\" already exists",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    } else {
-                                        CustomLocalDBDaoFunctionsDecl.localDB.crudDao()
-                                            .addANewFolder(
-                                                FoldersTable(
-                                                    folderName = folderNameTextFieldValue.value,
-                                                    infoForSaving = noteTextFieldValue.value
-                                                )
-                                            )
-                                        Toast.makeText(
-                                            context,
-                                            "\"${folderNameTextFieldValue.value}\" folder created successfully",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }.invokeOnCompletion {
-                                    onCreated()
-                                }
+                                customFunctionsForLocalDB.createANewFolder(
+                                    context = context,
+                                    folderName = folderNameTextFieldValue.value,
+                                    infoForSaving = noteTextFieldValue.value
+                                )
+                                onCreated()
                                 shouldDialogBoxAppear.value = false
                             }
                         }) {
