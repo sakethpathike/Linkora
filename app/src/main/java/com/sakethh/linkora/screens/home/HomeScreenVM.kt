@@ -139,6 +139,11 @@ class HomeScreenVM : ViewModel() {
                             infoForSaving = recentlyVisited.infoForSaving
                         )
                     )
+                changeHistoryRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    )
+                )
             }
         }
     }

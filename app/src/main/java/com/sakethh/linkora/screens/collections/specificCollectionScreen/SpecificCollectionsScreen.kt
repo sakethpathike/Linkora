@@ -494,7 +494,10 @@ fun SpecificScreen(navController: NavController) {
                 shouldRenameDialogBeVisible.value = true
             },
             onImportantLinkAdditionInTheTable = {
-                specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(context, tempImpLinkData)
+                specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
+                    context,
+                    tempImpLinkData
+                )
             },
             importantLinks = null,
             onArchiveClick = {

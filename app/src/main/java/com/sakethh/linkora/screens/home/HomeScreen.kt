@@ -64,6 +64,7 @@ import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -233,6 +234,11 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
+                                        homeScreenVM.changeHistoryRetrievedData(
+                                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                                SettingsScreenVM.Settings.selectedSortingType.value
+                                            )
+                                        )
                                     },
                                     onForceOpenInExternalBrowserClicked = {
                                         homeScreenVM.onForceOpenInExternalBrowser(
@@ -318,6 +324,11 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
+                                        homeScreenVM.changeHistoryRetrievedData(
+                                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                                SettingsScreenVM.Settings.selectedSortingType.value
+                                            )
+                                        )
                                     }, onForceOpenInExternalBrowserClicked = {
                                         homeScreenVM.onForceOpenInExternalBrowser(
                                             RecentlyVisited(
