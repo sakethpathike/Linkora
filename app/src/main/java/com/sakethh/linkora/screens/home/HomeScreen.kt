@@ -491,7 +491,7 @@ fun HomeScreen() {
             },
             onImportantLinkAdditionInTheTable = {
                 specificScreenVM.onImportantLinkAdditionInTheTable(
-                    context, ImportantLinks(
+                    context, {}, ImportantLinks(
                         title = HomeScreenVM.tempImpLinkData.title,
                         webURL = HomeScreenVM.tempImpLinkData.webURL,
                         baseURL = HomeScreenVM.tempImpLinkData.baseURL,
@@ -554,7 +554,9 @@ fun HomeScreen() {
         btmSheetState = btmModalSheetStateForSavingLinks,
         _inIntentActivity = false,
         screenType = SpecificScreenType.ROOT_SCREEN,
-        shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled
+        shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+        onLinkSaved = {},
+        onFolderCreated = {}
     )
     SortingBottomSheetUI(
         shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

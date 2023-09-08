@@ -131,10 +131,12 @@ fun AddNewFolderDialogBox(
                                 customFunctionsForLocalDB.createANewFolder(
                                     context = context,
                                     folderName = folderNameTextFieldValue.value,
-                                    infoForSaving = noteTextFieldValue.value
+                                    infoForSaving = noteTextFieldValue.value,
+                                    onTaskCompleted = {
+                                        onCreated()
+                                        shouldDialogBoxAppear.value = false
+                                    }
                                 )
-                                onCreated()
-                                shouldDialogBoxAppear.value = false
                             }
                         }) {
                         Text(

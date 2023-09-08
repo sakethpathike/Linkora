@@ -82,8 +82,8 @@ fun NewLinkBtmSheet(
     screenType: SpecificScreenType,
     _folderName: String = "",
     btmSheetState: SheetState,
-    onLinkSaved: () -> Unit = {},
-    onFolderCreated: () -> Unit = {},
+    onLinkSaved: () -> Unit,
+    onFolderCreated: () -> Unit,
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -278,20 +278,22 @@ fun NewLinkBtmSheet(
                                                         ),
                                                         context = context,
                                                         inImportantLinksScreen = true,
-                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            onLinkSaved()
+                                                            isDataExtractingForTheLink.value = false
+                                                            coroutineScope.launch {
+                                                                if (btmSheetState.isVisible) {
+                                                                    btmSheetState.hide()
+                                                                }
+                                                            }.invokeOnCompletion {
+                                                                shouldUIBeVisible.value = false
+                                                                if (inIntentActivity.value) {
+                                                                    activity?.finishAndRemoveTask()
+                                                                }
+                                                            }
+                                                        }
                                                     )
-                                                    onLinkSaved()
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
-                                                    }
                                                 }
 
                                                 SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
@@ -306,20 +308,22 @@ fun NewLinkBtmSheet(
                                                         folderName = selectedFolder.value,
                                                         savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                                         context = context,
-                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            onLinkSaved()
+                                                            isDataExtractingForTheLink.value = false
+                                                            coroutineScope.launch {
+                                                                if (btmSheetState.isVisible) {
+                                                                    btmSheetState.hide()
+                                                                }
+                                                            }.invokeOnCompletion {
+                                                                shouldUIBeVisible.value = false
+                                                                if (inIntentActivity.value) {
+                                                                    activity?.finishAndRemoveTask()
+                                                                }
+                                                            }
+                                                        }
                                                     )
-                                                    onLinkSaved()
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
-                                                    }
                                                 }
 
                                                 SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
@@ -330,20 +334,22 @@ fun NewLinkBtmSheet(
                                                         folderName = folderName.value,
                                                         savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
                                                         context = context,
-                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            onLinkSaved()
+                                                            isDataExtractingForTheLink.value = false
+                                                            coroutineScope.launch {
+                                                                if (btmSheetState.isVisible) {
+                                                                    btmSheetState.hide()
+                                                                }
+                                                            }.invokeOnCompletion {
+                                                                shouldUIBeVisible.value = false
+                                                                if (inIntentActivity.value) {
+                                                                    activity?.finishAndRemoveTask()
+                                                                }
+                                                            }
+                                                        }
                                                     )
-                                                    onLinkSaved()
-                                                    isDataExtractingForTheLink.value = false
-                                                    coroutineScope.launch {
-                                                        if (btmSheetState.isVisible) {
-                                                            btmSheetState.hide()
-                                                        }
-                                                    }.invokeOnCompletion {
-                                                        shouldUIBeVisible.value = false
-                                                        if (inIntentActivity.value) {
-                                                            activity?.finishAndRemoveTask()
-                                                        }
-                                                    }
                                                 }
 
                                                 SpecificScreenType.INTENT_ACTIVITY -> {
@@ -363,21 +369,24 @@ fun NewLinkBtmSheet(
                                                                         noteForSaving = noteTextFieldValue.value,
                                                                         savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                                                         context = context,
-                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                                        onTaskCompleted = {
+                                                                            isDataExtractingForTheLink.value =
+                                                                                false
+                                                                            coroutineScope.launch {
+                                                                                if (btmSheetState.isVisible) {
+                                                                                    btmSheetState.hide()
+                                                                                }
+                                                                            }.invokeOnCompletion {
+                                                                                shouldUIBeVisible.value =
+                                                                                    false
+                                                                                if (inIntentActivity.value) {
+                                                                                    activity?.finishAndRemoveTask()
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     )
                                                                 }
-                                                            isDataExtractingForTheLink.value =
-                                                                false
-                                                            coroutineScope.launch {
-                                                                if (btmSheetState.isVisible) {
-                                                                    btmSheetState.hide()
-                                                                }
-                                                            }.invokeOnCompletion {
-                                                                shouldUIBeVisible.value = false
-                                                                if (inIntentActivity.value) {
-                                                                    activity?.finishAndRemoveTask()
-                                                                }
-                                                            }
                                                         } else {
                                                             intentData.value!!.getStringExtra(
                                                                 Intent.EXTRA_TEXT
@@ -392,21 +401,24 @@ fun NewLinkBtmSheet(
                                                                         noteForSaving = noteTextFieldValue.value,
                                                                         savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
                                                                         context = context,
-                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                                        onTaskCompleted = {
+                                                                            isDataExtractingForTheLink.value =
+                                                                                false
+                                                                            coroutineScope.launch {
+                                                                                if (btmSheetState.isVisible) {
+                                                                                    btmSheetState.hide()
+                                                                                }
+                                                                            }.invokeOnCompletion {
+                                                                                shouldUIBeVisible.value =
+                                                                                    false
+                                                                                if (inIntentActivity.value) {
+                                                                                    activity?.finishAndRemoveTask()
+                                                                                }
+                                                                            }
+                                                                        }
                                                                     )
                                                                 }
-                                                            isDataExtractingForTheLink.value =
-                                                                false
-                                                            coroutineScope.launch {
-                                                                if (btmSheetState.isVisible) {
-                                                                    btmSheetState.hide()
-                                                                }
-                                                            }.invokeOnCompletion {
-                                                                shouldUIBeVisible.value = false
-                                                                if (inIntentActivity.value) {
-                                                                    activity?.finishAndRemoveTask()
-                                                                }
-                                                            }
                                                         }
                                                     }
                                                 }
@@ -421,19 +433,22 @@ fun NewLinkBtmSheet(
                                                             folderName = selectedFolder.value,
                                                             savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                                             context = context,
-                                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                            onTaskCompleted = {
+                                                                isDataExtractingForTheLink.value =
+                                                                    false
+                                                                coroutineScope.launch {
+                                                                    if (btmSheetState.isVisible) {
+                                                                        btmSheetState.hide()
+                                                                    }
+                                                                }.invokeOnCompletion {
+                                                                    shouldUIBeVisible.value = false
+                                                                    if (inIntentActivity.value) {
+                                                                        activity?.finishAndRemoveTask()
+                                                                    }
+                                                                }
+                                                            }
                                                         )
-                                                        isDataExtractingForTheLink.value = false
-                                                        coroutineScope.launch {
-                                                            if (btmSheetState.isVisible) {
-                                                                btmSheetState.hide()
-                                                            }
-                                                        }.invokeOnCompletion {
-                                                            shouldUIBeVisible.value = false
-                                                            if (inIntentActivity.value) {
-                                                                activity?.finishAndRemoveTask()
-                                                            }
-                                                        }
                                                     } else {
                                                         customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
                                                             title = titleTextFieldValue.value,
@@ -442,19 +457,22 @@ fun NewLinkBtmSheet(
                                                             noteForSaving = noteTextFieldValue.value,
                                                             savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
                                                             context = context,
-                                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                            onTaskCompleted = {
+                                                                isDataExtractingForTheLink.value =
+                                                                    false
+                                                                coroutineScope.launch {
+                                                                    if (btmSheetState.isVisible) {
+                                                                        btmSheetState.hide()
+                                                                    }
+                                                                }.invokeOnCompletion {
+                                                                    shouldUIBeVisible.value = false
+                                                                    if (inIntentActivity.value) {
+                                                                        activity?.finishAndRemoveTask()
+                                                                    }
+                                                                }
+                                                            }
                                                         )
-                                                        isDataExtractingForTheLink.value = false
-                                                        coroutineScope.launch {
-                                                            if (btmSheetState.isVisible) {
-                                                                btmSheetState.hide()
-                                                            }
-                                                        }.invokeOnCompletion {
-                                                            shouldUIBeVisible.value = false
-                                                            if (inIntentActivity.value) {
-                                                                activity?.finishAndRemoveTask()
-                                                            }
-                                                        }
                                                     }
                                                 }
                                             }

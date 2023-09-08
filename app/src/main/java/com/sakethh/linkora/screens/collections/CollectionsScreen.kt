@@ -393,7 +393,13 @@ fun CollectionsScreen(navController: NavController) {
                     archivedFolders = ArchivedFolders(
                         archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
                         infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
-                    ), context = context
+                    ), context = context, onTaskCompleted = {
+                        collectionsScreenVM.changeRetrievedFoldersData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             },
             noteForSaving = clickedFolderNote.value,
@@ -458,6 +464,8 @@ fun CollectionsScreen(navController: NavController) {
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
                 )
+            }, onLinkSaved = {
+
             }
         )
         SortingBottomSheetUI(

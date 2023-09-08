@@ -160,12 +160,6 @@ class HomeScreenVM : ViewModel() {
                         .renameALinkTitleFromSavedLinks(
                             webURL = webURL, newTitle = newTitle
                         )
-                }.invokeOnCompletion {
-                    changeHistoryRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
                 }
                 Unit
             }
@@ -176,6 +170,12 @@ class HomeScreenVM : ViewModel() {
                         .renameALinkTitleFromRecentlyVisited(
                             webURL = webURL, newTitle = newTitle
                         )
+                }.invokeOnCompletion {
+                    changeHistoryRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
                 }
                 Unit
             }
@@ -330,7 +330,8 @@ class HomeScreenVM : ViewModel() {
                                 baseURL = tempImpLinkData.baseURL,
                                 imgURL = tempImpLinkData.imgURL,
                                 infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context
+                            ), context = context, onTaskCompleted = {
+                            }
                         )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()
@@ -350,7 +351,13 @@ class HomeScreenVM : ViewModel() {
                                 baseURL = tempImpLinkData.baseURL,
                                 imgURL = tempImpLinkData.imgURL,
                                 infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context
+                            ), context = context, onTaskCompleted = {
+                                changeHistoryRetrievedData(
+                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    )
+                                )
+                            }
                         )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()
@@ -370,7 +377,7 @@ class HomeScreenVM : ViewModel() {
                                 baseURL = tempImpLinkData.baseURL,
                                 imgURL = tempImpLinkData.imgURL,
                                 infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context
+                            ), context = context, {}
                         )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()

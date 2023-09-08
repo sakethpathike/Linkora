@@ -184,11 +184,13 @@ fun RenameDialogBox(
                                                             existingFolderName = existingFolderName,
                                                             newFolderName = newFolderOrTitleName.value,
                                                             infoForFolder = newNote.value,
-                                                            context = localContext
+                                                            context = localContext,
+                                                            onTaskCompleted = {
+                                                                onTitleRenamed()
+                                                                shouldDialogBoxAppear.value = false
+                                                            }
                                                         )
                                                     }
-                                                    onTitleRenamed()
-                                                    shouldDialogBoxAppear.value = false
                                                 }
                                             }
                                         }

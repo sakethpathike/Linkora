@@ -147,7 +147,11 @@ fun OptionsBtmSheetUI(
                                 if (importantLinks != null && onImportantLinkAdditionInTheTable == null) {
                                     customFunctionsForLocalDB.importantLinkTableUpdater(
                                         importantLinks = importantLinks,
-                                        context = context
+                                        context = context, onTaskCompleted = {
+                                            if (onImportantLinkAdditionInTheTable != null) {
+                                                onImportantLinkAdditionInTheTable()
+                                            }
+                                        }
                                     )
                                 } else {
                                     if (onImportantLinkAdditionInTheTable != null) {

@@ -263,7 +263,9 @@ fun SpecificScreen(navController: NavController) {
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            )
+                                            ), onTaskCompleted = {
+
+                                            }
                                         )
                                     }
                                 )
@@ -327,7 +329,9 @@ fun SpecificScreen(navController: NavController) {
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            )
+                                            ), onTaskCompleted = {
+
+                                            }
                                         )
                                     }
                                 )
@@ -391,7 +395,9 @@ fun SpecificScreen(navController: NavController) {
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            )
+                                            ), onTaskCompleted = {
+
+                                            }
                                         )
                                     }
                                 )
@@ -436,7 +442,9 @@ fun SpecificScreen(navController: NavController) {
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            )
+                                            ), onTaskCompleted = {
+
+                                            }
                                         )
                                     }
                                 )
@@ -470,7 +478,8 @@ fun SpecificScreen(navController: NavController) {
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ), folderName = topBarText
                 )
-            }
+            },
+            onFolderCreated = {}
         )
         OptionsBtmSheetUI(
             inSpecificArchiveScreen = mutableStateOf(SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
@@ -496,12 +505,28 @@ fun SpecificScreen(navController: NavController) {
             onImportantLinkAdditionInTheTable = {
                 specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
                     context,
+                    onTaskCompleted = {
+                        specificCollectionsScreenVM.changeRetrievedData(
+                            folderName = topBarText,
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    },
                     tempImpLinkData
                 )
             },
             importantLinks = null,
             onArchiveClick = {
-                specificCollectionsScreenVM.onArchiveClick(tempImpLinkData, context, topBarText)
+                specificCollectionsScreenVM.onArchiveClick(tempImpLinkData, context, topBarText,
+                    onTaskCompleted = {
+                        specificCollectionsScreenVM.changeRetrievedData(
+                            folderName = topBarText,
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    })
             },
             noteForSaving = selectedURLOrFolderNote.value,
             onNoteDeleteCardClick = {
@@ -519,7 +544,15 @@ fun SpecificScreen(navController: NavController) {
                 specificCollectionsScreenVM.onDeleteClick(
                     folderName = topBarText,
                     selectedWebURL = selectedWebURL.value,
-                    context
+                    context,
+                    onTaskCompleted = {
+                        specificCollectionsScreenVM.changeRetrievedData(
+                            folderName = topBarText,
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             }, deleteDialogBoxType = DataDialogBoxType.LINK,
             onDeleted = {
@@ -539,14 +572,25 @@ fun SpecificScreen(navController: NavController) {
                 specificCollectionsScreenVM.onNoteChangeClickForLinks(
                     folderName = topBarText,
                     webURL,
-                    newNote
+                    newNote,
+                    onTaskCompleted = {
+
+                    }
                 )
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
                 specificCollectionsScreenVM.onTitleChangeClickForLinks(
                     folderName = topBarText,
                     newTitle,
-                    webURL
+                    webURL,
+                    onTaskCompleted = {
+                        specificCollectionsScreenVM.changeRetrievedData(
+                            folderName = topBarText,
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             },
             onTitleRenamed = {
@@ -560,7 +604,7 @@ fun SpecificScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             specificFolderName = topBarText,
             screenType = SpecificScreenVM.screenType.value,
-            onSaveClick = {
+            onTaskCompleted = {
                 specificCollectionsScreenVM.changeRetrievedData(
                     folderName = topBarText,
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(

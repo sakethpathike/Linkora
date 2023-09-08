@@ -73,11 +73,14 @@ class ArchiveScreenVM : ViewModel() {
         archiveScreenType: ArchiveScreenType,
         webURL: String,
         newNote: String,
+        onTaskCompleted: () -> Unit,
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
                 CustomFunctionsForLocalDB.localDB.crudDao()
                     .renameALinkInfoFromArchiveLinks(webURL, newNote)
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
@@ -86,6 +89,8 @@ class ArchiveScreenVM : ViewModel() {
                         folderName = webURL,
                         newNote = newNote
                     )
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         }
     }
@@ -95,11 +100,14 @@ class ArchiveScreenVM : ViewModel() {
         selectedURLOrFolderName: String,
         newTitle: String,
         webURL: String,
+        onTaskCompleted: () -> Unit,
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
                 CustomFunctionsForLocalDB.localDB.crudDao()
                     .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
@@ -110,6 +118,8 @@ class ArchiveScreenVM : ViewModel() {
                         selectedURLOrFolderName,
                         newTitle
                     )
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         }
     }
@@ -186,6 +196,7 @@ class ArchiveScreenVM : ViewModel() {
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
         context: Context,
+        onTaskCompleted: () -> Unit,
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
@@ -196,13 +207,17 @@ class ArchiveScreenVM : ViewModel() {
                         context, "removed the link from archive permanently", Toast.LENGTH_SHORT
                     ).show()
                 }
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         } else {
             CustomFunctionsForLocalDB().archiveFolderTableUpdater(
                 ArchivedFolders(
                     archiveFolderName = selectedURLOrFolderName,
                     infoForSaving = ""
-                ), context = context
+                ), context = context, onTaskCompleted = {
+                    onTaskCompleted()
+                }
             )
         }
 
@@ -212,6 +227,7 @@ class ArchiveScreenVM : ViewModel() {
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
         context: Context,
+        onTaskCompleted: () -> Unit,
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
@@ -220,6 +236,8 @@ class ArchiveScreenVM : ViewModel() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
@@ -228,6 +246,8 @@ class ArchiveScreenVM : ViewModel() {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         }
     }
@@ -237,6 +257,7 @@ class ArchiveScreenVM : ViewModel() {
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
         selectedURLOrFolderNote: String,
+        onTaskCompleted: () -> Unit,
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
@@ -271,6 +292,8 @@ class ArchiveScreenVM : ViewModel() {
                         ).show()
                     }
                 }
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
@@ -312,6 +335,8 @@ class ArchiveScreenVM : ViewModel() {
                         ).show()
                     }
                 }
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         }
     }

@@ -174,7 +174,14 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     context = context,
                     archiveScreenType = archiveScreenType,
                     selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    selectedURLOrFolderNote = selectedFolderNote.value
+                    selectedURLOrFolderNote = selectedFolderNote.value,
+                    onTaskCompleted = {
+                        archiveScreenVM.changeRetrievedData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             },
             onDeleteCardClick = {
@@ -190,7 +197,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 archiveScreenVM.onNoteDeleteCardClick(
                     archiveScreenType = archiveScreenType,
                     selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    context = context
+                    context = context,
+                    onTaskCompleted = {}
                 )
             },
             folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
@@ -203,7 +211,14 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 archiveScreenVM.onDeleteClick(
                     archiveScreenType = archiveScreenType,
                     selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    context = context
+                    context = context,
+                    onTaskCompleted = {
+                        archiveScreenVM.changeRetrievedData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             }, onDeleted = {
                 archiveScreenVM.changeRetrievedData(
@@ -223,7 +238,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 archiveScreenVM.onNoteChangeClickForLinks(
                     archiveScreenType = archiveScreenType,
                     webURL,
-                    newNote
+                    newNote,
+                    onTaskCompleted = {}
                 )
             },
             onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
@@ -231,7 +247,14 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     archiveScreenType = archiveScreenType,
                     selectedURLOrFolderName = selectedURLOrFolderName.value,
                     newTitle,
-                    webURL
+                    webURL,
+                    onTaskCompleted = {
+                        archiveScreenVM.changeRetrievedData(
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
+                    }
                 )
             },
             onTitleRenamed = {

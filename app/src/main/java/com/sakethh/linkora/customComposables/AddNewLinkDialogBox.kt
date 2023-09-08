@@ -66,7 +66,7 @@ fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     screenType: SpecificScreenType,
     specificFolderName: String,
-    onSaveClick: () -> Unit = {},
+    onTaskCompleted: () -> Unit = {},
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -306,13 +306,15 @@ fun AddNewLinkDialogBox(
                                             ),
                                             context = context,
                                             inImportantLinksScreen = true,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                            onTaskCompleted = {
+                                                onTaskCompleted()
+                                                if (linkTextFieldValue.value.isNotEmpty()) {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                }
+                                            }
                                         )
-                                        if (linkTextFieldValue.value.isNotEmpty()) {
-                                            isDataExtractingForTheLink.value = false
-                                            shouldDialogBoxAppear.value = false
-                                            onSaveClick()
-                                        }
                                     }
 
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
@@ -327,13 +329,15 @@ fun AddNewLinkDialogBox(
                                             folderName = selectedFolderName.value,
                                             savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                             context = context,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                            onTaskCompleted = {
+                                                if (linkTextFieldValue.value.isNotEmpty()) {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                    onTaskCompleted()
+                                                }
+                                            }
                                         )
-                                        if (linkTextFieldValue.value.isNotEmpty()) {
-                                            isDataExtractingForTheLink.value = false
-                                            shouldDialogBoxAppear.value = false
-                                            onSaveClick()
-                                        }
                                     }
 
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
@@ -344,13 +348,15 @@ fun AddNewLinkDialogBox(
                                             folderName = specificFolderName,
                                             savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
                                             context = context,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value
+                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                            onTaskCompleted = {
+                                                if (linkTextFieldValue.value.isNotEmpty()) {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                    onTaskCompleted()
+                                                }
+                                            }
                                         )
-                                        if (linkTextFieldValue.value.isNotEmpty()) {
-                                            isDataExtractingForTheLink.value = false
-                                            shouldDialogBoxAppear.value = false
-                                            onSaveClick()
-                                        }
                                     }
 
                                     SpecificScreenType.INTENT_ACTIVITY -> {
@@ -367,11 +373,13 @@ fun AddNewLinkDialogBox(
                                                 noteForSaving = noteTextFieldValue.value,
                                                 savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                                 context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                onTaskCompleted = {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                    onTaskCompleted()
+                                                }
                                             )
-                                            isDataExtractingForTheLink.value = false
-                                            shouldDialogBoxAppear.value = false
-                                            onSaveClick()
                                         } else {
                                             customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
                                                 title = titleTextFieldValue.value,
@@ -380,17 +388,19 @@ fun AddNewLinkDialogBox(
                                                 noteForSaving = noteTextFieldValue.value,
                                                 savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
                                                 context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                onTaskCompleted = {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                    onTaskCompleted()
+                                                }
                                             )
-                                            isDataExtractingForTheLink.value = false
-                                            shouldDialogBoxAppear.value = false
-                                            onSaveClick()
                                         }
                                     }
                                 }
                                 if (!isDataExtractingForTheLink.value) {
                                     shouldDialogBoxAppear.value = false
-                                    onSaveClick()
+                                    onTaskCompleted()
                                 }
                             }
                         }) {
@@ -530,7 +540,7 @@ fun AddNewLinkDialogBox(
                 newFolderName = {
                     selectedFolderName.value = it
                 }, onCreated = {
-                    onSaveClick()
+                    onTaskCompleted()
                     coroutineScope.launch {
                         if (btmModalSheetState.isVisible) {
                             btmModalSheetState.hide()

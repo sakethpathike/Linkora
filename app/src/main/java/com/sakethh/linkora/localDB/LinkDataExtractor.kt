@@ -4,10 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
@@ -18,9 +15,7 @@ data class LinkDataExtractor(
     val errorInGivenURL: Boolean,
 )
 
-fun linkDataExtractor(webURL: String): LinkDataExtractor {
-    val job = Job()
-    val coroutineScope = CoroutineScope(job)
+suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
     var errorInGivenURL = false
     val urlHost =
         try {
@@ -30,26 +25,20 @@ fun linkDataExtractor(webURL: String): LinkDataExtractor {
             errorInGivenURL = true
             ""
         }
-    var imgURL = ""
-    coroutineScope.launch {
-        imgURL = withContext(Dispatchers.IO) {
-            try {
-                return@withContext Jsoup.connect(webURL).get().head()
-                    .select("link[href~=.*\\.ico]").first()
-                    ?.attr("href").toString()
-            } catch (e: Exception) {
-                return@withContext ""
-            }
+    val imgURL = withContext(Dispatchers.IO) {
+        try {
+            return@withContext Jsoup.connect(webURL).get().head()
+                .select("link[href~=.*\\.ico]").first()
+                ?.attr("href").toString()
+        } catch (e: Exception) {
+            return@withContext ""
         }
     }
-    var title = ""
-    coroutineScope.launch {
-        title = withContext(Dispatchers.IO) {
-            try {
-                Jsoup.connect(webURL).get().title()
-            } catch (e: Exception) {
-                "Couldn't fetch title"
-            }
+    val title = withContext(Dispatchers.IO) {
+        try {
+            Jsoup.connect(webURL).get().title()
+        } catch (e: Exception) {
+            "Couldn't fetch title"
         }
     }
     return LinkDataExtractor(
@@ -57,9 +46,7 @@ fun linkDataExtractor(webURL: String): LinkDataExtractor {
         imgURL = imgURL,
         title = title,
         errorInGivenURL = errorInGivenURL
-    ).also {
-        job.cancel()
-    }
+    )
 }
 
 fun isNetworkAvailable(context: Context): Boolean {
