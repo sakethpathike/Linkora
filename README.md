@@ -30,45 +30,45 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### Linkora doesn't strictly follow MVVM architecture but uses it where required, at least for now. I'm planning to rewrite a few things; it may then be a proper MVVM-based project, but for now, it has most of the touch of MVVM.
 
 ## GitHub Releases
-The latest stable release of Linkora is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.0.3). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.0.3/Linkora-v0.0.3.apk)
+The latest release of Linkora is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.1.0). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.0.3/Linkora-v0.1.0.apk)
 
 ## Screenshots
 
 ### Home Screen
 
-| Home Screen | Home Screen |
-|:-------------:|:-------------:|
-|![Screenshot_2023_09_03_05_12_45_35_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/865b8bf8-db4a-490c-b9e3-e52d4bf40820)|![Screenshot_2023_09_03_05_18_16_52_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/b1658c49-762f-41cd-9b40-8cc2eddb70b3)|
+| Home Screen | Home Screen | Sorting History in Home Screen |
+|:-------------:|:-------------:|:-------------:|
+|![Screenshot_2023_09_03_05_12_45_35_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/865b8bf8-db4a-490c-b9e3-e52d4bf40820)|![Screenshot_2023_09_05_04_52_27_77_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/165d459b-1bd4-4115-bdbc-e84bc3cd2e98)|![Screenshot_2023_09_05_05_02_10_47_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/d6103a8f-4671-442e-b021-67d3cadce05f)|
 
 ### Collections Screen
 
-| Collections Screen | Collections Screen |
-|:-------------:|:-------------:|
-|![Screenshot_2023_09_03_05_19_27_10_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/a6d051b9-2749-44fd-920e-92e4174bfade)|![Screenshot_2023_09_03_05_20_23_49_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/4f9a67db-7ac4-48a6-872b-ce11272dfab1)|
+| Collections Screen | Collections Screen | Sorting Folders in Collections Screen |
+|:-------------:|:-------------:|:-------------:|
+|![Screenshot_2023_09_05_04_55_03_91_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/29cc3391-63a1-4b27-8d51-751aab2727db)|![Screenshot_2023_09_05_04_55_35_37_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/9b1ff4d2-cc52-450b-9de8-3ae79c838242)|![Screenshot_2023_09_05_04_56_05_85_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/f97d91fd-54b3-4c3c-8d8c-097f2ade1396)|
 
 ### Saved Links Screen
 
-| Saved Links Screen | Saved Links Screen (Light Theme) |
-|:-------------:|:-------------:|
-|![Screenshot_2023_09_03_05_25_37_52_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/b8736cb1-6b6b-4567-9a9a-6c9e295fd1b9)|![Screenshot_2023_09_03_05_26_06_31_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/0bed95e5-046b-47b4-82ac-a3ab1660e050)|
+| Saved Links Screen | Saved Links Screen (Light Theme) |  Sorting Links in Saved Links Screen |
+|:-------------:|:-------------:|:-------------:|
+| ![Screenshot_2023_09_05_04_56_27_34_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/b1bd52aa-5871-4214-ac34-5dd7b0efd70b)|![Screenshot_2023_09_05_04_57_34_08_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/8a0df4b6-6530-4af1-bbbb-2bdfb4c9de3e)|![Screenshot_2023_09_05_04_56_48_19_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/6f906fc0-88ed-4999-8b6c-60d79b396546)|
 
 ### Important Links Screen
 
-| Important Links Screen |
-|:-------------:|
-|![Screenshot_2023_09_03_05_36_26_55_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/42695e62-4299-44ae-8494-f8f99cbdade0)|
+| Important Links Screen | Sorting Links in Important Links Screen |
+|:-------------:|:-------------:|
+|![Screenshot_2023_09_05_04_59_21_66_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/219aed06-72de-48c0-b96f-6a485cc580cd)|![Screenshot_2023_09_05_04_58_21_42_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/fde56557-3c73-4e63-8e43-5eda796f5dd5)|
 
 ### Archive Screen
 
 | Archived Link Screen | Archived Folder Screen |
 |:-------------:|:-------------:|
-|![Screenshot_2023_09_03_05_33_09_23_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/634a5eb8-34e1-4ed8-8c4e-aa094e322520)|![Screenshot_2023_07_18_18_34_46_84_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/906de99b-c959-4274-af22-6f189108a2ce)|
+|![Screenshot_2023_09_05_05_00_07_24_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/5d93df76-4284-438a-980b-3d4a706c7788)|![Screenshot_2023_09_05_05_01_38_72_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/145ab639-0853-4c15-953d-2c352515d1c3)|
 
-### Specific Folder Links
+### Custom Folder
 
-| Specific Folder Links  |
-|:-------------:|
-|![Screenshot_2023_09_03_05_35_11_78_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/912c5d35-12fd-44ca-899f-05191b31068a)|
+| Links in a Custom Folder  | Sorting Links in a Custom Folder |
+|:-------------:|:-------------:|
+|![Screenshot_2023_09_06_00_26_26_48_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/4b5057bb-191e-47c7-ba3a-db20a6302dd6)|![Screenshot_2023_09_06_00_26_42_72_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/28feb961-693f-4c9e-aa6c-d495469455d5)|
 
 ### Settings Screen
 
@@ -83,7 +83,8 @@ The latest stable release of Linkora is available on [GitHub Releases](https://g
 |![Screenshot_2023_09_03_05_28_54_74_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/d2d2b7a6-a438-4249-8532-bc226e11f34e)|![Screenshot_2023_09_03_05_30_03_73_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/a2cc8933-f3ec-4faf-889f-1d689ee966ce)|
 
 ## Upcoming Updates
-- Searching and sorting
+- [x] Sorting
+- Searching
 - Better title and image parsing of links
 - Subfolders
 - Pinned folders

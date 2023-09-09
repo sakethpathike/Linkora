@@ -24,7 +24,7 @@ android {
             useSupportLibrary true
         }
         sourceSets {
-            androidTest.assets.srcDirs+=files("$projectDir/schemas".toString())
+            androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
         }
     }
 
@@ -82,7 +82,7 @@ dependencies {
     implementation "io.ktor:ktor-client-content-negotiation:$ktor_version"
     implementation "io.ktor:ktor-serialization-kotlinx-json:$ktor_version"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.5.0"
-    
+
     implementation "com.google.accompanist:accompanist-webview:0.31.2-alpha"
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.6.1"
     implementation 'com.google.accompanist:accompanist-placeholder:0.26.3-beta'
@@ -107,7 +107,7 @@ dependencies {
 
     implementation "com.google.accompanist:accompanist-pager:0.25.0" // Pager
     implementation "com.google.accompanist:accompanist-pager-indicators:0.25.0" // Pager Indicators
-    
+
     def room_version = "2.5.1"
     implementation "androidx.room:room-runtime:$room_version"
     implementation "androidx.room:room-ktx:$room_version"
