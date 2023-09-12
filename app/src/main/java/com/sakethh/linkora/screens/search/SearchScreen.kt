@@ -85,6 +85,12 @@ fun SearchScreen(navController: NavController) {
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
+    val selectedLinkType = rememberSaveable {
+        mutableStateOf("")
+    }
+    val selectedFolderName = rememberSaveable {
+        mutableStateOf("")
+    }
     LinkoraTheme {
         Column {
             SearchBar(
@@ -128,6 +134,8 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    selectedLinkType.value =
+                                        SearchScreenVM.SelectedLinkType.IMP_LINKS.name
                                     HomeScreenVM.tempImpLinkData.webURL =
                                         it.webURL
                                     HomeScreenVM.tempImpLinkData.baseURL =
@@ -184,6 +192,24 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    when {
+                                        it.isLinkedWithArchivedFolder -> {
+                                            selectedLinkType.value =
+                                                SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS.name
+                                            selectedFolderName.value = it.keyOfArchiveLinkedFolder
+                                        }
+
+                                        it.isLinkedWithFolders -> {
+                                            selectedLinkType.value =
+                                                SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS.name
+                                            selectedFolderName.value = it.keyOfLinkedFolder
+                                        }
+
+                                        it.isLinkedWithSavedLinks -> {
+                                            selectedLinkType.value =
+                                                SearchScreenVM.SelectedLinkType.SAVED_LINKS.name
+                                        }
+                                    }
                                     HomeScreenVM.tempImpLinkData.webURL =
                                         it.webURL
                                     HomeScreenVM.tempImpLinkData.baseURL =
@@ -367,14 +393,20 @@ fun SearchScreen(navController: NavController) {
             onNoteDeleteCardClick = {
                 searchScreenVM.onNoteDeleteCardClick(
                     context = context,
-                    selectedWebURL = selectedWebURL.value
+                    selectedWebURL = selectedWebURL.value,
+                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    folderName = selectedFolderName.value
                 )
             },
             onRenameClick = {
                 shouldRenameDialogBoxAppear.value = true
             },
             onArchiveClick = {
-                searchScreenVM.onArchiveClick(context)
+                searchScreenVM.onArchiveClick(
+                    context,
+                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    folderName = selectedFolderName.value
+                )
             },
             importantLinks = HomeScreenVM.tempImpLinkData,
             noteForSaving = HomeScreenVM.tempImpLinkData.infoForSaving,
@@ -386,11 +418,19 @@ fun SearchScreen(navController: NavController) {
             coroutineScope = coroutineScope,
             existingFolderName = "",
             onNoteChangeClickForLinks = { webURL, newNote ->
-                searchScreenVM.onNoteChangeClickForLinks(webURL, newNote)
+                searchScreenVM.onNoteChangeClickForLinks(
+                    webURL, newNote,
+                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    folderName = selectedFolderName.value
+                )
             },
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             onTitleChangeClickForLinks = { webURL, newTitle ->
-                searchScreenVM.onTitleChangeClickForLinks(webURL, newTitle)
+                searchScreenVM.onTitleChangeClickForLinks(
+                    webURL, newTitle,
+                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    folderName = selectedFolderName.value
+                )
             }, onTitleRenamed = {}
         )
         DeleteDialogBox(
@@ -400,7 +440,9 @@ fun SearchScreen(navController: NavController) {
                 searchScreenVM.onDeleteClick(
                     context = context,
                     selectedWebURL = selectedWebURL.value,
-                    shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
+                    shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
+                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    folderName = selectedFolderName.value
                 )
             })
     }
