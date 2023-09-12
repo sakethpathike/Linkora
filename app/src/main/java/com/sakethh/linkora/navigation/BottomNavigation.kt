@@ -1,7 +1,6 @@
 package com.sakethh.linkora.navigation
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -9,7 +8,6 @@ import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -30,7 +28,6 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationBar(
             modifier = Modifier.fillMaxWidth()/*.requiredHeight(55.dp)*/
         ) {
-            NavigationVM.btmNavBarContainerColor.value = NavigationBarDefaults.containerColor
             if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 NavigationBarItem(selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
                     onClick = {
@@ -55,12 +52,12 @@ fun BottomNavigationBar(navController: NavController) {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name, onClick = {
                         if (currentRoute != it.navigationRoute.name) navController.navigate(it.navigationRoute.name)
+
+                        if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name && it.navigationRoute == NavigationRoutes.SEARCH_SCREEN) {
+                            SearchScreenVM.isSearchEnabled.value = true
+                        }
                     }, icon = {
                         Icon(
-                            modifier = Modifier.combinedClickable(onClick = {}, onDoubleClick = {
-                                if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name) SearchScreenVM.isSearchEnabled.value =
-                                    true
-                            }),
                             imageVector = if (currentRoute == it.navigationRoute.name) {
                                 it.selectedIcon
                             } else {
@@ -68,10 +65,7 @@ fun BottomNavigationBar(navController: NavController) {
                             }, contentDescription = null
                         )
                     }, label = {
-                        Text(modifier = Modifier.combinedClickable(onClick = {}, onDoubleClick = {
-                            if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name) SearchScreenVM.isSearchEnabled.value =
-                                true
-                        }), text = it.itemName, style = MaterialTheme.typography.titleSmall)
+                        Text(text = it.itemName, style = MaterialTheme.typography.titleSmall)
                     })
             }
         }

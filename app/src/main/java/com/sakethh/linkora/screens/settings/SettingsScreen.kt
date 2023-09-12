@@ -262,14 +262,14 @@ fun SettingsScreen(navController: NavController) {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(15.dp)
+                            .clickable {
+                                privacySectionData.onSwitchStateChange()
+                            }
                             .animateContentSize(),
                         shape = RoundedCornerShape(10.dp)
                     ) {
                         Row(
                             modifier = Modifier
-                                .clickable {
-                                    privacySectionData.onSwitchStateChange()
-                                }
                                 .fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
@@ -279,17 +279,17 @@ fun SettingsScreen(navController: NavController) {
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(
+                                    top = 15.dp,
                                     start = 15.dp
                                 )
                             )
                             Switch(
                                 checked = privacySectionData.isSwitchEnabled.value,
                                 onCheckedChange = {
-                                    privacySectionData.isSwitchEnabled.value =
-                                        !privacySectionData.isSwitchEnabled.value
                                     privacySectionData.onSwitchStateChange()
                                 },
                                 modifier = Modifier.padding(
+                                    top = 15.dp,
                                     end = 15.dp
                                 )
                             )

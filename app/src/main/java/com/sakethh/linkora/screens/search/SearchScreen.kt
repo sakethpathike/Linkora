@@ -2,10 +2,12 @@ package com.sakethh.linkora.screens.search
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -42,6 +44,7 @@ import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -86,7 +89,12 @@ fun SearchScreen(navController: NavController) {
         Column {
             SearchBar(
                 modifier = Modifier
-                    .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                    .animateContentSize()
+                    .padding(
+                        top = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
+                        start = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
+                        end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp
+                    )
                     .fillMaxWidth(),
                 query = query.value,
                 onQueryChange = {
@@ -112,8 +120,7 @@ fun SearchScreen(navController: NavController) {
                 content = {
                     LazyColumn(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background)
+                            .fillMaxSize()
                     ) {
                         items(impLinksData) {
                             LinkUIComponent(
@@ -237,28 +244,30 @@ fun SearchScreen(navController: NavController) {
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                if (recentlyVisitedLinksData.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                    item {
-                        androidx.compose.foundation.layout.Row(
-                            modifier = Modifier
-                                .clickable {
+                item {
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+                item {
+                    androidx.compose.foundation.layout.Row(
+                        modifier = Modifier
+                            .clickable {
+                                if (recentlyVisitedLinksData.isNotEmpty()) {
                                     shouldSortingBottomSheetAppear.value = true
                                 }
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                            verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "History",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(start = 15.dp)
-                            )
+                            }
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = "History",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(start = 15.dp)
+                        )
+                        if (recentlyVisitedLinksData.isNotEmpty()) {
                             androidx.compose.material3.IconButton(onClick = {
                                 shouldSortingBottomSheetAppear.value = true
                             }) {
@@ -269,9 +278,11 @@ fun SearchScreen(navController: NavController) {
                             }
                         }
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
+                if (recentlyVisitedLinksData.isNotEmpty()) {
                     items(recentlyVisitedLinksData) {
                         LinkUIComponent(
                             title = it.title,
@@ -328,6 +339,10 @@ fun SearchScreen(navController: NavController) {
                             }
                         )
                     }
+                } else {
+                    item {
+                        DataEmptyScreen(text = "No Links were found in History.")
+                    }
                 }
                 item {
                     Spacer(modifier = Modifier.height(225.dp))
@@ -367,7 +382,7 @@ fun SearchScreen(navController: NavController) {
             linkTitle = HomeScreenVM.tempImpLinkData.title
         )
         RenameDialogBox(
-            shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+            shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,
             existingFolderName = "",
             onNoteChangeClickForLinks = { webURL, newNote ->

@@ -298,6 +298,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear
         )
         OptionsBtmSheetUI(
+            importantLinks = HomeScreenVM.tempImpLinkData,
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
@@ -322,7 +323,6 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                     )
                 )
             },
-            importantLinks = null,
             onArchiveClick = {
                 homeScreenVM.onArchiveClick(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,

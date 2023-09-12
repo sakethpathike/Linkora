@@ -21,8 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScreenVM()) :
-    ViewModel() {
+class HomeScreenVM : ViewModel() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     enum class HomeScreenType {
@@ -116,7 +115,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                             webURL = webURL, newTitle = newTitle
                         )
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -135,7 +134,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                     CustomFunctionsForLocalDB.localDB.crudDao()
                         .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -203,7 +202,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                         ).show()
                     }
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -227,7 +226,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                     CustomFunctionsForLocalDB.localDB.crudDao()
                         .deleteALinkFromImpLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -300,7 +299,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -348,7 +347,7 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    specificScreenVM.changeRetrievedData(
+                    SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -356,24 +355,6 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                 }
                 Unit
             }
-        }
-    }
-
-    fun changeRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
-        viewModelScope.launch {
-            awaitAll(async {
-                specificScreenVM.changeRetrievedData(
-                    sortingPreferences = sortingPreferences,
-                    folderName = "",
-                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN
-                )
-            }, async {
-                specificScreenVM.changeRetrievedData(
-                    sortingPreferences = sortingPreferences,
-                    folderName = "",
-                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                )
-            })
         }
     }
 }

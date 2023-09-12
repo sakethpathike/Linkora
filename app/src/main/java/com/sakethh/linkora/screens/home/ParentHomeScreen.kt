@@ -32,6 +32,9 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -42,6 +45,7 @@ import kotlinx.coroutines.launch
 fun ParentHomeScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = viewModel()
+    val specificScreenVM: SpecificScreenVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -103,7 +107,16 @@ fun ParentHomeScreen(navController: NavController) {
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = {
-                homeScreenVM.changeRetrievedData(it)
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                )
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                )
             },
             bottomModalSheetState = sortingBtmSheetState
         )
