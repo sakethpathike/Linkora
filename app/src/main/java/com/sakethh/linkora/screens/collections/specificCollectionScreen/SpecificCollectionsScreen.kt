@@ -25,6 +25,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,6 +62,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpecificScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificScreenVM = viewModel()
+    LaunchedEffect(key1 = Unit) {
+        specificCollectionsScreenVM.changeRetrievedData(
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+            folderName = SpecificScreenVM.currentClickedFolderName.value
+        )
+    }
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }

@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import com.sakethh.linkora.screens.collections.CollectionsScreen
 import com.sakethh.linkora.screens.collections.archiveScreen.ParentArchiveScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreen
-import com.sakethh.linkora.screens.home.HomeScreen
+import com.sakethh.linkora.screens.home.ParentHomeScreen
 import com.sakethh.linkora.screens.search.SearchScreen
 import com.sakethh.linkora.screens.settings.SettingsScreen
 
@@ -19,7 +19,7 @@ fun MainNavigation(navController: NavHostController) {
         startDestination = NavigationVM.startDestination.value
     ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
-            HomeScreen()
+            ParentHomeScreen(navController = navController)
         }
         composable(route = NavigationRoutes.COLLECTIONS_SCREEN.name) {
             CollectionsScreen(navController = navController)

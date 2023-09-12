@@ -10,66 +10,92 @@ import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HomeScreenVM : ViewModel() {
+class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScreenVM()) :
+    ViewModel() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
-    private val _linksData = MutableStateFlow(emptyList<LinksTable>())
-    val recentlySavedLinksData = _linksData.asStateFlow()
+    enum class HomeScreenType {
+        SAVED_LINKS, IMP_LINKS
+    }
 
-    private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
-    val recentlySavedImpLinksData = _impLinksData.asStateFlow()
+    val parentHomeScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
+        ChildHomeScreen(homeScreenType = HomeScreenType.SAVED_LINKS, navController = it)
+    }), ArchiveScreenModal(name = "Important Links", screen = {
+        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS, navController = it)
+    }))
 
     companion object {
-        val tempImpLinkData = ImportantLinks(
+        var tempImpLinkData = ImportantLinks(
             title = "",
             webURL = "",
             baseURL = "",
             imgURL = "",
             infoForSaving = ""
         )
+        var savedLinksData = LinksTable(
+            title = "",
+            webURL = "",
+            baseURL = "",
+            imgURL = "",
+            infoForSaving = "",
+            isLinkedWithSavedLinks = false,
+            isLinkedWithFolders = false,
+            keyOfLinkedFolder = "",
+            isLinkedWithImpFolder = false,
+            keyOfImpLinkedFolder = "",
+            isLinkedWithArchivedFolder = false,
+            keyOfArchiveLinkedFolder = ""
+        )
     }
 
     init {
-        when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-            in 0..11 -> {
-                currentPhaseOfTheDay.value = "Good Morning"
-            }
-
-            in 12..15 -> {
-                currentPhaseOfTheDay.value = "Good Afternoon"
-            }
-
-            in 16..22 -> {
-                currentPhaseOfTheDay.value = "Good Evening"
-            }
-
-            in 23 downTo 0 -> {
-                currentPhaseOfTheDay.value = "Good Night?"
-            }
-
-            else -> {
-                currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
-            }
-        }
-
         viewModelScope.launch {
-            CustomFunctionsForLocalDB.localDB.crudDao().getLatestImportantLinks().collect {
-                _impLinksData.emit(it.reversed())
-            }
-        }
+            awaitAll(async {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                )
+            }, async {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                )
+            }, async {
+                when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+                    in 0..11 -> {
+                        currentPhaseOfTheDay.value = "Good Morning"
+                    }
 
-        viewModelScope.launch {
-            CustomFunctionsForLocalDB.localDB.crudDao().getLatestSavedLinks().collect {
-                _linksData.emit(it.reversed())
-            }
+                    in 12..15 -> {
+                        currentPhaseOfTheDay.value = "Good Afternoon"
+                    }
+
+                    in 16..22 -> {
+                        currentPhaseOfTheDay.value = "Good Evening"
+                    }
+
+                    in 23 downTo 0 -> {
+                        currentPhaseOfTheDay.value = "Good Night?"
+                    }
+
+                    else -> {
+                        currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
+                    }
+                }
+            })
         }
     }
 
@@ -250,7 +276,7 @@ class HomeScreenVM : ViewModel() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
                             archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
                                 title = tempImpLinkData.title,
@@ -271,7 +297,7 @@ class HomeScreenVM : ViewModel() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
                             archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
                                 title = tempImpLinkData.title,
@@ -293,7 +319,7 @@ class HomeScreenVM : ViewModel() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
                             archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
                                 title = tempImpLinkData.title,

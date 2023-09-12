@@ -12,6 +12,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +39,7 @@ class SettingsScreenVM : ViewModel() {
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
 
     companion object {
-        const val currentAppVersion = "0.1.0"
+        const val currentAppVersion = "0.2.0"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
@@ -118,6 +119,30 @@ class SettingsScreenVM : ViewModel() {
         )
     }
 
+    val privacySection: (context: Context) -> SettingsUIElement = {
+        SettingsUIElement(
+            title = "Send crash reports",
+            doesDescriptionExists = true,
+            description = "",
+            isSwitchNeeded = true,
+            isSwitchEnabled = isSendCrashReportsEnabled,
+            onSwitchStateChange = {
+                viewModelScope.launch {
+                    Settings.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(
+                            SettingsPreferences.SEND_CRASH_REPORTS.name
+                        ),
+                        dataStore = it.dataStore,
+                        newValue = !isSendCrashReportsEnabled.value
+                    )
+                    isSendCrashReportsEnabled.value =
+                        Settings.readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                            dataStore = it.dataStore
+                        ) == true
+                }
+            })
+    }
     val generalSection: (context: Context) -> List<SettingsUIElement> = {
         listOf(
             SettingsUIElement(title = "Use in-app browser",
@@ -214,7 +239,7 @@ class SettingsScreenVM : ViewModel() {
 
     enum class SettingsPreferences {
         DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS,
-        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE
+        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS
     }
 
     enum class SortingPreferences {
@@ -232,6 +257,7 @@ class SettingsScreenVM : ViewModel() {
         val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
         val isBtmSheetEnabledForSavingLinks = mutableStateOf(true)
         val isHomeScreenEnabled = mutableStateOf(true)
+        val isSendCrashReportsEnabled = mutableStateOf(true)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -325,6 +351,13 @@ class SettingsScreenVM : ViewModel() {
                         isBtmSheetEnabledForSavingLinks.value =
                             readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
+                                dataStore = context.dataStore
+                            ) ?: true
+                    },
+                    async {
+                        isSendCrashReportsEnabled.value =
+                            readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
                                 dataStore = context.dataStore
                             ) ?: true
                     },

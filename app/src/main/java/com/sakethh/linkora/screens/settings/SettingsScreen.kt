@@ -255,8 +255,13 @@ fun SettingsScreen(navController: NavController) {
                             fontSize = 16.sp,
                             modifier = Modifier.padding(start = 15.dp, top = 20.dp)
                         )
+                        SettingComponent(
+                            settingsUIElement = settingsScreenVM.privacySection(context),
+                            data = generalSectionData,
+                            isSingleComponent = true
+                        )
                         Text(
-                            text = "Every single bit of data is stored locally on your device.",
+                            text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(

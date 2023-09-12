@@ -37,9 +37,13 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
         lifecycleScope.launch {
             SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
+        }
+        if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
+            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+            firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
+            firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
         }
         setContent {
             val context = LocalContext.current

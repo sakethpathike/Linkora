@@ -44,18 +44,12 @@ class SpecificScreenVM : ViewModel() {
         val selectedArchiveFolderName = mutableStateOf("")
     }
 
-    init {
-        changeRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-            folderName = currentClickedFolderName.value
-        )
-    }
-
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
         folderName: String,
+        screenType: SpecificScreenType = Companion.screenType.value,
     ) {
-        when (screenType.value) {
+        when (screenType) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {

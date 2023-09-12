@@ -62,6 +62,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
@@ -123,6 +124,12 @@ fun NewLinkBtmSheet(
                     if (inIntentActivity.value) {
                         coroutineScope.launch {
                             SettingsScreenVM.Settings.readAllPreferencesValues(context)
+                        }.invokeOnCompletion {
+                            if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
+                                val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+                                firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
+                                firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
+                            }
                         }
                     }
                 },
