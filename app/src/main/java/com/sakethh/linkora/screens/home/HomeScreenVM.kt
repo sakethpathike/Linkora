@@ -10,7 +10,6 @@ import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
-import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,9 +26,6 @@ class HomeScreenVM : ViewModel() {
 
     private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
     val recentlySavedImpLinksData = _impLinksData.asStateFlow()
-
-    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
-    val historyLinksData = _historyLinksData.asStateFlow()
 
     companion object {
         val tempImpLinkData = ImportantLinks(
@@ -75,54 +71,8 @@ class HomeScreenVM : ViewModel() {
                 _linksData.emit(it.reversed())
             }
         }
-        changeHistoryRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                SettingsScreenVM.Settings.selectedSortingType.value
-            )
-        )
     }
 
-    fun changeHistoryRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
-        when (sortingPreferences) {
-            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByAToZ()
-                        .collect {
-                            _historyLinksData.emit(it)
-                        }
-                }
-            }
-
-            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByZToA()
-                        .collect {
-                            _historyLinksData.emit(it)
-                        }
-                }
-            }
-
-            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting()
-                        .sortByLatestToOldest()
-                        .collect {
-                            _historyLinksData.emit(it)
-                        }
-                }
-            }
-
-            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting()
-                        .sortByOldestToLatest()
-                        .collect {
-                            _historyLinksData.emit(it)
-                        }
-                }
-            }
-        }
-    }
 
     fun onForceOpenInExternalBrowser(recentlyVisited: RecentlyVisited) {
         viewModelScope.launch {
@@ -139,11 +89,6 @@ class HomeScreenVM : ViewModel() {
                             infoForSaving = recentlyVisited.infoForSaving
                         )
                     )
-                changeHistoryRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
-                    )
-                )
             }
         }
     }
@@ -165,18 +110,7 @@ class HomeScreenVM : ViewModel() {
             }
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .renameALinkTitleFromRecentlyVisited(
-                            webURL = webURL, newTitle = newTitle
-                        )
-                }.invokeOnCompletion {
-                    changeHistoryRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
-                }
+
                 Unit
             }
 
@@ -256,12 +190,6 @@ class HomeScreenVM : ViewModel() {
                         .deleteARecentlyVisitedLink(
                             webURL = selectedWebURL
                         )
-                }.invokeOnCompletion {
-                    changeHistoryRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
                 }
                 Unit
             }
@@ -352,11 +280,7 @@ class HomeScreenVM : ViewModel() {
                                 imgURL = tempImpLinkData.imgURL,
                                 infoForSaving = tempImpLinkData.infoForSaving
                             ), context = context, onTaskCompleted = {
-                                changeHistoryRetrievedData(
-                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                        SettingsScreenVM.Settings.selectedSortingType.value
-                                    )
-                                )
+
                             }
                         )
                     }, async {

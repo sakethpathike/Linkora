@@ -15,11 +15,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.datastore.preferences.createDataStore
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.navigation.BottomNavigationBar
@@ -37,9 +37,9 @@ class MainActivity : ComponentActivity() {
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SettingsScreenVM.Settings.dataStore = createDataStore("linkoraDataStore")
+        FirebaseCrashlytics.getInstance().setCrashlyticsCollectionEnabled(true)
         lifecycleScope.launch {
-            SettingsScreenVM.Settings.readAllPreferencesValues()
+            SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
         }
         setContent {
             val context = LocalContext.current

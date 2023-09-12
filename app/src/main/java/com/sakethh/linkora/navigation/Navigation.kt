@@ -8,6 +8,7 @@ import com.sakethh.linkora.screens.collections.CollectionsScreen
 import com.sakethh.linkora.screens.collections.archiveScreen.ParentArchiveScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreen
 import com.sakethh.linkora.screens.home.HomeScreen
+import com.sakethh.linkora.screens.search.SearchScreen
 import com.sakethh.linkora.screens.settings.SettingsScreen
 
 @Composable
@@ -31,6 +32,9 @@ fun MainNavigation(navController: NavHostController) {
         }
         composable(route = NavigationRoutes.ARCHIVE_SCREEN.name) {
             ParentArchiveScreen(navController = navController)
+        }
+        composable(route = NavigationRoutes.SEARCH_SCREEN.name) {
+            SearchScreen(navController = navController)
         }
     }
 

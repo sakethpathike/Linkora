@@ -12,17 +12,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
-import androidx.datastore.preferences.createDataStore
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.settings.SettingsScreenVM
 
 class IntentActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        SettingsScreenVM.Settings.dataStore = createDataStore("linkoraDataStore")
         WindowCompat.setDecorFitsSystemWindows(window, false)
         ViewCompat.setOnApplyWindowInsetsListener(window.decorView) { v, insets ->
             v.setPadding(0, 0, 0, 0)

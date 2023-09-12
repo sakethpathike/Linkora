@@ -122,7 +122,7 @@ fun NewLinkBtmSheet(
                 async {
                     if (inIntentActivity.value) {
                         coroutineScope.launch {
-                            SettingsScreenVM.Settings.readAllPreferencesValues()
+                            SettingsScreenVM.Settings.readAllPreferencesValues(context)
                         }
                     }
                 },

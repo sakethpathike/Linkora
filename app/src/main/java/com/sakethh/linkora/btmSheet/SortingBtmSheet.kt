@@ -20,6 +20,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -37,6 +38,7 @@ fun SortingBottomSheetUI(
 ) {
     val coroutineScope = rememberCoroutineScope()
     val sortingBtmSheetVM: SortingBtmSheetVM = viewModel()
+    val context = LocalContext.current
     LinkoraTheme {
         if (shouldBottomSheetVisible.value) {
             ModalBottomSheet(sheetState = bottomModalSheetState, onDismissRequest = {
@@ -52,7 +54,7 @@ fun SortingBottomSheetUI(
                     fontSize = 14.sp,
                     modifier = Modifier.padding(start = 15.dp)
                 )
-                sortingBtmSheetVM.sortingBottomSheetData.forEach {
+                sortingBtmSheetVM.sortingBottomSheetData(context).forEach {
                     Column(
                         modifier = Modifier
                             .clickable {

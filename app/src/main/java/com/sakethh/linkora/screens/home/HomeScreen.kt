@@ -7,9 +7,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,13 +18,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -38,7 +32,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -56,7 +49,6 @@ import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.LinkCard
-import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.ImportantLinks
@@ -64,7 +56,6 @@ import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
-import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -78,7 +69,6 @@ fun HomeScreen() {
     val homeScreenVM: HomeScreenVM = viewModel()
     val recentlySavedImpsLinksData = homeScreenVM.recentlySavedImpLinksData.collectAsState().value
     val recentlySavedLinksData = homeScreenVM.recentlySavedLinksData.collectAsState().value
-    val recentlyVisitedLinksData = homeScreenVM.historyLinksData.collectAsState().value
     val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLinks =
         rememberModalBottomSheetState()
@@ -234,11 +224,6 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
-                                        homeScreenVM.changeHistoryRetrievedData(
-                                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                                SettingsScreenVM.Settings.selectedSortingType.value
-                                            )
-                                        )
                                     },
                                     onForceOpenInExternalBrowserClicked = {
                                         homeScreenVM.onForceOpenInExternalBrowser(
@@ -324,11 +309,6 @@ fun HomeScreen() {
                                                 uriHandler = uriHandler
                                             )
                                         }
-                                        homeScreenVM.changeHistoryRetrievedData(
-                                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                                SettingsScreenVM.Settings.selectedSortingType.value
-                                            )
-                                        )
                                     }, onForceOpenInExternalBrowserClicked = {
                                         homeScreenVM.onForceOpenInExternalBrowser(
                                             RecentlyVisited(
@@ -353,90 +333,7 @@ fun HomeScreen() {
                         )
                     }
                 }
-                if (recentlyVisitedLinksData.isNotEmpty()) {
-                    item {
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                    item {
-                        Row(
-                            modifier = Modifier
-                                .clickable {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "History",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(start = 15.dp)
-                            )
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
-                            }
-                        }
-                    }
-                    item {
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                    items(recentlyVisitedLinksData) {
-                        LinkUIComponent(
-                            title = it.title,
-                            webBaseURL = it.baseURL,
-                            imgURL = it.imgURL,
-                            onMoreIconCLick = {
-                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
-                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                HomeScreenVM.tempImpLinkData.title = it.title
-                                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
-                                selectedURLNote.value = it.infoForSaving
-                                selectedWebURL.value = it.webURL
-                                selectedCardType.value = HomeScreenBtmSheetType.RECENT_VISITS.name
-                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                coroutineScope.launch {
-                                    awaitAll(async {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                    }, async {
-                                        optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                    })
-                                }
-                            },
-                            onLinkClick = {
-                                coroutineScope.launch {
-                                    openInWeb(
-                                        recentlyVisitedData = RecentlyVisited(
-                                            title = it.title,
-                                            webURL = it.webURL,
-                                            baseURL = it.baseURL,
-                                            imgURL = it.imgURL,
-                                            infoForSaving = it.infoForSaving
-                                        ),
-                                        context = context,
-                                        uriHandler = uriHandler
-                                    )
-                                }
-                            },
-                            webURL = it.webURL,
-                            onForceOpenInExternalBrowserClicked = {
-                                homeScreenVM.onForceOpenInExternalBrowser(
-                                    RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    )
-                                )
-                            }
-                        )
-                    }
-                }
-                if (recentlySavedImpsLinksData.isEmpty() && recentlySavedLinksData.isEmpty() && recentlyVisitedLinksData.isEmpty()) {
+                if (recentlySavedImpsLinksData.isEmpty() && recentlySavedLinksData.isEmpty()) {
                     item {
                         DataEmptyScreen(text = "Welcome back to Linkora! No recent activity related to saving links has been found. Your recent links will show up here.")
                     }
@@ -561,7 +458,7 @@ fun HomeScreen() {
     SortingBottomSheetUI(
         shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
         onSelectedAComponent = {
-            homeScreenVM.changeHistoryRetrievedData(sortingPreferences = it)
+
         },
         bottomModalSheetState = sortingBtmSheetState
     )

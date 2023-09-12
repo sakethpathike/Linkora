@@ -58,8 +58,8 @@ fun SettingsScreen(navController: NavController) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
-    val themeSectionData = settingsScreenVM.themeSection
-    val generalSectionData = settingsScreenVM.generalSection
+    val themeSectionData = settingsScreenVM.themeSection(context)
+    val generalSectionData = settingsScreenVM.generalSection(context)
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
         mutableStateOf(false)
@@ -109,6 +109,7 @@ fun SettingsScreen(navController: NavController) {
                             icon = Icons.Outlined.Update,
                             title = "Check for latest version",
                             onClick = {
+                                throw IllegalStateException("testing crash")
                                 shouldVersionCheckerDialogAppear.value = true
                                 if (isNetworkAvailable(context)) {
                                     coroutineScope.launch {
