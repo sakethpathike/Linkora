@@ -174,6 +174,7 @@ fun FloatingActionBtn(
                         if (isMainFabRotated.value) {
                             shouldScreenTransparencyDecreasedBoxVisible.value = false
                             shouldDialogForNewLinkAppear.value = true
+                            isMainFabRotated.value = false
                         } else {
                             coroutineScope.launch {
                                 kotlinx.coroutines.awaitAll(async {

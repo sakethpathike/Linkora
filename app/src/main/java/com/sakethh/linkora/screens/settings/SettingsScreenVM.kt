@@ -122,7 +122,7 @@ class SettingsScreenVM : ViewModel() {
     val privacySection: (context: Context) -> SettingsUIElement = {
         SettingsUIElement(
             title = "Send crash reports",
-            doesDescriptionExists = true,
+            doesDescriptionExists = false,
             description = "",
             isSwitchNeeded = true,
             isSwitchEnabled = isSendCrashReportsEnabled,

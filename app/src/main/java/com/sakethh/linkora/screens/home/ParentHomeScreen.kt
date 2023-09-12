@@ -103,7 +103,7 @@ fun ParentHomeScreen(navController: NavController) {
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = {
-
+                homeScreenVM.changeRetrievedData(it)
             },
             bottomModalSheetState = sortingBtmSheetState
         )

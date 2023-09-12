@@ -3,6 +3,9 @@ package com.sakethh.linkora.screens.settings
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -22,12 +25,14 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -68,6 +73,7 @@ fun SettingsScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val privacySectionData = settingsScreenVM.privacySection(context)
     LinkoraTheme {
         Scaffold(topBar = {
             TopAppBar(title = {
@@ -242,24 +248,52 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 item {
+                    Text(
+                        text = "Privacy",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                    )
+                }
+                item {
                     Card(
                         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(15.dp),
+                            .padding(15.dp)
+                            .animateContentSize(),
                         shape = RoundedCornerShape(10.dp)
                     ) {
-                        Text(
-                            text = "Privacy",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 15.dp, top = 20.dp)
-                        )
-                        SettingComponent(
-                            settingsUIElement = settingsScreenVM.privacySection(context),
-                            data = generalSectionData,
-                            isSingleComponent = true
-                        )
+                        Row(
+                            modifier = Modifier
+                                .clickable {
+                                    privacySectionData.onSwitchStateChange()
+                                }
+                                .fillMaxWidth(),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = privacySectionData.title,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 16.sp,
+                                modifier = Modifier.padding(
+                                    start = 15.dp
+                                )
+                            )
+                            Switch(
+                                checked = privacySectionData.isSwitchEnabled.value,
+                                onCheckedChange = {
+                                    privacySectionData.isSwitchEnabled.value =
+                                        !privacySectionData.isSwitchEnabled.value
+                                    privacySectionData.onSwitchStateChange()
+                                },
+                                modifier = Modifier.padding(
+                                    end = 15.dp
+                                )
+                            )
+                        }
                         Text(
                             text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
                             style = MaterialTheme.typography.titleSmall,

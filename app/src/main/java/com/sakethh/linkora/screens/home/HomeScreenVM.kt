@@ -60,42 +60,26 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
     }
 
     init {
-        viewModelScope.launch {
-            awaitAll(async {
-                specificScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
-                )
-            }, async {
-                specificScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                )
-            }, async {
-                when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-                    in 0..11 -> {
-                        currentPhaseOfTheDay.value = "Good Morning"
-                    }
+        when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+            in 0..11 -> {
+                currentPhaseOfTheDay.value = "Good Morning"
+            }
 
-                    in 12..15 -> {
-                        currentPhaseOfTheDay.value = "Good Afternoon"
-                    }
+            in 12..15 -> {
+                currentPhaseOfTheDay.value = "Good Afternoon"
+            }
 
-                    in 16..22 -> {
-                        currentPhaseOfTheDay.value = "Good Evening"
-                    }
+            in 16..22 -> {
+                currentPhaseOfTheDay.value = "Good Evening"
+            }
 
-                    in 23 downTo 0 -> {
-                        currentPhaseOfTheDay.value = "Good Night?"
-                    }
+            in 23 downTo 0 -> {
+                currentPhaseOfTheDay.value = "Good Night?"
+            }
 
-                    else -> {
-                        currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
-                    }
-                }
-            })
+            else -> {
+                currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
+            }
         }
     }
 
@@ -131,6 +115,12 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                         .renameALinkTitleFromSavedLinks(
                             webURL = webURL, newTitle = newTitle
                         )
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
@@ -144,6 +134,12 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                 viewModelScope.launch {
                     CustomFunctionsForLocalDB.localDB.crudDao()
                         .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
@@ -206,6 +202,12 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                             Toast.LENGTH_SHORT
                         ).show()
                     }
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
@@ -224,6 +226,12 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                 viewModelScope.launch {
                     CustomFunctionsForLocalDB.localDB.crudDao()
                         .deleteALinkFromImpLinks(webURL = selectedWebURL)
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
@@ -291,6 +299,12 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                         CustomFunctionsForLocalDB.localDB.crudDao()
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                     })
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
@@ -333,9 +347,33 @@ class HomeScreenVM(private val specificScreenVM: SpecificScreenVM = SpecificScre
                         CustomFunctionsForLocalDB.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                     })
+                }.invokeOnCompletion {
+                    specificScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    )
                 }
                 Unit
             }
+        }
+    }
+
+    fun changeRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+        viewModelScope.launch {
+            awaitAll(async {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = sortingPreferences,
+                    folderName = "",
+                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                )
+            }, async {
+                specificScreenVM.changeRetrievedData(
+                    sortingPreferences = sortingPreferences,
+                    folderName = "",
+                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                )
+            })
         }
     }
 }

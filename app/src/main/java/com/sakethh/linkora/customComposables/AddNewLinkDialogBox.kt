@@ -27,6 +27,7 @@ import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -124,12 +125,9 @@ fun AddNewLinkDialogBox(
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
                     )
-                    OutlinedTextField(
-                        readOnly = isDataExtractingForTheLink.value,
+                    OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                         modifier = Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 30.dp
+                            start = 20.dp, end = 20.dp, top = 30.dp
                         ),
                         label = {
                             Text(
@@ -147,12 +145,9 @@ fun AddNewLinkDialogBox(
                             linkTextFieldValue.value = it
                         })
                     if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                        OutlinedTextField(
-                            readOnly = isDataExtractingForTheLink.value,
+                        OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                             modifier = Modifier.padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                top = 15.dp
+                                start = 20.dp, end = 20.dp, top = 15.dp
                             ),
                             label = {
                                 Text(
@@ -170,12 +165,9 @@ fun AddNewLinkDialogBox(
                                 titleTextFieldValue.value = it
                             })
                     }
-                    OutlinedTextField(
-                        readOnly = isDataExtractingForTheLink.value,
+                    OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                         modifier = Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 15.dp
+                            start = 20.dp, end = 20.dp, top = 15.dp
                         ),
                         label = {
                             Text(
@@ -195,11 +187,8 @@ fun AddNewLinkDialogBox(
                     if (screenType == SpecificScreenType.ROOT_SCREEN) {
                         Row(
                             Modifier.padding(
-                                start = 20.dp,
-                                end = 20.dp,
-                                top = 30.dp
-                            ),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                                start = 20.dp, end = 20.dp, top = 30.dp
+                            ), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
                                 text = "Save in",
@@ -224,8 +213,7 @@ fun AddNewLinkDialogBox(
                                 Spacer(modifier = Modifier.width(10.dp))
                                 Text(
                                     text = if (selectedFolderName.value.length <= 9) selectedFolderName.value else selectedFolderName.value.trimSubstring(
-                                        0,
-                                        6
+                                        0, 6
                                     ) + "...",
                                     color = AlertDialogDefaults.textContentColor,
                                     style = MaterialTheme.typography.titleSmall,
@@ -250,28 +238,22 @@ fun AddNewLinkDialogBox(
                         }
                     }
                     if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                        Row(
-                            modifier = Modifier
-                                .clickable {
-                                    if (!isDataExtractingForTheLink.value) {
-                                        isAutoDetectTitleEnabled.value =
-                                            !isAutoDetectTitleEnabled.value
-                                    }
+                        Row(modifier = Modifier
+                            .clickable {
+                                if (!isDataExtractingForTheLink.value) {
+                                    isAutoDetectTitleEnabled.value = !isAutoDetectTitleEnabled.value
                                 }
-                                .fillMaxWidth()
-                                .padding(
-                                    top = 20.dp, start = 10.dp
+                            }
+                            .fillMaxWidth()
+                            .padding(
+                                top = 20.dp, start = 10.dp
 
-                                ),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(
-                                enabled = !isDataExtractingForTheLink.value,
+                            ), verticalAlignment = Alignment.CenterVertically) {
+                            androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink.value,
                                 checked = isAutoDetectTitleEnabled.value,
                                 onCheckedChange = {
                                     isAutoDetectTitleEnabled.value = it
-                                }
-                            )
+                                })
                             Text(
                                 text = "Force Auto-detect title",
                                 style = MaterialTheme.typography.titleSmall,
@@ -288,9 +270,7 @@ fun AddNewLinkDialogBox(
                         onClick = {
                             if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
-                                    context,
-                                    "where's the link bruhh?",
-                                    Toast.LENGTH_SHORT
+                                    context, "where's the link bruhh?", Toast.LENGTH_SHORT
                                 ).show()
                             } else if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isNotEmpty()) {
                                 isDataExtractingForTheLink.value = true
@@ -313,8 +293,7 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                 }
-                                            }
-                                        )
+                                            })
                                     }
 
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
@@ -336,8 +315,7 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            }
-                                        )
+                                            })
                                     }
 
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
@@ -355,8 +333,7 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            }
-                                        )
+                                            })
                                     }
 
                                     SpecificScreenType.INTENT_ACTIVITY -> {
@@ -378,8 +355,25 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                }
-                                            )
+                                                })
+                                        } else if (selectedFolderName.value == "Important Links") {
+                                            isDataExtractingForTheLink.value = true
+                                            customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                ImportantLinks(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    infoForSaving = noteTextFieldValue.value,
+                                                    baseURL = "",
+                                                    imgURL = ""
+                                                ),
+                                                context = context,
+                                                inImportantLinksScreen = true,
+                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                onTaskCompleted = {
+                                                    isDataExtractingForTheLink.value = false
+                                                    shouldDialogBoxAppear.value = false
+                                                    onTaskCompleted()
+                                                })
                                         } else {
                                             customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
                                                 title = titleTextFieldValue.value,
@@ -393,8 +387,7 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                }
-                                            )
+                                                })
                                         }
                                     }
                                 }
@@ -424,14 +417,11 @@ fun AddNewLinkDialogBox(
                     if (!isDataExtractingForTheLink.value) {
                         androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                             border = BorderStroke(
-                                width = 1.dp,
-                                color = MaterialTheme.colorScheme.secondary
+                                width = 1.dp, color = MaterialTheme.colorScheme.secondary
                             ),
                             modifier = Modifier
                                 .padding(
-                                    end = 20.dp,
-                                    top = 10.dp,
-                                    bottom = 30.dp
+                                    end = 20.dp, top = 10.dp, bottom = 30.dp
                                 )
                                 .align(Alignment.End),
                             onClick = {
@@ -468,13 +458,11 @@ fun AddNewLinkDialogBox(
                                     text = "Save in :",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 24.sp,
-                                    modifier = Modifier
-                                        .padding(
-                                            start = 20.dp
-                                        )
+                                    modifier = Modifier.padding(
+                                        start = 20.dp
+                                    )
                                 )
-                                Icon(
-                                    imageVector = Icons.Outlined.CreateNewFolder,
+                                Icon(imageVector = Icons.Outlined.CreateNewFolder,
                                     contentDescription = null,
                                     modifier = Modifier
                                         .clickable {
@@ -482,15 +470,12 @@ fun AddNewLinkDialogBox(
                                         }
                                         .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
                                         .size(30.dp),
-                                    tint = MaterialTheme.colorScheme.onSurface
-                                )
+                                    tint = MaterialTheme.colorScheme.onSurface)
                             }
                             Divider(
                                 modifier = Modifier.padding(
-                                    start = 20.dp,
-                                    end = 65.dp
-                                ),
-                                color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                    start = 20.dp, end = 65.dp
+                                ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
                             )
                             SelectableFolderUIComponent(
                                 onClick = {
@@ -512,6 +497,27 @@ fun AddNewLinkDialogBox(
                                 folderName = "Saved Links",
                                 imageVector = Icons.Outlined.Link,
                                 _isComponentSelected = selectedFolderName.value == "Saved Links"
+                            )
+                            SelectableFolderUIComponent(
+                                onClick = {
+                                    selectedFolderName.value = "Saved Links"
+                                    coroutineScope.launch {
+                                        if (btmModalSheetState.isVisible) {
+                                            btmModalSheetState.hide()
+                                        }
+                                    }.invokeOnCompletion {
+                                        coroutineScope.launch {
+                                            if (btmModalSheetState.isVisible) {
+                                                btmModalSheetState.hide()
+                                            }
+                                        }.invokeOnCompletion {
+                                            isDropDownMenuIconClicked.value = false
+                                        }
+                                    }
+                                },
+                                folderName = "Important Links",
+                                imageVector = Icons.Outlined.StarOutline,
+                                _isComponentSelected = selectedFolderName.value == "Important Links"
                             )
                             foldersTableData.forEach {
                                 SelectableFolderUIComponent(
@@ -535,11 +541,11 @@ fun AddNewLinkDialogBox(
                     }
                 }
             }
-            AddNewFolderDialogBox(
-                shouldDialogBoxAppear = isCreateANewFolderIconClicked,
+            AddNewFolderDialogBox(shouldDialogBoxAppear = isCreateANewFolderIconClicked,
                 newFolderName = {
                     selectedFolderName.value = it
-                }, onCreated = {
+                },
+                onCreated = {
                     onTaskCompleted()
                     coroutineScope.launch {
                         if (btmModalSheetState.isVisible) {

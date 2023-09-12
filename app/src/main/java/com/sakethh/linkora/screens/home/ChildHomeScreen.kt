@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -49,6 +50,7 @@ import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -62,6 +64,21 @@ import kotlinx.coroutines.launch
 fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: NavController) {
     val homeScreenVM: HomeScreenVM = viewModel()
     val specificScreenVM: SpecificScreenVM = viewModel()
+    LaunchedEffect(key1 = Unit) {
+        awaitAll(async {
+            specificScreenVM.changeRetrievedData(
+                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                    SettingsScreenVM.Settings.selectedSortingType.value
+                ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+            )
+        }, async {
+            specificScreenVM.changeRetrievedData(
+                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                    SettingsScreenVM.Settings.selectedSortingType.value
+                ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+            )
+        })
+    }
     val savedLinksData = specificScreenVM.savedLinksTable.collectAsState().value
     val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
     val uriHandler = LocalUriHandler.current
@@ -246,6 +263,9 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                         }
                     }
                 }
+                item {
+                    Spacer(modifier = Modifier.height(225.dp))
+                }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
                 Box(modifier = Modifier
@@ -317,7 +337,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 )
             },
             folderName = "",
-            linkTitle = HomeScreenVM.tempImpLinkData.title
+            linkTitle = selectedURLTitle.value
         )
     }
     DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,

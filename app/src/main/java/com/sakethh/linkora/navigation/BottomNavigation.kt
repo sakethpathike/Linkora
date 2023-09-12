@@ -52,27 +52,27 @@ fun BottomNavigationBar(navController: NavController) {
                     })
             }
             navigationVM.btmBarList.forEach {
-                NavigationBarItem(modifier = Modifier.combinedClickable(onClick = {
-                    if (currentRoute != it.navigationRoute.name) navController.navigate(it.navigationRoute.name)
-                }, onLongClick = {
-                    if (it.navigationRoute == NavigationRoutes.SEARCH_SCREEN) SearchScreenVM.isSearchEnabled.value =
-                        true
-                }, onDoubleClick = {
-                    if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name) SearchScreenVM.isSearchEnabled.value =
-                        true
-                }), selected = currentRoute == it.navigationRoute.name, onClick = {
-
-                }, icon = {
-                    Icon(
-                        imageVector = if (currentRoute == it.navigationRoute.name) {
-                            it.selectedIcon
-                        } else {
-                            it.nonSelectedIcon
-                        }, contentDescription = null
-                    )
-                }, label = {
-                    Text(text = it.itemName, style = MaterialTheme.typography.titleSmall)
-                })
+                NavigationBarItem(
+                    selected = currentRoute == it.navigationRoute.name, onClick = {
+                        if (currentRoute != it.navigationRoute.name) navController.navigate(it.navigationRoute.name)
+                    }, icon = {
+                        Icon(
+                            modifier = Modifier.combinedClickable(onClick = {}, onDoubleClick = {
+                                if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name) SearchScreenVM.isSearchEnabled.value =
+                                    true
+                            }),
+                            imageVector = if (currentRoute == it.navigationRoute.name) {
+                                it.selectedIcon
+                            } else {
+                                it.nonSelectedIcon
+                            }, contentDescription = null
+                        )
+                    }, label = {
+                        Text(modifier = Modifier.combinedClickable(onClick = {}, onDoubleClick = {
+                            if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name) SearchScreenVM.isSearchEnabled.value =
+                                true
+                        }), text = it.itemName, style = MaterialTheme.typography.titleSmall)
+                    })
             }
         }
     }

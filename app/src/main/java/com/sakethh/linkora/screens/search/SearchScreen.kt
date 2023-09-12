@@ -1,8 +1,11 @@
 package com.sakethh.linkora.screens.search
 
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,7 +41,9 @@ import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.home.HomeScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -80,7 +85,9 @@ fun SearchScreen(navController: NavController) {
     LinkoraTheme {
         Column {
             SearchBar(
-                modifier = Modifier.padding(top = 20.dp, start = 20.dp, end = 20.dp),
+                modifier = Modifier
+                    .padding(top = 10.dp, start = 10.dp, end = 10.dp)
+                    .fillMaxWidth(),
                 query = query.value,
                 onQueryChange = {
                     query.value = it
@@ -99,8 +106,7 @@ fun SearchScreen(navController: NavController) {
                 placeholder = {
                     Text(
                         text = "Search",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleMedium
+                        style = MaterialTheme.typography.titleSmall
                     )
                 },
                 content = {
@@ -114,10 +120,55 @@ fun SearchScreen(navController: NavController) {
                                 title = it.title,
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = { },
-                                onLinkClick = { },
+                                onMoreIconCLick = {
+                                    HomeScreenVM.tempImpLinkData.webURL =
+                                        it.webURL
+                                    HomeScreenVM.tempImpLinkData.baseURL =
+                                        it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL =
+                                        it.imgURL
+                                    HomeScreenVM.tempImpLinkData.title =
+                                        it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving =
+                                        it.infoForSaving
+                                    selectedURLNote.value = it.infoForSaving
+                                    selectedWebURL.value = it.webURL
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    coroutineScope.launch {
+                                        kotlinx.coroutines.awaitAll(async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                        }, async {
+                                            optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                        })
+                                    }
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                            recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler
+                                        )
+                                    }
+                                },
                                 webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = {}
+                                onForceOpenInExternalBrowserClicked = {
+                                    searchScreenVM.onForceOpenInExternalBrowser(
+                                        com.sakethh.linkora.localDB.RecentlyVisited(
+                                            title = it.title,
+                                            webURL = it.webURL,
+                                            baseURL = it.baseURL,
+                                            imgURL = it.imgURL,
+                                            infoForSaving = it.infoForSaving
+                                        )
+                                    )
+                                }
                             )
                         }
                         items(linksTableData) {
@@ -125,11 +176,59 @@ fun SearchScreen(navController: NavController) {
                                 title = it.title,
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = { },
-                                onLinkClick = { },
+                                onMoreIconCLick = {
+                                    HomeScreenVM.tempImpLinkData.webURL =
+                                        it.webURL
+                                    HomeScreenVM.tempImpLinkData.baseURL =
+                                        it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL =
+                                        it.imgURL
+                                    HomeScreenVM.tempImpLinkData.title =
+                                        it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving =
+                                        it.infoForSaving
+                                    selectedURLNote.value = it.infoForSaving
+                                    selectedWebURL.value = it.webURL
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    coroutineScope.launch {
+                                        kotlinx.coroutines.awaitAll(async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                        }, async {
+                                            optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                        })
+                                    }
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                            recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler
+                                        )
+                                    }
+                                },
                                 webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = {}
+                                onForceOpenInExternalBrowserClicked = {
+                                    searchScreenVM.onForceOpenInExternalBrowser(
+                                        com.sakethh.linkora.localDB.RecentlyVisited(
+                                            title = it.title,
+                                            webURL = it.webURL,
+                                            baseURL = it.baseURL,
+                                            imgURL = it.imgURL,
+                                            infoForSaving = it.infoForSaving
+                                        )
+                                    )
+                                }
                             )
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(225.dp))
                         }
                     }
                 })
@@ -140,7 +239,7 @@ fun SearchScreen(navController: NavController) {
             ) {
                 if (recentlyVisitedLinksData.isNotEmpty()) {
                     item {
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                     item {
                         androidx.compose.foundation.layout.Row(
@@ -171,7 +270,7 @@ fun SearchScreen(navController: NavController) {
                         }
                     }
                     item {
-                        androidx.compose.foundation.layout.Spacer(modifier = Modifier.height(5.dp))
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                     items(recentlyVisitedLinksData) {
                         LinkUIComponent(
@@ -230,6 +329,9 @@ fun SearchScreen(navController: NavController) {
                         )
                     }
                 }
+                item {
+                    Spacer(modifier = Modifier.height(225.dp))
+                }
             }
         }
         SortingBottomSheetUI(
@@ -286,5 +388,21 @@ fun SearchScreen(navController: NavController) {
                     shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
                 )
             })
+    }
+    val activity = LocalContext.current as? Activity
+    BackHandler {
+        when {
+            SearchScreenVM.isSearchEnabled.value -> {
+                SearchScreenVM.isSearchEnabled.value = false
+            }
+
+            else -> if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+                navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                    popUpTo(0)
+                }
+            } else {
+                activity?.finish()
+            }
+        }
     }
 }

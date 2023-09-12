@@ -55,6 +55,7 @@ class SearchScreenVM : ViewModel() {
     }
 
     init {
+        isSearchEnabled.value = false
         changeHistoryRetrievedData(
             sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                 SettingsScreenVM.Settings.selectedSortingType.value

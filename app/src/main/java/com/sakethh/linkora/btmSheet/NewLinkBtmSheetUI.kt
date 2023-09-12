@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -394,6 +395,42 @@ fun NewLinkBtmSheet(
                                                                         }
                                                                     )
                                                                 }
+                                                        } else if (selectedFolder.value == "Important Links") {
+                                                            intentData.value!!.getStringExtra(
+                                                                Intent.EXTRA_TEXT
+                                                            )
+                                                                ?.let {
+                                                                    linkTextFieldValue.value =
+                                                                        it
+                                                                    customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                                        ImportantLinks(
+                                                                            title = titleTextFieldValue.value,
+                                                                            webURL = linkTextFieldValue.value,
+                                                                            infoForSaving = noteTextFieldValue.value,
+                                                                            baseURL = "",
+                                                                            imgURL = ""
+                                                                        ),
+                                                                        context = context,
+                                                                        inImportantLinksScreen = true,
+                                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                                        onTaskCompleted = {
+                                                                            onLinkSaved()
+                                                                            isDataExtractingForTheLink.value =
+                                                                                false
+                                                                            coroutineScope.launch {
+                                                                                if (btmSheetState.isVisible) {
+                                                                                    btmSheetState.hide()
+                                                                                }
+                                                                            }.invokeOnCompletion {
+                                                                                shouldUIBeVisible.value =
+                                                                                    false
+                                                                                if (inIntentActivity.value) {
+                                                                                    activity?.finishAndRemoveTask()
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    )
+                                                                }
                                                         } else {
                                                             intentData.value!!.getStringExtra(
                                                                 Intent.EXTRA_TEXT
@@ -440,6 +477,34 @@ fun NewLinkBtmSheet(
                                                             folderName = selectedFolder.value,
                                                             savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
                                                             context = context,
+                                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                            onTaskCompleted = {
+                                                                isDataExtractingForTheLink.value =
+                                                                    false
+                                                                coroutineScope.launch {
+                                                                    if (btmSheetState.isVisible) {
+                                                                        btmSheetState.hide()
+                                                                    }
+                                                                }.invokeOnCompletion {
+                                                                    shouldUIBeVisible.value = false
+                                                                    if (inIntentActivity.value) {
+                                                                        activity?.finishAndRemoveTask()
+                                                                    }
+                                                                }
+                                                            }
+                                                        )
+                                                    } else if (selectedFolder.value == "Important Links") {
+                                                        isDataExtractingForTheLink.value = true
+                                                        customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                            ImportantLinks(
+                                                                title = titleTextFieldValue.value,
+                                                                webURL = linkTextFieldValue.value,
+                                                                infoForSaving = noteTextFieldValue.value,
+                                                                baseURL = "",
+                                                                imgURL = ""
+                                                            ),
+                                                            context = context,
+                                                            inImportantLinksScreen = true,
                                                             autoDetectTitle = isAutoDetectTitleEnabled.value,
                                                             onTaskCompleted = {
                                                                 isDataExtractingForTheLink.value =
@@ -678,6 +743,14 @@ fun NewLinkBtmSheet(
                                     folderName = "Saved Links",
                                     imageVector = Icons.Outlined.Link,
                                     _isComponentSelected = selectedFolder.value == "Saved Links"
+                                )
+                            }
+                            item {
+                                SelectableFolderUIComponent(
+                                    onClick = { selectedFolder.value = "Important Links" },
+                                    folderName = "Important Links",
+                                    imageVector = Icons.Outlined.StarOutline,
+                                    _isComponentSelected = selectedFolder.value == "Important Links"
                                 )
                             }
                             items(IntentActivityData.foldersData.value) {
