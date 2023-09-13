@@ -15,21 +15,27 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -49,9 +55,10 @@ import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun SearchScreen(navController: NavController) {
     val searchScreenVM: SearchScreenVM = viewModel()
@@ -91,9 +98,26 @@ fun SearchScreen(navController: NavController) {
     val selectedFolderName = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedLinkTitle = rememberSaveable {
+        mutableStateOf("")
+    }
+    if (!SearchScreenVM.isSearchEnabled.value) {
+        query.value = ""
+    }
     LinkoraTheme {
         Column {
             SearchBar(
+                trailingIcon = {
+                    IconButton(onClick = {
+                        if (query.value == "") {
+                            SearchScreenVM.isSearchEnabled.value = false
+                        } else {
+                            query.value = ""
+                        }
+                    }) {
+                        Icon(imageVector = Icons.Default.Clear, contentDescription = null)
+                    }
+                },
                 modifier = Modifier
                     .animateContentSize()
                     .padding(
@@ -101,7 +125,8 @@ fun SearchScreen(navController: NavController) {
                         start = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
                         end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp
                     )
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .focusRequester(SearchScreenVM.focusRequester),
                 query = query.value,
                 onQueryChange = {
                     query.value = it
@@ -134,6 +159,7 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    selectedLinkTitle.value = it.title
                                     selectedLinkType.value =
                                         SearchScreenVM.SelectedLinkType.IMP_LINKS.name
                                     HomeScreenVM.tempImpLinkData.webURL =
@@ -192,6 +218,7 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.webURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    selectedLinkTitle.value = it.title
                                     when {
                                         it.isLinkedWithArchivedFolder -> {
                                             selectedLinkType.value =
@@ -291,10 +318,13 @@ fun SearchScreen(navController: NavController) {
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = Modifier.padding(start = 15.dp)
+                            modifier = Modifier.padding(
+                                start = 15.dp,
+                                top = if (recentlyVisitedLinksData.isNotEmpty()) 0.dp else 11.dp
+                            )
                         )
                         if (recentlyVisitedLinksData.isNotEmpty()) {
-                            androidx.compose.material3.IconButton(onClick = {
+                            IconButton(onClick = {
                                 shouldSortingBottomSheetAppear.value = true
                             }) {
                                 Icon(
@@ -409,9 +439,9 @@ fun SearchScreen(navController: NavController) {
                 )
             },
             importantLinks = HomeScreenVM.tempImpLinkData,
-            noteForSaving = HomeScreenVM.tempImpLinkData.infoForSaving,
-            folderName = "",
-            linkTitle = HomeScreenVM.tempImpLinkData.title
+            noteForSaving = selectedURLNote.value,
+            folderName = selectedFolderName.value,
+            linkTitle = selectedLinkTitle.value
         )
         RenameDialogBox(
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
@@ -445,6 +475,18 @@ fun SearchScreen(navController: NavController) {
                     folderName = selectedFolderName.value
                 )
             })
+    }
+    val localKeyBoard = LocalSoftwareKeyboardController.current
+    LaunchedEffect(key1 = SearchScreenVM.isSearchEnabled.value) {
+        if (SearchScreenVM.isSearchEnabled.value) {
+            SearchScreenVM.focusRequester.requestFocus()
+            delay(100)
+            localKeyBoard?.show()
+        } else {
+            SearchScreenVM.focusRequester.freeFocus()
+            delay(100)
+            localKeyBoard?.hide()
+        }
     }
     val activity = LocalContext.current as? Activity
     BackHandler {

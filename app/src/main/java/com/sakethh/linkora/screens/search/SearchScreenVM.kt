@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
@@ -33,8 +34,7 @@ class SearchScreenVM : ViewModel() {
 
     companion object {
         val isSearchEnabled = mutableStateOf(false)
-
-        val selectedData = SelectedData(null, false)
+        val focusRequester = FocusRequester()
     }
 
     private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())

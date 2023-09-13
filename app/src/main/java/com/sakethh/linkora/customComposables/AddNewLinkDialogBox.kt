@@ -500,7 +500,7 @@ fun AddNewLinkDialogBox(
                             )
                             SelectableFolderUIComponent(
                                 onClick = {
-                                    selectedFolderName.value = "Saved Links"
+                                    selectedFolderName.value = "Important Links"
                                     coroutineScope.launch {
                                         if (btmModalSheetState.isVisible) {
                                             btmModalSheetState.hide()
