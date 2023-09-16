@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
@@ -42,6 +43,9 @@ class SearchScreenVM : ViewModel() {
     private val _impLinksQueriedData = MutableStateFlow(emptyList<ImportantLinks>())
     val impLinksQueriedData = _impLinksQueriedData.asStateFlow()
 
+    private val _archiveLinksQueriedData = MutableStateFlow(emptyList<ArchivedLinks>())
+    val archiveLinksQueriedData = _archiveLinksQueriedData.asStateFlow()
+
     fun retrieveSearchQueryData(query: String) {
         viewModelScope.launch {
             awaitAll(async {
@@ -56,6 +60,13 @@ class SearchScreenVM : ViewModel() {
                     CustomFunctionsForLocalDB.localDB.linksSearching()
                         .getFromLinksTableIncludingArchive(query = query).collect {
                             _linksTableQueriedData.emit(it)
+                        }
+                }
+            }, async {
+                if (query.isNotEmpty()) {
+                    CustomFunctionsForLocalDB.localDB.linksSearching()
+                        .getFromArchiveLinks(query = query).collect {
+                            _archiveLinksQueriedData.emit(it)
                         }
                 }
             })
@@ -206,7 +217,7 @@ class SearchScreenVM : ViewModel() {
     ) {
         viewModelScope.launch {
             awaitAll(async {
-                CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                     title = HomeScreenVM.tempImpLinkData.title,
                     webURL = HomeScreenVM.tempImpLinkData.webURL,
                     baseURL = HomeScreenVM.tempImpLinkData.baseURL,

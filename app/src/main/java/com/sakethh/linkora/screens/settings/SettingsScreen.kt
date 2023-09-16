@@ -115,7 +115,6 @@ fun SettingsScreen(navController: NavController) {
                             icon = Icons.Outlined.Update,
                             title = "Check for latest version",
                             onClick = {
-                                throw IllegalStateException("testing crash")
                                 shouldVersionCheckerDialogAppear.value = true
                                 if (isNetworkAvailable(context)) {
                                     coroutineScope.launch {

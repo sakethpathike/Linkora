@@ -122,6 +122,7 @@ fun FloatingActionBtn(
                         ), onClick = {
                             shouldScreenTransparencyDecreasedBoxVisible.value = false
                             shouldDialogForNewFolderAppear.value = true
+                            isMainFabRotated.value = false
                         }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Default.CreateNewFolder,

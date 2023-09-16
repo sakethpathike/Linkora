@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.dao.searching
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import kotlinx.coroutines.flow.Flow
@@ -11,42 +12,70 @@ interface LinksSearching {
     @Query(
         "SELECT *\n" +
                 "                FROM links_table\n" +
-                "                WHERE isLinkedWithArchivedFolder = 0 AND title LIKE '%' || :query || '%'\n" +
-                "        AND title <> :query \n" +
-                "                ORDER BY CASE\n" +
-                "        WHEN title LIKE :query COLLATE NOCASE THEN 1\n" +
-                "        WHEN title LIKE :query || '%' COLLATE NOCASE THEN 2\n" +
-                "        WHEN title LIKE '%' || :query || '%' COLLATE NOCASE THEN 3\n" +
-                "        ELSE 4\n" +
-                "        END;"
+                "WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
+                "    AND title <> :query\n" +
+                "    AND (\n" +
+                "        LOWER(title) LIKE LOWER(:query)\n" +
+                "        OR LOWER(title) LIKE LOWER(:query) || '%'\n" +
+                "        OR LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
+                "    )\n" +
+                "ORDER BY CASE\n" +
+                "    WHEN LOWER(title) LIKE LOWER(:query) THEN 1\n" +
+                "    WHEN LOWER(title) LIKE LOWER(:query) || '%' THEN 2\n" +
+                "    WHEN LOWER(title) LIKE '%' || LOWER(:query) || '%' THEN 3\n" +
+                "    ELSE 4\n" +
+                "END;\n"
     )
     fun getFromLinksTableExcludingArchive(query: String): Flow<List<LinksTable>>
 
     @Query(
         "SELECT *\n" +
-                "                FROM links_table\n" +
-                "                WHERE title LIKE '%' || :query || '%'\n" +
-                "        AND title <> :query \n" +
-                "                ORDER BY CASE\n" +
-                "        WHEN title LIKE :query COLLATE NOCASE THEN 1\n" +
-                "        WHEN title LIKE :query || '%' COLLATE NOCASE THEN 2\n" +
-                "        WHEN title LIKE '%' || :query || '%' COLLATE NOCASE THEN 3\n" +
-                "        ELSE 4\n" +
-                "        END;"
+                "FROM links_table\n" +
+                "WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
+                "    AND (\n" +
+                "        LOWER(title) <> LOWER(:query)\n" +
+                "        OR LOWER(title) = LOWER(:query)\n" +
+                "    )\n" +
+                "ORDER BY CASE\n" +
+                "    WHEN LOWER(title) = LOWER(:query) THEN 1\n" +
+                "    WHEN LOWER(title) LIKE LOWER(:query) || '%' THEN 2\n" +
+                "    WHEN LOWER(title) LIKE '%' || LOWER(:query) || '%' THEN 3\n" +
+                "    ELSE 4\n" +
+                "END;\n"
     )
     fun getFromLinksTableIncludingArchive(query: String): Flow<List<LinksTable>>
 
     @Query(
         "SELECT *\n" +
-                "                FROM important_links_table\n" +
-                "                WHERE title LIKE '%' || :query || '%'\n" +
-                "        AND title <> :query \n" +
-                "                ORDER BY CASE\n" +
-                "        WHEN title LIKE :query COLLATE NOCASE THEN 1\n" +
-                "        WHEN title LIKE :query || '%' COLLATE NOCASE THEN 2\n" +
-                "        WHEN title LIKE '%' || :query || '%' COLLATE NOCASE THEN 3\n" +
-                "        ELSE 4\n" +
-                "        END;"
+                "FROM important_links_table\n" +
+                "WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
+                "    AND (\n" +
+                "        LOWER(title) <> LOWER(:query)\n" +
+                "        OR LOWER(title) = LOWER(:query)\n" +
+                "    )\n" +
+                "ORDER BY CASE\n" +
+                "    WHEN LOWER(title) = LOWER(:query) THEN 1\n" +
+                "    WHEN LOWER(title) LIKE LOWER(:query) || '%' THEN 2\n" +
+                "    WHEN LOWER(title) LIKE '%' || LOWER(:query) || '%' THEN 3\n" +
+                "    ELSE 4\n" +
+                "END;\n"
     )
     fun getFromImportantLinks(query: String): Flow<List<ImportantLinks>>
+
+    @Query(
+        "SELECT *\n" +
+                "FROM archived_links_table\n" +
+                "WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
+                "    AND (\n" +
+                "        LOWER(title) <> LOWER(:query)\n" +
+                "        OR LOWER(title) = LOWER(:query)\n" +
+                "    )\n" +
+                "ORDER BY CASE\n" +
+                "    WHEN LOWER(title) = LOWER(:query) THEN 1\n" +
+                "    WHEN LOWER(title) LIKE LOWER(:query) || '%' THEN 2\n" +
+                "    WHEN LOWER(title) LIKE '%' || LOWER(:query) || '%' THEN 3\n" +
+                "    ELSE 4\n" +
+                "END;\n"
+    )
+    fun getFromArchiveLinks(query: String): Flow<List<ArchivedLinks>>
 }
