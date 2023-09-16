@@ -27,12 +27,8 @@ class SearchScreenVM : ViewModel() {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS
     }
 
-    data class SelectedData(
-        val linksTable: LinksTable?,
-        val isLinkedWithImportantLinksTable: Boolean,
-    )
-
     companion object {
+        var selectedLinkType = SelectedLinkType.SAVED_LINKS
         val isSearchEnabled = mutableStateOf(false)
         val focusRequester = FocusRequester()
     }

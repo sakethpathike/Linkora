@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -26,16 +27,15 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,7 +55,6 @@ import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
@@ -79,6 +78,9 @@ fun SearchScreen(navController: NavController) {
     val selectedURLNote = rememberSaveable {
         mutableStateOf("")
     }
+    val interactionSource = remember {
+        MutableInteractionSource()
+    }
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM = viewModel<OptionsBtmSheetVM>()
     val query = rememberSaveable {
@@ -92,9 +94,6 @@ fun SearchScreen(navController: NavController) {
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val selectedLinkType = rememberSaveable {
-        mutableStateOf("")
-    }
     val selectedFolderName = rememberSaveable {
         mutableStateOf("")
     }
@@ -106,16 +105,19 @@ fun SearchScreen(navController: NavController) {
     }
     LinkoraTheme {
         Column {
-            SearchBar(
+            SearchBar(interactionSource = interactionSource,
                 trailingIcon = {
-                    IconButton(onClick = {
-                        if (query.value == "") {
-                            SearchScreenVM.isSearchEnabled.value = false
-                        } else {
-                            query.value = ""
+                    if (SearchScreenVM.isSearchEnabled.value) {
+                        IconButton(onClick = {
+                            if (query.value == "") {
+                                SearchScreenVM.focusRequester.freeFocus()
+                                SearchScreenVM.isSearchEnabled.value = false
+                            } else {
+                                query.value = ""
+                            }
+                        }) {
+                            Icon(imageVector = Icons.Default.Clear, contentDescription = null)
                         }
-                    }) {
-                        Icon(imageVector = Icons.Default.Clear, contentDescription = null)
                     }
                 },
                 modifier = Modifier
@@ -133,7 +135,8 @@ fun SearchScreen(navController: NavController) {
                     searchScreenVM.retrieveSearchQueryData(query = it)
                 },
                 onSearch = {
-
+                    query.value = it
+                    searchScreenVM.retrieveSearchQueryData(query = it)
                 },
                 active = SearchScreenVM.isSearchEnabled.value,
                 onActiveChange = {
@@ -160,8 +163,8 @@ fun SearchScreen(navController: NavController) {
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
                                     selectedLinkTitle.value = it.title
-                                    selectedLinkType.value =
-                                        SearchScreenVM.SelectedLinkType.IMP_LINKS.name
+                                    SearchScreenVM.selectedLinkType =
+                                        SearchScreenVM.SelectedLinkType.IMP_LINKS
                                     HomeScreenVM.tempImpLinkData.webURL =
                                         it.webURL
                                     HomeScreenVM.tempImpLinkData.baseURL =
@@ -221,20 +224,20 @@ fun SearchScreen(navController: NavController) {
                                     selectedLinkTitle.value = it.title
                                     when {
                                         it.isLinkedWithArchivedFolder -> {
-                                            selectedLinkType.value =
-                                                SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS.name
+                                            SearchScreenVM.selectedLinkType =
+                                                SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
                                             selectedFolderName.value = it.keyOfArchiveLinkedFolder
                                         }
 
                                         it.isLinkedWithFolders -> {
-                                            selectedLinkType.value =
-                                                SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS.name
+                                            SearchScreenVM.selectedLinkType =
+                                                SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
                                             selectedFolderName.value = it.keyOfLinkedFolder
                                         }
 
                                         it.isLinkedWithSavedLinks -> {
-                                            selectedLinkType.value =
-                                                SearchScreenVM.SelectedLinkType.SAVED_LINKS.name
+                                            SearchScreenVM.selectedLinkType =
+                                                SearchScreenVM.SelectedLinkType.SAVED_LINKS
                                         }
                                     }
                                     HomeScreenVM.tempImpLinkData.webURL =
@@ -345,6 +348,9 @@ fun SearchScreen(navController: NavController) {
                             webBaseURL = it.baseURL,
                             imgURL = it.imgURL,
                             onMoreIconCLick = {
+                                selectedLinkTitle.value = it.title
+                                SearchScreenVM.selectedLinkType =
+                                    SearchScreenVM.SelectedLinkType.HISTORY_LINKS
                                 HomeScreenVM.tempImpLinkData.webURL =
                                     it.webURL
                                 HomeScreenVM.tempImpLinkData.baseURL =
@@ -424,7 +430,7 @@ fun SearchScreen(navController: NavController) {
                 searchScreenVM.onNoteDeleteCardClick(
                     context = context,
                     selectedWebURL = selectedWebURL.value,
-                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    selectedLinkType = SearchScreenVM.selectedLinkType,
                     folderName = selectedFolderName.value
                 )
             },
@@ -434,7 +440,7 @@ fun SearchScreen(navController: NavController) {
             onArchiveClick = {
                 searchScreenVM.onArchiveClick(
                     context,
-                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    selectedLinkType = SearchScreenVM.selectedLinkType,
                     folderName = selectedFolderName.value
                 )
             },
@@ -444,13 +450,14 @@ fun SearchScreen(navController: NavController) {
             linkTitle = selectedLinkTitle.value
         )
         RenameDialogBox(
+            webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             coroutineScope = coroutineScope,
             existingFolderName = "",
             onNoteChangeClickForLinks = { webURL, newNote ->
                 searchScreenVM.onNoteChangeClickForLinks(
                     webURL, newNote,
-                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    selectedLinkType = SearchScreenVM.selectedLinkType,
                     folderName = selectedFolderName.value
                 )
             },
@@ -458,10 +465,10 @@ fun SearchScreen(navController: NavController) {
             onTitleChangeClickForLinks = { webURL, newTitle ->
                 searchScreenVM.onTitleChangeClickForLinks(
                     webURL, newTitle,
-                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    selectedLinkType = SearchScreenVM.selectedLinkType,
                     folderName = selectedFolderName.value
                 )
-            }, onTitleRenamed = {}
+            }
         )
         DeleteDialogBox(
             shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
@@ -471,23 +478,20 @@ fun SearchScreen(navController: NavController) {
                     context = context,
                     selectedWebURL = selectedWebURL.value,
                     shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
-                    selectedLinkType = SearchScreenVM.SelectedLinkType.valueOf(selectedLinkType.value),
+                    selectedLinkType = SearchScreenVM.selectedLinkType,
                     folderName = selectedFolderName.value
                 )
             })
     }
-    val localKeyBoard = LocalSoftwareKeyboardController.current
-    LaunchedEffect(key1 = SearchScreenVM.isSearchEnabled.value) {
-        if (SearchScreenVM.isSearchEnabled.value) {
-            SearchScreenVM.focusRequester.requestFocus()
-            delay(100)
-            localKeyBoard?.show()
-        } else {
-            SearchScreenVM.focusRequester.freeFocus()
-            delay(100)
-            localKeyBoard?.hide()
-        }
-    }
+    /*val localKeyBoard = LocalSoftwareKeyboardController.current
+    LachedEffect(key1 = SearchScreenVM.isSearchEnabled.value) {
+        val press = PressInteraction.Press(Offset.Zero)
+        interactionSource.emit(press)
+        interactionSource.emit(PressInteraction.Release(press))
+        SearchScreenVM.focusRequester.requestFocus()
+        delay(100)
+        localKeyBoard?.show()
+    }*/
     val activity = LocalContext.current as? Activity
     BackHandler {
         when {

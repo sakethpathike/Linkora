@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.sakethh.linkora.screens.search.SearchScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -24,6 +23,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun BottomNavigationBar(navController: NavController) {
     val navigationVM: NavigationVM = viewModel()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    var tappedTime = 1
     LinkoraTheme {
         NavigationBar(
             modifier = Modifier.fillMaxWidth()/*.requiredHeight(55.dp)*/
@@ -52,10 +52,6 @@ fun BottomNavigationBar(navController: NavController) {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name, onClick = {
                         if (currentRoute != it.navigationRoute.name) navController.navigate(it.navigationRoute.name)
-
-                        if (currentRoute == NavigationRoutes.SEARCH_SCREEN.name && it.navigationRoute == NavigationRoutes.SEARCH_SCREEN) {
-                            SearchScreenVM.isSearchEnabled.value = true
-                        }
                     }, icon = {
                         Icon(
                             imageVector = if (currentRoute == it.navigationRoute.name) {

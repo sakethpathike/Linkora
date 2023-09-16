@@ -8,7 +8,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
@@ -35,26 +34,12 @@ class HomeScreenVM : ViewModel() {
     }))
 
     companion object {
-        var tempImpLinkData = ImportantLinks(
+        val tempImpLinkData = ImportantLinks(
             title = "",
             webURL = "",
             baseURL = "",
             imgURL = "",
             infoForSaving = ""
-        )
-        var savedLinksData = LinksTable(
-            title = "",
-            webURL = "",
-            baseURL = "",
-            imgURL = "",
-            infoForSaving = "",
-            isLinkedWithSavedLinks = false,
-            isLinkedWithFolders = false,
-            keyOfLinkedFolder = "",
-            isLinkedWithImpFolder = false,
-            keyOfImpLinkedFolder = "",
-            isLinkedWithArchivedFolder = false,
-            keyOfArchiveLinkedFolder = ""
         )
     }
 

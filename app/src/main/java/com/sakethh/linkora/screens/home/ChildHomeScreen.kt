@@ -155,13 +155,26 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
-                                    HomeScreenVM.savedLinksData = it
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     selectedWebURL.value = it.webURL
                                     selectedNote.value = it.infoForSaving
                                     selectedURLTitle.value = it.title
                                     coroutineScope.launch {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                        awaitAll(async {
+                                            optionsBtmSheetVM.updateImportantCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }, async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }
+                                        )
                                     }
                                 },
                                 onLinkClick = {
@@ -214,13 +227,26 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
-                                    HomeScreenVM.tempImpLinkData = it
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     selectedWebURL.value = it.webURL
                                     selectedNote.value = it.infoForSaving
                                     selectedURLTitle.value = it.title
                                     coroutineScope.launch {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                        awaitAll(async {
+                                            optionsBtmSheetVM.updateImportantCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }, async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }
+                                        )
                                     }
                                 },
                                 onLinkClick = {
@@ -298,11 +324,17 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             shouldDialogBoxAppear = shouldDialogForNewFolderAppear
         )
         OptionsBtmSheetUI(
-            importantLinks = HomeScreenVM.tempImpLinkData,
+            importantLinks = ImportantLinks(
+                title = HomeScreenVM.tempImpLinkData.title,
+                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+            ),
             btmModalSheetState = btmModalSheetState,
             shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
             coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.LINK,
+            btmSheetFor = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN,
             onRenameClick = {
                 coroutineScope.launch {
                     btmModalSheetState.hide()
@@ -314,13 +346,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             },
             onImportantLinkAdditionInTheTable = {
                 specificScreenVM.onImportantLinkAdditionInTheTable(
-                    context, {}, ImportantLinks(
-                        title = HomeScreenVM.tempImpLinkData.title,
-                        webURL = HomeScreenVM.tempImpLinkData.webURL,
-                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                    )
+                    context, {}, HomeScreenVM.tempImpLinkData
                 )
             },
             onArchiveClick = {
@@ -332,7 +358,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             onNoteDeleteCardClick = {
                 homeScreenVM.onNoteDeleteCardClick(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    selectedWebURL = selectedWebURL.value,
+                    selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
                     context = context
                 )
             },
@@ -345,14 +371,14 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
         onDeleteClick = {
             homeScreenVM.onDeleteClick(
                 selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                selectedWebURL = selectedWebURL.value,
+                selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
                 context = context,
                 shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
             )
         })
     RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
         coroutineScope = coroutineScope,
-        webURLForTitle = selectedWebURL.value,
+        webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
         existingFolderName = "",
         renameDialogBoxFor = OptionsBtmSheetType.LINK,
         onNoteChangeClickForLinks = { webURL: String, newNote: String ->
