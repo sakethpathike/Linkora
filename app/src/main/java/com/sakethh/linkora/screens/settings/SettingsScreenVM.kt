@@ -309,7 +309,7 @@ class SettingsScreenVM : ViewModel() {
                             readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
                                 dataStore = context.dataStore
-                            ) == true
+                            ) ?: true
                     },
                     async {
                         shouldFollowDynamicTheming.value =
@@ -323,14 +323,14 @@ class SettingsScreenVM : ViewModel() {
                             readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
                                 dataStore = context.dataStore
-                            ) ?: true
+                            ) ?: false
                     },
                     async {
                         isAutoDetectTitleForLinksEnabled.value =
                             readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
                                 dataStore = context.dataStore
-                            ) ?: true
+                            ) ?: false
                     },
                     async {
                         isHomeScreenEnabled.value =
