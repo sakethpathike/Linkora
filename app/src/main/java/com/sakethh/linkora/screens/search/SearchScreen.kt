@@ -49,6 +49,7 @@ import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.HomeScreenVM
@@ -204,7 +205,7 @@ fun SearchScreen(navController: NavController) {
                                         onLinkClick = {
                                             coroutineScope.launch {
                                                 com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                                    recentlyVisitedData = RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
@@ -212,20 +213,23 @@ fun SearchScreen(navController: NavController) {
                                                         infoForSaving = it.infoForSaving
                                                     ),
                                                     context = context,
-                                                    uriHandler = uriHandler
+                                                    uriHandler = uriHandler,
+                                                    forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
                                         webURL = it.webURL,
                                         onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onForceOpenInExternalBrowser(
-                                                com.sakethh.linkora.localDB.RecentlyVisited(
+                                            searchScreenVM.onLinkClick(
+                                                RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                )
+                                                ), context = context, uriHandler = uriHandler,
+                                                onTaskCompleted = {},
+                                                forceOpenInExternalBrowser = true
                                             )
                                         }
                                     )
@@ -280,7 +284,7 @@ fun SearchScreen(navController: NavController) {
                                         onLinkClick = {
                                             coroutineScope.launch {
                                                 com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                                    recentlyVisitedData = RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
@@ -288,20 +292,23 @@ fun SearchScreen(navController: NavController) {
                                                         infoForSaving = it.infoForSaving
                                                     ),
                                                     context = context,
-                                                    uriHandler = uriHandler
+                                                    uriHandler = uriHandler,
+                                                    forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
                                         webURL = it.webURL,
                                         onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onForceOpenInExternalBrowser(
-                                                com.sakethh.linkora.localDB.RecentlyVisited(
+                                            searchScreenVM.onLinkClick(
+                                                RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                )
+                                                ), context = context, uriHandler = uriHandler,
+                                                onTaskCompleted = {},
+                                                forceOpenInExternalBrowser = true
                                             )
                                         }
                                     )
@@ -339,7 +346,7 @@ fun SearchScreen(navController: NavController) {
                                         onLinkClick = {
                                             coroutineScope.launch {
                                                 com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                                    recentlyVisitedData = RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
@@ -347,20 +354,23 @@ fun SearchScreen(navController: NavController) {
                                                         infoForSaving = it.infoForSaving
                                                     ),
                                                     context = context,
-                                                    uriHandler = uriHandler
+                                                    uriHandler = uriHandler,
+                                                    forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
                                         webURL = it.webURL,
                                         onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onForceOpenInExternalBrowser(
-                                                com.sakethh.linkora.localDB.RecentlyVisited(
+                                            searchScreenVM.onLinkClick(
+                                                RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                )
+                                                ), context = context, uriHandler = uriHandler,
+                                                onTaskCompleted = {},
+                                                forceOpenInExternalBrowser = true
                                             )
                                         }
                                     )
@@ -452,7 +462,7 @@ fun SearchScreen(navController: NavController) {
                             onLinkClick = {
                                 coroutineScope.launch {
                                     com.sakethh.linkora.customWebTab.openInWeb(
-                                        recentlyVisitedData = com.sakethh.linkora.localDB.RecentlyVisited(
+                                        recentlyVisitedData = RecentlyVisited(
                                             title = it.title,
                                             webURL = it.webURL,
                                             baseURL = it.baseURL,
@@ -460,20 +470,23 @@ fun SearchScreen(navController: NavController) {
                                             infoForSaving = it.infoForSaving
                                         ),
                                         context = context,
-                                        uriHandler = uriHandler
+                                        uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             },
                             webURL = it.webURL,
                             onForceOpenInExternalBrowserClicked = {
-                                searchScreenVM.onForceOpenInExternalBrowser(
-                                    com.sakethh.linkora.localDB.RecentlyVisited(
+                                searchScreenVM.onLinkClick(
+                                    RecentlyVisited(
                                         title = it.title,
                                         webURL = it.webURL,
                                         baseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         infoForSaving = it.infoForSaving
-                                    )
+                                    ), context = context, uriHandler = uriHandler,
+                                    onTaskCompleted = {},
+                                    forceOpenInExternalBrowser = true
                                 )
                             }
                         )

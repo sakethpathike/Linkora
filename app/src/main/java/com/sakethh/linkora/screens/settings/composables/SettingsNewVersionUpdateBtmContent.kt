@@ -113,7 +113,7 @@ fun SettingsNewVersionUpdateBtmContent(
                                 infoForSaving = "Linkora Stable Release on Github"
                             ),
                             context = context,
-                            uriHandler = uriHandler
+                            uriHandler = uriHandler, forceOpenInExternalBrowser = false
                         )
                     }
                 }) {
@@ -149,7 +149,7 @@ fun SettingsNewVersionUpdateBtmContent(
                             infoForSaving = "Linkora Release on Github"
                         ),
                         context = context,
-                        uriHandler = uriHandler
+                        uriHandler = uriHandler, forceOpenInExternalBrowser = false
                     )
                 }
             }) {

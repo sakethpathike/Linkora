@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings.composables
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -32,6 +34,9 @@ fun SettingComponent(
     isSingleComponent: Boolean,
     settingsUIElement: SettingsUIElement,
     data: List<SettingsUIElement>,
+    forListOfSettings: Boolean = false,
+    shape: RoundedCornerShape = RoundedCornerShape(0.dp),
+    topPadding: Dp = 0.dp,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val cardHeight = remember {
@@ -40,21 +45,22 @@ fun SettingComponent(
     val settingsScreenVM: SettingsScreenVM = viewModel()
     val localDensity = LocalDensity.current
     Card(
-        shape = RoundedCornerShape(
+        shape = if (forListOfSettings) RoundedCornerShape(
             topStart = if (settingsUIElement.title == data[0].title || isSingleComponent) 10.dp else 0.dp,
             topEnd = if (settingsUIElement.title == data[0].title || isSingleComponent) 10.dp else 0.dp,
             bottomStart = if (settingsUIElement.title == data.last().title) 10.dp else 0.dp,
             bottomEnd = if (settingsUIElement.title == data.last().title) 10.dp else 0.dp
-        ), modifier = Modifier
+        ) else shape, modifier = Modifier
             .fillMaxWidth()
             .padding(
-                top = if (settingsUIElement.title == data[0].title || isSingleComponent) 20.dp else 1.dp,
+                top = if (forListOfSettings) if (settingsUIElement.title == data[0].title || isSingleComponent) 20.dp else 1.dp else topPadding,
                 start = 15.dp,
                 end = 15.dp
             )
             .clickable {
                 settingsUIElement.onSwitchStateChange()
             }
+            .animateContentSize()
     ) {
         Row(modifier = Modifier.fillMaxWidth()) {
             Row(modifier = Modifier.fillMaxWidth(if (settingsUIElement.isSwitchNeeded) 0.70f else 1f)) {

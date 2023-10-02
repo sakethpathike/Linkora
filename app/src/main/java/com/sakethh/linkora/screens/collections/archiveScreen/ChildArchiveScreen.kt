@@ -102,28 +102,24 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
-                                        ), context = context, uriHandler = uriHandler
+                                        ), context = context, uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             },
                             webURL = it.webURL,
                             onForceOpenInExternalBrowserClicked = {
-                                coroutineScope.launch {
-                                    if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                    ) {
-                                        CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .addANewLinkInRecentlyVisited(
-                                                recentlyVisited = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                )
-                                            )
-                                    }
-                                }
+                                archiveScreenVM.onLinkClick(
+                                    RecentlyVisited(
+                                        title = it.title,
+                                        webURL = it.webURL,
+                                        baseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        infoForSaving = it.infoForSaving
+                                    ), context = context, uriHandler = uriHandler,
+                                    onTaskCompleted = {},
+                                    forceOpenInExternalBrowser = true
+                                )
                             }
                         )
                     }

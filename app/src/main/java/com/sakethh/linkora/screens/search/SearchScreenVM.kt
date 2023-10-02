@@ -5,13 +5,13 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
 import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchScreenVM : ViewModel() {
+class SearchScreenVM : SpecificScreenVM() {
 
     enum class SelectedLinkType {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS
@@ -116,24 +116,6 @@ class SearchScreenVM : ViewModel() {
                             _historyLinksData.emit(it)
                         }
                 }
-            }
-        }
-    }
-
-    fun onForceOpenInExternalBrowser(recentlyVisited: RecentlyVisited) {
-        viewModelScope.launch {
-            if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                    .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisited.webURL)
-            ) {
-                CustomFunctionsForLocalDB.localDB.crudDao().addANewLinkInRecentlyVisited(
-                    recentlyVisited = RecentlyVisited(
-                        title = recentlyVisited.title,
-                        webURL = recentlyVisited.webURL,
-                        baseURL = recentlyVisited.baseURL,
-                        imgURL = recentlyVisited.imgURL,
-                        infoForSaving = recentlyVisited.infoForSaving
-                    )
-                )
             }
         }
     }

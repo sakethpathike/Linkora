@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sakethh.linkora.localDB.ArchivedFolders
@@ -12,6 +11,7 @@ import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.FoldersTable
 import com.sakethh.linkora.localDB.LinksTable
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +30,7 @@ enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
 
-class ArchiveScreenVM : ViewModel() {
+class ArchiveScreenVM : SpecificScreenVM() {
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
             title = "",

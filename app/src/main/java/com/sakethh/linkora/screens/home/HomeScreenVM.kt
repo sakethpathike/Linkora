@@ -4,11 +4,9 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
@@ -20,7 +18,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HomeScreenVM : ViewModel() {
+class HomeScreenVM : SpecificScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     enum class HomeScreenType {
@@ -67,25 +65,6 @@ class HomeScreenVM : ViewModel() {
         }
     }
 
-
-    fun onForceOpenInExternalBrowser(recentlyVisited: RecentlyVisited) {
-        viewModelScope.launch {
-            if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                    .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisited.webURL)
-            ) {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .addANewLinkInRecentlyVisited(
-                        recentlyVisited = RecentlyVisited(
-                            title = recentlyVisited.title,
-                            webURL = recentlyVisited.webURL,
-                            baseURL = recentlyVisited.baseURL,
-                            imgURL = recentlyVisited.imgURL,
-                            infoForSaving = recentlyVisited.infoForSaving
-                        )
-                    )
-            }
-        }
-    }
 
     fun onTitleChangeClickForLinks(
         selectedCardType: HomeScreenBtmSheetType,

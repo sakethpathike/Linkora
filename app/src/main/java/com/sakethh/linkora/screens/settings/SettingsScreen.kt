@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
@@ -50,6 +51,7 @@ import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -63,7 +65,6 @@ fun SettingsScreen(navController: NavController) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
-    val themeSectionData = settingsScreenVM.themeSection(context)
     val generalSectionData = settingsScreenVM.generalSection(context)
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
@@ -169,7 +170,8 @@ fun SettingsScreen(navController: NavController) {
                                             infoForSaving = "Linkora on Github"
                                         ),
                                         context = context,
-                                        uriHandler = uriHandler
+                                        uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             }
@@ -198,7 +200,8 @@ fun SettingsScreen(navController: NavController) {
                                             infoForSaving = "Linkora on Twitter"
                                         ),
                                         context = context,
-                                        uriHandler = uriHandler
+                                        uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             }
@@ -215,21 +218,115 @@ fun SettingsScreen(navController: NavController) {
                         modifier = Modifier.padding(start = 15.dp, top = 40.dp)
                     )
                 }
-                items(themeSectionData) { settingsUIElement ->
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && settingsUIElement.title == "Use dynamic theming" || Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && settingsUIElement.title == "Follow System Theme") {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
+                    item {
                         SettingComponent(
-                            settingsUIElement = settingsUIElement,
-                            data = themeSectionData,
-                            isSingleComponent = false
-                        )
-                    } else if (settingsUIElement.title != "Use dynamic theming" && settingsUIElement.title != "Follow System Theme") {
-                        SettingComponent(
-                            settingsUIElement = settingsUIElement,
-                            data = themeSectionData,
-                            isSingleComponent = Build.VERSION.SDK_INT < Build.VERSION_CODES.S && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q
+                            isSingleComponent = false,
+                            settingsUIElement = SettingsUIElement(
+                                title = "Follow System Theme",
+                                doesDescriptionExists = false,
+                                isSwitchNeeded = true,
+                                description = null,
+                                isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowSystemTheme,
+                                onSwitchStateChange = {
+                                    coroutineScope.launch {
+                                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                            preferenceKey = booleanPreferencesKey(
+                                                SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
+                                            ),
+                                            dataStore = context.dataStore,
+                                            newValue = !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
+                                        )
+                                        SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
+                                            SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
+                                                ),
+                                                dataStore = context.dataStore
+                                            ) == true
+                                    }
+                                }),
+                            data = emptyList(),
+                            forListOfSettings = false,
+                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+                            topPadding = 20.dp
                         )
                     }
                 }
+                if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
+                    item {
+                        SettingComponent(
+                            isSingleComponent = false,
+                            settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
+                                doesDescriptionExists = false,
+                                description = null,
+                                isSwitchNeeded = true,
+                                isSwitchEnabled = SettingsScreenVM.Settings.shouldDarkThemeBeEnabled,
+                                onSwitchStateChange = {
+                                    coroutineScope.launch {
+                                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                            preferenceKey = booleanPreferencesKey(
+                                                SettingsScreenVM.SettingsPreferences.DARK_THEME.name
+                                            ),
+                                            dataStore = context.dataStore,
+                                            newValue = !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
+                                        )
+                                        SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
+                                            SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.DARK_THEME.name
+                                                ),
+                                                dataStore = context.dataStore
+                                            ) == true
+                                    }
+                                }),
+                            data = emptyList(),
+                            forListOfSettings = false,
+                            shape = RoundedCornerShape(
+                                bottomEnd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
+                                bottomStart = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
+                                topStart = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 10.dp else 0.dp,
+                                topEnd = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 10.dp else 0.dp
+                            ),
+                            topPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 20.dp else 1.dp
+                        )
+                    }
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    item {
+                        SettingComponent(
+                            isSingleComponent = false,
+                            settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
+                                doesDescriptionExists = true,
+                                description = "Change colour themes within the app based on your wallpaper.",
+                                isSwitchNeeded = true,
+                                isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowDynamicTheming,
+                                onSwitchStateChange = {
+                                    coroutineScope.launch {
+                                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                            preferenceKey = booleanPreferencesKey(
+                                                SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
+                                            ),
+                                            dataStore = context.dataStore,
+                                            newValue = !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
+                                        )
+                                        SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
+                                            SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
+                                                ),
+                                                dataStore = context.dataStore
+                                            ) == true
+                                    }
+                                }),
+                            data = emptyList(),
+                            forListOfSettings = false,
+                            shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
+                            topPadding = 1.dp
+                        )
+                    }
+                }
+
                 item {
                     Text(
                         text = "General",

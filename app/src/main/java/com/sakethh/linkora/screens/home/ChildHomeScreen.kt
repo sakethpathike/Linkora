@@ -31,7 +31,6 @@ import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
@@ -135,28 +134,24 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
-                                        ), context = context, uriHandler = uriHandler
+                                        ), context = context, uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             },
                             webURL = it.webURL,
                             onForceOpenInExternalBrowserClicked = {
-                                coroutineScope.launch {
-                                    if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                    ) {
-                                        CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .addANewLinkInRecentlyVisited(
-                                                recentlyVisited = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                )
-                                            )
-                                    }
-                                }
+                                homeScreenVM.onLinkClick(
+                                    RecentlyVisited(
+                                        title = it.title,
+                                        webURL = it.webURL,
+                                        baseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        infoForSaving = it.infoForSaving
+                                    ), context = context, uriHandler = uriHandler,
+                                    onTaskCompleted = {},
+                                    forceOpenInExternalBrowser = true
+                                )
                             }
                         )
                     }
@@ -207,28 +202,24 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
-                                        ), context = context, uriHandler = uriHandler
+                                        ), context = context, uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
                                     )
                                 }
                             },
                             webURL = it.webURL,
                             onForceOpenInExternalBrowserClicked = {
-                                coroutineScope.launch {
-                                    if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .doesThisExistsInRecentlyVisitedLinks(webURL = it.webURL)
-                                    ) {
-                                        CustomFunctionsForLocalDB.localDB.crudDao()
-                                            .addANewLinkInRecentlyVisited(
-                                                recentlyVisited = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                )
-                                            )
-                                    }
-                                }
+                                homeScreenVM.onLinkClick(
+                                    RecentlyVisited(
+                                        title = it.title,
+                                        webURL = it.webURL,
+                                        baseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        infoForSaving = it.infoForSaving
+                                    ), context = context, uriHandler = uriHandler,
+                                    onTaskCompleted = {},
+                                    forceOpenInExternalBrowser = true
+                                )
                             }
                         )
                     }

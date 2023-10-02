@@ -17,12 +17,14 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 suspend fun openInWeb(
     recentlyVisitedData: RecentlyVisited,
     uriHandler: UriHandler,
     context: Context,
+    forceOpenInExternalBrowser: Boolean,
 ) {
     val launchCustomWeb: () -> Unit = {
         val _customTabBuilder = CustomTabsIntent.Builder()
@@ -39,9 +41,19 @@ suspend fun openInWeb(
             ) {
                 CustomFunctionsForLocalDB.localDB.crudDao()
                     .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
+            } else {
+                this.launch {
+                    CustomFunctionsForLocalDB.localDB.crudDao()
+                        .deleteARecentlyVisitedLink(webURL = recentlyVisitedData.webURL)
+                }.invokeOnCompletion {
+                    this.launch {
+                        CustomFunctionsForLocalDB.localDB.crudDao()
+                            .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
+                    }
+                }
             }
         }, async {
-            if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value) {
+            if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value || forceOpenInExternalBrowser) {
                 uriHandler.openUri(recentlyVisitedData.webURL)
             } else {
                 if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && context.packageManager.getInstalledApplications(
@@ -54,8 +66,7 @@ suspend fun openInWeb(
                 } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     try {
                         context.packageManager.getPackageInfo(
-                            "com.android.chrome",
-                            PackageManager.PackageInfoFlags.of(0.toLong())
+                            "com.android.chrome", PackageManager.PackageInfoFlags.of(0.toLong())
                         )
                         launchCustomWeb()
                     } catch (_: PackageManager.NameNotFoundException) {

@@ -3,9 +3,11 @@ package com.sakethh.linkora.screens.collections.specificCollectionScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
+import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LinksTable
@@ -17,7 +19,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-class SpecificScreenVM : ViewModel() {
+open class SpecificScreenVM : ViewModel() {
     private val _folderLinksData = MutableStateFlow(emptyList<LinksTable>())
     val folderLinksData = _folderLinksData.asStateFlow()
 
@@ -573,25 +575,26 @@ class SpecificScreenVM : ViewModel() {
         }
     }
 
-    fun onForceOpenInExternalBrowserClicked(
+    fun onLinkClick(
         recentlyVisited: RecentlyVisited,
         onTaskCompleted: () -> Unit,
+        context: Context,
+        uriHandler: UriHandler,
+        forceOpenInExternalBrowser: Boolean,
     ) {
         viewModelScope.launch {
-            if (!CustomFunctionsForLocalDB.localDB.crudDao()
-                    .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisited.webURL)
-            ) {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .addANewLinkInRecentlyVisited(
-                        recentlyVisited = RecentlyVisited(
-                            title = recentlyVisited.title,
-                            webURL = recentlyVisited.webURL,
-                            baseURL = recentlyVisited.baseURL,
-                            imgURL = recentlyVisited.imgURL,
-                            infoForSaving = recentlyVisited.infoForSaving
-                        )
-                    )
-            }
+            openInWeb(
+                recentlyVisitedData = RecentlyVisited(
+                    title = recentlyVisited.title,
+                    webURL = recentlyVisited.webURL,
+                    baseURL = recentlyVisited.baseURL,
+                    imgURL = recentlyVisited.imgURL,
+                    infoForSaving = recentlyVisited.infoForSaving
+                ),
+                context = context,
+                uriHandler = uriHandler,
+                forceOpenInExternalBrowser = forceOpenInExternalBrowser
+            )
         }.invokeOnCompletion {
             onTaskCompleted()
         }

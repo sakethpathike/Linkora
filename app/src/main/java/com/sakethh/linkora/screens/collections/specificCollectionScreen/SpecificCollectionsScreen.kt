@@ -257,22 +257,23 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
                                             )
                                         }
                                     },
                                     webURL = it.webURL,
                                     onForceOpenInExternalBrowserClicked = {
-                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                        specificCollectionsScreenVM.onLinkClick(
                                             RecentlyVisited(
                                                 title = it.title,
                                                 webURL = it.webURL,
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            ), onTaskCompleted = {
-
-                                            }
+                                            ), context = context, uriHandler = uriHandler,
+                                            onTaskCompleted = {},
+                                            forceOpenInExternalBrowser = true
                                         )
                                     }
                                 )
@@ -324,21 +325,22 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
                                             )
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                        specificCollectionsScreenVM.onLinkClick(
                                             RecentlyVisited(
                                                 title = it.title,
                                                 webURL = it.webURL,
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            ), onTaskCompleted = {
-
-                                            }
+                                            ), context = context, uriHandler = uriHandler,
+                                            onTaskCompleted = {},
+                                            forceOpenInExternalBrowser = true
                                         )
                                     }
                                 )
@@ -390,21 +392,22 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
                                             )
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                        specificCollectionsScreenVM.onLinkClick(
                                             RecentlyVisited(
                                                 title = it.title,
                                                 webURL = it.webURL,
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            ), onTaskCompleted = {
-
-                                            }
+                                            ), context = context, uriHandler = uriHandler,
+                                            onTaskCompleted = {},
+                                            forceOpenInExternalBrowser = true
                                         )
                                     }
                                 )
@@ -437,21 +440,22 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
                                             )
                                         }
                                     },
                                     webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
-                                        specificCollectionsScreenVM.onForceOpenInExternalBrowserClicked(
+                                        specificCollectionsScreenVM.onLinkClick(
                                             RecentlyVisited(
                                                 title = it.title,
                                                 webURL = it.webURL,
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 infoForSaving = it.infoForSaving
-                                            ), onTaskCompleted = {
-
-                                            }
+                                            ), context = context, uriHandler = uriHandler,
+                                            onTaskCompleted = {},
+                                            forceOpenInExternalBrowser = true
                                         )
                                     }
                                 )
