@@ -39,7 +39,7 @@ class SettingsScreenVM : ViewModel() {
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
 
     companion object {
-        const val currentAppVersion = "0.2.0"
+        const val currentAppVersion = "0.2.1"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),

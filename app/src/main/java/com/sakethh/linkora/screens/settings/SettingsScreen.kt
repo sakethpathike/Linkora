@@ -285,10 +285,10 @@ fun SettingsScreen(navController: NavController) {
                             shape = RoundedCornerShape(
                                 bottomEnd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
                                 bottomStart = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
-                                topStart = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 10.dp else 0.dp,
-                                topEnd = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 10.dp else 0.dp
+                                topStart = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp,
+                                topEnd = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp
                             ),
-                            topPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) 20.dp else 1.dp
+                            topPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 20.dp else 1.dp
                         )
                     }
                 }
@@ -340,7 +340,8 @@ fun SettingsScreen(navController: NavController) {
                     SettingComponent(
                         settingsUIElement = settingsUIElement,
                         data = generalSectionData,
-                        isSingleComponent = false
+                        isSingleComponent = false,
+                        forListOfSettings = true,
                     )
                 }
                 item {
