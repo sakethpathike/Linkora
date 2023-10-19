@@ -1,8 +1,16 @@
 package com.sakethh.linkora.screens.settings
 
+import android.Manifest
+import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -40,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -48,12 +57,14 @@ import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
+import com.sakethh.linkora.screens.settings.composables.SettingsDataComposable
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -66,6 +77,20 @@ fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
     val generalSectionData = settingsScreenVM.generalSection(context)
+    val isPermissionDialogBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val runtimePermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+
+        }
+    )
+    val dataSectionData = settingsScreenVM.dataSection(
+        runtimePermission,
+        context,
+        isDialogBoxVisible = isPermissionDialogBoxVisible
+    )
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
         mutableStateOf(false)
@@ -344,6 +369,67 @@ fun SettingsScreen(navController: NavController) {
                         forListOfSettings = true,
                     )
                 }
+
+                item {
+                    Text(
+                        text = "Data",
+                        color = MaterialTheme.colorScheme.primary,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                    )
+                }
+                items(dataSectionData) { settingsUIElement ->
+                    settingsUIElement.description?.let { it1 ->
+                        SettingsDataComposable(
+                            onClick = {
+                                settingsUIElement.onSwitchStateChange()
+                            },
+                            shape = RoundedCornerShape(
+                                topStart = when (settingsUIElement) {
+                                    dataSectionData.first() -> {
+                                        10.dp
+                                    }
+
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                                topEnd = when (settingsUIElement) {
+                                    dataSectionData.first() -> {
+                                        10.dp
+                                    }
+
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                                bottomStart = when (settingsUIElement) {
+                                    dataSectionData.last() -> {
+                                        10.dp
+                                    }
+
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                                bottomEnd = when (settingsUIElement) {
+                                    dataSectionData.last() -> {
+                                        10.dp
+                                    }
+
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                            ),
+                            title = settingsUIElement.title,
+                            description = it1,
+                            icon = settingsUIElement.icon!!
+                        )
+                    }
+
+                }
                 item {
                     Text(
                         text = "Privacy",
@@ -412,6 +498,19 @@ fun SettingsScreen(navController: NavController) {
                 }
             }
         }
+        PermissionDialog(
+            isVisible = isPermissionDialogBoxVisible,
+            permissionDenied = when (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )) {
+                PackageManager.PERMISSION_GRANTED -> false
+                else -> true
+            },
+            onClick = {
+                context as Activity
+                context.openApplicationSettings()
+            })
         SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear = shouldVersionCheckerDialogAppear)
         if (shouldBtmModalSheetBeVisible.value) {
             ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
@@ -455,5 +554,14 @@ fun SettingsScreen(navController: NavController) {
                 popUpTo(0)
             }
         }
+    }
+}
+
+fun Activity.openApplicationSettings() {
+    Intent(
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+        Uri.fromParts("package", packageName, null)
+    ).also {
+        startActivity(it)
     }
 }

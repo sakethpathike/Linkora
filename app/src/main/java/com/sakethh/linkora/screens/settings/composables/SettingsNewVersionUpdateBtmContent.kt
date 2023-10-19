@@ -28,7 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.launch
 

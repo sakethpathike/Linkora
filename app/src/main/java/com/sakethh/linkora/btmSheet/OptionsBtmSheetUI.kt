@@ -49,7 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch

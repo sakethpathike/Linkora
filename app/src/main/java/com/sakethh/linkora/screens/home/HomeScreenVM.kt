@@ -6,7 +6,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.ImportantLinks
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
@@ -249,7 +250,7 @@ class HomeScreenVM : SpecificScreenVM() {
                 viewModelScope.launch {
                     awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,
@@ -276,7 +277,7 @@ class HomeScreenVM : SpecificScreenVM() {
                 viewModelScope.launch {
                     awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,
@@ -298,7 +299,7 @@ class HomeScreenVM : SpecificScreenVM() {
                 viewModelScope.launch {
                     awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,

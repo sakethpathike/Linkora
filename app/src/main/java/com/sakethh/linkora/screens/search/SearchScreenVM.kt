@@ -6,11 +6,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM

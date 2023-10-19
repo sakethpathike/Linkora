@@ -3,12 +3,12 @@ package com.sakethh.linkora.localDB.dao
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.sakethh.linkora.localDB.ArchivedFolders
-import com.sakethh.linkora.localDB.ArchivedLinks
-import com.sakethh.linkora.localDB.FoldersTable
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.ArchivedFolders
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import kotlinx.coroutines.flow.Flow
 
 @Dao

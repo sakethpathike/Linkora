@@ -1,4 +1,4 @@
-package com.sakethh.linkora.localDB
+package com.sakethh.linkora.localDB.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -2,9 +2,9 @@ package com.sakethh.linkora.localDB.dao.searching
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.sakethh.linkora.localDB.ArchivedLinks
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LinksTable
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao

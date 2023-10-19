@@ -6,11 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.sakethh.linkora.localDB.ArchivedFolders
-import com.sakethh.linkora.localDB.ArchivedLinks
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.FoldersTable
-import com.sakethh.linkora.localDB.LinksTable
+import com.sakethh.linkora.localDB.dto.ArchivedFolders
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers

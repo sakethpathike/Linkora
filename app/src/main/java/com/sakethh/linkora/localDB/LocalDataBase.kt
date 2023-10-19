@@ -16,6 +16,13 @@ import com.sakethh.linkora.localDB.dao.sorting.ImportantLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.SavedLinksSorting
+import com.sakethh.linkora.localDB.dto.ArchivedFolders
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.ImportantFolders
+import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 
 @Database(
     version = 2,

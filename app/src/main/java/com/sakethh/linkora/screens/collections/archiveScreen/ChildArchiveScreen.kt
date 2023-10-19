@@ -29,7 +29,7 @@ import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent

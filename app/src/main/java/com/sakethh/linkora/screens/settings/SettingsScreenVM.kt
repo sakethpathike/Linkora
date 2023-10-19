@@ -1,9 +1,18 @@
 package com.sakethh.linkora.screens.settings
 
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
@@ -32,6 +41,7 @@ data class SettingsUIElement(
     val isSwitchNeeded: Boolean,
     val isSwitchEnabled: MutableState<Boolean>,
     val onSwitchStateChange: () -> Unit,
+    val icon: ImageVector? = null,
 )
 
 class SettingsScreenVM : ViewModel() {
@@ -158,14 +168,70 @@ class SettingsScreenVM : ViewModel() {
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }), SettingsUIElement(title = "Delete entire data permanently",
+                }),
+        )
+    }
+
+    fun dataSection(
+        runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
+        context: Context,
+        isDialogBoxVisible: MutableState<Boolean>,
+    ): List<SettingsUIElement> {
+        return listOf(
+            SettingsUIElement(title = "Import Links",
+                doesDescriptionExists = true,
+                description = "Import Links from external JSON file.",
+                isSwitchNeeded = false,
+                isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+                onSwitchStateChange = {
+
+                }, icon = Icons.Default.FileDownload
+            ),
+            SettingsUIElement(title = "Export Links",
+                doesDescriptionExists = true,
+                description = "Export all of your links in JSON format.",
+                isSwitchNeeded = false,
+                isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+                onSwitchStateChange = {
+                    runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    when (ContextCompat.checkSelfPermission(
+                        context,
+                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )) {
+                        PackageManager.PERMISSION_GRANTED -> {
+                            viewModelScope.launch {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "PERMISSION GRANTED",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                            isDialogBoxVisible.value = false
+                        }
+
+                        else -> {
+                            viewModelScope.launch {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                            isDialogBoxVisible.value = true
+                        }
+                    }
+                }, icon = Icons.Default.FileUpload
+            ),
+            SettingsUIElement(title = "Delete entire data permanently",
                 doesDescriptionExists = true,
                 description = "Delete all links and folders permanently including archive(s).",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-                    shouldDeleteDialogBoxAppear.value = true
-                })
+
+                }, icon = Icons.Default.DeleteForever
+            ),
         )
     }
 

@@ -9,9 +9,10 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.ImportantLinks
-import com.sakethh.linkora.localDB.LinksTable
-import com.sakethh.linkora.localDB.RecentlyVisited
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -231,7 +232,7 @@ open class SpecificScreenVM : ViewModel() {
                 viewModelScope.launch {
                     kotlinx.coroutines.awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,
@@ -254,7 +255,7 @@ open class SpecificScreenVM : ViewModel() {
                 viewModelScope.launch {
                     kotlinx.coroutines.awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,
@@ -274,7 +275,7 @@ open class SpecificScreenVM : ViewModel() {
                 viewModelScope.launch {
                     kotlinx.coroutines.awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,
@@ -297,7 +298,7 @@ open class SpecificScreenVM : ViewModel() {
                 viewModelScope.launch {
                     kotlinx.coroutines.awaitAll(async {
                         CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = com.sakethh.linkora.localDB.ArchivedLinks(
+                            archivedLinks = ArchivedLinks(
                                 title = tempImpLinkData.title,
                                 webURL = tempImpLinkData.webURL,
                                 baseURL = tempImpLinkData.baseURL,

@@ -77,14 +77,15 @@ fun SettingComponent(
                             start = 15.dp,
                             top = 25.dp,
                             bottom = if (!settingsUIElement.doesDescriptionExists) 25.dp else 0.dp
-                        )
+                        ),
+                        lineHeight = 20.sp
                     )
                     if (settingsUIElement.doesDescriptionExists) {
                         Text(
                             text = settingsUIElement.description.toString(),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
-                            lineHeight = 16.sp,
+                            lineHeight = 18.sp,
                             textAlign = TextAlign.Start,
                             modifier = Modifier.padding(
                                 start = 15.dp, top = 10.dp, bottom = 25.dp

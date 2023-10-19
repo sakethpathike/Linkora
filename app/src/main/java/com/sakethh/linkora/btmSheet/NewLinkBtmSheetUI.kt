@@ -67,8 +67,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.ImportantLinks
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
