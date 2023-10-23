@@ -10,10 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -31,13 +28,12 @@ fun SettingsDataComposable(
     shape: RoundedCornerShape,
     title: String,
     description: String,
-    icon:ImageVector
+    icon: ImageVector,
 ) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
         modifier = Modifier
             .fillMaxWidth()
-            .padding(15.dp)
+            .padding(1.dp)
             .clickable {
                 onClick()
             }
@@ -48,13 +44,17 @@ fun SettingsDataComposable(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(modifier = Modifier
-                .width(15.dp)
-                .height(15.dp))
+            Spacer(
+                modifier = Modifier
+                    .width(15.dp)
+                    .height(15.dp)
+            )
             Icon(imageVector = icon, contentDescription = null)
-            Spacer(modifier = Modifier
-                .width(15.dp)
-                .height(15.dp))
+            Spacer(
+                modifier = Modifier
+                    .width(15.dp)
+                    .height(15.dp)
+            )
             Column {
                 Text(
                     text = title,
@@ -74,7 +74,8 @@ fun SettingsDataComposable(
                     lineHeight = 18.sp,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.padding(
-                        start = 15.dp, top = 10.dp, bottom = 25.dp
+                        start = 15.dp, top = 10.dp, bottom = 25.dp,
+                        end = 25.dp
                     )
                 )
             }

@@ -2,7 +2,9 @@ package com.sakethh.linkora.localDB.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.Serializable
 
+@Serializable
 @Entity(tableName = "links_table")
 data class LinksTable(
     @PrimaryKey(autoGenerate = true)
@@ -25,6 +27,7 @@ data class LinksTable(
     var keyOfArchiveLinkedFolder: String,
 )
 
+@Serializable
 @Entity(tableName = "folders_table")
 data class FoldersTable(
     var folderName: String,
@@ -34,6 +37,7 @@ data class FoldersTable(
     var id: Long = 0,
 )
 
+@Serializable
 @Entity(tableName = "archived_links_table")
 data class ArchivedLinks(
     val title: String,
@@ -46,6 +50,7 @@ data class ArchivedLinks(
     var id: Long = 0,
 )
 
+@Serializable
 @Entity(tableName = "archived_folders_table")
 data class ArchivedFolders(
     val archiveFolderName: String,
@@ -55,6 +60,7 @@ data class ArchivedFolders(
     var id: Long = 0,
 )
 
+@Serializable
 @Entity(tableName = "important_links_table")
 data class ImportantLinks(
     var title: String,
@@ -67,6 +73,7 @@ data class ImportantLinks(
     var id: Long = 0,
 )
 
+@Serializable
 @Entity(tableName = "important_folders_table")
 data class ImportantFolders(
     val impFolderName: String,
@@ -76,6 +83,7 @@ data class ImportantFolders(
     var id: Long = 0,
 )
 
+@Serializable
 @Entity(tableName = "recently_visited_table")
 data class RecentlyVisited(
     @PrimaryKey(autoGenerate = true)

@@ -22,13 +22,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.serialization.SerializationException
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PermissionDialog(
+fun ImportExceptionDialogBox(
     isVisible: MutableState<Boolean>,
-    permissionDenied: Boolean,
     onClick: () -> Unit,
+    exceptionType: MutableState<Exception>,
 ) {
     if (isVisible.value) {
         LinkoraTheme {
@@ -38,7 +39,12 @@ fun PermissionDialog(
                 onDismissRequest = { isVisible.value = false }) {
                 Column {
                     Text(
-                        text = "Permission Denied",
+                        text = when (exceptionType.value) {
+                            IllegalArgumentException() -> "Invalid File Type"
+
+                            SerializationException() -> "Conversion Error"
+                            else -> ""
+                        },
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -47,8 +53,12 @@ fun PermissionDialog(
                         textAlign = TextAlign.Start
                     )
                     Text(
-                        text = "It seems you've denied the permission, Linkora needs storage access to export links to a JSON file in your local storage.",
-                        color = AlertDialogDefaults.titleContentColor,
+                        text = when (exceptionType.value) {
+                            IllegalArgumentException() -> "Selected File is not a valid Linkora-Exported JSON File, you can try with another file which matches Linkora's Schema to import Links."
+
+                            SerializationException() -> "Something went wrong while importing links, try again with another file."
+                            else -> ""
+                        }, color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),

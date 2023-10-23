@@ -7,6 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sakethh.linkora.localDB.dao.CRUDDao
+import com.sakethh.linkora.localDB.dao._import.ImportDao
 import com.sakethh.linkora.localDB.dao.searching.LinksSearching
 import com.sakethh.linkora.localDB.dao.sorting.ArchiveFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedFoldersSorting
@@ -40,6 +41,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun savedLinksSorting(): SavedLinksSorting
     abstract fun historyLinksSorting(): HistoryLinksSorting
     abstract fun linksSearching(): LinksSearching
+    abstract fun importDao(): ImportDao
 
     companion object {
         @Volatile

@@ -20,6 +20,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
@@ -44,7 +45,7 @@ data class SettingsUIElement(
     val icon: ImageVector? = null,
 )
 
-class SettingsScreenVM : ViewModel() {
+class SettingsScreenVM(private val exportImpl: ExportImpl = ExportImpl()) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
 
@@ -178,7 +179,8 @@ class SettingsScreenVM : ViewModel() {
         isDialogBoxVisible: MutableState<Boolean>,
     ): List<SettingsUIElement> {
         return listOf(
-            SettingsUIElement(title = "Import Links",
+            SettingsUIElement(
+                title = "Import Links",
                 doesDescriptionExists = true,
                 description = "Import Links from external JSON file.",
                 isSwitchNeeded = false,
@@ -187,18 +189,21 @@ class SettingsScreenVM : ViewModel() {
 
                 }, icon = Icons.Default.FileDownload
             ),
-            SettingsUIElement(title = "Export Links",
+            SettingsUIElement(
+                title = "Export Links",
                 doesDescriptionExists = true,
                 description = "Export all of your links in JSON format.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-                    runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                     when (ContextCompat.checkSelfPermission(
                         context,
                         android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )) {
                         PackageManager.PERMISSION_GRANTED -> {
+                            viewModelScope.launch {
+                                exportImpl.exportToAFile()
+                            }
                             viewModelScope.launch {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
@@ -212,18 +217,19 @@ class SettingsScreenVM : ViewModel() {
                         }
 
                         else -> {
+                            runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             viewModelScope.launch {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
                                         .show()
                                 }
                             }
-                            isDialogBoxVisible.value = true
                         }
                     }
                 }, icon = Icons.Default.FileUpload
             ),
-            SettingsUIElement(title = "Delete entire data permanently",
+            SettingsUIElement(
+                title = "Delete entire data permanently",
                 doesDescriptionExists = true,
                 description = "Delete all links and folders permanently including archive(s).",
                 isSwitchNeeded = false,

@@ -83,7 +83,7 @@ fun SettingsScreen(navController: NavController) {
     val runtimePermission = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {
-
+            isPermissionDialogBoxVisible.value = !it
         }
     )
     val dataSectionData = settingsScreenVM.dataSection(
