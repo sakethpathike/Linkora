@@ -33,7 +33,7 @@ fun SettingsDataComposable(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(1.dp)
+            .padding(start = 15.dp,top=1.dp,end=15.dp)
             .clickable {
                 onClick()
             }

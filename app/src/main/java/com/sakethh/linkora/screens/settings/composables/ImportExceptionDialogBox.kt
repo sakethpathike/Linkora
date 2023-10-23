@@ -29,7 +29,7 @@ import kotlinx.serialization.SerializationException
 fun ImportExceptionDialogBox(
     isVisible: MutableState<Boolean>,
     onClick: () -> Unit,
-    exceptionType: MutableState<Exception>,
+    exceptionType: MutableState<Exception?>,
 ) {
     if (isVisible.value) {
         LinkoraTheme {
@@ -40,9 +40,9 @@ fun ImportExceptionDialogBox(
                 Column {
                     Text(
                         text = when (exceptionType.value) {
-                            IllegalArgumentException() -> "Invalid File Type"
+                            IllegalArgumentException() -> "Incompatible File Type"
 
-                            SerializationException() -> "Conversion Error"
+                            SerializationException() -> "Data Conversion Failed"
                             else -> ""
                         },
                         color = AlertDialogDefaults.titleContentColor,
@@ -54,9 +54,9 @@ fun ImportExceptionDialogBox(
                     )
                     Text(
                         text = when (exceptionType.value) {
-                            IllegalArgumentException() -> "Selected File is not a valid Linkora-Exported JSON File, you can try with another file which matches Linkora's Schema to import Links."
+                            IllegalArgumentException() -> "Selected file doesn't match Linkora's Schema for JSON files. Please choose a compatible file to import your links."
 
-                            SerializationException() -> "Something went wrong while importing links, try again with another file."
+                            SerializationException() -> "Apologies, but there was an issue importing the links. Please try again with a different file."
                             else -> ""
                         }, color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleSmall,
@@ -77,7 +77,7 @@ fun ImportExceptionDialogBox(
                             onClick()
                         }) {
                         Text(
-                            text = "Go to Settings",
+                            text = "Choose another file",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
@@ -99,7 +99,7 @@ fun ImportExceptionDialogBox(
                             isVisible.value = false
                         }) {
                         Text(
-                            text = "Never-mind",
+                            text = "Cancel",
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp

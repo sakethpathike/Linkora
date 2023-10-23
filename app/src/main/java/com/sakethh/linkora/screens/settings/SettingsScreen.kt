@@ -61,6 +61,7 @@ import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
@@ -69,6 +70,7 @@ import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionChecke
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -80,6 +82,12 @@ fun SettingsScreen(navController: NavController) {
     val isPermissionDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val activityResultLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+            val file = uri?.path?.let { File(it) }
+            file?.readText()
+                ?.let { settingsScreenVM.importData(settingsScreenVM.exceptionType, it) }
+        }
     val runtimePermission = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
         onResult = {
@@ -89,7 +97,8 @@ fun SettingsScreen(navController: NavController) {
     val dataSectionData = settingsScreenVM.dataSection(
         runtimePermission,
         context,
-        isDialogBoxVisible = isPermissionDialogBoxVisible
+        isDialogBoxVisible = isPermissionDialogBoxVisible,
+        activityResultLauncher = activityResultLauncher
     )
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
@@ -376,7 +385,7 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 40.dp, bottom = 20.dp)
                     )
                 }
                 items(dataSectionData) { settingsUIElement ->
@@ -528,6 +537,14 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
         }
+        val isImportExceptionBoxVisible = rememberSaveable {
+            mutableStateOf(settingsScreenVM.exceptionType.value != null)
+        }
+        ImportExceptionDialogBox(
+            isVisible = isImportExceptionBoxVisible,
+            onClick = { activityResultLauncher.launch("text/*") },
+            exceptionType = settingsScreenVM.exceptionType
+        )
         DeleteDialogBox(
             shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,

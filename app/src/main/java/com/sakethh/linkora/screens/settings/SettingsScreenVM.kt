@@ -2,6 +2,7 @@ package com.sakethh.linkora.screens.settings
 
 import android.content.Context
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
@@ -20,6 +21,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB._import.ImportImpl
 import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
@@ -45,10 +47,13 @@ data class SettingsUIElement(
     val icon: ImageVector? = null,
 )
 
-class SettingsScreenVM(private val exportImpl: ExportImpl = ExportImpl()) : ViewModel() {
+class SettingsScreenVM(
+    private val exportImpl: ExportImpl = ExportImpl(),
+    private val importImpl: ImportImpl = ImportImpl(),
+) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
-
+    val exceptionType : MutableState<Exception?> = mutableStateOf(null)
     companion object {
         const val currentAppVersion = "0.2.1"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
@@ -173,10 +178,17 @@ class SettingsScreenVM(private val exportImpl: ExportImpl = ExportImpl()) : View
         )
     }
 
+    fun importData(exceptionType: MutableState<Exception?>, json: String) {
+        viewModelScope.launch {
+            importImpl.importToLocalDB(exceptionType, json)
+        }
+    }
+
     fun dataSection(
         runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
+        activityResultLauncher: ManagedActivityResultLauncher<String, Uri?>,
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
@@ -186,7 +198,7 @@ class SettingsScreenVM(private val exportImpl: ExportImpl = ExportImpl()) : View
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-
+                    activityResultLauncher.launch("text/*")
                 }, icon = Icons.Default.FileDownload
             ),
             SettingsUIElement(
