@@ -150,27 +150,27 @@ fun ParentHomeScreen(navController: NavController) {
                     homeScreenVM.parentHomeScreenData[it].screen(navController = navController)
                 }
             }
-        }
-        if (shouldScreenTransparencyDecreasedBoxVisible.value) {
-            Box(modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background.copy(0.85f))
-                .clickable {
-                    shouldScreenTransparencyDecreasedBoxVisible.value = false
-                    coroutineScope
-                        .launch {
-                            awaitAll(async {
-                                rotationAnimation.animateTo(
-                                    -360f, animationSpec = tween(300)
-                                )
-                            }, async { isMainFabRotated.value = false })
-                        }
-                        .invokeOnCompletion {
-                            coroutineScope.launch {
-                                rotationAnimation.snapTo(0f)
+            if (shouldScreenTransparencyDecreasedBoxVisible.value) {
+                Box(modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                    .clickable {
+                        shouldScreenTransparencyDecreasedBoxVisible.value = false
+                        coroutineScope
+                            .launch {
+                                awaitAll(async {
+                                    rotationAnimation.animateTo(
+                                        -360f, animationSpec = tween(300)
+                                    )
+                                }, async { isMainFabRotated.value = false })
                             }
-                        }
-                })
+                            .invokeOnCompletion {
+                                coroutineScope.launch {
+                                    rotationAnimation.snapTo(0f)
+                                }
+                            }
+                    })
+            }
         }
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

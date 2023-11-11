@@ -48,14 +48,14 @@ data class SettingsUIElement(
 )
 
 class SettingsScreenVM(
-    private val exportImpl: ExportImpl = ExportImpl(),
-    private val importImpl: ImportImpl = ImportImpl(),
+    private val exportImpl: ExportImpl = ExportImpl()
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
-    val exceptionType : MutableState<Exception?> = mutableStateOf(null)
+    val exceptionType: MutableState<String?> = mutableStateOf(null)
+
     companion object {
-        const val currentAppVersion = "0.2.1"
+        const val currentAppVersion = "0.3.0"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
@@ -68,8 +68,7 @@ class SettingsScreenVM(
     }
 
     val privacySection: (context: Context) -> SettingsUIElement = {
-        SettingsUIElement(
-            title = "Send crash reports",
+        SettingsUIElement(title = "Send crash reports",
             doesDescriptionExists = false,
             description = "",
             isSwitchNeeded = true,
@@ -79,15 +78,12 @@ class SettingsScreenVM(
                     Settings.changeSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(
                             SettingsPreferences.SEND_CRASH_REPORTS.name
-                        ),
-                        dataStore = it.dataStore,
-                        newValue = !isSendCrashReportsEnabled.value
+                        ), dataStore = it.dataStore, newValue = !isSendCrashReportsEnabled.value
                     )
-                    isSendCrashReportsEnabled.value =
-                        Settings.readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                            dataStore = it.dataStore
-                        ) == true
+                    isSendCrashReportsEnabled.value = Settings.readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                        dataStore = it.dataStore
+                    ) == true
                 }
             })
     }
@@ -178,9 +174,11 @@ class SettingsScreenVM(
         )
     }
 
-    fun importData(exceptionType: MutableState<Exception?>, json: String) {
+    fun importData(exceptionType: MutableState<String?>, json: String, context: Context) {
         viewModelScope.launch {
-            importImpl.importToLocalDB(exceptionType, json)
+            ImportImpl().importToLocalDB(
+                exceptionType = exceptionType, json = json, context = context
+            )
         }
     }
 
@@ -199,7 +197,8 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     activityResultLauncher.launch("text/*")
-                }, icon = Icons.Default.FileDownload
+                },
+                icon = Icons.Default.FileDownload
             ),
             SettingsUIElement(
                 title = "Export Links",
@@ -209,19 +208,14 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     when (ContextCompat.checkSelfPermission(
-                        context,
-                        android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+                        context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
                     )) {
                         PackageManager.PERMISSION_GRANTED -> {
-                            viewModelScope.launch {
-                                exportImpl.exportToAFile()
-                            }
+                            exportImpl.exportToAFile()
                             viewModelScope.launch {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
-                                        context,
-                                        "PERMISSION GRANTED",
-                                        Toast.LENGTH_SHORT
+                                        context, "Successfully Exported", Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
@@ -238,7 +232,8 @@ class SettingsScreenVM(
                             }
                         }
                     }
-                }, icon = Icons.Default.FileUpload
+                },
+                icon = Icons.Default.FileUpload
             ),
             SettingsUIElement(
                 title = "Delete entire data permanently",
@@ -247,15 +242,15 @@ class SettingsScreenVM(
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-
-                }, icon = Icons.Default.DeleteForever
+                    shouldDeleteDialogBoxAppear.value = true
+                },
+                icon = Icons.Default.DeleteForever
             ),
         )
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS,
-        AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS
     }
 
     enum class SortingPreferences {
@@ -312,85 +307,66 @@ class SettingsScreenVM(
 
         suspend fun readAllPreferencesValues(context: Context) {
             coroutineScope {
-                kotlinx.coroutines.awaitAll(
-                    async {
-                        shouldFollowSystemTheme.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
-                                dataStore = context.dataStore
-                            ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    },
-                    async {
-                        shouldDarkThemeBeEnabled.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
-                                dataStore = context.dataStore
-                            ) ?: true
-                    },
-                    async {
-                        shouldFollowDynamicTheming.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
-                                dataStore = context.dataStore
-                            ) ?: false
-                    },
-                    async {
-                        isInAppWebTabEnabled.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
-                                dataStore = context.dataStore
-                            ) ?: false
-                    },
-                    async {
-                        isAutoDetectTitleForLinksEnabled.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                                dataStore = context.dataStore
-                            ) ?: false
-                    },
-                    async {
-                        isHomeScreenEnabled.value =
-                            if (readSettingPreferenceValue(
-                                    preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                                    dataStore = context.dataStore
-                                ) == null
-                            ) {
-                                true
-                            } else {
-                                readSettingPreferenceValue(
-                                    preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                                    dataStore = context.dataStore
-                                ) == true
-                            }
-                    },
-                    async {
-                        isBtmSheetEnabledForSavingLinks.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                                dataStore = context.dataStore
-                            ) ?: true
-                    },
-                    async {
-                        isSendCrashReportsEnabled.value =
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                                dataStore = context.dataStore
-                            ) ?: true
-                    },
-                    async {
-                        selectedSortingType.value =
-                            readSortingPreferenceValue(
-                                preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
-                                dataStore = context.dataStore
-                            ) ?: SortingPreferences.NEW_TO_OLD.name
+                kotlinx.coroutines.awaitAll(async {
+                    shouldFollowSystemTheme.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
+                        dataStore = context.dataStore
+                    ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                }, async {
+                    shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
+                        dataStore = context.dataStore
+                    ) ?: (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+                }, async {
+                    shouldFollowDynamicTheming.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
+                        dataStore = context.dataStore
+                    ) ?: false
+                }, async {
+                    isInAppWebTabEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                        dataStore = context.dataStore
+                    ) ?: false
+                }, async {
+                    isAutoDetectTitleForLinksEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                        dataStore = context.dataStore
+                    ) ?: false
+                }, async {
+                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == null
+                    ) {
+                        true
+                    } else {
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == true
                     }
-                )
+                }, async {
+                    isBtmSheetEnabledForSavingLinks.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
+                    isSendCrashReportsEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
+                    selectedSortingType.value = readSortingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
+                        dataStore = context.dataStore
+                    ) ?: SortingPreferences.NEW_TO_OLD.name
+                })
             }
         }
 
         suspend fun latestAppVersionRetriever() {
             val rawData = withContext(Dispatchers.Default) {
-                Jsoup.connect(appInfoURL).get().body().ownText()
+                Jsoup.connect("appInfoURL").get().body().ownText()
             }
             val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
             latestAppInfoFromServer.apply {

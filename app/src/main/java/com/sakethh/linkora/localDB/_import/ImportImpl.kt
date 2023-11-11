@@ -1,5 +1,7 @@
 package com.sakethh.linkora.localDB._import
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTO
@@ -13,11 +15,14 @@ import kotlinx.serialization.json.Json
 
 class ImportImpl {
     suspend fun importToLocalDB(
-        exceptionType: MutableState<Exception?>,
+        context: Context,
+        exceptionType: MutableState<String?>,
         json: String,
     ) {
         try {
-            val jsonDeserialized = Json.decodeFromString<ExportDTO>(json)
+            val jsonDeserialized = Json {
+                ignoreUnknownKeys = true
+            }.decodeFromString<ExportDTO>(json)
             withContext(Dispatchers.IO) {
                 awaitAll(async {
                     CustomFunctionsForLocalDB.localDB.importDao()
@@ -40,10 +45,13 @@ class ImportImpl {
                 })
             }
             exceptionType.value = null
-        } catch (_: IllegalArgumentException) {
-            exceptionType.value = IllegalArgumentException()
-        } catch (_: SerializationException) {
-            exceptionType.value = SerializationException()
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "Imported Data Successfully", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: IllegalArgumentException) {
+            exceptionType.value = IllegalArgumentException().toString()
+        } catch (e: SerializationException) {
+            exceptionType.value = SerializationException().toString()
         }
 
     }

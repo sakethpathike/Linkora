@@ -1,7 +1,6 @@
 package com.sakethh.linkora.localDB.export
 
 import android.os.Environment
-import android.util.Log
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
@@ -10,28 +9,27 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTO
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.launch
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import java.io.File
-import java.io.FileOutputStream
 
 
 class ExportImpl {
+    private val savedLinks = mutableListOf<LinksTable>()
+    private val importantLinks = mutableListOf<ImportantLinks>()
+    private val folders = mutableListOf<FoldersTable>()
+    private val archivedLinks = mutableListOf<ArchivedLinks>()
+    private val archivedFolders = mutableListOf<ArchivedFolders>()
+    private val historyLinks = mutableListOf<RecentlyVisited>()
 
-    suspend fun exportToAFile() {
-        val defaultFolder = File(Environment.getExternalStorageDirectory(), "Linkora/Exports")
-        if (!defaultFolder.exists()) {
-            File(Environment.getExternalStorageDirectory(), "Linkora/Exports").mkdirs()
-        }
-        val savedLinks = mutableListOf<LinksTable>()
-        val importantLinks = mutableListOf<ImportantLinks>()
-        val folders = mutableListOf<FoldersTable>()
-        val archivedLinks = mutableListOf<ArchivedLinks>()
-        val archivedFolders = mutableListOf<ArchivedFolders>()
-        val historyLinks = mutableListOf<RecentlyVisited>()
-        withContext(Dispatchers.IO) {
+    init {
+        val job = Job()
+        CoroutineScope(job).launch {
             awaitAll(
                 async {
                     CustomFunctionsForLocalDB.localDB.crudDao().getAllSavedLinks().collect {
@@ -63,36 +61,35 @@ class ExportImpl {
                         .collect {
                             historyLinks.addAll(it)
                         }
-                },
+                }
             )
+        }.start()
+        if (job.isCompleted) {
+            job.cancel()
         }
+    }
 
-        val json = ExportDTO(
-            appVersion = 8,
-            savedLinks = savedLinks,
-            importantLinks = importantLinks,
-            folders = folders,
-            archivedLinks = archivedLinks,
-            archivedFolders = archivedFolders,
-            historyLinks = historyLinks,
-        )
-        val file =
-            File(Environment.getExternalStorageDirectory(), "Linkora/Exports/LinksExport.txt")
+    fun exportToAFile() {
+        val defaultFolder = File(Environment.getExternalStorageDirectory(), "Linkora/Exports")
+        if (!defaultFolder.exists()) {
+            File(Environment.getExternalStorageDirectory(), "Linkora/Exports").mkdirs()
+        }
+        val file = File(defaultFolder, "LinkoraExport.txt")
         if (file.exists()) {
             file.delete()
-        } else {
-            withContext(Dispatchers.IO) {
-                file.createNewFile()
-            }
         }
-        val fileOutputStream = withContext(Dispatchers.IO) {
-            FileOutputStream(file)
-        }
-        withContext(Dispatchers.IO) {
-            fileOutputStream.write(json.toString().toByteArray())
-            Log.d("check export", json.toString())
-            fileOutputStream.flush()
-            fileOutputStream.close()
-        }
+        file.writeText(
+            Json.encodeToString(
+                ExportDTO(
+                    appVersion = 8,
+                    savedLinks = savedLinks,
+                    importantLinks = importantLinks,
+                    folders = folders,
+                    archivedLinks = archivedLinks,
+                    archivedFolders = archivedFolders,
+                    historyLinks = historyLinks,
+                )
+            )
+        )
     }
 }

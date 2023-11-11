@@ -70,7 +70,6 @@ import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionChecke
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
-import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
@@ -84,9 +83,14 @@ fun SettingsScreen(navController: NavController) {
     }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            val file = uri?.path?.let { File(it) }
-            file?.readText()
-                ?.let { settingsScreenVM.importData(settingsScreenVM.exceptionType, it) }
+            val file = createTempFile()
+            uri?.let { context.contentResolver.openInputStream(it) }.use { input ->
+                file.outputStream().use { output ->
+                    input?.copyTo(output)
+                }
+            }
+            settingsScreenVM.importData(settingsScreenVM.exceptionType, file.readText(), context)
+            file.delete()
         }
     val runtimePermission = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),
@@ -282,7 +286,12 @@ fun SettingsScreen(navController: NavController) {
                                 }),
                             data = emptyList(),
                             forListOfSettings = false,
-                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+                            shape = RoundedCornerShape(
+                                topStart = 10.dp,
+                                topEnd = 10.dp,
+                                bottomStart = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp,
+                                bottomEnd = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp
+                            ),
                             topPadding = 20.dp
                         )
                     }
@@ -537,7 +546,7 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
         }
-        val isImportExceptionBoxVisible = rememberSaveable {
+        val isImportExceptionBoxVisible = rememberSaveable(settingsScreenVM.exceptionType.value) {
             mutableStateOf(settingsScreenVM.exceptionType.value != null)
         }
         ImportExceptionDialogBox(

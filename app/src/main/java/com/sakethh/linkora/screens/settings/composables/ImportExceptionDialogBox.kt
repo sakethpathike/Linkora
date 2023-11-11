@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
@@ -29,23 +30,23 @@ import kotlinx.serialization.SerializationException
 fun ImportExceptionDialogBox(
     isVisible: MutableState<Boolean>,
     onClick: () -> Unit,
-    exceptionType: MutableState<Exception?>,
+    exceptionType: MutableState<String?>,
 ) {
     if (isVisible.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
+                .wrapContentSize()
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = { isVisible.value = false }) {
                 Column {
                     Text(
                         text = when (exceptionType.value) {
-                            IllegalArgumentException() -> "Incompatible File Type"
+                            IllegalArgumentException().toString() -> "Incompatible File Type"
 
-                            SerializationException() -> "Data Conversion Failed"
+                            SerializationException().toString() -> "Data Conversion Failed"
                             else -> ""
                         },
-                        color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
@@ -54,11 +55,11 @@ fun ImportExceptionDialogBox(
                     )
                     Text(
                         text = when (exceptionType.value) {
-                            IllegalArgumentException() -> "Selected file doesn't match Linkora's Schema for JSON files. Please choose a compatible file to import your links."
+                            IllegalArgumentException().toString() -> "Selected file doesn't match Linkora's Schema for JSON files. Please choose a compatible file to import your links."
 
-                            SerializationException() -> "Apologies, but there was an issue importing the links. Please try again with a different file."
+                            SerializationException().toString() -> "Apologies, but there was an issue importing the links. Please try again with a different file."
                             else -> ""
-                        }, color = AlertDialogDefaults.titleContentColor,
+                        },
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
