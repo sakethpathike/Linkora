@@ -31,7 +31,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### Linkora doesn't strictly follow MVVM architecture but uses it where required, at least for now. I'm planning to rewrite a few things; it may then be a proper MVVM-based project, but for now, it has most of the touch of MVVM.
 
 ## GitHub Releases
-The latest release of Linkora is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.2.1). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.2.1/Linkora-v0.2.1.apk)
+The latest release of Linkora (v0.3.0) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.3.0). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.3.0/Linkora-v0.3.0.apk)
 
 ## Screenshots
 
@@ -92,11 +92,10 @@ The latest release of Linkora is available on [GitHub Releases](https://github.c
 ## Upcoming Updates
 - [x] Sorting
 - [x] Searching
+- [x] Importing and exporting (in alpha)
 - Better title and image parsing of links
-- Subfolders
-- Pinned folders
-- Linkboard in the home screen
-- Linksheet and a few other things that a link utility app should have.
+- Sub-folders
+- Pinned folders and a few other things that a link utility app should have.
 
 #### Note: This project is in active development and new features and improvements will be added over time.
 

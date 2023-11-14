@@ -105,11 +105,11 @@ fun SettingsScreen(navController: NavController) {
             )
             file.delete()
         }
-    val runtimePermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
-            onResult = {
-                isPermissionDialogBoxVisible.value = !it
-            })
+    val runtimePermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            isPermissionDialogBoxVisible.value = !it
+        })
     val dataSectionData = settingsScreenVM.dataSection(
         runtimePermission,
         context,
@@ -399,10 +399,9 @@ fun SettingsScreen(navController: NavController) {
                                 color = MaterialTheme.colorScheme.primary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 20.sp,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 15.dp
-                                    )
+                                modifier = Modifier.padding(
+                                    start = 15.dp
+                                )
                             )
                             Text(
                                 text = "Alpha",
@@ -578,14 +577,30 @@ fun SettingsScreen(navController: NavController) {
                 activityResultLauncher.launch("text/*")
             })
         }, onExportAndThenImportClick = {
-            CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                settingsScreenVM.exportDataToAFile(
-                    context = context,
-                    isDialogBoxVisible = isPermissionDialogBoxVisible,
-                    runtimePermission = runtimePermission
-                )
-                activityResultLauncher.launch("text/*")
-            })
+            when (ContextCompat.checkSelfPermission(
+                context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+            )) {
+                PackageManager.PERMISSION_GRANTED -> {
+                    settingsScreenVM.exportDataToAFile(
+                        context = context,
+                        isDialogBoxVisible = isPermissionDialogBoxVisible,
+                        runtimePermission = runtimePermission
+                    )
+                    Toast.makeText(
+                        context, "Successfully Exported", Toast.LENGTH_SHORT
+                    ).show()
+                    CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                        activityResultLauncher.launch("text/*")
+                    })
+                }
+
+                else -> {
+                    runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    Toast.makeText(
+                        context, "Permission required to write the data", Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
         })
         DeleteDialogBox(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
