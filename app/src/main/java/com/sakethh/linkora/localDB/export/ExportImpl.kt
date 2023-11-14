@@ -30,39 +30,31 @@ class ExportImpl {
     init {
         val job = Job()
         CoroutineScope(job).launch {
-            awaitAll(
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllSavedLinks().collect {
-                        savedLinks.addAll(it)
-                    }
-                },
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllImpLinks().collect {
-                        importantLinks.addAll(it)
-                    }
-                },
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllFolders().collect {
-                        folders.addAll(it)
-                    }
-                },
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveLinks().collect {
-                        archivedLinks.addAll(it)
-                    }
-                },
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveFolders().collect {
-                        archivedFolders.addAll(it)
-                    }
-                },
-                async {
-                    CustomFunctionsForLocalDB.localDB.crudDao().getAllRecentlyVisitedLinks()
-                        .collect {
-                            historyLinks.addAll(it)
-                        }
+            awaitAll(async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllFromLinksTable().collect {
+                    savedLinks.addAll(it)
                 }
-            )
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllImpLinks().collect {
+                    importantLinks.addAll(it)
+                }
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllFolders().collect {
+                    folders.addAll(it)
+                }
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveLinks().collect {
+                    archivedLinks.addAll(it)
+                }
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveFolders().collect {
+                    archivedFolders.addAll(it)
+                }
+            }, async {
+                CustomFunctionsForLocalDB.localDB.crudDao().getAllRecentlyVisitedLinks().collect {
+                    historyLinks.addAll(it)
+                }
+            })
         }.start()
         if (job.isCompleted) {
             job.cancel()

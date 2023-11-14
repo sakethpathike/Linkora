@@ -13,6 +13,25 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CRUDDao {
+
+    @Query("SELECT (SELECT COUNT(*) FROM links_table) == 0")
+    suspend fun isLinksTableEmpty(): Boolean
+
+    @Query("SELECT (SELECT COUNT(*) FROM folders_table) == 0")
+    suspend fun isFoldersTableEmpty(): Boolean
+
+    @Query("SELECT (SELECT COUNT(*) FROM archived_links_table) == 0")
+    suspend fun isArchivedLinksTableEmpty(): Boolean
+
+    @Query("SELECT (SELECT COUNT(*) FROM archived_folders_table) == 0")
+    suspend fun isArchivedFoldersTableEmpty(): Boolean
+
+    @Query("SELECT (SELECT COUNT(*) FROM important_links_table) == 0")
+    suspend fun isImpLinksTableEmpty(): Boolean
+
+    @Query("SELECT (SELECT COUNT(*) FROM recently_visited_table) == 0")
+    suspend fun isHistoryLinksTableEmpty(): Boolean
+
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1 LIMIT 8")
     fun getLatestSavedLinks(): Flow<List<LinksTable>>
 
@@ -79,6 +98,9 @@ interface CRUDDao {
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")
     fun getAllSavedLinks(): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM links_table")
+    fun getAllFromLinksTable(): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM recently_visited_table")
     fun getAllRecentlyVisitedLinks(): Flow<List<RecentlyVisited>>

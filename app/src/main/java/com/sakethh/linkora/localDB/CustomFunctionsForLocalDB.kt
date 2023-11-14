@@ -568,11 +568,13 @@ class CustomFunctionsForLocalDB : ViewModel() {
         }
     }
 
-    fun deleteEntireLinksAndFoldersData() {
+    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {
                 localDB.clearAllTables()
             }
+        }.invokeOnCompletion {
+            onTaskCompleted()
         }
     }
 

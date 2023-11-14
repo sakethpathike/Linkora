@@ -12,6 +12,7 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -61,6 +62,7 @@ import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.screens.settings.composables.ImportConflictDialog
 import com.sakethh.linkora.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.screens.settings.composables.SettingComponent
@@ -81,6 +83,12 @@ fun SettingsScreen(navController: NavController) {
     val isPermissionDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val isImportExceptionBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isImportConflictBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             val file = createTempFile()
@@ -89,20 +97,25 @@ fun SettingsScreen(navController: NavController) {
                     input?.copyTo(output)
                 }
             }
-            settingsScreenVM.importData(settingsScreenVM.exceptionType, file.readText(), context)
+            settingsScreenVM.importData(
+                settingsScreenVM.exceptionType,
+                file.readText(),
+                context,
+                isImportExceptionBoxVisible
+            )
             file.delete()
         }
-    val runtimePermission = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission(),
-        onResult = {
-            isPermissionDialogBoxVisible.value = !it
-        }
-    )
+    val runtimePermission =
+        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
+            onResult = {
+                isPermissionDialogBoxVisible.value = !it
+            })
     val dataSectionData = settingsScreenVM.dataSection(
         runtimePermission,
         context,
         isDialogBoxVisible = isPermissionDialogBoxVisible,
-        activityResultLauncher = activityResultLauncher
+        activityResultLauncher = activityResultLauncher,
+        isImportConflictDialogVisible = isImportConflictBoxVisible
     )
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
@@ -148,8 +161,7 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        SettingsAppInfoComponent(
-                            hasDescription = false,
+                        SettingsAppInfoComponent(hasDescription = false,
                             description = "",
                             icon = Icons.Outlined.Update,
                             title = "Check for latest version",
@@ -183,16 +195,14 @@ fun SettingsScreen(navController: NavController) {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                            }
-                        )
+                            })
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
                             thickness = 0.5.dp,
                             modifier = Modifier.padding(20.dp)
                         )
 
-                        SettingsAppInfoComponent(
-                            description = "The source code for this app is public and open-source; feel free to check out what this app does under the hood.",
+                        SettingsAppInfoComponent(description = "The source code for this app is public and open-source; feel free to check out what this app does under the hood.",
                             icon = null,
                             usingLocalIcon = true,
                             title = "Github",
@@ -212,8 +222,7 @@ fun SettingsScreen(navController: NavController) {
                                         forceOpenInExternalBrowser = false
                                     )
                                 }
-                            }
-                        )
+                            })
 
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
@@ -221,8 +230,7 @@ fun SettingsScreen(navController: NavController) {
                             modifier = Modifier.padding(20.dp)
                         )
 
-                        SettingsAppInfoComponent(
-                            description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about this app.",
+                        SettingsAppInfoComponent(description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about this app.",
                             icon = null,
                             usingLocalIcon = true,
                             localIcon = R.drawable.twitter_logo,
@@ -242,8 +250,7 @@ fun SettingsScreen(navController: NavController) {
                                         forceOpenInExternalBrowser = false
                                     )
                                 }
-                            }
-                        )
+                            })
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
@@ -260,8 +267,7 @@ fun SettingsScreen(navController: NavController) {
                     item {
                         SettingComponent(
                             isSingleComponent = false,
-                            settingsUIElement = SettingsUIElement(
-                                title = "Follow System Theme",
+                            settingsUIElement = SettingsUIElement(title = "Follow System Theme",
                                 doesDescriptionExists = false,
                                 isSwitchNeeded = true,
                                 description = null,
@@ -279,8 +285,7 @@ fun SettingsScreen(navController: NavController) {
                                             SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                 preferenceKey = booleanPreferencesKey(
                                                     SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
-                                                ),
-                                                dataStore = context.dataStore
+                                                ), dataStore = context.dataStore
                                             ) == true
                                     }
                                 }),
@@ -318,8 +323,7 @@ fun SettingsScreen(navController: NavController) {
                                             SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                 preferenceKey = booleanPreferencesKey(
                                                     SettingsScreenVM.SettingsPreferences.DARK_THEME.name
-                                                ),
-                                                dataStore = context.dataStore
+                                                ), dataStore = context.dataStore
                                             ) == true
                                     }
                                 }),
@@ -357,8 +361,7 @@ fun SettingsScreen(navController: NavController) {
                                             SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                 preferenceKey = booleanPreferencesKey(
                                                     SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
-                                                ),
-                                                dataStore = context.dataStore
+                                                ), dataStore = context.dataStore
                                             ) == true
                                     }
                                 }),
@@ -387,66 +390,93 @@ fun SettingsScreen(navController: NavController) {
                         forListOfSettings = true,
                     )
                 }
-
-                item {
-                    Text(
-                        text = "Data",
-                        color = MaterialTheme.colorScheme.primary,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp, bottom = 20.dp)
-                    )
-                }
-                items(dataSectionData) { settingsUIElement ->
-                    settingsUIElement.description?.let { it1 ->
-                        SettingsDataComposable(
-                            onClick = {
-                                settingsUIElement.onSwitchStateChange()
-                            },
-                            shape = RoundedCornerShape(
-                                topStart = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                topEnd = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomStart = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomEnd = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                            ),
-                            title = settingsUIElement.title,
-                            description = it1,
-                            icon = settingsUIElement.icon!!
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                    item {
+                        Spacer(modifier = Modifier.padding(top = 40.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Text(
+                                text = "Data",
+                                color = MaterialTheme.colorScheme.primary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 20.sp,
+                                modifier = Modifier
+                                    .padding(
+                                        start = 15.dp
+                                    )
+                            )
+                            Text(
+                                text = "Alpha",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 15.sp,
+                                modifier = Modifier
+                                    .padding(
+                                        start = 10.dp
+                                    )
+                                    .background(
+                                        color = MaterialTheme.colorScheme.primary,
+                                        shape = RoundedCornerShape(5.dp)
+                                    )
+                                    .padding(5.dp)
+                            )
+                        }
+                        Spacer(
+                            modifier = Modifier.padding(
+                                bottom = 20.dp
+                            )
                         )
                     }
+                    items(dataSectionData) { settingsUIElement ->
+                        settingsUIElement.description?.let { it1 ->
+                            SettingsDataComposable(
+                                onClick = {
+                                    settingsUIElement.onSwitchStateChange()
+                                },
+                                shape = RoundedCornerShape(
+                                    topStart = when (settingsUIElement) {
+                                        dataSectionData.first() -> {
+                                            10.dp
+                                        }
 
+                                        else -> {
+                                            0.dp
+                                        }
+                                    },
+                                    topEnd = when (settingsUIElement) {
+                                        dataSectionData.first() -> {
+                                            10.dp
+                                        }
+
+                                        else -> {
+                                            0.dp
+                                        }
+                                    },
+                                    bottomStart = when (settingsUIElement) {
+                                        dataSectionData.last() -> {
+                                            10.dp
+                                        }
+
+                                        else -> {
+                                            0.dp
+                                        }
+                                    },
+                                    bottomEnd = when (settingsUIElement) {
+                                        dataSectionData.last() -> {
+                                            10.dp
+                                        }
+
+                                        else -> {
+                                            0.dp
+                                        }
+                                    },
+                                ),
+                                title = settingsUIElement.title,
+                                description = it1,
+                                icon = settingsUIElement.icon!!
+                            )
+                        }
+
+                    }
                 }
                 item {
                     Text(
@@ -458,8 +488,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 item {
-                    Card(
-                        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(15.dp)
@@ -467,11 +496,9 @@ fun SettingsScreen(navController: NavController) {
                                 privacySectionData.onSwitchStateChange()
                             }
                             .animateContentSize(),
-                        shape = RoundedCornerShape(10.dp)
-                    ) {
+                        shape = RoundedCornerShape(10.dp)) {
                         Row(
-                            modifier = Modifier
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             verticalAlignment = Alignment.CenterVertically,
                             horizontalArrangement = Arrangement.SpaceBetween
                         ) {
@@ -480,8 +507,7 @@ fun SettingsScreen(navController: NavController) {
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 16.sp,
                                 modifier = Modifier.padding(
-                                    top = 15.dp,
-                                    start = 15.dp
+                                    top = 15.dp, start = 15.dp
                                 )
                             )
                             Switch(
@@ -490,8 +516,7 @@ fun SettingsScreen(navController: NavController) {
                                     privacySectionData.onSwitchStateChange()
                                 },
                                 modifier = Modifier.padding(
-                                    top = 15.dp,
-                                    end = 15.dp
+                                    top = 15.dp, end = 15.dp
                                 )
                             )
                         }
@@ -500,10 +525,7 @@ fun SettingsScreen(navController: NavController) {
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(
-                                top = 10.dp,
-                                start = 15.dp,
-                                bottom = 20.dp,
-                                end = 15.dp
+                                top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
                             ),
                             lineHeight = 16.sp,
                             textAlign = TextAlign.Start,
@@ -516,11 +538,9 @@ fun SettingsScreen(navController: NavController) {
                 }
             }
         }
-        PermissionDialog(
-            isVisible = isPermissionDialogBoxVisible,
+        PermissionDialog(isVisible = isPermissionDialogBoxVisible,
             permissionDenied = when (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                context, Manifest.permission.WRITE_EXTERNAL_STORAGE
             )) {
                 PackageManager.PERMISSION_GRANTED -> false
                 else -> true
@@ -546,23 +566,33 @@ fun SettingsScreen(navController: NavController) {
                 )
             }
         }
-        val isImportExceptionBoxVisible = rememberSaveable(settingsScreenVM.exceptionType.value) {
-            mutableStateOf(settingsScreenVM.exceptionType.value != null)
-        }
         ImportExceptionDialogBox(
             isVisible = isImportExceptionBoxVisible,
             onClick = { activityResultLauncher.launch("text/*") },
             exceptionType = settingsScreenVM.exceptionType
         )
-        DeleteDialogBox(
-            shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+        ImportConflictDialog(isVisible = isImportConflictBoxVisible, onMergeClick = {
+            activityResultLauncher.launch("text/*")
+        }, onDeleteExistingDataClick = {
+            CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                activityResultLauncher.launch("text/*")
+            })
+        }, onExportAndThenImportClick = {
+            CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                settingsScreenVM.exportDataToAFile(
+                    context = context,
+                    isDialogBoxVisible = isPermissionDialogBoxVisible,
+                    runtimePermission = runtimePermission
+                )
+                activityResultLauncher.launch("text/*")
+            })
+        })
+        DeleteDialogBox(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
             onDeleteClick = {
                 CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData()
                 Toast.makeText(
-                    context,
-                    "Deleted entire data from the local database",
-                    Toast.LENGTH_SHORT
+                    context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
                 ).show()
             })
     }
@@ -585,8 +615,7 @@ fun SettingsScreen(navController: NavController) {
 
 fun Activity.openApplicationSettings() {
     Intent(
-        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-        Uri.fromParts("package", packageName, null)
+        Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.fromParts("package", packageName, null)
     ).also {
         startActivity(it)
     }

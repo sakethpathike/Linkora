@@ -18,6 +18,7 @@ class ImportImpl {
         context: Context,
         exceptionType: MutableState<String?>,
         json: String,
+        shouldErrorDialogBeVisible: MutableState<Boolean>
     ) {
         try {
             val jsonDeserialized = Json {
@@ -45,13 +46,16 @@ class ImportImpl {
                 })
             }
             exceptionType.value = null
+            shouldErrorDialogBeVisible.value = false
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Imported Data Successfully", Toast.LENGTH_SHORT).show()
             }
         } catch (e: IllegalArgumentException) {
             exceptionType.value = IllegalArgumentException().toString()
+            shouldErrorDialogBeVisible.value = true
         } catch (e: SerializationException) {
             exceptionType.value = SerializationException().toString()
+            shouldErrorDialogBeVisible.value = true
         }
 
     }

@@ -21,6 +21,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB._import.ImportImpl
 import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
@@ -174,11 +175,51 @@ class SettingsScreenVM(
         )
     }
 
-    fun importData(exceptionType: MutableState<String?>, json: String, context: Context) {
+    fun importData(
+        exceptionType: MutableState<String?>,
+        json: String,
+        context: Context,
+        shouldErrorDialogBeVisible: MutableState<Boolean>
+    ) {
         viewModelScope.launch {
             ImportImpl().importToLocalDB(
-                exceptionType = exceptionType, json = json, context = context
+                exceptionType = exceptionType,
+                json = json,
+                context = context,
+                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
             )
+        }
+    }
+
+    fun exportDataToAFile(
+        context: Context,
+        isDialogBoxVisible: MutableState<Boolean>,
+        runtimePermission: ManagedActivityResultLauncher<String, Boolean>
+    ) {
+        when (ContextCompat.checkSelfPermission(
+            context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
+        )) {
+            PackageManager.PERMISSION_GRANTED -> {
+                exportImpl.exportToAFile()
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context, "Successfully Exported", Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+                isDialogBoxVisible.value = false
+            }
+
+            else -> {
+                runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }
+            }
         }
     }
 
@@ -187,6 +228,7 @@ class SettingsScreenVM(
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
         activityResultLauncher: ManagedActivityResultLauncher<String, Uri?>,
+        isImportConflictDialogVisible: MutableState<Boolean>
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
@@ -196,7 +238,20 @@ class SettingsScreenVM(
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-                    activityResultLauncher.launch("text/*")
+                    viewModelScope.launch {
+                        if (CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isHistoryLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isImpLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isArchivedFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                                .isArchivedLinksTableEmpty()
+                        ) {
+                            activityResultLauncher.launch("text/*")
+                        } else {
+                            isImportConflictDialogVisible.value = true
+                        }
+                    }
                 },
                 icon = Icons.Default.FileDownload
             ),
@@ -207,31 +262,7 @@ class SettingsScreenVM(
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
-                    when (ContextCompat.checkSelfPermission(
-                        context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )) {
-                        PackageManager.PERMISSION_GRANTED -> {
-                            exportImpl.exportToAFile()
-                            viewModelScope.launch {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context, "Successfully Exported", Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
-                            isDialogBoxVisible.value = false
-                        }
-
-                        else -> {
-                            runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            viewModelScope.launch {
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
-                                        .show()
-                                }
-                            }
-                        }
-                    }
+                    exportDataToAFile(context, isDialogBoxVisible, runtimePermission)
                 },
                 icon = Icons.Default.FileUpload
             ),
