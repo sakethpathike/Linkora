@@ -1,5 +1,7 @@
 package com.sakethh.linkora.screens.settings
 
+import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -13,6 +15,7 @@ import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.booleanPreferencesKey
@@ -212,11 +215,18 @@ class SettingsScreenVM(
             }
 
             else -> {
-                runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                viewModelScope.launch {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
-                            .show()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    ActivityCompat.shouldShowRequestPermissionRationale(
+                        context as Activity,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )
+                } else {
+                    runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    viewModelScope.launch {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
                 }
             }

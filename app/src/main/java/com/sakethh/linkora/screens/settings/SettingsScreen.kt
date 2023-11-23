@@ -390,92 +390,90 @@ fun SettingsScreen(navController: NavController) {
                         forListOfSettings = true,
                     )
                 }
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                    item {
-                        Spacer(modifier = Modifier.padding(top = 40.dp))
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = "Data",
-                                color = MaterialTheme.colorScheme.primary,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 20.sp,
-                                modifier = Modifier.padding(
-                                    start = 15.dp
-                                )
-                            )
-                            Text(
-                                text = "Alpha",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 15.sp,
-                                modifier = Modifier
-                                    .padding(
-                                        start = 10.dp
-                                    )
-                                    .background(
-                                        color = MaterialTheme.colorScheme.primary,
-                                        shape = RoundedCornerShape(5.dp)
-                                    )
-                                    .padding(5.dp)
-                            )
-                        }
-                        Spacer(
+                item {
+                    Spacer(modifier = Modifier.padding(top = 40.dp))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "Data",
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
                             modifier = Modifier.padding(
-                                bottom = 20.dp
+                                start = 15.dp
                             )
                         )
+                        Text(
+                            text = "Alpha",
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 15.sp,
+                            modifier = Modifier
+                                .padding(
+                                    start = 10.dp
+                                )
+                                .background(
+                                    color = MaterialTheme.colorScheme.primary,
+                                    shape = RoundedCornerShape(5.dp)
+                                )
+                                .padding(5.dp)
+                        )
                     }
-                    items(dataSectionData) { settingsUIElement ->
-                        settingsUIElement.description?.let { it1 ->
-                            SettingsDataComposable(
-                                onClick = {
-                                    settingsUIElement.onSwitchStateChange()
+                    Spacer(
+                        modifier = Modifier.padding(
+                            bottom = 20.dp
+                        )
+                    )
+                }
+                items(dataSectionData) { settingsUIElement ->
+                    settingsUIElement.description?.let { it1 ->
+                        SettingsDataComposable(
+                            onClick = {
+                                settingsUIElement.onSwitchStateChange()
+                            },
+                            shape = RoundedCornerShape(
+                                topStart = when (settingsUIElement) {
+                                    dataSectionData.first() -> {
+                                        10.dp
+                                    }
+
+                                    else -> {
+                                        0.dp
+                                    }
                                 },
-                                shape = RoundedCornerShape(
-                                    topStart = when (settingsUIElement) {
-                                        dataSectionData.first() -> {
-                                            10.dp
-                                        }
+                                topEnd = when (settingsUIElement) {
+                                    dataSectionData.first() -> {
+                                        10.dp
+                                    }
 
-                                        else -> {
-                                            0.dp
-                                        }
-                                    },
-                                    topEnd = when (settingsUIElement) {
-                                        dataSectionData.first() -> {
-                                            10.dp
-                                        }
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                                bottomStart = when (settingsUIElement) {
+                                    dataSectionData.last() -> {
+                                        10.dp
+                                    }
 
-                                        else -> {
-                                            0.dp
-                                        }
-                                    },
-                                    bottomStart = when (settingsUIElement) {
-                                        dataSectionData.last() -> {
-                                            10.dp
-                                        }
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                                bottomEnd = when (settingsUIElement) {
+                                    dataSectionData.last() -> {
+                                        10.dp
+                                    }
 
-                                        else -> {
-                                            0.dp
-                                        }
-                                    },
-                                    bottomEnd = when (settingsUIElement) {
-                                        dataSectionData.last() -> {
-                                            10.dp
-                                        }
-
-                                        else -> {
-                                            0.dp
-                                        }
-                                    },
-                                ),
-                                title = settingsUIElement.title,
-                                description = it1,
-                                icon = settingsUIElement.icon!!
-                            )
-                        }
-
+                                    else -> {
+                                        0.dp
+                                    }
+                                },
+                            ),
+                            title = settingsUIElement.title,
+                            description = it1,
+                            icon = settingsUIElement.icon!!
+                        )
                     }
+
                 }
                 item {
                     Text(

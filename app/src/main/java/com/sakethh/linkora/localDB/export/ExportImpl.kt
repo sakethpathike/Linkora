@@ -1,5 +1,6 @@
 package com.sakethh.linkora.localDB.export
 
+import android.os.Build
 import android.os.Environment
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
@@ -17,6 +18,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import java.text.DateFormat.getDateTimeInstance
+import java.util.Date
 
 
 class ExportImpl {
@@ -62,14 +65,27 @@ class ExportImpl {
     }
 
     fun exportToAFile() {
-        val defaultFolder = File(Environment.getExternalStorageDirectory(), "Linkora/Exports")
-        if (!defaultFolder.exists()) {
+        val defaultFolder = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+            File(Environment.getExternalStorageDirectory(), "Linkora/Exports")
+        } else {
+            File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "Linkora/Exports"
+            )
+        }
+        if (!defaultFolder.exists() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             File(Environment.getExternalStorageDirectory(), "Linkora/Exports").mkdirs()
+        } else if (!defaultFolder.exists() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            File(
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
+                "Linkora/Exports"
+            ).mkdirs()
         }
-        val file = File(defaultFolder, "LinkoraExport.txt")
-        if (file.exists()) {
-            file.delete()
-        }
+
+        val file = File(
+            defaultFolder,
+            "LinkoraExport_${getDateTimeInstance().format(Date()).replace(":", "_")}.txt"
+        )
         file.writeText(
             Json.encodeToString(
                 ExportDTO(
@@ -83,5 +99,6 @@ class ExportImpl {
                 )
             )
         )
+
     }
 }
