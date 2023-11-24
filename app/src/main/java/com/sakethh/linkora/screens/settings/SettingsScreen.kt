@@ -25,8 +25,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -59,7 +57,6 @@ import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
-import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.composables.ImportConflictDialog
@@ -161,41 +158,41 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                       /* SettingsAppInfoComponent(hasDescription = false,
-                            description = "",
-                            icon = Icons.Outlined.Update,
-                            title = "Check for latest version",
-                            onClick = {
-                                shouldVersionCheckerDialogAppear.value = true
-                                if (isNetworkAvailable(context)) {
-                                    coroutineScope.launch {
-                                        SettingsScreenVM.Settings.latestAppVersionRetriever()
-                                    }.invokeOnCompletion {
-                                        shouldVersionCheckerDialogAppear.value = false
-                                        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
-                                            shouldBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                if (!btmModalSheetState.isVisible) {
-                                                    btmModalSheetState.show()
-                                                }
-                                            }
-                                        } else {
-                                            Toast.makeText(
-                                                context,
-                                                "you're already on latest version",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                } else {
-                                    shouldVersionCheckerDialogAppear.value = false
-                                    Toast.makeText(
-                                        context,
-                                        "network error, check your network connection and try again",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            })*/
+                        /* SettingsAppInfoComponent(hasDescription = false,
+                             description = "",
+                             icon = Icons.Outlined.Update,
+                             title = "Check for latest version",
+                             onClick = {
+                                 shouldVersionCheckerDialogAppear.value = true
+                                 if (isNetworkAvailable(context)) {
+                                     coroutineScope.launch {
+                                         SettingsScreenVM.Settings.latestAppVersionRetriever()
+                                     }.invokeOnCompletion {
+                                         shouldVersionCheckerDialogAppear.value = false
+                                         if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+                                             shouldBtmModalSheetBeVisible.value = true
+                                             coroutineScope.launch {
+                                                 if (!btmModalSheetState.isVisible) {
+                                                     btmModalSheetState.show()
+                                                 }
+                                             }
+                                         } else {
+                                             Toast.makeText(
+                                                 context,
+                                                 "you're already on latest version",
+                                                 Toast.LENGTH_SHORT
+                                             ).show()
+                                         }
+                                     }
+                                 } else {
+                                     shouldVersionCheckerDialogAppear.value = false
+                                     Toast.makeText(
+                                         context,
+                                         "network error, check your network connection and try again",
+                                         Toast.LENGTH_SHORT
+                                     ).show()
+                                 }
+                             })*/
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
                             thickness = 0.5.dp,
