@@ -73,9 +73,9 @@ class ExportImpl {
                 "Linkora/Exports"
             )
         }
-        if (!defaultFolder.exists() && Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q && !defaultFolder.exists()) {
             File(Environment.getExternalStorageDirectory(), "Linkora/Exports").mkdirs()
-        } else if (!defaultFolder.exists() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !defaultFolder.exists()) {
             File(
                 Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS),
                 "Linkora/Exports"
@@ -84,12 +84,14 @@ class ExportImpl {
 
         val file = File(
             defaultFolder,
-            "LinkoraExport_${getDateTimeInstance().format(Date()).replace(":", "_")}.txt"
+            "LinkoraExport-${
+                getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
+            }.txt"
         )
         file.writeText(
             Json.encodeToString(
                 ExportDTO(
-                    appVersion = 8,
+                    appVersion = 9,
                     savedLinks = savedLinks,
                     importantLinks = importantLinks,
                     folders = folders,

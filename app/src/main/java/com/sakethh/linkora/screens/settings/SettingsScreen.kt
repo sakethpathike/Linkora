@@ -161,7 +161,7 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        SettingsAppInfoComponent(hasDescription = false,
+                       /* SettingsAppInfoComponent(hasDescription = false,
                             description = "",
                             icon = Icons.Outlined.Update,
                             title = "Check for latest version",
@@ -195,14 +195,13 @@ fun SettingsScreen(navController: NavController) {
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
-                            })
+                            })*/
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
                             thickness = 0.5.dp,
                             modifier = Modifier.padding(20.dp)
                         )
-
-                        SettingsAppInfoComponent(description = "The source code for this app is public and open-source; feel free to check out what this app does under the hood.",
+                        SettingsAppInfoComponent(description = "The source code for Linkora is public and open-source; feel free to check out what Linkora does under the hood.",
                             icon = null,
                             usingLocalIcon = true,
                             title = "Github",
@@ -230,7 +229,7 @@ fun SettingsScreen(navController: NavController) {
                             modifier = Modifier.padding(20.dp)
                         )
 
-                        SettingsAppInfoComponent(description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about this app.",
+                        SettingsAppInfoComponent(description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about Linkora.",
                             icon = null,
                             usingLocalIcon = true,
                             localIcon = R.drawable.twitter_logo,
@@ -409,7 +408,7 @@ fun SettingsScreen(navController: NavController) {
                             fontSize = 15.sp,
                             modifier = Modifier
                                 .padding(
-                                    start = 10.dp
+                                    start = 5.dp
                                 )
                                 .background(
                                     color = MaterialTheme.colorScheme.primary,
@@ -568,42 +567,50 @@ fun SettingsScreen(navController: NavController) {
             onClick = { activityResultLauncher.launch("text/*") },
             exceptionType = settingsScreenVM.exceptionType
         )
+        val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
         ImportConflictDialog(isVisible = isImportConflictBoxVisible, onMergeClick = {
             activityResultLauncher.launch("text/*")
         }, onDeleteExistingDataClick = {
-            CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
+            customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                 activityResultLauncher.launch("text/*")
             })
         }, onExportAndThenImportClick = {
-            when (ContextCompat.checkSelfPermission(
-                context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-            )) {
-                PackageManager.PERMISSION_GRANTED -> {
-                    settingsScreenVM.exportDataToAFile(
-                        context = context,
-                        isDialogBoxVisible = isPermissionDialogBoxVisible,
-                        runtimePermission = runtimePermission
-                    )
-                    Toast.makeText(
-                        context, "Successfully Exported", Toast.LENGTH_SHORT
-                    ).show()
-                    CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                        activityResultLauncher.launch("text/*")
-                    })
-                }
+            fun exportDataToAFile() {
+                settingsScreenVM.exportDataToAFile(
+                    context = context,
+                    isDialogBoxVisible = isPermissionDialogBoxVisible,
+                    runtimePermission = runtimePermission
+                )
+                Toast.makeText(
+                    context, "Successfully Exported", Toast.LENGTH_SHORT
+                ).show()
+                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                    activityResultLauncher.launch("text/*")
+                })
+            }
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                exportDataToAFile()
+            } else {
+                when (ContextCompat.checkSelfPermission(
+                    context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                )) {
+                    PackageManager.PERMISSION_GRANTED -> {
+                        exportDataToAFile()
+                    }
 
-                else -> {
-                    runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                    Toast.makeText(
-                        context, "Permission required to write the data", Toast.LENGTH_SHORT
-                    ).show()
+                    else -> {
+                        runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        Toast.makeText(
+                            context, "Permission required to write the data", Toast.LENGTH_SHORT
+                        ).show()
+                    }
                 }
             }
         })
         DeleteDialogBox(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
             onDeleteClick = {
-                CustomFunctionsForLocalDB().deleteEntireLinksAndFoldersData()
+                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData()
                 Toast.makeText(
                     context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
                 ).show()

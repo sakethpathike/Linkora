@@ -63,7 +63,8 @@ fun SettingsDataComposable(
                     modifier = Modifier.padding(
                         start = 15.dp,
                         top = 25.dp,
-                        bottom = 0.dp
+                        bottom = 0.dp,
+                        end = 20.dp
                     ),
                     lineHeight = 20.sp
                 )
