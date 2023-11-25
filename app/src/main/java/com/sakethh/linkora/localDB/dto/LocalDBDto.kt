@@ -35,6 +35,8 @@ data class FoldersTable(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
+
+    var parentFolderID: Long?
 )
 
 @Serializable

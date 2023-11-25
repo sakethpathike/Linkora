@@ -154,7 +154,8 @@ fun CollectionsScreen(navController: NavController) {
                 shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
                 shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
                 isMainFabRotated = isMainFabRotated,
-                rotationAnimation = rotationAnimation
+                rotationAnimation = rotationAnimation,
+                inASpecificScreen = false
             )
         },
             floatingActionButtonPosition = FabPosition.End,
@@ -451,7 +452,8 @@ fun CollectionsScreen(navController: NavController) {
                         SettingsScreenVM.Settings.selectedSortingType.value
                     )
                 )
-            }
+            },
+            parentFolderID = null
         )
         NewLinkBtmSheet(
             btmSheetState = btmModalSheetStateForSavingLinks,
@@ -466,7 +468,8 @@ fun CollectionsScreen(navController: NavController) {
                 )
             }, onLinkSaved = {
 
-            }
+            },
+            parentFolderID = null
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

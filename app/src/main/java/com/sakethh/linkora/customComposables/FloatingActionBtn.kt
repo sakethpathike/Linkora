@@ -33,6 +33,7 @@ fun FloatingActionBtn(
     shouldDialogForNewLinkAppear: MutableState<Boolean>,
     isMainFabRotated: MutableState<Boolean>,
     rotationAnimation: Animatable<Float, AnimationVector1D>,
+    inASpecificScreen: Boolean
 ) {
     val currentIconForMainFAB = remember(isMainFabRotated.value) {
         mutableStateOf(
@@ -47,7 +48,7 @@ fun FloatingActionBtn(
     if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
         androidx.compose.foundation.layout.Column(
             modifier = androidx.compose.ui.Modifier.padding(
-                bottom = 82.dp
+                bottom = if (!inASpecificScreen) 82.dp else 0.dp
             )
         ) {
             androidx.compose.material3.FloatingActionButton(
@@ -72,7 +73,7 @@ fun FloatingActionBtn(
     } else {
         androidx.compose.foundation.layout.Column(
             modifier = androidx.compose.ui.Modifier.padding(
-                bottom = 82.dp
+                bottom = if (!inASpecificScreen) 82.dp else 0.dp
             )
         ) {
             androidx.compose.foundation.layout.Row(

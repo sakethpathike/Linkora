@@ -44,7 +44,10 @@ class IntentActivity : ComponentActivity() {
                 _inIntentActivity = true,
                 shouldUIBeVisible = shouldUIBeVisible,
                 screenType = SpecificScreenType.INTENT_ACTIVITY,
-                btmSheetState = btmSheetState, onLinkSaved = {}, onFolderCreated = {}
+                btmSheetState = btmSheetState,
+                onLinkSaved = {},
+                onFolderCreated = {},
+                parentFolderID = null
             )
         }
     }

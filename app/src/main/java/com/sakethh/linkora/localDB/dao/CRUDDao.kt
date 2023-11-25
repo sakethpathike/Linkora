@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface CRUDDao {
+    @Query("SELECT COUNT(id) FROM folders_table")
+    fun getFoldersCount(): Flow<Int>
 
     @Query("SELECT (SELECT COUNT(*) FROM links_table) == 0")
     suspend fun isLinksTableEmpty(): Boolean
@@ -118,7 +120,7 @@ interface CRUDDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1")
     fun getAllArchiveFoldersData(): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM folders_table")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL")
     fun getAllFolders(): Flow<List<FoldersTable>>
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")

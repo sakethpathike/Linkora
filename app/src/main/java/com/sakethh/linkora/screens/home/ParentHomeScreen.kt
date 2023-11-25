@@ -98,7 +98,8 @@ fun ParentHomeScreen(navController: NavController) {
                     shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
                     shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
                     isMainFabRotated = isMainFabRotated,
-                    rotationAnimation = rotationAnimation
+                    rotationAnimation = rotationAnimation,
+                    inASpecificScreen = false
                 )
             },
             floatingActionButtonPosition = FabPosition.End,
@@ -194,7 +195,7 @@ fun ParentHomeScreen(navController: NavController) {
             specificFolderName = "Tea || Coffee ?"
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear
+            shouldDialogBoxAppear = shouldDialogForNewFolderAppear, parentFolderID = null
         )
         NewLinkBtmSheet(
             btmSheetState = btmModalSheetStateForSavingLinks,
@@ -202,7 +203,8 @@ fun ParentHomeScreen(navController: NavController) {
             screenType = SpecificScreenType.ROOT_SCREEN,
             shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
             onLinkSaved = {},
-            onFolderCreated = {}
+            onFolderCreated = {},
+            parentFolderID = null
         )
     }
 

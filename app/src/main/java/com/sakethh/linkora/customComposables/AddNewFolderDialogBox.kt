@@ -37,6 +37,7 @@ fun AddNewFolderDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     newFolderName: (String) -> Unit = {},
     onCreated: () -> Unit = {},
+    parentFolderID: Long?
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
@@ -135,7 +136,8 @@ fun AddNewFolderDialogBox(
                                     onTaskCompleted = {
                                         onCreated()
                                         shouldDialogBoxAppear.value = false
-                                    }
+                                    },
+                                    parentFolderID = parentFolderID
                                 )
                             }
                         }) {

@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
@@ -34,35 +36,42 @@ class HomeScreenVM : SpecificScreenVM() {
 
     companion object {
         val tempImpLinkData = ImportantLinks(
-            title = "",
-            webURL = "",
-            baseURL = "",
-            imgURL = "",
-            infoForSaving = ""
+            title = "", webURL = "", baseURL = "", imgURL = "", infoForSaving = ""
         )
     }
 
     init {
-        when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-            in 0..11 -> {
-                currentPhaseOfTheDay.value = "Good Morning"
-            }
+        viewModelScope.launch {
+            awaitAll(async {
+                NavigationVM.startDestination.value =
+                    if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+                        NavigationRoutes.HOME_SCREEN.name
+                    } else {
+                        NavigationRoutes.COLLECTIONS_SCREEN.name
+                    }
+            }, async {
+                when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+                    in 0..11 -> {
+                        currentPhaseOfTheDay.value = "Good Morning"
+                    }
 
-            in 12..15 -> {
-                currentPhaseOfTheDay.value = "Good Afternoon"
-            }
+                    in 12..15 -> {
+                        currentPhaseOfTheDay.value = "Good Afternoon"
+                    }
 
-            in 16..22 -> {
-                currentPhaseOfTheDay.value = "Good Evening"
-            }
+                    in 16..22 -> {
+                        currentPhaseOfTheDay.value = "Good Evening"
+                    }
 
-            in 23 downTo 0 -> {
-                currentPhaseOfTheDay.value = "Good Night?"
-            }
+                    in 23 downTo 0 -> {
+                        currentPhaseOfTheDay.value = "Good Night?"
+                    }
 
-            else -> {
-                currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
-            }
+                    else -> {
+                        currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
+                    }
+                }
+            })
         }
     }
 
@@ -75,10 +84,9 @@ class HomeScreenVM : SpecificScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .renameALinkTitleFromSavedLinks(
-                            webURL = webURL, newTitle = newTitle
-                        )
+                    CustomFunctionsForLocalDB.localDB.crudDao().renameALinkTitleFromSavedLinks(
+                        webURL = webURL, newTitle = newTitle
+                    )
                 }.invokeOnCompletion {
                     SpecificScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -118,10 +126,9 @@ class HomeScreenVM : SpecificScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .renameALinkInfoFromSavedLinks(
-                            webURL = webURL, newInfo = newNote
-                        )
+                    CustomFunctionsForLocalDB.localDB.crudDao().renameALinkInfoFromSavedLinks(
+                        webURL = webURL, newInfo = newNote
+                    )
                 }
                 Unit
             }
@@ -155,15 +162,13 @@ class HomeScreenVM : SpecificScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .deleteALinkFromSavedLinks(
-                            webURL = selectedWebURL
-                        )
+                    CustomFunctionsForLocalDB.localDB.crudDao().deleteALinkFromSavedLinks(
+                        webURL = selectedWebURL
+                    )
                     shouldDeleteBoxAppear.value = false
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context, "deleted the link successfully",
-                            Toast.LENGTH_SHORT
+                            context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
                 }.invokeOnCompletion {
@@ -178,10 +183,9 @@ class HomeScreenVM : SpecificScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .deleteARecentlyVisitedLink(
-                            webURL = selectedWebURL
-                        )
+                    CustomFunctionsForLocalDB.localDB.crudDao().deleteARecentlyVisitedLink(
+                        webURL = selectedWebURL
+                    )
                 }
                 Unit
             }
@@ -249,16 +253,13 @@ class HomeScreenVM : SpecificScreenVM() {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = ArchivedLinks(
-                                title = tempImpLinkData.title,
-                                webURL = tempImpLinkData.webURL,
-                                baseURL = tempImpLinkData.baseURL,
-                                imgURL = tempImpLinkData.imgURL,
-                                infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context, onTaskCompleted = {
-                            }
-                        )
+                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                            title = tempImpLinkData.title,
+                            webURL = tempImpLinkData.webURL,
+                            baseURL = tempImpLinkData.baseURL,
+                            imgURL = tempImpLinkData.imgURL,
+                            infoForSaving = tempImpLinkData.infoForSaving
+                        ), context = context, onTaskCompleted = {})
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
@@ -276,17 +277,15 @@ class HomeScreenVM : SpecificScreenVM() {
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = ArchivedLinks(
-                                title = tempImpLinkData.title,
-                                webURL = tempImpLinkData.webURL,
-                                baseURL = tempImpLinkData.baseURL,
-                                imgURL = tempImpLinkData.imgURL,
-                                infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context, onTaskCompleted = {
+                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                            title = tempImpLinkData.title,
+                            webURL = tempImpLinkData.webURL,
+                            baseURL = tempImpLinkData.baseURL,
+                            imgURL = tempImpLinkData.imgURL,
+                            infoForSaving = tempImpLinkData.infoForSaving
+                        ), context = context, onTaskCompleted = {
 
-                            }
-                        )
+                        })
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()
                             .deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
@@ -298,15 +297,13 @@ class HomeScreenVM : SpecificScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(
-                            archivedLinks = ArchivedLinks(
-                                title = tempImpLinkData.title,
-                                webURL = tempImpLinkData.webURL,
-                                baseURL = tempImpLinkData.baseURL,
-                                imgURL = tempImpLinkData.imgURL,
-                                infoForSaving = tempImpLinkData.infoForSaving
-                            ), context = context, {}
-                        )
+                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                            title = tempImpLinkData.title,
+                            webURL = tempImpLinkData.webURL,
+                            baseURL = tempImpLinkData.baseURL,
+                            imgURL = tempImpLinkData.imgURL,
+                            infoForSaving = tempImpLinkData.infoForSaving
+                        ), context = context, {})
                     }, async {
                         CustomFunctionsForLocalDB.localDB.crudDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)

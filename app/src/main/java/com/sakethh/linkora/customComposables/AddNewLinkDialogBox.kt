@@ -554,7 +554,8 @@ fun AddNewLinkDialogBox(
                     }.invokeOnCompletion {
                         isDropDownMenuIconClicked.value = false
                     }
-                })
+                }, parentFolderID = null
+            )
         }
     }
 }

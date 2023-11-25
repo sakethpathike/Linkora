@@ -31,6 +31,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
     fun createANewFolder(
         context: Context, folderName: String, infoForSaving: String,
         onTaskCompleted: () -> Unit,
+        parentFolderID: Long?
     ) {
         var doesThisFolderExists = false
         viewModelScope.launch {
@@ -56,7 +57,8 @@ class CustomFunctionsForLocalDB : ViewModel() {
                         .addANewFolder(
                             FoldersTable(
                                 folderName = folderName,
-                                infoForSaving = infoForSaving
+                                infoForSaving = infoForSaving,
+                                parentFolderID = parentFolderID
                             )
                         )
                     withContext(Dispatchers.Main) {

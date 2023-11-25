@@ -86,6 +86,7 @@ fun NewLinkBtmSheet(
     btmSheetState: SheetState,
     onLinkSaved: () -> Unit,
     onFolderCreated: () -> Unit,
+    parentFolderID: Long?
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -775,7 +776,8 @@ fun NewLinkBtmSheet(
                 },
                 onCreated = {
                     onFolderCreated()
-                }
+                },
+                parentFolderID = parentFolderID
             )
         }
         BackHandler {

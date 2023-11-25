@@ -19,7 +19,8 @@ class CollectionsScreenVM : ViewModel() {
     val foldersData = _foldersData.asStateFlow()
 
     companion object {
-        val selectedFolderData = FoldersTable(folderName = "", infoForSaving = "")
+        val selectedFolderData =
+            FoldersTable(folderName = "", infoForSaving = "", parentFolderID = 0)
     }
 
     init {

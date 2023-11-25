@@ -28,8 +28,6 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -47,8 +45,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             val context = LocalContext.current
+            val coroutineScope = rememberCoroutineScope()
             LinkoraTheme {
-                val coroutineScope = rememberCoroutineScope()
                 val navController = rememberNavController()
                 val bottomBarSheetState =
                     androidx.compose.material.rememberBottomSheetScaffoldState()
@@ -92,16 +90,7 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
-            CoroutineScope(Dispatchers.Main).launch {
-                NavigationVM.startDestination.value =
-                    if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
-                        NavigationRoutes.HOME_SCREEN.name
-                    } else {
-                        NavigationRoutes.COLLECTIONS_SCREEN.name
-                    }
-            }.start()
             CustomFunctionsForLocalDB.localDB = LocalDataBase.getLocalDB(context = context)
         }
-
     }
 }

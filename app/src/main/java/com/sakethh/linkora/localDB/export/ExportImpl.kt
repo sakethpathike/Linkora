@@ -9,7 +9,7 @@ import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
-import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTO
+import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTOv8
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
@@ -90,7 +90,7 @@ class ExportImpl {
         )
         file.writeText(
             Json.encodeToString(
-                ExportDTO(
+                ExportDTOv8(
                     appVersion = 9,
                     savedLinks = savedLinks,
                     importantLinks = importantLinks,

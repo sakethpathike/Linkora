@@ -277,7 +277,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                             .addANewFolder(
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
-                                    infoForSaving = selectedURLOrFolderNote
+                                    infoForSaving = selectedURLOrFolderNote, parentFolderID = null
                                 )
                             )
                     }, async {
