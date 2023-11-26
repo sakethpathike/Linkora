@@ -36,18 +36,18 @@ suspend fun openInWeb(
     }
     coroutineScope {
         awaitAll(async {
-            if (!CustomFunctionsForLocalDB.localDB.crudDao()
+            if (!CustomFunctionsForLocalDB.localDB.readDao()
                     .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisitedData.webURL)
             ) {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.createDao()
                     .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
             } else {
                 this.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteARecentlyVisitedLink(webURL = recentlyVisitedData.webURL)
                 }.invokeOnCompletion {
                     this.launch {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        CustomFunctionsForLocalDB.localDB.createDao()
                             .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
                     }
                 }

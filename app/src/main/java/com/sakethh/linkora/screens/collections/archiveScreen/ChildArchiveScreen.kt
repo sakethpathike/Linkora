@@ -22,11 +22,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.LinkUIComponent
+import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -80,47 +84,47 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 if (archiveLinksData.isNotEmpty()) {
                     items(archiveLinksData) {
                         LinkUIComponent(
-                            title = it.title,
-                            webBaseURL = it.baseURL,
-                            imgURL = it.imgURL,
-                            onMoreIconCLick = {
-                                archiveScreenVM.selectedArchivedLinkData.value = it
-                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                selectedURLOrFolderName.value = it.webURL
-                                selectedFolderNote.value = it.infoForSaving
-                                selectedURLTitle.value = it.title
-                                coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                }
-                            },
-                            onLinkClick = {
-                                coroutineScope.launch {
-                                    openInWeb(
-                                        recentlyVisitedData = RecentlyVisited(
+                            LinkUIComponentParam(title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    archiveScreenVM.selectedArchivedLinkData.value = it
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    selectedURLOrFolderName.value = it.webURL
+                                    selectedFolderNote.value = it.infoForSaving
+                                    selectedURLTitle.value = it.title
+                                    coroutineScope.launch {
+                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                    }
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL,
+                                onForceOpenInExternalBrowserClicked = {
+                                    archiveScreenVM.onLinkClick(
+                                        RecentlyVisited(
                                             title = it.title,
                                             webURL = it.webURL,
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
                                         ), context = context, uriHandler = uriHandler,
-                                        forceOpenInExternalBrowser = false
+                                        onTaskCompleted = {},
+                                        forceOpenInExternalBrowser = true
                                     )
-                                }
-                            },
-                            webURL = it.webURL,
-                            onForceOpenInExternalBrowserClicked = {
-                                archiveScreenVM.onLinkClick(
-                                    RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    ), context = context, uriHandler = uriHandler,
-                                    onTaskCompleted = {},
-                                    forceOpenInExternalBrowser = true
-                                )
-                            }
+                                })
                         )
                     }
                 } else {
@@ -141,12 +145,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 selectedURLOrFolderName.value = it.archiveFolderName
                                 selectedFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderID = it.id)
                                 }
                             },
                             onFolderClick = {
-                                SpecificScreenVM.selectedArchiveFolderName.value =
-                                    it.archiveFolderName
+                                SpecificScreenVM.selectedArchiveFolderID =
+                                    it.id
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -160,106 +164,111 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
             }
         }
         OptionsBtmSheetUI(
-            inArchiveScreen = mutableStateOf(true),
-            btmModalSheetState = btmModalSheetState,
-            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-            coroutineScope = coroutineScope,
-            btmSheetFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
-            onUnarchiveClick = {
-                archiveScreenVM.onUnArchiveClick(
-                    context = context,
-                    archiveScreenType = archiveScreenType,
-                    selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    selectedURLOrFolderNote = selectedFolderNote.value,
-                    onTaskCompleted = {
-                        archiveScreenVM.changeRetrievedData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
+            OptionsBtmSheetUIParam(
+                inArchiveScreen = mutableStateOf(true),
+                btmModalSheetState = btmModalSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
+                onUnarchiveClick = {
+                    archiveScreenVM.onUnArchiveClick(
+                        context = context,
+                        archiveScreenType = archiveScreenType,
+                        selectedURLOrFolderName = selectedURLOrFolderName.value,
+                        selectedURLOrFolderNote = selectedFolderNote.value,
+                        onTaskCompleted = {
+                            archiveScreenVM.changeRetrievedData(
+                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                )
                             )
-                        )
-                    }
-                )
-            },
-            onDeleteCardClick = {
-                shouldDeleteDialogBoxAppear.value = true
-            },
-            onRenameClick = {
-                shouldRenameDialogBoxAppear.value = true
-            },
-            onArchiveClick = {},
-            importantLinks = null,
-            noteForSaving = selectedFolderNote.value,
-            onNoteDeleteCardClick = {
-                archiveScreenVM.onNoteDeleteCardClick(
-                    archiveScreenType = archiveScreenType,
-                    selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    context = context,
-                    onTaskCompleted = {}
-                )
-            },
-            folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
-            linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else ""
+                        }, selectedFolderID = SpecificScreenVM.selectedArchiveFolderID
+                    )
+                },
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxAppear.value = true
+                },
+                onRenameClick = {
+                    shouldRenameDialogBoxAppear.value = true
+                },
+                onArchiveClick = {},
+                importantLinks = null,
+                noteForSaving = selectedFolderNote.value,
+                onNoteDeleteCardClick = {
+                    archiveScreenVM.onNoteDeleteCardClick(
+                        archiveScreenType = archiveScreenType,
+                        selectedURLOrFolderName = selectedURLOrFolderName.value,
+                        context = context,
+                        onTaskCompleted = {}, folderID = SpecificScreenVM.selectedArchiveFolderID
+                    )
+                },
+                folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
+                linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else ""
+            )
         )
 
-        DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = if (archiveScreenType == ArchiveScreenType.LINKS) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
-            onDeleteClick = {
-                archiveScreenVM.onDeleteClick(
-                    archiveScreenType = archiveScreenType,
-                    selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    context = context,
-                    onTaskCompleted = {
-                        archiveScreenVM.changeRetrievedData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
+        DeleteDialogBox(
+            DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+                deleteDialogBoxType = if (archiveScreenType == ArchiveScreenType.LINKS) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
+                onDeleteClick = {
+                    archiveScreenVM.onDeleteClick(
+                        archiveScreenType = archiveScreenType,
+                        selectedURLOrFolderName = selectedURLOrFolderName.value,
+                        context = context,
+                        onTaskCompleted = {
+                            archiveScreenVM.changeRetrievedData(
+                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                )
                             )
-                        )
-                    }
-                )
-            }, onDeleted = {
-                archiveScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+                        }
                     )
-                )
-            })
+                }, onDeleted = {
+                    archiveScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
+                })
+        )
         RenameDialogBox(
-            inChildArchiveFolderScreen = mutableStateOf(archiveScreenType != ArchiveScreenType.LINKS),
-            renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
-            shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-            coroutineScope = coroutineScope,
-            existingFolderName = selectedURLOrFolderName.value,
-            webURLForTitle = selectedURLOrFolderName.value,
-            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
-                archiveScreenVM.onNoteChangeClickForLinks(
-                    archiveScreenType = archiveScreenType,
-                    webURL,
-                    newNote,
-                    onTaskCompleted = {}
-                )
-            },
-            onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
-                archiveScreenVM.onTitleChangeClickForLinks(
-                    archiveScreenType = archiveScreenType,
-                    selectedURLOrFolderName = selectedURLOrFolderName.value,
-                    newTitle,
-                    webURL,
-                    onTaskCompleted = {
-                        archiveScreenVM.changeRetrievedData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
-                            )
-                        )
-                    }
-                )
-            },
-            onTitleRenamed = {
-                archiveScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            RenameDialogBoxParam(
+                inChildArchiveFolderScreen = mutableStateOf(archiveScreenType != ArchiveScreenType.LINKS),
+                renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
+                shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
+                existingFolderName = selectedURLOrFolderName.value,
+                webURLForTitle = selectedURLOrFolderName.value,
+                onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+                    archiveScreenVM.onNoteChangeClickForLinks(
+                        archiveScreenType = archiveScreenType,
+                        webURL,
+                        newNote,
+                        onTaskCompleted = {}, folderID = SpecificScreenVM.selectedArchiveFolderID
                     )
-                )
-            }
+                },
+                onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+                    archiveScreenVM.onTitleChangeClickForLinks(
+                        archiveScreenType = archiveScreenType,
+                        selectedURLOrFolderName = selectedURLOrFolderName.value,
+                        newTitle,
+                        webURL,
+                        onTaskCompleted = {
+                            archiveScreenVM.changeRetrievedData(
+                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                )
+                            )
+                        }, folderID = SpecificScreenVM.selectedArchiveFolderID
+                    )
+                },
+                onTitleRenamed = {
+                    archiveScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
+                },
+                folderID = SpecificScreenVM.selectedArchiveFolderID,
+            )
         )
     }
 }

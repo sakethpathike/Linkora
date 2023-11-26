@@ -74,19 +74,20 @@ class ArchiveScreenVM : SpecificScreenVM() {
         webURL: String,
         newNote: String,
         onTaskCompleted: () -> Unit,
+        folderID: Long
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.updateDao()
                     .renameALinkInfoFromArchiveLinks(webURL, newNote)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.updateDao()
                     .renameArchivedFolderNote(
-                        folderName = webURL,
+                        folderID = folderID,
                         newNote = newNote
                     )
             }.invokeOnCompletion {
@@ -101,23 +102,19 @@ class ArchiveScreenVM : SpecificScreenVM() {
         newTitle: String,
         webURL: String,
         onTaskCompleted: () -> Unit,
+        folderID: Long
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.updateDao()
                     .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .renameAFolderArchiveName(selectedURLOrFolderName, newTitle)
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .renameFolderNameForExistingArchivedFolderData(
-                        selectedURLOrFolderName,
-                        newTitle
-                    )
+                CustomFunctionsForLocalDB.localDB.updateDao()
+                    .renameAFolderArchiveName(folderID, newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -200,7 +197,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.deleteDao()
                     .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -228,11 +225,12 @@ class ArchiveScreenVM : SpecificScreenVM() {
         selectedURLOrFolderName: String,
         context: Context,
         onTaskCompleted: () -> Unit,
+        folderID: Long
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .deleteArchiveFolderNote(folderName = selectedURLOrFolderName)
+                CustomFunctionsForLocalDB.localDB.deleteDao()
+                    .deleteArchiveFolderNote(folderID)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
@@ -241,7 +239,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.deleteDao()
                     .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -258,11 +256,15 @@ class ArchiveScreenVM : SpecificScreenVM() {
         selectedURLOrFolderName: String,
         selectedURLOrFolderNote: String,
         onTaskCompleted: () -> Unit,
+        selectedFolderID: Long
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                if (CustomFunctionsForLocalDB.localDB.crudDao()
-                        .doesThisFolderExists(folderName = selectedURLOrFolderName)
+                if (CustomFunctionsForLocalDB.localDB.readDao()
+                        .doesThisFolderExists(
+                            folderID = selectedFolderID,
+                            folderName = selectedURLOrFolderName
+                        )
                 ) {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -273,19 +275,20 @@ class ArchiveScreenVM : SpecificScreenVM() {
                     }
                 } else {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        CustomFunctionsForLocalDB.localDB.createDao()
                             .addANewFolder(
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
-                                    infoForSaving = selectedURLOrFolderNote, parentFolderID = null
+                                    infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
+                                    childFolderIDs = emptyList()
                                 )
                             )
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
-                            .deleteAnArchiveFolder(folderName = selectedURLOrFolderName)
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteAnArchiveFolder(folderID = selectedFolderID)
                     })
-                    CustomFunctionsForLocalDB.localDB.crudDao()
-                        .moveArchiveFolderBackToFolder(folderName = selectedURLOrFolderName)
+                    CustomFunctionsForLocalDB.localDB.updateDao()
+                        .moveArchiveFolderBackToFolder(folderID = selectedFolderID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context, "Unarchived successfully", Toast.LENGTH_SHORT
@@ -297,7 +300,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
             }
         } else {
             viewModelScope.launch {
-                if (CustomFunctionsForLocalDB.localDB.crudDao()
+                if (CustomFunctionsForLocalDB.localDB.readDao()
                         .doesThisExistsInSavedLinks(webURL = selectedArchivedLinkData.value.webURL)
                 ) {
                     withContext(Dispatchers.Main) {
@@ -308,7 +311,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                         ).show()
                     }
                 } else {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.createDao()
                         .addANewLinkToSavedLinksOrInFolders(
                             LinksTable(
                                 title = selectedArchivedLinkData.value.title,
@@ -318,14 +321,14 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 infoForSaving = selectedArchivedLinkData.value.infoForSaving,
                                 isLinkedWithSavedLinks = true,
                                 isLinkedWithFolders = false,
-                                keyOfLinkedFolder = "",
+                                keyOfLinkedFolder = 0,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
+                                keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolder = ""
+                                keyOfArchiveLinkedFolder = 0
                             )
                         )
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromArchiveLinks(selectedArchivedLinkData.value.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(

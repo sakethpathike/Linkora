@@ -27,24 +27,30 @@ enum class DataDialogBoxType {
     LINK, FOLDER, REMOVE_ENTIRE_DATA
 }
 
+data class DeleteDialogBoxParam(
+    val shouldDialogBoxAppear: MutableState<Boolean>,
+    val deleteDialogBoxType: DataDialogBoxType,
+    val onDeleteClick: () -> Unit,
+    val onDeleted: () -> Unit = {},
+)
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DeleteDialogBox(
-    shouldDialogBoxAppear: MutableState<Boolean>,
-    deleteDialogBoxType: DataDialogBoxType,
-    onDeleteClick: () -> Unit,
-    onDeleted: () -> Unit = {},
+    deleteDialogBoxParam: DeleteDialogBoxParam
 ) {
     Column {
-        if (shouldDialogBoxAppear.value) {
+        if (deleteDialogBoxParam.shouldDialogBoxAppear.value) {
             LinkoraTheme {
                 AlertDialog(modifier = Modifier
                     .clip(RoundedCornerShape(10.dp))
                     .background(AlertDialogDefaults.containerColor),
-                    onDismissRequest = { shouldDialogBoxAppear.value = false }) {
+                    onDismissRequest = {
+                        deleteDialogBoxParam.shouldDialogBoxAppear.value = false
+                    }) {
                     Column {
                         Text(
-                            text = if (deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
+                            text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
                             color = AlertDialogDefaults.titleContentColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,
@@ -60,9 +66,9 @@ fun DeleteDialogBox(
                                 )
                                 .align(Alignment.End),
                             onClick = {
-                                onDeleteClick()
-                                shouldDialogBoxAppear.value = false
-                                onDeleted()
+                                deleteDialogBoxParam.onDeleteClick()
+                                deleteDialogBoxParam.shouldDialogBoxAppear.value = false
+                                deleteDialogBoxParam.onDeleted()
                             }) {
                             Text(
                                 text = "Delete it",
@@ -84,7 +90,7 @@ fun DeleteDialogBox(
                                 )
                                 .align(Alignment.End),
                             onClick = {
-                                shouldDialogBoxAppear.value = false
+                                deleteDialogBoxParam.shouldDialogBoxAppear.value = false
                             }) {
                             Text(
                                 text = "Never-mind",

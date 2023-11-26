@@ -18,13 +18,13 @@ data class LinksTable(
     var isLinkedWithSavedLinks: Boolean,
 
     var isLinkedWithFolders: Boolean,
-    var keyOfLinkedFolder: String,
+    var keyOfLinkedFolder: Long,
 
     var isLinkedWithImpFolder: Boolean,
-    var keyOfImpLinkedFolder: String,
+    var keyOfImpLinkedFolder: Long,
 
     var isLinkedWithArchivedFolder: Boolean,
-    var keyOfArchiveLinkedFolder: String,
+    var keyOfArchiveLinkedFolder: Long,
 )
 
 @Serializable
@@ -36,7 +36,8 @@ data class FoldersTable(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
 
-    var parentFolderID: Long?
+    var parentFolderID: Long?,
+    var childFolderIDs: List<Long?>
 )
 
 @Serializable

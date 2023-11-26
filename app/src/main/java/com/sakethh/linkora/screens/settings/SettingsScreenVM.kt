@@ -252,12 +252,12 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        if (CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isHistoryLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isImpLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isArchivedFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                        if (CustomFunctionsForLocalDB.localDB.readDao()
+                                .isHistoryLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
+                                .isImpLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
+                                .isLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
+                                .isArchivedFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
+                                .isFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
                                 .isArchivedLinksTableEmpty()
                         ) {
                             activityResultLauncher.launch("text/*")

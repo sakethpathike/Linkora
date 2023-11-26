@@ -13,6 +13,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowCompat
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 
@@ -41,13 +42,15 @@ class IntentActivity : ComponentActivity() {
             }
             val btmSheetState = rememberModalBottomSheetState()
             NewLinkBtmSheet(
-                _inIntentActivity = true,
-                shouldUIBeVisible = shouldUIBeVisible,
-                screenType = SpecificScreenType.INTENT_ACTIVITY,
-                btmSheetState = btmSheetState,
-                onLinkSaved = {},
-                onFolderCreated = {},
-                parentFolderID = null
+                NewLinkBtmSheetUIParam(
+                    inIntentActivity = true,
+                    shouldUIBeVisible = shouldUIBeVisible,
+                    screenType = SpecificScreenType.INTENT_ACTIVITY,
+                    btmSheetState = btmSheetState,
+                    onLinkSaved = {},
+                    onFolderCreated = {},
+                    parentFolderID = null, folderName = "", childFolderIDs = emptyList()
+                )
             )
         }
     }

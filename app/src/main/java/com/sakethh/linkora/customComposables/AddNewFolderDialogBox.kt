@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -30,20 +31,28 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.launch
+
+
+data class AddNewFolderDialogBoxParam(
+    val shouldDialogBoxAppear: MutableState<Boolean>,
+    val newFolderName: (String, Long) -> Unit = { folderName, folderID -> },
+    val onCreated: () -> Unit = {},
+    val parentFolderID: Long?,
+    val currentFolderID: Long?,
+    val childFolderIDs: List<Long?>,
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddNewFolderDialogBox(
-    shouldDialogBoxAppear: MutableState<Boolean>,
-    newFolderName: (String) -> Unit = {},
-    onCreated: () -> Unit = {},
-    parentFolderID: Long?
+    addNewFolderDialogBoxParam: AddNewFolderDialogBoxParam
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
-
-    if (shouldDialogBoxAppear.value) {
+    val coroutineScope = rememberCoroutineScope()
+    if (addNewFolderDialogBoxParam.shouldDialogBoxAppear.value) {
         val folderNameTextFieldValue = rememberSaveable {
             mutableStateOf("")
         }
@@ -54,7 +63,9 @@ fun AddNewFolderDialogBox(
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { shouldDialogBoxAppear.value = false }) {
+                onDismissRequest = {
+                    addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
+                }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
                         text = "Create new folder",
@@ -128,17 +139,26 @@ fun AddNewFolderDialogBox(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                newFolderName(folderNameTextFieldValue.value)
                                 customFunctionsForLocalDB.createANewFolder(
                                     context = context,
                                     folderName = folderNameTextFieldValue.value,
                                     infoForSaving = noteTextFieldValue.value,
                                     onTaskCompleted = {
-                                        onCreated()
-                                        shouldDialogBoxAppear.value = false
+                                        addNewFolderDialogBoxParam.onCreated()
+                                        addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
+                                            false
                                     },
-                                    parentFolderID = parentFolderID
+                                    parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
+                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs,
+                                    folderID = addNewFolderDialogBoxParam.currentFolderID
                                 )
+                                coroutineScope.launch {
+                                    addNewFolderDialogBoxParam.newFolderName(
+                                        folderNameTextFieldValue.value,
+                                        CustomFunctionsForLocalDB.localDB.readDao()
+                                            .getLatestAddedFolder().id
+                                    )
+                                }
                             }
                         }) {
                         Text(
@@ -161,7 +181,7 @@ fun AddNewFolderDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            shouldDialogBoxAppear.value = false
+                            addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Cancel",

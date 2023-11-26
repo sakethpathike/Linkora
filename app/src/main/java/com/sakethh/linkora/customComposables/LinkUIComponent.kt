@@ -42,16 +42,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.screens.CoilImage
 
+
+data class LinkUIComponentParam(
+    val title: String,
+    val webBaseURL: String,
+    val imgURL: String,
+    val onMoreIconCLick: () -> Unit,
+    val onLinkClick: () -> Unit,
+    val webURL: String,
+    val onForceOpenInExternalBrowserClicked: () -> Unit,
+)
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LinkUIComponent(
-    title: String,
-    webBaseURL: String,
-    imgURL: String,
-    onMoreIconCLick: () -> Unit,
-    onLinkClick: () -> Unit,
-    webURL: String,
-    onForceOpenInExternalBrowserClicked: () -> Unit,
+    linkUIComponentParam: LinkUIComponentParam
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
@@ -59,8 +64,8 @@ fun LinkUIComponent(
     Column(
         modifier = Modifier
             .combinedClickable(
-                onClick = { onLinkClick() },
-                onLongClick = { onMoreIconCLick() })
+                onClick = { linkUIComponentParam.onLinkClick() },
+                onLongClick = { linkUIComponentParam.onMoreIconCLick() })
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
             .wrapContentHeight(),
@@ -73,7 +78,7 @@ fun LinkUIComponent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = title,
+                text = linkUIComponentParam.title,
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -84,11 +89,15 @@ fun LinkUIComponent(
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis
             )
-            if (imgURL.startsWith("https://") && imgURL.endsWith(".webp") || imgURL.startsWith("https://") && imgURL.endsWith(
+            if (linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
+                    ".webp"
+                ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
                     ".jpeg"
-                ) || imgURL.startsWith("https://") && imgURL.endsWith(
+                ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
                     ".jpg"
-                ) || imgURL.startsWith("https://") && imgURL.endsWith(".png") || imgURL.startsWith("https://") && imgURL.endsWith(
+                ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
+                    ".png"
+                ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
                     ".ico"
                 )
             ) {
@@ -96,7 +105,7 @@ fun LinkUIComponent(
                     modifier = Modifier
                         .width(95.dp)
                         .height(60.dp)
-                        .clip(RoundedCornerShape(15.dp)), imgURL = imgURL
+                        .clip(RoundedCornerShape(15.dp)), imgURL = linkUIComponentParam.imgURL
                 )
             } else {
                 Box(
@@ -125,7 +134,7 @@ fun LinkUIComponent(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = webBaseURL,
+                text = linkUIComponentParam.webBaseURL,
                 style = MaterialTheme.typography.titleSmall,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 14.sp,
@@ -142,14 +151,14 @@ fun LinkUIComponent(
                 Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
                     modifier = Modifier
                         .clickable {
-                            onForceOpenInExternalBrowserClicked()
-                            localURIHandler.openUri(webURL)
+                            linkUIComponentParam.onForceOpenInExternalBrowserClicked()
+                            localURIHandler.openUri(linkUIComponentParam.webURL)
                         }
                 )
                 Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
                     modifier = Modifier.clickable {
                         localClipBoardManager.setText(
-                            AnnotatedString(webURL)
+                            AnnotatedString(linkUIComponentParam.webURL)
                         )
                         Toast.makeText(
                             context, "Link copied to the clipboard",
@@ -160,7 +169,7 @@ fun LinkUIComponent(
                     modifier = Modifier.clickable {
                         val intent = Intent().apply {
                             action = Intent.ACTION_SEND
-                            putExtra(Intent.EXTRA_TEXT, webURL)
+                            putExtra(Intent.EXTRA_TEXT, linkUIComponentParam.webURL)
                             type = "text/plain"
                         }
                         val shareIntent = Intent.createChooser(intent, null)
@@ -169,7 +178,7 @@ fun LinkUIComponent(
                 Icon(
                     imageVector = Icons.Filled.MoreVert,
                     contentDescription = null,
-                    modifier = Modifier.clickable { onMoreIconCLick() })
+                    modifier = Modifier.clickable { linkUIComponentParam.onMoreIconCLick() })
             }
         }
         Divider(

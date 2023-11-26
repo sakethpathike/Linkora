@@ -68,12 +68,14 @@ fun AddNewLinkDialogBox(
     screenType: SpecificScreenType,
     specificFolderName: String,
     onTaskCompleted: () -> Unit = {},
+    parentFolderID: Long?,
+    childFoldersIDs: List<Long?>
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
     }
     val foldersTableData =
-        CustomFunctionsForLocalDB.localDB.crudDao().getAllFolders().collectAsState(
+        CustomFunctionsForLocalDB.localDB.readDao().getAllRootFolders().collectAsState(
             initial = emptyList()
         ).value
     val context = LocalContext.current
@@ -106,6 +108,7 @@ fun AddNewLinkDialogBox(
         val selectedFolderName = rememberSaveable {
             mutableStateOf("Saved Links")
         }
+        var selectedFolderID: Long = 0
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .wrapContentHeight()
@@ -270,7 +273,7 @@ fun AddNewLinkDialogBox(
                         onClick = {
                             if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
-                                    context, "where's the link bruhh?", Toast.LENGTH_SHORT
+                                    context, "add a link", Toast.LENGTH_SHORT
                                 ).show()
                             } else if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isNotEmpty()) {
                                 isDataExtractingForTheLink.value = true
@@ -315,7 +318,8 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            })
+                                            }, folderID = selectedFolderID
+                                        )
                                     }
 
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
@@ -333,7 +337,8 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            })
+                                            }, folderID = selectedFolderID
+                                        )
                                     }
 
                                     SpecificScreenType.INTENT_ACTIVITY -> {
@@ -355,7 +360,8 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                })
+                                                }, folderID = selectedFolderID
+                                            )
                                         } else if (selectedFolderName.value == "Important Links") {
                                             isDataExtractingForTheLink.value = true
                                             customFunctionsForLocalDB.importantLinkTableUpdater(
@@ -387,7 +393,8 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                })
+                                                }, folderID = selectedFolderID
+                                            )
                                         }
                                     }
                                 }
@@ -523,6 +530,7 @@ fun AddNewLinkDialogBox(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
+                                        selectedFolderID = it.id
                                         coroutineScope.launch {
                                             if (btmModalSheetState.isVisible) {
                                                 btmModalSheetState.hide()
@@ -541,20 +549,25 @@ fun AddNewLinkDialogBox(
                     }
                 }
             }
-            AddNewFolderDialogBox(shouldDialogBoxAppear = isCreateANewFolderIconClicked,
-                newFolderName = {
-                    selectedFolderName.value = it
-                },
-                onCreated = {
-                    onTaskCompleted()
-                    coroutineScope.launch {
-                        if (btmModalSheetState.isVisible) {
-                            btmModalSheetState.hide()
+            AddNewFolderDialogBox(
+                AddNewFolderDialogBoxParam(
+                    shouldDialogBoxAppear = isCreateANewFolderIconClicked,
+                    newFolderName = { folderName, folderID ->
+                        selectedFolderName.value = folderName
+                        selectedFolderID = folderID
+                    },
+                    onCreated = {
+                        onTaskCompleted()
+                        coroutineScope.launch {
+                            if (btmModalSheetState.isVisible) {
+                                btmModalSheetState.hide()
+                            }
+                        }.invokeOnCompletion {
+                            isDropDownMenuIconClicked.value = false
                         }
-                    }.invokeOnCompletion {
-                        isDropDownMenuIconClicked.value = false
-                    }
-                }, parentFolderID = null
+                    }, parentFolderID = parentFolderID,
+                    childFolderIDs = childFoldersIDs, currentFolderID = selectedFolderID
+                )
             )
         }
     }

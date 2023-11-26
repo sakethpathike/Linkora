@@ -10,6 +10,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -42,14 +43,14 @@ open class SpecificScreenVM : ViewModel() {
     )
 
     companion object {
-        val currentClickedFolderName = mutableStateOf("")
+        val currentClickedFolderData = mutableStateOf(FoldersTable("", "", 0, 0, emptyList()))
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
-        val selectedArchiveFolderName = mutableStateOf("")
+        var selectedArchiveFolderID: Long = 0
     }
 
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
-        folderName: String,
+        folderID: Long,
         screenType: SpecificScreenType = Companion.screenType.value,
     ) {
         when (screenType) {
@@ -138,7 +139,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByAToZ(folderName = folderName).collect {
+                                .sortByAToZ(folderID = folderID).collect {
                                     _archiveFolderData.emit(it)
                                 }
                         }
@@ -147,7 +148,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByZToA(folderName = folderName).collect {
+                                .sortByZToA(folderID = folderID).collect {
                                     _archiveFolderData.emit(it)
                                 }
                         }
@@ -156,7 +157,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByLatestToOldest(folderName = folderName).collect {
+                                .sortByLatestToOldest(folderID = folderID).collect {
                                     _archiveFolderData.emit(it)
                                 }
                         }
@@ -165,7 +166,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByOldestToLatest(folderName = folderName).collect {
+                                .sortByOldestToLatest(folderID = folderID).collect {
                                     _archiveFolderData.emit(it)
                                 }
                         }
@@ -178,7 +179,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.regularFolderLinksSorting()
-                                .sortByAToZ(folderName = folderName).collect {
+                                .sortByAToZ(folderID = folderID).collect {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -187,7 +188,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.regularFolderLinksSorting()
-                                .sortByZToA(folderName = folderName).collect {
+                                .sortByZToA(folderID = folderID).collect {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -196,7 +197,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.regularFolderLinksSorting()
-                                .sortByLatestToOldest(folderName = folderName).collect {
+                                .sortByLatestToOldest(folderID = folderID).collect {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -205,7 +206,7 @@ open class SpecificScreenVM : ViewModel() {
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             CustomFunctionsForLocalDB.localDB.regularFolderLinksSorting()
-                                .sortByOldestToLatest(folderName = folderName).collect {
+                                .sortByOldestToLatest(folderID = folderID).collect {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -224,7 +225,7 @@ open class SpecificScreenVM : ViewModel() {
     }
 
     fun onArchiveClick(
-        tempImpLinkData: ImportantLinks, context: Context, folderName: String,
+        tempImpLinkData: ImportantLinks, context: Context, folderID: Long,
         onTaskCompleted: () -> Unit,
     ) {
         when (screenType.value) {
@@ -243,7 +244,7 @@ open class SpecificScreenVM : ViewModel() {
                             }
                         )
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -286,7 +287,7 @@ open class SpecificScreenVM : ViewModel() {
                             }
                         )
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -309,9 +310,9 @@ open class SpecificScreenVM : ViewModel() {
                             }
                         )
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
                             .deleteALinkFromSpecificFolder(
-                                folderName = folderName, webURL = tempImpLinkData.webURL
+                                folderID = folderID, webURL = tempImpLinkData.webURL
                             )
                     })
                 }.invokeOnCompletion {
@@ -324,13 +325,13 @@ open class SpecificScreenVM : ViewModel() {
     }
 
     fun onTitleChangeClickForLinks(
-        folderName: String, newTitle: String, webURL: String,
+        folderID: Long, newTitle: String, webURL: String,
         onTaskCompleted: () -> Unit,
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkTitleFromImpLinks(
                             webURL = webURL, newTitle = newTitle
                         )
@@ -342,9 +343,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkTitleFromArchiveBasedFolderLinks(
-                            webURL = webURL, newTitle = newTitle, folderName = folderName
+                            webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -354,7 +355,7 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkTitleFromSavedLinks(
                             webURL = webURL, newTitle = newTitle
                         )
@@ -366,9 +367,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkTitleFromFolders(
-                            webURL = webURL, newTitle = newTitle, folderName = folderName
+                            webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -382,13 +383,13 @@ open class SpecificScreenVM : ViewModel() {
     }
 
     fun onNoteChangeClickForLinks(
-        folderName: String, webURL: String, newNote: String,
+        folderID: Long, webURL: String, newNote: String,
         onTaskCompleted: () -> Unit,
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkInfoFromImpLinks(
                             webURL = webURL, newInfo = newNote
                         )
@@ -400,9 +401,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkInfoFromArchiveBasedFolderLinks(
-                            webURL = webURL, newInfo = newNote, folderName = folderName
+                            webURL = webURL, newInfo = newNote, folderID = folderID
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -412,7 +413,7 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkInfoFromSavedLinks(
                             webURL = webURL, newInfo = newNote
                         )
@@ -424,9 +425,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkInfoFromFolders(
-                            webURL = webURL, newInfo = newNote, folderName = folderName
+                            webURL = webURL, newInfo = newNote, folderID = folderID
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -440,13 +441,13 @@ open class SpecificScreenVM : ViewModel() {
     }
 
     fun onDeleteClick(
-        folderName: String, selectedWebURL: String, context: Context,
+        folderID: Long, selectedWebURL: String, context: Context,
         onTaskCompleted: () -> Unit,
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromImpLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -455,9 +456,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromArchiveFolderBasedLinks(
-                            webURL = selectedWebURL, archiveFolderName = folderName
+                            webURL = selectedWebURL, archiveFolderID = folderID
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -466,7 +467,7 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -475,9 +476,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromSpecificFolder(
-                            folderName = folderName, webURL = selectedWebURL
+                            folderID = folderID, webURL = selectedWebURL
                         )
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -492,11 +493,11 @@ open class SpecificScreenVM : ViewModel() {
 
     }
 
-    fun onNoteDeleteCardClick(selectedWebURL: String, context: Context, folderName: String) {
+    fun onNoteDeleteCardClick(selectedWebURL: String, context: Context, folderID: Long) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -505,9 +506,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkNoteFromArchiveBasedFolderLinks(
-                            folderName = folderName, webURL = selectedWebURL
+                            folderID = folderID, webURL = selectedWebURL
                         )
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -516,7 +517,7 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -525,9 +526,9 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkInfoOfFolders(
-                            folderName = folderName, webURL = selectedWebURL
+                            folderID = folderID, webURL = selectedWebURL
                         )
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -544,10 +545,10 @@ open class SpecificScreenVM : ViewModel() {
         onTaskCompleted: () -> Unit, tempImpLinkData: ImportantLinks,
     ) {
         viewModelScope.launch {
-            if (CustomFunctionsForLocalDB.localDB.crudDao()
+            if (CustomFunctionsForLocalDB.localDB.readDao()
                     .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
             ) {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                CustomFunctionsForLocalDB.localDB.deleteDao()
                     .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                 Toast.makeText(
                     context,
@@ -555,7 +556,7 @@ open class SpecificScreenVM : ViewModel() {
                     Toast.LENGTH_SHORT
                 ).show()
             } else {
-                CustomFunctionsForLocalDB.localDB.crudDao().addANewLinkToImpLinks(
+                CustomFunctionsForLocalDB.localDB.createDao().addANewLinkToImpLinks(
                     ImportantLinks(
                         title = tempImpLinkData.title,
                         webURL = tempImpLinkData.webURL,

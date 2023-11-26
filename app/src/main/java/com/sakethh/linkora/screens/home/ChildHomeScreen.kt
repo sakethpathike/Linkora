@@ -25,11 +25,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.LinkUIComponent
+import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -54,13 +58,13 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             specificScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
-                ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                ), folderID = 0, screenType = SpecificScreenType.SAVED_LINKS_SCREEN
             )
         }, async {
             specificScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
-                ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                ), folderID = 0, screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
             )
         })
     }
@@ -99,60 +103,61 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 if (savedLinksData.isNotEmpty()) {
                     items(savedLinksData) {
                         LinkUIComponent(
-                            title = it.title,
-                            webBaseURL = it.baseURL,
-                            imgURL = it.imgURL,
-                            onMoreIconCLick = {
-                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
-                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                HomeScreenVM.tempImpLinkData.title = it.title
-                                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
-                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                selectedWebURL.value = it.webURL
-                                selectedNote.value = it.infoForSaving
-                                selectedURLTitle.value = it.title
-                                coroutineScope.launch {
-                                    awaitAll(async {
-                                        optionsBtmSheetVM.updateImportantCardData(
-                                            url = selectedWebURL.value
-                                        )
-                                    }, async {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(
-                                            url = selectedWebURL.value
+                            LinkUIComponentParam(
+                                title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    selectedWebURL.value = it.webURL
+                                    selectedNote.value = it.infoForSaving
+                                    selectedURLTitle.value = it.title
+                                    coroutineScope.launch {
+                                        awaitAll(async {
+                                            optionsBtmSheetVM.updateImportantCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }, async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }
                                         )
                                     }
-                                    )
-                                }
-                            },
-                            onLinkClick = {
-                                coroutineScope.launch {
-                                    openInWeb(
-                                        recentlyVisitedData = RecentlyVisited(
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL,
+                                onForceOpenInExternalBrowserClicked = {
+                                    homeScreenVM.onLinkClick(
+                                        RecentlyVisited(
                                             title = it.title,
                                             webURL = it.webURL,
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
                                         ), context = context, uriHandler = uriHandler,
-                                        forceOpenInExternalBrowser = false
+                                        onTaskCompleted = {},
+                                        forceOpenInExternalBrowser = true
                                     )
-                                }
-                            },
-                            webURL = it.webURL,
-                            onForceOpenInExternalBrowserClicked = {
-                                homeScreenVM.onLinkClick(
-                                    RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    ), context = context, uriHandler = uriHandler,
-                                    onTaskCompleted = {},
-                                    forceOpenInExternalBrowser = true
-                                )
-                            }
+                                })
                         )
                     }
                 } else {
@@ -167,60 +172,61 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 if (impLinksData.isNotEmpty()) {
                     items(impLinksData) {
                         LinkUIComponent(
-                            title = it.title,
-                            webBaseURL = it.baseURL,
-                            imgURL = it.imgURL,
-                            onMoreIconCLick = {
-                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
-                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                HomeScreenVM.tempImpLinkData.title = it.title
-                                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
-                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                selectedWebURL.value = it.webURL
-                                selectedNote.value = it.infoForSaving
-                                selectedURLTitle.value = it.title
-                                coroutineScope.launch {
-                                    awaitAll(async {
-                                        optionsBtmSheetVM.updateImportantCardData(
-                                            url = selectedWebURL.value
-                                        )
-                                    }, async {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(
-                                            url = selectedWebURL.value
+                            LinkUIComponentParam(
+                                title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    selectedWebURL.value = it.webURL
+                                    selectedNote.value = it.infoForSaving
+                                    selectedURLTitle.value = it.title
+                                    coroutineScope.launch {
+                                        awaitAll(async {
+                                            optionsBtmSheetVM.updateImportantCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }, async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }
                                         )
                                     }
-                                    )
-                                }
-                            },
-                            onLinkClick = {
-                                coroutineScope.launch {
-                                    openInWeb(
-                                        recentlyVisitedData = RecentlyVisited(
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL,
+                                onForceOpenInExternalBrowserClicked = {
+                                    homeScreenVM.onLinkClick(
+                                        RecentlyVisited(
                                             title = it.title,
                                             webURL = it.webURL,
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
                                         ), context = context, uriHandler = uriHandler,
-                                        forceOpenInExternalBrowser = false
+                                        onTaskCompleted = {},
+                                        forceOpenInExternalBrowser = true
                                     )
-                                }
-                            },
-                            webURL = it.webURL,
-                            onForceOpenInExternalBrowserClicked = {
-                                homeScreenVM.onLinkClick(
-                                    RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    ), context = context, uriHandler = uriHandler,
-                                    onTaskCompleted = {},
-                                    forceOpenInExternalBrowser = true
-                                )
-                            }
+                                })
                         )
                     }
                 } else {
@@ -235,77 +241,84 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
         }
 
         OptionsBtmSheetUI(
-            importantLinks = ImportantLinks(
-                title = HomeScreenVM.tempImpLinkData.title,
-                webURL = HomeScreenVM.tempImpLinkData.webURL,
-                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-            ),
-            btmModalSheetState = btmModalSheetState,
-            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-            coroutineScope = coroutineScope,
-            btmSheetFor = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN,
-            onRenameClick = {
-                coroutineScope.launch {
-                    btmModalSheetState.hide()
-                }
-                shouldRenameDialogBoxAppear.value = true
-            },
-            onDeleteCardClick = {
-                shouldDeleteDialogBoxAppear.value = true
-            },
-            onImportantLinkAdditionInTheTable = {
-                specificScreenVM.onImportantLinkAdditionInTheTable(
-                    context, {}, HomeScreenVM.tempImpLinkData
-                )
-            },
-            onArchiveClick = {
-                homeScreenVM.onArchiveClick(
-                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    context
-                )
-            }, noteForSaving = selectedNote.value,
-            onNoteDeleteCardClick = {
-                homeScreenVM.onNoteDeleteCardClick(
-                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
-                    context = context
-                )
-            },
-            folderName = "",
-            linkTitle = selectedURLTitle.value
+            OptionsBtmSheetUIParam(
+                importantLinks = ImportantLinks(
+                    title = HomeScreenVM.tempImpLinkData.title,
+                    webURL = HomeScreenVM.tempImpLinkData.webURL,
+                    baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                    imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                    infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                ),
+                btmModalSheetState = btmModalSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN,
+                onRenameClick = {
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }
+                    shouldRenameDialogBoxAppear.value = true
+                },
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxAppear.value = true
+                },
+                onImportantLinkAdditionInTheTable = {
+                    specificScreenVM.onImportantLinkAdditionInTheTable(
+                        context, {}, HomeScreenVM.tempImpLinkData
+                    )
+                },
+                onArchiveClick = {
+                    homeScreenVM.onArchiveClick(
+                        selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
+                        context
+                    )
+                }, noteForSaving = selectedNote.value,
+                onNoteDeleteCardClick = {
+                    homeScreenVM.onNoteDeleteCardClick(
+                        selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
+                        selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
+                        context = context
+                    )
+                },
+                folderName = "",
+                linkTitle = selectedURLTitle.value
+            )
         )
     }
-    DeleteDialogBox(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-        deleteDialogBoxType = DataDialogBoxType.LINK,
-        onDeleteClick = {
-            homeScreenVM.onDeleteClick(
-                selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
-                context = context,
-                shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
-            )
-        })
-    RenameDialogBox(shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-        coroutineScope = coroutineScope,
-        webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
-        existingFolderName = "",
-        renameDialogBoxFor = OptionsBtmSheetType.LINK,
-        onNoteChangeClickForLinks = { webURL: String, newNote: String ->
-            homeScreenVM.onNoteChangeClickForLinks(
-                selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                webURL,
-                newNote
-            )
-        },
-        onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
-            homeScreenVM.onTitleChangeClickForLinks(
-                selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                webURL,
-                newTitle
-            )
-        })
+    DeleteDialogBox(
+        DeleteDialogBoxParam(
+            shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+            deleteDialogBoxType = DataDialogBoxType.LINK,
+            onDeleteClick = {
+                homeScreenVM.onDeleteClick(
+                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
+                    selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
+                    context = context,
+                    shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
+                )
+            })
+    )
+    RenameDialogBox(
+        RenameDialogBoxParam(
+            shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
+            webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
+            existingFolderName = "",
+            renameDialogBoxFor = OptionsBtmSheetType.LINK,
+            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+                homeScreenVM.onNoteChangeClickForLinks(
+                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
+                    webURL,
+                    newNote
+                )
+            },
+            onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+                homeScreenVM.onTitleChangeClickForLinks(
+                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
+                    webURL,
+                    newTitle
+                )
+            }, folderID = 0
+        )
+    )
 
 
     BackHandler {

@@ -54,6 +54,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -604,14 +605,16 @@ fun SettingsScreen(navController: NavController) {
                 }
             }
         })
-        DeleteDialogBox(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
-            onDeleteClick = {
-                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData()
-                Toast.makeText(
-                    context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
-                ).show()
-            })
+        DeleteDialogBox(
+            DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+                deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
+                onDeleteClick = {
+                    customFunctionsForLocalDB.deleteEntireLinksAndFoldersData()
+                    Toast.makeText(
+                        context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
+                    ).show()
+                })
+        )
     }
     BackHandler {
         if (btmModalSheetState.isVisible) {

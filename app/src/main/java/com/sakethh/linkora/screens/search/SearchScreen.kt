@@ -43,16 +43,21 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.LinkUIComponent
+import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.home.HomeScreenVM
+import com.sakethh.linkora.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -95,9 +100,6 @@ fun SearchScreen(navController: NavController) {
     }
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
-    }
-    val selectedFolderName = rememberSaveable {
-        mutableStateOf("")
     }
     val selectedLinkTitle = rememberSaveable {
         mutableStateOf("")
@@ -174,205 +176,221 @@ fun SearchScreen(navController: NavController) {
                             else -> {
                                 items(impLinksData) {
                                     LinkUIComponent(
-                                        title = it.title,
-                                        webBaseURL = it.webURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedLinkTitle.value = it.title
-                                            SearchScreenVM.selectedLinkType =
-                                                SearchScreenVM.SelectedLinkType.IMP_LINKS
-                                            HomeScreenVM.tempImpLinkData.webURL =
-                                                it.webURL
-                                            HomeScreenVM.tempImpLinkData.baseURL =
-                                                it.baseURL
-                                            HomeScreenVM.tempImpLinkData.imgURL =
-                                                it.imgURL
-                                            HomeScreenVM.tempImpLinkData.title =
-                                                it.title
-                                            HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                it.infoForSaving
-                                            selectedURLNote.value = it.infoForSaving
-                                            selectedWebURL.value = it.webURL
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                kotlinx.coroutines.awaitAll(async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                                }, async {
-                                                    optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                                })
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            coroutineScope.launch {
-                                                com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = RecentlyVisited(
+                                        LinkUIComponentParam(
+                                            title = it.title,
+                                            webBaseURL = it.webURL,
+                                            imgURL = it.imgURL,
+                                            onMoreIconCLick = {
+                                                selectedLinkTitle.value = it.title
+                                                SearchScreenVM.selectedLinkType =
+                                                    SearchScreenVM.SelectedLinkType.IMP_LINKS
+                                                HomeScreenVM.tempImpLinkData.webURL =
+                                                    it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL =
+                                                    it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL =
+                                                    it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title =
+                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                    it.infoForSaving
+                                                selectedURLNote.value = it.infoForSaving
+                                                selectedWebURL.value = it.webURL
+                                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                                coroutineScope.launch {
+                                                    kotlinx.coroutines.awaitAll(async {
+                                                        optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    }, async {
+                                                        optionsBtmSheetVM.updateImportantCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    })
+                                                }
+                                            },
+                                            onLinkClick = {
+                                                coroutineScope.launch {
+                                                    com.sakethh.linkora.customWebTab.openInWeb(
+                                                        recentlyVisitedData = RecentlyVisited(
+                                                            title = it.title,
+                                                            webURL = it.webURL,
+                                                            baseURL = it.baseURL,
+                                                            imgURL = it.imgURL,
+                                                            infoForSaving = it.infoForSaving
+                                                        ),
+                                                        context = context,
+                                                        uriHandler = uriHandler,
+                                                        forceOpenInExternalBrowser = false
+                                                    )
+                                                }
+                                            },
+                                            webURL = it.webURL,
+                                            onForceOpenInExternalBrowserClicked = {
+                                                searchScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false
+                                                    ), context = context, uriHandler = uriHandler,
+                                                    onTaskCompleted = {},
+                                                    forceOpenInExternalBrowser = true
                                                 )
-                                            }
-                                        },
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        }
+                                            })
                                     )
                                 }
                                 items(linksTableData) {
                                     LinkUIComponent(
-                                        title = it.title,
-                                        webBaseURL = it.webURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedLinkTitle.value = it.title
-                                            when {
-                                                it.isLinkedWithArchivedFolder -> {
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
-                                                    selectedFolderName.value =
-                                                        it.keyOfArchiveLinkedFolder
-                                                }
+                                        LinkUIComponentParam(
+                                            title = it.title,
+                                            webBaseURL = it.webURL,
+                                            imgURL = it.imgURL,
+                                            onMoreIconCLick = {
+                                                selectedLinkTitle.value = it.title
+                                                when {
+                                                    it.isLinkedWithArchivedFolder -> {
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
+                                                        SearchScreenVM.selectedFolderID =
+                                                            it.keyOfArchiveLinkedFolder
+                                                    }
 
-                                                it.isLinkedWithFolders -> {
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
-                                                    selectedFolderName.value = it.keyOfLinkedFolder
-                                                }
+                                                    it.isLinkedWithFolders -> {
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
+                                                        SearchScreenVM.selectedFolderID =
+                                                            it.keyOfLinkedFolder
+                                                    }
 
-                                                it.isLinkedWithSavedLinks -> {
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.SAVED_LINKS
+                                                    it.isLinkedWithSavedLinks -> {
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.SAVED_LINKS
+                                                    }
                                                 }
-                                            }
-                                            HomeScreenVM.tempImpLinkData.webURL =
-                                                it.webURL
-                                            HomeScreenVM.tempImpLinkData.baseURL =
-                                                it.baseURL
-                                            HomeScreenVM.tempImpLinkData.imgURL =
-                                                it.imgURL
-                                            HomeScreenVM.tempImpLinkData.title =
-                                                it.title
-                                            HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                it.infoForSaving
-                                            selectedURLNote.value = it.infoForSaving
-                                            selectedWebURL.value = it.webURL
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                kotlinx.coroutines.awaitAll(async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                                }, async {
-                                                    optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                                })
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            coroutineScope.launch {
-                                                com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = RecentlyVisited(
+                                                HomeScreenVM.tempImpLinkData.webURL =
+                                                    it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL =
+                                                    it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL =
+                                                    it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title =
+                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                    it.infoForSaving
+                                                selectedURLNote.value = it.infoForSaving
+                                                selectedWebURL.value = it.webURL
+                                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                                coroutineScope.launch {
+                                                    kotlinx.coroutines.awaitAll(async {
+                                                        optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    }, async {
+                                                        optionsBtmSheetVM.updateImportantCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    })
+                                                }
+                                            },
+                                            onLinkClick = {
+                                                coroutineScope.launch {
+                                                    com.sakethh.linkora.customWebTab.openInWeb(
+                                                        recentlyVisitedData = RecentlyVisited(
+                                                            title = it.title,
+                                                            webURL = it.webURL,
+                                                            baseURL = it.baseURL,
+                                                            imgURL = it.imgURL,
+                                                            infoForSaving = it.infoForSaving
+                                                        ),
+                                                        context = context,
+                                                        uriHandler = uriHandler,
+                                                        forceOpenInExternalBrowser = false
+                                                    )
+                                                }
+                                            },
+                                            webURL = it.webURL,
+                                            onForceOpenInExternalBrowserClicked = {
+                                                searchScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false
+                                                    ), context = context, uriHandler = uriHandler,
+                                                    onTaskCompleted = {},
+                                                    forceOpenInExternalBrowser = true
                                                 )
-                                            }
-                                        },
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        }
+                                            })
                                     )
                                 }
                                 items(archiveLinksTableData) {
                                     LinkUIComponent(
-                                        title = it.title,
-                                        webBaseURL = it.webURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedLinkTitle.value = it.title
-                                            SearchScreenVM.selectedLinkType =
-                                                SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
-                                            HomeScreenVM.tempImpLinkData.webURL =
-                                                it.webURL
-                                            HomeScreenVM.tempImpLinkData.baseURL =
-                                                it.baseURL
-                                            HomeScreenVM.tempImpLinkData.imgURL =
-                                                it.imgURL
-                                            HomeScreenVM.tempImpLinkData.title =
-                                                it.title
-                                            HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                it.infoForSaving
-                                            selectedURLNote.value = it.infoForSaving
-                                            selectedWebURL.value = it.webURL
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                kotlinx.coroutines.awaitAll(async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                                }, async {
-                                                    optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                                })
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            coroutineScope.launch {
-                                                com.sakethh.linkora.customWebTab.openInWeb(
-                                                    recentlyVisitedData = RecentlyVisited(
+                                        LinkUIComponentParam(
+                                            title = it.title,
+                                            webBaseURL = it.webURL,
+                                            imgURL = it.imgURL,
+                                            onMoreIconCLick = {
+                                                selectedLinkTitle.value = it.title
+                                                SearchScreenVM.selectedLinkType =
+                                                    SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
+                                                HomeScreenVM.tempImpLinkData.webURL =
+                                                    it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL =
+                                                    it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL =
+                                                    it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title =
+                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                    it.infoForSaving
+                                                selectedURLNote.value = it.infoForSaving
+                                                selectedWebURL.value = it.webURL
+                                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                                coroutineScope.launch {
+                                                    kotlinx.coroutines.awaitAll(async {
+                                                        optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    }, async {
+                                                        optionsBtmSheetVM.updateImportantCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    })
+                                                }
+                                            },
+                                            onLinkClick = {
+                                                coroutineScope.launch {
+                                                    com.sakethh.linkora.customWebTab.openInWeb(
+                                                        recentlyVisitedData = RecentlyVisited(
+                                                            title = it.title,
+                                                            webURL = it.webURL,
+                                                            baseURL = it.baseURL,
+                                                            imgURL = it.imgURL,
+                                                            infoForSaving = it.infoForSaving
+                                                        ),
+                                                        context = context,
+                                                        uriHandler = uriHandler,
+                                                        forceOpenInExternalBrowser = false
+                                                    )
+                                                }
+                                            },
+                                            webURL = it.webURL,
+                                            onForceOpenInExternalBrowserClicked = {
+                                                searchScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                         title = it.title,
                                                         webURL = it.webURL,
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false
+                                                    ), context = context, uriHandler = uriHandler,
+                                                    onTaskCompleted = {},
+                                                    forceOpenInExternalBrowser = true
                                                 )
-                                            }
-                                        },
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            searchScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        }
+                                            })
                                     )
                                 }
                                 item {
@@ -431,64 +449,65 @@ fun SearchScreen(navController: NavController) {
                 if (recentlyVisitedLinksData.isNotEmpty()) {
                     items(recentlyVisitedLinksData) {
                         LinkUIComponent(
-                            title = it.title,
-                            webBaseURL = it.baseURL,
-                            imgURL = it.imgURL,
-                            onMoreIconCLick = {
-                                selectedLinkTitle.value = it.title
-                                SearchScreenVM.selectedLinkType =
-                                    SearchScreenVM.SelectedLinkType.HISTORY_LINKS
-                                HomeScreenVM.tempImpLinkData.webURL =
-                                    it.webURL
-                                HomeScreenVM.tempImpLinkData.baseURL =
-                                    it.baseURL
-                                HomeScreenVM.tempImpLinkData.imgURL =
-                                    it.imgURL
-                                HomeScreenVM.tempImpLinkData.title =
-                                    it.title
-                                HomeScreenVM.tempImpLinkData.infoForSaving =
-                                    it.infoForSaving
-                                selectedURLNote.value = it.infoForSaving
-                                selectedWebURL.value = it.webURL
-                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                coroutineScope.launch {
-                                    kotlinx.coroutines.awaitAll(async {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                    }, async {
-                                        optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                    })
-                                }
-                            },
-                            onLinkClick = {
-                                coroutineScope.launch {
-                                    com.sakethh.linkora.customWebTab.openInWeb(
-                                        recentlyVisitedData = RecentlyVisited(
+                            LinkUIComponentParam(
+                                title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    selectedLinkTitle.value = it.title
+                                    SearchScreenVM.selectedLinkType =
+                                        SearchScreenVM.SelectedLinkType.HISTORY_LINKS
+                                    HomeScreenVM.tempImpLinkData.webURL =
+                                        it.webURL
+                                    HomeScreenVM.tempImpLinkData.baseURL =
+                                        it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL =
+                                        it.imgURL
+                                    HomeScreenVM.tempImpLinkData.title =
+                                        it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving =
+                                        it.infoForSaving
+                                    selectedURLNote.value = it.infoForSaving
+                                    selectedWebURL.value = it.webURL
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    coroutineScope.launch {
+                                        kotlinx.coroutines.awaitAll(async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                                        }, async {
+                                            optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                                        })
+                                    }
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL,
+                                onForceOpenInExternalBrowserClicked = {
+                                    searchScreenVM.onLinkClick(
+                                        RecentlyVisited(
                                             title = it.title,
                                             webURL = it.webURL,
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
-                                        ),
-                                        context = context,
-                                        uriHandler = uriHandler,
-                                        forceOpenInExternalBrowser = false
+                                        ), context = context, uriHandler = uriHandler,
+                                        onTaskCompleted = {},
+                                        forceOpenInExternalBrowser = true
                                     )
-                                }
-                            },
-                            webURL = it.webURL,
-                            onForceOpenInExternalBrowserClicked = {
-                                searchScreenVM.onLinkClick(
-                                    RecentlyVisited(
-                                        title = it.title,
-                                        webURL = it.webURL,
-                                        baseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        infoForSaving = it.infoForSaving
-                                    ), context = context, uriHandler = uriHandler,
-                                    onTaskCompleted = {},
-                                    forceOpenInExternalBrowser = true
-                                )
-                            }
+                                })
                         )
                     }
                 } else {
@@ -509,79 +528,74 @@ fun SearchScreen(navController: NavController) {
             bottomModalSheetState = sortingBtmSheetState
         )
         OptionsBtmSheetUI(
-            btmModalSheetState = optionsBtmSheetState,
-            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-            coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.LINK,
-            onDeleteCardClick = {
-                shouldDeleteDialogBoxAppear.value = true
-            },
-            onNoteDeleteCardClick = {
-                searchScreenVM.onNoteDeleteCardClick(
-                    context = context,
-                    selectedWebURL = selectedWebURL.value,
-                    selectedLinkType = SearchScreenVM.selectedLinkType,
-                    folderName = selectedFolderName.value
-                )
-            },
-            onRenameClick = {
-                shouldRenameDialogBoxAppear.value = true
-            },
-            onArchiveClick = {
-                searchScreenVM.onArchiveClick(
-                    context,
-                    selectedLinkType = SearchScreenVM.selectedLinkType,
-                    folderName = selectedFolderName.value
-                )
-            },
-            importantLinks = HomeScreenVM.tempImpLinkData,
-            noteForSaving = selectedURLNote.value,
-            folderName = selectedFolderName.value,
-            linkTitle = selectedLinkTitle.value
+            OptionsBtmSheetUIParam(
+                btmModalSheetState = optionsBtmSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = OptionsBtmSheetType.LINK,
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxAppear.value = true
+                },
+                onNoteDeleteCardClick = {
+                    searchScreenVM.onNoteDeleteCardClick(
+                        context = context,
+                        selectedWebURL = selectedWebURL.value,
+                        selectedLinkType = SearchScreenVM.selectedLinkType,
+                        folderID = selectedFolderID
+                    )
+                },
+                onRenameClick = {
+                    shouldRenameDialogBoxAppear.value = true
+                },
+                onArchiveClick = {
+                    searchScreenVM.onArchiveClick(
+                        context,
+                        selectedLinkType = SearchScreenVM.selectedLinkType,
+                        folderID = selectedFolderID
+                    )
+                },
+                importantLinks = HomeScreenVM.tempImpLinkData,
+                noteForSaving = selectedURLNote.value,
+                folderName = "",
+                linkTitle = selectedLinkTitle.value
+            )
         )
         RenameDialogBox(
-            webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
-            shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-            coroutineScope = coroutineScope,
-            existingFolderName = "",
-            onNoteChangeClickForLinks = { webURL, newNote ->
-                searchScreenVM.onNoteChangeClickForLinks(
-                    webURL, newNote,
-                    selectedLinkType = SearchScreenVM.selectedLinkType,
-                    folderName = selectedFolderName.value
-                )
-            },
-            renameDialogBoxFor = OptionsBtmSheetType.LINK,
-            onTitleChangeClickForLinks = { webURL, newTitle ->
-                searchScreenVM.onTitleChangeClickForLinks(
-                    webURL, newTitle,
-                    selectedLinkType = SearchScreenVM.selectedLinkType,
-                    folderName = selectedFolderName.value
-                )
-            }
+            RenameDialogBoxParam(
+                webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
+                shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
+                existingFolderName = "",
+                onNoteChangeClickForLinks = { webURL, newNote ->
+                    searchScreenVM.onNoteChangeClickForLinks(
+                        webURL, newNote,
+                        selectedLinkType = SearchScreenVM.selectedLinkType,
+                        folderID = selectedFolderID
+                    )
+                },
+                renameDialogBoxFor = OptionsBtmSheetType.LINK,
+                onTitleChangeClickForLinks = { webURL, newTitle ->
+                    searchScreenVM.onTitleChangeClickForLinks(
+                        webURL, newTitle,
+                        selectedLinkType = SearchScreenVM.selectedLinkType,
+                        folderID = selectedFolderID
+                    )
+                }, folderID = selectedFolderID
+            )
         )
         DeleteDialogBox(
-            shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = DataDialogBoxType.LINK,
-            onDeleteClick = {
-                searchScreenVM.onDeleteClick(
-                    context = context,
-                    selectedWebURL = selectedWebURL.value,
-                    shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
-                    selectedLinkType = SearchScreenVM.selectedLinkType,
-                    folderName = selectedFolderName.value
-                )
-            })
+            DeleteDialogBoxParam(
+                shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+                deleteDialogBoxType = DataDialogBoxType.LINK,
+                onDeleteClick = {
+                    searchScreenVM.onDeleteClick(
+                        context = context,
+                        selectedWebURL = selectedWebURL.value,
+                        shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
+                        selectedLinkType = SearchScreenVM.selectedLinkType,
+                        folderID = selectedFolderID
+                    )
+                })
+        )
     }
-    /*val localKeyBoard = LocalSoftwareKeyboardController.current
-    LachedEffect(key1 = SearchScreenVM.isSearchEnabled.value) {
-        val press = PressInteraction.Press(Offset.Zero)
-        interactionSource.emit(press)
-        interactionSource.emit(PressInteraction.Release(press))
-        SearchScreenVM.focusRequester.requestFocus()
-        delay(100)
-        localKeyBoard?.show()
-    }*/
     val activity = LocalContext.current as? Activity
     BackHandler {
         when {

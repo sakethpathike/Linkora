@@ -20,7 +20,10 @@ class CollectionsScreenVM : ViewModel() {
 
     companion object {
         val selectedFolderData =
-            FoldersTable(folderName = "", infoForSaving = "", parentFolderID = 0)
+            FoldersTable(
+                folderName = "", infoForSaving = "", parentFolderID = 0,
+                childFolderIDs = emptyList()
+            )
     }
 
     init {
@@ -73,24 +76,24 @@ class CollectionsScreenVM : ViewModel() {
         }
     }
 
-    fun onNoteDeleteClick(context: Context) {
+    fun onNoteDeleteClick(context: Context, clickedFolderID: Long) {
         viewModelScope.launch {
-            CustomFunctionsForLocalDB.localDB.crudDao()
-                .deleteAFolderNote(folderName = selectedFolderData.folderName)
+            CustomFunctionsForLocalDB.localDB.deleteDao()
+                .deleteAFolderNote(folderID = clickedFolderID)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    fun onDeleteClick(clickedFolderName: String) {
+    fun onDeleteClick(clickedFolderID: Long) {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .deleteAFolder(folderName = clickedFolderName)
+                CustomFunctionsForLocalDB.localDB.deleteDao()
+                    .deleteAFolder(folderID = clickedFolderID)
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao()
-                    .deleteThisFolderData(folderName = clickedFolderName)
+                CustomFunctionsForLocalDB.localDB.deleteDao()
+                    .deleteThisFolderData(folderID = clickedFolderID)
             })
         }
 

@@ -41,10 +41,13 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
+import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
+import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -92,14 +95,16 @@ fun ParentHomeScreen(navController: NavController) {
         Scaffold(
             floatingActionButton = {
                 FloatingActionBtn(
-                    newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
-                    shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                    shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
-                    shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
-                    shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
-                    isMainFabRotated = isMainFabRotated,
-                    rotationAnimation = rotationAnimation,
-                    inASpecificScreen = false
+                    FloatingActionBtnParam(
+                        newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                        shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                        shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                        shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                        shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
+                        isMainFabRotated = isMainFabRotated,
+                        rotationAnimation = rotationAnimation,
+                        inASpecificScreen = false
+                    )
                 )
             },
             floatingActionButtonPosition = FabPosition.End,
@@ -179,12 +184,12 @@ fun ParentHomeScreen(navController: NavController) {
                 specificScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderName = "", screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    ), folderID = 0, screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                 )
                 specificScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderName = "", screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    ), folderID = 0, screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                 )
             },
             bottomModalSheetState = sortingBtmSheetState
@@ -192,19 +197,29 @@ fun ParentHomeScreen(navController: NavController) {
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            specificFolderName = "Tea || Coffee ?"
+            specificFolderName = "Tea || Coffee ?",
+            parentFolderID = null,
+            childFoldersIDs = emptyList()
         )
+
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear, parentFolderID = null
+            AddNewFolderDialogBoxParam(
+                shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
+                parentFolderID = null,
+                childFolderIDs = emptyList(),
+                currentFolderID = 0
+            )
         )
         NewLinkBtmSheet(
-            btmSheetState = btmModalSheetStateForSavingLinks,
-            _inIntentActivity = false,
-            screenType = SpecificScreenType.ROOT_SCREEN,
-            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-            onLinkSaved = {},
-            onFolderCreated = {},
-            parentFolderID = null
+            NewLinkBtmSheetUIParam(
+                btmSheetState = btmModalSheetStateForSavingLinks,
+                inIntentActivity = false,
+                screenType = SpecificScreenType.ROOT_SCREEN,
+                shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                onLinkSaved = {},
+                onFolderCreated = {},
+                parentFolderID = null, childFolderIDs = emptyList()
+            )
         )
     }
 

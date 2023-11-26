@@ -29,14 +29,17 @@ class CustomFunctionsForLocalDB : ViewModel() {
     }
 
     fun createANewFolder(
-        context: Context, folderName: String, infoForSaving: String,
+        context: Context, infoForSaving: String,
         onTaskCompleted: () -> Unit,
-        parentFolderID: Long?
+        parentFolderID: Long?,
+        childFolderIDs: List<Long?>,
+        folderName: String,
+        folderID: Long?
     ) {
         var doesThisFolderExists = false
         viewModelScope.launch {
-            doesThisFolderExists = localDB.crudDao()
-                .doesThisFolderExists(folderName = folderName)
+            doesThisFolderExists = localDB.readDao()
+                .doesThisFolderExists(folderID = folderID, folderName = folderName)
         }.invokeOnCompletion {
             if (doesThisFolderExists) {
                 viewModelScope.launch {
@@ -53,12 +56,13 @@ class CustomFunctionsForLocalDB : ViewModel() {
 
             } else {
                 viewModelScope.launch {
-                    localDB.crudDao()
+                    localDB.createDao()
                         .addANewFolder(
                             FoldersTable(
                                 folderName = folderName,
                                 infoForSaving = infoForSaving,
-                                parentFolderID = parentFolderID
+                                parentFolderID = parentFolderID,
+                                childFolderIDs = childFolderIDs
                             )
                         )
                     withContext(Dispatchers.Main) {
@@ -76,7 +80,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
     }
 
     fun updateFoldersDetails(
-        existingFolderName: String,
+        folderID: Long,
         newFolderName: String,
         infoForFolder: String,
         context: Context,
@@ -84,33 +88,15 @@ class CustomFunctionsForLocalDB : ViewModel() {
     ) {
         if (infoForFolder.isNotEmpty()) {
             viewModelScope.launch {
-                awaitAll(
-                    async {
-                        localDB.crudDao().renameAFolderName(existingFolderName, newFolderName)
-                        localDB.crudDao().renameAFolderNote(newFolderName, infoForFolder)
-                    },
-                    async {
-                        localDB.crudDao().renameFolderNameForExistingFolderData(
-                            existingFolderName,
-                            newFolderName
-                        )
-                    })
+                localDB.updateDao()
+                    .renameAFolderName(folderID = folderID, newFolderName = newFolderName)
+                localDB.updateDao().renameAFolderNote(folderID = folderID, infoForFolder)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                awaitAll(
-                    async {
-                        localDB.crudDao().renameAFolderName(existingFolderName, newFolderName)
-                    },
-                    async {
-                        localDB.crudDao()
-                            .renameFolderNameForExistingFolderData(
-                                existingFolderName,
-                                newFolderName
-                            )
-                    })
+                localDB.updateDao().renameAFolderName(folderID, newFolderName)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -134,7 +120,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
         var doesLinkExists = false
         viewModelScope.launch {
             doesLinkExists =
-                localDB.crudDao().doesThisExistsInImpLinks(webURL = importantLinks.webURL)
+                localDB.readDao().doesThisExistsInImpLinks(webURL = importantLinks.webURL)
         }.invokeOnCompletion {
             if (doesLinkExists) {
                 if (inImportantLinksScreen) {
@@ -152,7 +138,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
                     }
                 } else {
                     viewModelScope.launch {
-                        localDB.crudDao().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
+                        localDB.deleteDao().deleteALinkFromImpLinks(webURL = importantLinks.webURL)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
@@ -203,7 +189,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
                             imgURL = linkDataExtractor.imgURL,
                             infoForSaving = importantLinks.infoForSaving
                         )
-                        localDB.crudDao().addANewLinkToImpLinks(importantLinks = linksData)
+                        localDB.createDao().addANewLinkToImpLinks(importantLinks = linksData)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
@@ -228,11 +214,11 @@ class CustomFunctionsForLocalDB : ViewModel() {
         var doesArchiveLinkExists = false
         viewModelScope.launch {
             doesArchiveLinkExists =
-                localDB.crudDao().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)
+                localDB.readDao().doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)
         }.invokeOnCompletion {
             if (doesArchiveLinkExists) {
                 viewModelScope.launch {
-                    localDB.crudDao().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
+                    localDB.deleteDao().deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
@@ -246,7 +232,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
                 }
             } else {
                 viewModelScope.launch {
-                    localDB.crudDao().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
+                    localDB.createDao().addANewLinkToArchiveLink(archivedLinks = archivedLinks)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "moved the link to archive(s)", Toast.LENGTH_SHORT)
                             .show()
@@ -266,17 +252,17 @@ class CustomFunctionsForLocalDB : ViewModel() {
     ) {
         var doesThisExistsInArchiveFolder = false
         viewModelScope.launch {
-            doesThisExistsInArchiveFolder = localDB.crudDao()
-                .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
+            doesThisExistsInArchiveFolder = localDB.readDao()
+                .doesThisArchiveFolderExists(folderID = archivedFolders.id)
         }.invokeOnCompletion {
             if (doesThisExistsInArchiveFolder) {
                 viewModelScope.launch {
                     awaitAll(async {
-                        localDB.crudDao()
-                            .deleteAnArchiveFolder(folderName = archivedFolders.archiveFolderName)
+                        localDB.deleteDao()
+                            .deleteAnArchiveFolder(folderID = archivedFolders.id)
                     }, async {
-                        localDB.crudDao()
-                            .deleteThisArchiveFolderData(folderName = archivedFolders.archiveFolderName)
+                        localDB.deleteDao()
+                            .deleteThisArchiveFolderData(folderID = archivedFolders.id)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -292,15 +278,15 @@ class CustomFunctionsForLocalDB : ViewModel() {
                 }
             } else {
                 viewModelScope.launch {
-                    localDB.crudDao().addANewArchiveFolder(archivedFolders = archivedFolders)
+                    localDB.createDao().addANewArchiveFolder(archivedFolders = archivedFolders)
                 }.invokeOnCompletion {
                     viewModelScope.launch {
-                        localDB.crudDao()
-                            .moveFolderDataToArchive(folderName = archivedFolders.archiveFolderName)
+                        localDB.updateDao()
+                            .moveFolderDataToArchive(folderID = archivedFolders.id)
                     }.invokeOnCompletion {
                         viewModelScope.launch {
-                            localDB.crudDao()
-                                .deleteAFolder(folderName = archivedFolders.archiveFolderName)
+                            localDB.deleteDao()
+                                .deleteAFolder(folderID = archivedFolders.id)
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
@@ -314,7 +300,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
                     }
                 }
                 viewModelScope.launch {
-                    OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
+                    OptionsBtmSheetVM().updateArchiveFolderCardData(folderID = archivedFolders.id)
                 }
             }
         }
@@ -325,19 +311,20 @@ class CustomFunctionsForLocalDB : ViewModel() {
         title: String,
         webURL: String,
         noteForSaving: String,
-        folderName: String?,
+        folderID: Long,
         savingFor: CustomFunctionsForLocalDBType,
         context: Context,
         autoDetectTitle: Boolean = false,
         onTaskCompleted: () -> Unit,
+        folderName: String
     ) {
         when (savingFor) {
             CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS -> {
                 var doesThisLinkExists = false
                 viewModelScope.launch {
-                    doesThisLinkExists = localDB.crudDao()
+                    doesThisLinkExists = localDB.readDao()
                         .doesThisLinkExistsInAFolder(
-                            webURL, folderName.toString()
+                            webURL, folderID
                         )
                 }.invokeOnCompletion {
                     if (!isNetworkAvailable(context)) {
@@ -381,24 +368,22 @@ class CustomFunctionsForLocalDB : ViewModel() {
                     } else {
                         viewModelScope.launch {
                             val linkDataExtractor = linkDataExtractor(webURL)
-                            val linkData = folderName?.let {
-                                LinksTable(
-                                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                                    webURL = webURL,
-                                    baseURL = linkDataExtractor.baseURL,
-                                    imgURL = linkDataExtractor.imgURL,
-                                    infoForSaving = noteForSaving,
-                                    isLinkedWithSavedLinks = false,
-                                    isLinkedWithFolders = true,
-                                    keyOfLinkedFolder = it,
-                                    isLinkedWithImpFolder = false,
-                                    keyOfImpLinkedFolder = "",
-                                    isLinkedWithArchivedFolder = false,
-                                    keyOfArchiveLinkedFolder = ""
-                                )
-                            }
+                            val linkData = LinksTable(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
+                                webURL = webURL,
+                                baseURL = linkDataExtractor.baseURL,
+                                imgURL = linkDataExtractor.imgURL,
+                                infoForSaving = noteForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = true,
+                                keyOfLinkedFolder = folderID,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = 0,
+                                isLinkedWithArchivedFolder = false,
+                                keyOfArchiveLinkedFolder = 0
+                            )
                             if (linkData != null) {
-                                localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                                localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                             }
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "added the url", Toast.LENGTH_SHORT)
@@ -417,11 +402,8 @@ class CustomFunctionsForLocalDB : ViewModel() {
             CustomFunctionsForLocalDBType.ARCHIVE_FOLDER_LINKS -> {
                 var doesThisLinkExistsInAFolder = false
                 viewModelScope.launch {
-                    doesThisLinkExistsInAFolder = localDB.crudDao()
-                        .doesThisLinkExistsInAFolder(
-                            folderName = folderName.toString(),
-                            webURL = webURL
-                        )
+                    doesThisLinkExistsInAFolder = localDB.readDao()
+                        .doesThisLinkExistsInAFolder(webURL, folderID)
                 }.invokeOnCompletion {
                     if (!isNetworkAvailable(context)) {
                         viewModelScope.launch {
@@ -464,24 +446,22 @@ class CustomFunctionsForLocalDB : ViewModel() {
                     } else {
                         viewModelScope.launch {
                             val _linkDataExtractor = linkDataExtractor(webURL)
-                            val linkData = folderName?.let {
-                                LinksTable(
-                                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
-                                    webURL = webURL,
-                                    baseURL = _linkDataExtractor.baseURL,
-                                    imgURL = _linkDataExtractor.imgURL,
-                                    infoForSaving = noteForSaving,
-                                    isLinkedWithSavedLinks = false,
-                                    isLinkedWithFolders = false,
-                                    keyOfLinkedFolder = "",
-                                    isLinkedWithImpFolder = false,
-                                    keyOfImpLinkedFolder = "",
-                                    isLinkedWithArchivedFolder = true,
-                                    keyOfArchiveLinkedFolder = folderName
-                                )
-                            }
+                            val linkData = LinksTable(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
+                                webURL = webURL,
+                                baseURL = _linkDataExtractor.baseURL,
+                                imgURL = _linkDataExtractor.imgURL,
+                                infoForSaving = noteForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                keyOfLinkedFolder = 0,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = 0,
+                                isLinkedWithArchivedFolder = true,
+                                keyOfArchiveLinkedFolder = folderID
+                            )
                             if (linkData != null) {
-                                localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                                localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                             }
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "added the link", Toast.LENGTH_SHORT)
@@ -497,7 +477,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
             CustomFunctionsForLocalDBType.SAVED_LINKS -> {
                 var doesThisLinkExists = false
                 viewModelScope.launch {
-                    doesThisLinkExists = localDB.crudDao()
+                    doesThisLinkExists = localDB.readDao()
                         .doesThisExistsInSavedLinks(
                             webURL
                         )
@@ -551,13 +531,13 @@ class CustomFunctionsForLocalDB : ViewModel() {
                                 infoForSaving = noteForSaving,
                                 isLinkedWithSavedLinks = true,
                                 isLinkedWithFolders = false,
-                                keyOfLinkedFolder = "",
+                                keyOfLinkedFolder = 0,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
+                                keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolder = ""
+                                keyOfArchiveLinkedFolder = 0
                             )
-                            localDB.crudDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                            localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
                             }

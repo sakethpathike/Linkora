@@ -34,27 +34,27 @@ class ExportImpl {
         val job = Job()
         CoroutineScope(job).launch {
             awaitAll(async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllFromLinksTable().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllFromLinksTable().collect {
                     savedLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllImpLinks().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllImpLinks().collect {
                     importantLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllFolders().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllRootFolders().collect {
                     folders.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveLinks().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveLinks().collect {
                     archivedLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllArchiveFolders().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveFolders().collect {
                     archivedFolders.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.crudDao().getAllRecentlyVisitedLinks().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllRecentlyVisitedLinks().collect {
                     historyLinks.addAll(it)
                 }
             })

@@ -63,16 +63,22 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
+import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.FloatingActionBtn
+import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
+import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -148,14 +154,16 @@ fun CollectionsScreen(navController: NavController) {
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             FloatingActionBtn(
-                newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
-                shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
-                shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
-                shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
-                isMainFabRotated = isMainFabRotated,
-                rotationAnimation = rotationAnimation,
-                inASpecificScreen = false
+                FloatingActionBtnParam(
+                    newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                    shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                    shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                    shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                    shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
+                    isMainFabRotated = isMainFabRotated,
+                    rotationAnimation = rotationAnimation,
+                    inASpecificScreen = false
+                )
             )
         },
             floatingActionButtonPosition = FabPosition.End,
@@ -334,15 +342,15 @@ fun CollectionsScreen(navController: NavController) {
                                     foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderID = foldersData.id)
                                 }
                                 clickedFolderName.value = foldersData.folderName
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                SpecificScreenVM.currentClickedFolderName.value =
-                                    foldersData.folderName
+                                SpecificScreenVM.currentClickedFolderData.value =
+                                    foldersData
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             })
                     }
@@ -378,98 +386,111 @@ fun CollectionsScreen(navController: NavController) {
             }
         }
         OptionsBtmSheetUI(
-            btmModalSheetState = btmModalSheetState,
-            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-            coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.FOLDER,
-            onDeleteCardClick = {
-                shouldDeleteDialogBoxBeVisible.value = true
-            },
-            onRenameClick = {
-                shouldRenameDialogBoxBeVisible.value = true
-            },
-            importantLinks = null,
-            onArchiveClick = {
-                customFunctionsForLocalDB.archiveFolderTableUpdater(
-                    archivedFolders = ArchivedFolders(
-                        archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
-                        infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
-                    ), context = context, onTaskCompleted = {
-                        collectionsScreenVM.changeRetrievedFoldersData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
+            OptionsBtmSheetUIParam(
+                btmModalSheetState = btmModalSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = OptionsBtmSheetType.FOLDER,
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxBeVisible.value = true
+                },
+                onRenameClick = {
+                    shouldRenameDialogBoxBeVisible.value = true
+                },
+                importantLinks = null,
+                onArchiveClick = {
+                    customFunctionsForLocalDB.archiveFolderTableUpdater(
+                        archivedFolders = ArchivedFolders(
+                            archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
+                            infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
+                        ), context = context, onTaskCompleted = {
+                            collectionsScreenVM.changeRetrievedFoldersData(
+                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                )
                             )
-                        )
-                    }
-                )
-            },
-            noteForSaving = clickedFolderNote.value,
-            onNoteDeleteCardClick = {
-                collectionsScreenVM.onNoteDeleteClick(context)
-            },
-            linkTitle = "",
-            folderName = CollectionsScreenVM.selectedFolderData.folderName
+                        }
+                    )
+                },
+                noteForSaving = clickedFolderNote.value,
+                onNoteDeleteCardClick = {
+                    collectionsScreenVM.onNoteDeleteClick(
+                        context,
+                        CollectionsScreenVM.selectedFolderData.id
+                    )
+                },
+                linkTitle = "",
+                folderName = CollectionsScreenVM.selectedFolderData.folderName
+            )
         )
         RenameDialogBox(
-            onNoteChangeClickForLinks = null,
-            shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
-            coroutineScope = coroutineScope,
-            existingFolderName = clickedFolderName.value,
-            onTitleChangeClickForLinks = null,
-            onTitleRenamed = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            RenameDialogBoxParam(
+                onNoteChangeClickForLinks = null,
+                shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
+                existingFolderName = clickedFolderName.value,
+                onTitleChangeClickForLinks = null,
+                onTitleRenamed = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }
+                }, folderID = CollectionsScreenVM.selectedFolderData.id
+            )
         )
         DeleteDialogBox(
-            shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
-            onDeleteClick = {
-                collectionsScreenVM.onDeleteClick(clickedFolderName.value)
-            },
-            deleteDialogBoxType = DataDialogBoxType.FOLDER,
-            onDeleted = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            DeleteDialogBoxParam(
+                shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
+                onDeleteClick = {
+                    collectionsScreenVM.onDeleteClick(CollectionsScreenVM.selectedFolderData.id)
+                },
+                deleteDialogBoxType = DataDialogBoxType.FOLDER,
+                onDeleted = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }
+                })
         )
 
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             specificFolderName = "hi lol",
-            screenType = SpecificScreenType.ROOT_SCREEN
+            screenType = SpecificScreenType.ROOT_SCREEN,
+            childFoldersIDs = emptyList(),
+            parentFolderID = null
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-            onCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            AddNewFolderDialogBoxParam(
+                shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
+                onCreated = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            },
-            parentFolderID = null
+                },
+                parentFolderID = null,
+                childFolderIDs = emptyList(), currentFolderID = null
+            )
         )
         NewLinkBtmSheet(
-            btmSheetState = btmModalSheetStateForSavingLinks,
-            _inIntentActivity = false,
-            screenType = SpecificScreenType.ROOT_SCREEN,
-            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-            onFolderCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            NewLinkBtmSheetUIParam(
+                btmSheetState = btmModalSheetStateForSavingLinks,
+                inIntentActivity = false,
+                screenType = SpecificScreenType.ROOT_SCREEN,
+                shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                onFolderCreated = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }, onLinkSaved = {
+                }, onLinkSaved = {
 
-            },
-            parentFolderID = null
+                },
+                parentFolderID = null, childFolderIDs = emptyList()
+            )
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

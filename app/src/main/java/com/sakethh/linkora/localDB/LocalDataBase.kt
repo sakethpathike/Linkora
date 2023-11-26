@@ -4,10 +4,14 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.sakethh.linkora.localDB.dao.CRUDDao
 import com.sakethh.linkora.localDB.dao._import.ImportDao
+import com.sakethh.linkora.localDB.dao.crud.CreateDao
+import com.sakethh.linkora.localDB.dao.crud.DeleteDao
+import com.sakethh.linkora.localDB.dao.crud.ReadDao
+import com.sakethh.linkora.localDB.dao.crud.UpdateDao
 import com.sakethh.linkora.localDB.dao.searching.LinksSearching
 import com.sakethh.linkora.localDB.dao.sorting.ArchiveFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedFoldersSorting
@@ -24,14 +28,19 @@ import com.sakethh.linkora.localDB.dto.ImportantFolders
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.localDB.typeConverters.ChildIDFolderTypeConverter
 
 @Database(
     version = 2,
     exportSchema = true,
     entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
+@TypeConverters(ChildIDFolderTypeConverter::class)
 abstract class LocalDataBase : RoomDatabase() {
-    abstract fun crudDao(): CRUDDao
+    abstract fun createDao(): CreateDao
+    abstract fun readDao(): ReadDao
+    abstract fun updateDao(): UpdateDao
+    abstract fun deleteDao(): DeleteDao
     abstract fun archivedFolderSorting(): ArchivedFoldersSorting
     abstract fun archivedLinksSorting(): ArchivedLinksSorting
     abstract fun archivedFolderLinksSorting(): ArchiveFolderLinksSorting

@@ -20,6 +20,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,27 +33,32 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+
+data class RenameDialogBoxParam(
+    val shouldDialogBoxAppear: MutableState<Boolean>,
+    val webURLForTitle: String? = null,
+    val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
+    val onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
+    val onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
+    val inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
+    val onTitleRenamed: () -> Unit = {},
+    val folderID: Long,
+    val existingFolderName: String?
+)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RenameDialogBox(
-    shouldDialogBoxAppear: MutableState<Boolean>,
-    coroutineScope: CoroutineScope, existingFolderName: String?,
-    webURLForTitle: String? = null,
-    renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
-    onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
-    onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
-    inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
-    onTitleRenamed: () -> Unit = {},
+    renameDialogBoxParam: RenameDialogBoxParam
 ) {
     val context = LocalContext.current
     val scrollState = rememberScrollState()
     var doesFolderNameAlreadyExists = false
     val localContext = LocalContext.current
     val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
-    if (shouldDialogBoxAppear.value) {
+    val coroutineScope = rememberCoroutineScope()
+    if (renameDialogBoxParam.shouldDialogBoxAppear.value) {
         val newFolderOrTitleName = rememberSaveable {
             mutableStateOf("")
         }
@@ -63,10 +69,10 @@ fun RenameDialogBox(
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { shouldDialogBoxAppear.value = false }) {
+                onDismissRequest = { renameDialogBoxParam.shouldDialogBoxAppear.value = false }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
-                        text = if (renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"$existingFolderName\" folder:" else "Change Link's Data:",
+                        text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"${renameDialogBoxParam.existingFolderName}\" folder:" else "Change Link's Data:",
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -80,7 +86,7 @@ fun RenameDialogBox(
                         ),
                         label = {
                             Text(
-                                text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "New Name" else "New title",
+                                text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "New Name" else "New title",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
@@ -131,20 +137,21 @@ fun RenameDialogBox(
                             if (newFolderOrTitleName.value.isEmpty()) {
                                 Toast.makeText(
                                     localContext,
-                                    if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
+                                    if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                if (renameDialogBoxFor == OptionsBtmSheetType.LINK || inChildArchiveFolderScreen.value) {
-                                    if (onTitleChangeClickForLinks != null && webURLForTitle != null) {
-                                        onTitleChangeClickForLinks(
-                                            webURLForTitle, newFolderOrTitleName.value
+                                if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                                    if (renameDialogBoxParam.onTitleChangeClickForLinks != null && renameDialogBoxParam.webURLForTitle != null) {
+                                        renameDialogBoxParam.onTitleChangeClickForLinks.invoke(
+                                            renameDialogBoxParam.webURLForTitle,
+                                            newFolderOrTitleName.value
                                         )
                                     }
-                                    if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
+                                    if (renameDialogBoxParam.onNoteChangeClickForLinks != null && renameDialogBoxParam.webURLForTitle != null) {
                                         if (newNote.value.isNotEmpty()) {
-                                            onNoteChangeClickForLinks(
-                                                if (inChildArchiveFolderScreen.value) newFolderOrTitleName.value else webURLForTitle,
+                                            renameDialogBoxParam.onNoteChangeClickForLinks.invoke(
+                                                if (renameDialogBoxParam.inChildArchiveFolderScreen.value) newFolderOrTitleName.value else renameDialogBoxParam.webURLForTitle,
                                                 newNote.value
                                             )
                                         }
@@ -154,23 +161,26 @@ fun RenameDialogBox(
                                         "renamed link's data successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    onTitleRenamed()
-                                    shouldDialogBoxAppear.value = false
+                                    renameDialogBoxParam.onTitleRenamed()
+                                    renameDialogBoxParam.shouldDialogBoxAppear.value = false
                                 } else {
                                     if (newFolderOrTitleName.value.isEmpty()) {
                                         Toast.makeText(
                                             localContext,
-                                            if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
+                                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Folder name can't be empty" else "title can't be empty",
                                             Toast.LENGTH_SHORT
                                         ).show()
                                     } else {
-                                        if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
+                                        if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
                                             coroutineScope.launch {
                                                 doesFolderNameAlreadyExists =
-                                                    CustomFunctionsForLocalDB.localDB.crudDao()
-                                                        .doesThisFolderExists(
-                                                            newFolderOrTitleName.value
-                                                        )
+                                                    renameDialogBoxParam.existingFolderName?.let {
+                                                        CustomFunctionsForLocalDB.localDB.readDao()
+                                                            .doesThisFolderExists(
+                                                                folderID = renameDialogBoxParam.folderID,
+                                                                folderName = it
+                                                            )
+                                                    } == true
                                             }.invokeOnCompletion {
                                                 if (doesFolderNameAlreadyExists) {
                                                     Toast.makeText(
@@ -179,15 +189,16 @@ fun RenameDialogBox(
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                 } else {
-                                                    if (existingFolderName != null) {
+                                                    if (renameDialogBoxParam.existingFolderName != null) {
                                                         customFunctionsForLocalDB.updateFoldersDetails(
-                                                            existingFolderName = existingFolderName,
+                                                            folderID = renameDialogBoxParam.folderID,
                                                             newFolderName = newFolderOrTitleName.value,
                                                             infoForFolder = newNote.value,
                                                             context = localContext,
                                                             onTaskCompleted = {
-                                                                onTitleRenamed()
-                                                                shouldDialogBoxAppear.value = false
+                                                                renameDialogBoxParam.onTitleRenamed()
+                                                                renameDialogBoxParam.shouldDialogBoxAppear.value =
+                                                                    false
                                                             }
                                                         )
                                                     }
@@ -199,7 +210,7 @@ fun RenameDialogBox(
                             }
                         }) {
                         Text(
-                            text = if (renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title data",
+                            text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "Change folder data" else "Change title data",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
@@ -213,13 +224,13 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxFor == OptionsBtmSheetType.LINK || inChildArchiveFolderScreen.value) {
-                                if (onNoteChangeClickForLinks != null && webURLForTitle != null) {
-                                    onNoteChangeClickForLinks(
-                                        webURLForTitle, newNote.value
+                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                                if (renameDialogBoxParam.onNoteChangeClickForLinks != null && renameDialogBoxParam.webURLForTitle != null) {
+                                    renameDialogBoxParam.onNoteChangeClickForLinks.invoke(
+                                        renameDialogBoxParam.webURLForTitle, newNote.value
                                     )
                                 }
-                                shouldDialogBoxAppear.value = false
+                                renameDialogBoxParam.shouldDialogBoxAppear.value = false
                             } else {
                                 if (newNote.value.isEmpty()) {
                                     Toast.makeText(
@@ -227,15 +238,15 @@ fun RenameDialogBox(
                                     ).show()
                                 } else {
                                     coroutineScope.launch {
-                                        if (existingFolderName != null) {
-                                            CustomFunctionsForLocalDB.localDB.crudDao()
+                                        if (renameDialogBoxParam.existingFolderName != null) {
+                                            CustomFunctionsForLocalDB.localDB.updateDao()
                                                 .renameAFolderNote(
-                                                    folderName = existingFolderName,
+                                                    folderID = renameDialogBoxParam.folderID,
                                                     newNote = newNote.value
                                                 )
                                         }
                                     }
-                                    shouldDialogBoxAppear.value = false
+                                    renameDialogBoxParam.shouldDialogBoxAppear.value = false
                                 }
                             }
                         }) {
@@ -256,7 +267,7 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            shouldDialogBoxAppear.value = false
+                            renameDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Cancel",
