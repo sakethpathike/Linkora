@@ -345,6 +345,7 @@ fun CollectionsScreen(navController: NavController) {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderID = foldersData.id)
                                 }
                                 clickedFolderName.value = foldersData.folderName
+                                CollectionsScreenVM.selectedFolderData.id = foldersData.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificScreenVM.screenType.value =
@@ -434,7 +435,9 @@ fun CollectionsScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
-                }, folderID = CollectionsScreenVM.selectedFolderData.id
+                },
+                currentFolderID = CollectionsScreenVM.selectedFolderData.id,
+                parentFolderID = null
             )
         )
         DeleteDialogBox(

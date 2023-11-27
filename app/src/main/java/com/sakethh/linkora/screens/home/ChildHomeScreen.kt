@@ -316,7 +316,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                     webURL,
                     newTitle
                 )
-            }, folderID = 0
+            }, currentFolderID = 0, parentFolderID = null
         )
     )
 

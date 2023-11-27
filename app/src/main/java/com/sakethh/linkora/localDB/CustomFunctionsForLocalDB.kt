@@ -17,7 +17,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CustomFunctionsForLocalDB : ViewModel() {
+open class CustomFunctionsForLocalDB : ViewModel() {
 
 
     enum class CustomFunctionsForLocalDBType {
@@ -39,7 +39,7 @@ class CustomFunctionsForLocalDB : ViewModel() {
         var doesThisFolderExists = false
         viewModelScope.launch {
             doesThisFolderExists = localDB.readDao()
-                .doesThisFolderExists(folderID = folderID, folderName = folderName)
+                .doesThisFolderExists(parentFolderID=parentFolderID, folderName = folderName)
         }.invokeOnCompletion {
             if (doesThisFolderExists) {
                 viewModelScope.launch {

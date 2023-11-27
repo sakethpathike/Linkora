@@ -262,7 +262,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
             viewModelScope.launch {
                 if (CustomFunctionsForLocalDB.localDB.readDao()
                         .doesThisFolderExists(
-                            folderID = selectedFolderID,
+                            parentFolderID = null,
                             folderName = selectedURLOrFolderName
                         )
                 ) {

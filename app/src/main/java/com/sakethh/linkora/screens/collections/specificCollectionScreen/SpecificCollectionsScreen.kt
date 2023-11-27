@@ -681,9 +681,13 @@ fun SpecificScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ), folderID = SpecificScreenVM.currentClickedFolderData.value.id
                     )
-                }, inChildArchiveFolderScreen = mutableStateOf(
+                },
+                inChildArchiveFolderScreen = mutableStateOf(
                     SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                ), folderID = SpecificScreenVM.currentClickedFolderData.value.id
+                ),
+                currentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                parentFolderID = SpecificScreenVM
+                    .currentClickedFolderData.value.parentFolderID
             )
         )
         val collectionsScreenVM: CollectionsScreenVM = viewModel()

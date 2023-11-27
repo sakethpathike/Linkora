@@ -151,14 +151,12 @@ fun SearchScreen(navController: NavController) {
                 },
                 placeholder = {
                     Text(
-                        text = "Search",
-                        style = MaterialTheme.typography.titleSmall
+                        text = "Search", style = MaterialTheme.typography.titleSmall
                     )
                 },
                 content = {
                     LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
+                        modifier = Modifier.fillMaxSize()
                     ) {
                         when {
                             query.value.isEmpty() -> {
@@ -176,22 +174,17 @@ fun SearchScreen(navController: NavController) {
                             else -> {
                                 items(impLinksData) {
                                     LinkUIComponent(
-                                        LinkUIComponentParam(
-                                            title = it.title,
+                                        LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
                                                 selectedLinkTitle.value = it.title
                                                 SearchScreenVM.selectedLinkType =
                                                     SearchScreenVM.SelectedLinkType.IMP_LINKS
-                                                HomeScreenVM.tempImpLinkData.webURL =
-                                                    it.webURL
-                                                HomeScreenVM.tempImpLinkData.baseURL =
-                                                    it.baseURL
-                                                HomeScreenVM.tempImpLinkData.imgURL =
-                                                    it.imgURL
-                                                HomeScreenVM.tempImpLinkData.title =
-                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title = it.title
                                                 HomeScreenVM.tempImpLinkData.infoForSaving =
                                                     it.infoForSaving
                                                 selectedURLNote.value = it.infoForSaving
@@ -234,7 +227,9 @@ fun SearchScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
@@ -243,8 +238,7 @@ fun SearchScreen(navController: NavController) {
                                 }
                                 items(linksTableData) {
                                     LinkUIComponent(
-                                        LinkUIComponentParam(
-                                            title = it.title,
+                                        LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
@@ -269,14 +263,10 @@ fun SearchScreen(navController: NavController) {
                                                             SearchScreenVM.SelectedLinkType.SAVED_LINKS
                                                     }
                                                 }
-                                                HomeScreenVM.tempImpLinkData.webURL =
-                                                    it.webURL
-                                                HomeScreenVM.tempImpLinkData.baseURL =
-                                                    it.baseURL
-                                                HomeScreenVM.tempImpLinkData.imgURL =
-                                                    it.imgURL
-                                                HomeScreenVM.tempImpLinkData.title =
-                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title = it.title
                                                 HomeScreenVM.tempImpLinkData.infoForSaving =
                                                     it.infoForSaving
                                                 selectedURLNote.value = it.infoForSaving
@@ -319,7 +309,9 @@ fun SearchScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
@@ -328,22 +320,17 @@ fun SearchScreen(navController: NavController) {
                                 }
                                 items(archiveLinksTableData) {
                                     LinkUIComponent(
-                                        LinkUIComponentParam(
-                                            title = it.title,
+                                        LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
                                                 selectedLinkTitle.value = it.title
                                                 SearchScreenVM.selectedLinkType =
                                                     SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
-                                                HomeScreenVM.tempImpLinkData.webURL =
-                                                    it.webURL
-                                                HomeScreenVM.tempImpLinkData.baseURL =
-                                                    it.baseURL
-                                                HomeScreenVM.tempImpLinkData.imgURL =
-                                                    it.imgURL
-                                                HomeScreenVM.tempImpLinkData.title =
-                                                    it.title
+                                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title = it.title
                                                 HomeScreenVM.tempImpLinkData.infoForSaving =
                                                     it.infoForSaving
                                                 selectedURLNote.value = it.infoForSaving
@@ -386,7 +373,9 @@ fun SearchScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
@@ -409,18 +398,16 @@ fun SearchScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(5.dp))
                 }
                 item {
-                    androidx.compose.foundation.layout.Row(
-                        modifier = Modifier
-                            .clickable {
-                                if (recentlyVisitedLinksData.isNotEmpty()) {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }
+                    androidx.compose.foundation.layout.Row(modifier = Modifier
+                        .clickable {
+                            if (recentlyVisitedLinksData.isNotEmpty()) {
+                                shouldSortingBottomSheetAppear.value = true
                             }
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                        }
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
                         horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically
-                    ) {
+                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
                         Text(
                             text = "History",
                             color = MaterialTheme.colorScheme.primary,
@@ -436,8 +423,7 @@ fun SearchScreen(navController: NavController) {
                                 shouldSortingBottomSheetAppear.value = true
                             }) {
                                 Icon(
-                                    imageVector = Icons.Outlined.Sort,
-                                    contentDescription = null
+                                    imageVector = Icons.Outlined.Sort, contentDescription = null
                                 )
                             }
                         }
@@ -449,24 +435,18 @@ fun SearchScreen(navController: NavController) {
                 if (recentlyVisitedLinksData.isNotEmpty()) {
                     items(recentlyVisitedLinksData) {
                         LinkUIComponent(
-                            LinkUIComponentParam(
-                                title = it.title,
+                            LinkUIComponentParam(title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
                                     selectedLinkTitle.value = it.title
                                     SearchScreenVM.selectedLinkType =
                                         SearchScreenVM.SelectedLinkType.HISTORY_LINKS
-                                    HomeScreenVM.tempImpLinkData.webURL =
-                                        it.webURL
-                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                        it.baseURL
-                                    HomeScreenVM.tempImpLinkData.imgURL =
-                                        it.imgURL
-                                    HomeScreenVM.tempImpLinkData.title =
-                                        it.title
-                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                        it.infoForSaving
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
                                     selectedURLNote.value = it.infoForSaving
                                     selectedWebURL.value = it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
@@ -503,7 +483,9 @@ fun SearchScreen(navController: NavController) {
                                             baseURL = it.baseURL,
                                             imgURL = it.imgURL,
                                             infoForSaving = it.infoForSaving
-                                        ), context = context, uriHandler = uriHandler,
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler,
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
@@ -521,11 +503,9 @@ fun SearchScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = {
+            shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
                 searchScreenVM.changeHistoryRetrievedData(sortingPreferences = it)
-            },
-            bottomModalSheetState = sortingBtmSheetState
+            }, bottomModalSheetState = sortingBtmSheetState
         )
         OptionsBtmSheetUI(
             OptionsBtmSheetUIParam(
@@ -566,7 +546,8 @@ fun SearchScreen(navController: NavController) {
                 existingFolderName = "",
                 onNoteChangeClickForLinks = { webURL, newNote ->
                     searchScreenVM.onNoteChangeClickForLinks(
-                        webURL, newNote,
+                        webURL,
+                        newNote,
                         selectedLinkType = SearchScreenVM.selectedLinkType,
                         folderID = selectedFolderID
                     )
@@ -574,16 +555,18 @@ fun SearchScreen(navController: NavController) {
                 renameDialogBoxFor = OptionsBtmSheetType.LINK,
                 onTitleChangeClickForLinks = { webURL, newTitle ->
                     searchScreenVM.onTitleChangeClickForLinks(
-                        webURL, newTitle,
+                        webURL,
+                        newTitle,
                         selectedLinkType = SearchScreenVM.selectedLinkType,
                         folderID = selectedFolderID
                     )
-                }, folderID = selectedFolderID
+                },
+                currentFolderID = selectedFolderID,
+                parentFolderID = null
             )
         )
         DeleteDialogBox(
-            DeleteDialogBoxParam(
-                shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+            DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.LINK,
                 onDeleteClick = {
                     searchScreenVM.onDeleteClick(

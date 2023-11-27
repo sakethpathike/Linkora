@@ -58,8 +58,8 @@ interface ReadDao {
     @Query("SELECT EXISTS(SELECT * FROM recently_visited_table WHERE webURL = :webURL)")
     suspend fun doesThisExistsInRecentlyVisitedLinks(webURL: String): Boolean
 
-    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE id = :folderID AND folderName = :folderName)")
-    suspend fun doesThisFolderExists(folderName: String, folderID: Long?): Boolean
+    @Query("SELECT COUNT(*) FROM folders_table WHERE folderName = :folderName AND parentFolderID = :parentFolderID")
+    suspend fun doesThisFolderExists(folderName: String, parentFolderID: Long?): Boolean
 
     @Query("SELECT EXISTS(SELECT * FROM archived_folders_table WHERE id = :folderID)")
     suspend fun doesThisArchiveFolderExists(folderID: Long): Boolean

@@ -147,18 +147,18 @@ fun AddNewFolderDialogBox(
                                         addNewFolderDialogBoxParam.onCreated()
                                         addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
                                             false
+                                        coroutineScope.launch {
+                                            addNewFolderDialogBoxParam.newFolderName(
+                                                folderNameTextFieldValue.value,
+                                                CustomFunctionsForLocalDB.localDB.readDao()
+                                                    .getLatestAddedFolder().id
+                                            )
+                                        }
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
                                     childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs,
                                     folderID = addNewFolderDialogBoxParam.currentFolderID
                                 )
-                                coroutineScope.launch {
-                                    addNewFolderDialogBoxParam.newFolderName(
-                                        folderNameTextFieldValue.value,
-                                        CustomFunctionsForLocalDB.localDB.readDao()
-                                            .getLatestAddedFolder().id
-                                    )
-                                }
                             }
                         }) {
                         Text(

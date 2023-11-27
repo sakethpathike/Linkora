@@ -267,7 +267,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         )
                     )
                 },
-                folderID = SpecificScreenVM.selectedArchiveFolderID,
+                currentFolderID = SpecificScreenVM.selectedArchiveFolderID,
+                parentFolderID = null
             )
         )
     }
