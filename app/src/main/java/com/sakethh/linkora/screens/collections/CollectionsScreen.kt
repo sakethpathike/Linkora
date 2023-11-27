@@ -342,7 +342,7 @@ fun CollectionsScreen(navController: NavController) {
                                     foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName =  foldersData.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
                                 }
                                 clickedFolderName.value = foldersData.folderName
                                 CollectionsScreenVM.selectedFolderData.id = foldersData.id
@@ -436,6 +436,7 @@ fun CollectionsScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
+                    shouldRenameDialogBoxBeVisible.value = false
                 },
                 currentFolderID = CollectionsScreenVM.selectedFolderData.id,
                 parentFolderID = null

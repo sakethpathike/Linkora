@@ -141,6 +141,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
+                                SpecificScreenVM.selectedArchiveFolderID = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
                                 selectedFolderNote.value = it.infoForSaving
@@ -244,7 +245,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         onTaskCompleted = {}, folderID = SpecificScreenVM.selectedArchiveFolderID
                     )
                 },
-                onTitleChangeClickForLinks = {newTitle: String ->
+                onTitleChangeClickForLinks = { newTitle: String ->
                     archiveScreenVM.onTitleChangeClickForLinks(
                         archiveScreenType = archiveScreenType,
                         newTitle,

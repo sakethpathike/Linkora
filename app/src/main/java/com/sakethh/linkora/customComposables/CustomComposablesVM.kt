@@ -69,7 +69,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                             }
                         }
                     }
-                } else {
+                } else if(updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
                     fun updateArchivedFolderTitle() {
                         viewModelScope.launch {
                             val doesFolderExists = async {

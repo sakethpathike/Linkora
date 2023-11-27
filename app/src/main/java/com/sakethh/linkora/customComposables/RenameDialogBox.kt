@@ -148,7 +148,7 @@ fun RenameDialogBox(
                                         context = localContext,
                                         newFolderOrTitleName = newFolderOrTitleName.value,
                                         newNote = newNote.value,
-                                        parentFolderID = renameDialogBoxParam.parentFolderID,
+                                        parentFolderID = renameDialogBoxParam.parentFolderID
                                     )
                                 )
                             } else {
@@ -169,6 +169,7 @@ fun RenameDialogBox(
                                     renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
                                 }
                             }
+                            renameDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Change both name and note",
@@ -186,7 +187,7 @@ fun RenameDialogBox(
                             .align(Alignment.End),
                         onClick = {
                             if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.inChildArchiveFolderScreen.value) {
-                                    renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
+                                renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
                                 renameDialogBoxParam.shouldDialogBoxAppear.value = false
                             } else {
                                 if (newNote.value.isEmpty()) {
