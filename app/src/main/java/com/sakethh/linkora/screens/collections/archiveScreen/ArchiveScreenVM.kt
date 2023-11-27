@@ -98,7 +98,6 @@ class ArchiveScreenVM : SpecificScreenVM() {
 
     fun onTitleChangeClickForLinks(
         archiveScreenType: ArchiveScreenType,
-        selectedURLOrFolderName: String,
         newTitle: String,
         webURL: String,
         onTaskCompleted: () -> Unit,
@@ -261,8 +260,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
                 if (CustomFunctionsForLocalDB.localDB.readDao()
-                        .doesThisFolderExists(
-                            parentFolderID = null,
+                        .doesThisRootFolderExists(
                             folderName = selectedURLOrFolderName
                         )
                 ) {
@@ -280,15 +278,16 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    childFolderIDs = emptyList()
+                                    childFolderIDs = emptyList(),
+                                    id = selectedFolderID
                                 )
                             )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.deleteDao()
-                            .deleteAnArchiveFolder(folderID = selectedFolderID)
+                            .deleteAnArchiveFolder(folderName = selectedURLOrFolderName)
                     })
                     CustomFunctionsForLocalDB.localDB.updateDao()
-                        .moveArchiveFolderBackToFolder(folderID = selectedFolderID)
+                        .moveArchiveFolderBackToRootFolder(folderID = selectedFolderID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context, "Unarchived successfully", Toast.LENGTH_SHORT

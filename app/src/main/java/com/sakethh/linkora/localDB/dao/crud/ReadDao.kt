@@ -60,9 +60,11 @@ interface ReadDao {
 
     @Query("SELECT COUNT(*) FROM folders_table WHERE folderName = :folderName AND parentFolderID = :parentFolderID")
     suspend fun doesThisFolderExists(folderName: String, parentFolderID: Long?): Boolean
+    @Query("SELECT COUNT(*) FROM folders_table WHERE folderName = :folderName AND parentFolderID IS NULL")
+    suspend fun doesThisRootFolderExists(folderName: String): Boolean
 
-    @Query("SELECT EXISTS(SELECT * FROM archived_folders_table WHERE id = :folderID)")
-    suspend fun doesThisArchiveFolderExists(folderID: Long): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM archived_folders_table WHERE archiveFolderName = :folderName)")
+    suspend fun doesThisArchiveFolderExists(folderName: String): Boolean
 
     @Query("SELECT * FROM folders_table ORDER BY id DESC LIMIT 1")
     suspend fun getLatestAddedFolder(): FoldersTable

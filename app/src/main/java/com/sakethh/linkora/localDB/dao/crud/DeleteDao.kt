@@ -59,6 +59,6 @@ interface DeleteDao {
     suspend fun deleteThisArchiveFolderData(folderID: Long)
 
 
-    @Query("DELETE from archived_folders_table WHERE id = :folderID")
-    suspend fun deleteAnArchiveFolder(folderID: Long)
+    @Query("DELETE from archived_folders_table WHERE archiveFolderName= :folderName")
+    suspend fun deleteAnArchiveFolder(folderName: String)
 }

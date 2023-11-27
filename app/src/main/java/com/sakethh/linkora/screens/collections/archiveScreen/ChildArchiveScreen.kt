@@ -145,7 +145,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 selectedURLOrFolderName.value = it.archiveFolderName
                                 selectedFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderID = it.id)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
                                 }
                             },
                             onFolderClick = {
@@ -236,21 +236,19 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
                 existingFolderName = selectedURLOrFolderName.value,
-                webURLForTitle = selectedURLOrFolderName.value,
-                onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+                onNoteChangeClickForLinks = { newNote: String ->
                     archiveScreenVM.onNoteChangeClickForLinks(
                         archiveScreenType = archiveScreenType,
-                        webURL,
+                        selectedURLOrFolderName.value,
                         newNote,
                         onTaskCompleted = {}, folderID = SpecificScreenVM.selectedArchiveFolderID
                     )
                 },
-                onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+                onTitleChangeClickForLinks = {newTitle: String ->
                     archiveScreenVM.onTitleChangeClickForLinks(
                         archiveScreenType = archiveScreenType,
-                        selectedURLOrFolderName = selectedURLOrFolderName.value,
                         newTitle,
-                        webURL,
+                        selectedURLOrFolderName.value,
                         onTaskCompleted = {
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(

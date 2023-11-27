@@ -45,9 +45,9 @@ class OptionsBtmSheetVM : ViewModel() {
         }
     }
 
-    suspend fun updateArchiveFolderCardData(folderID: Long) {
+    suspend fun updateArchiveFolderCardData(folderName: String) {
         if (CustomFunctionsForLocalDB.localDB.readDao()
-                .doesThisArchiveFolderExists(folderID = folderID)
+                .doesThisArchiveFolderExists(folderName = folderName )
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
             archiveCardText.value = "Remove from Archive(s)"

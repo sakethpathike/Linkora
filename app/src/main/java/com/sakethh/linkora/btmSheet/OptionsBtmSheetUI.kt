@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Delete
@@ -24,9 +23,10 @@ import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.TextSnippet
 import androidx.compose.material.icons.outlined.Unarchive
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -116,6 +116,7 @@ fun OptionsBtmSheetUI(
                     showMoreIcon = false,
                     folderIcon = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
                 )
+                Spacer(modifier = Modifier.height(5.dp))
                 if (!isNoteBtnSelected.value) {
                     OptionsBtmSheetIndividualComponent(
                         onClick = {
@@ -248,6 +249,7 @@ fun OptionsBtmSheetUI(
                         Text(
                             text = "Saved note :",
                             style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
                             modifier = Modifier
                                 .padding(20.dp)
@@ -289,7 +291,7 @@ fun OptionsBtmSheetUI(
                         }
                     }
                 }
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(5.dp))
             }
         }
     }
@@ -305,35 +307,34 @@ fun OptionsBtmSheetIndividualComponent(
         mutableStateOf(0.dp)
     }
     val localDensity = LocalDensity.current
-    Card(shape = RoundedCornerShape(10.dp),
+    Row(
         modifier = Modifier
-            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+            .clickable {
+                onClick()
+            }
+            .padding(end = 10.dp)
             .wrapContentHeight()
             .fillMaxWidth()
             .onGloballyPositioned {
                 heightOfCard.value = with(localDensity) {
                     it.size.height.toDp()
                 }
-            }
-            .clickable {
-                onClick()
             }) {
-        Row {
-            Icon(
-                modifier = Modifier.padding(20.dp),
-                imageVector = elementImageVector,
-                contentDescription = null
+        IconButton(
+            modifier = Modifier.padding(10.dp), onClick = { onClick() },
+            colors = IconButtonDefaults.filledIconButtonColors()
+        ) {
+            Icon(imageVector = elementImageVector, contentDescription = null)
+        }
+        Box(
+            modifier = Modifier.height(heightOfCard.value),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = elementName,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 16.sp
             )
-            Box(
-                modifier = Modifier.height(heightOfCard.value),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Text(
-                    text = elementName,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp
-                )
-            }
         }
     }
 }

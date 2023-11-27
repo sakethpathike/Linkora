@@ -342,7 +342,7 @@ fun CollectionsScreen(navController: NavController) {
                                     foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderID = foldersData.id)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName =  foldersData.folderName)
                                 }
                                 clickedFolderName.value = foldersData.folderName
                                 CollectionsScreenVM.selectedFolderData.id = foldersData.id
@@ -402,7 +402,8 @@ fun CollectionsScreen(navController: NavController) {
                     customFunctionsForLocalDB.archiveFolderTableUpdater(
                         archivedFolders = ArchivedFolders(
                             archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
-                            infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
+                            infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving,
+                            id = CollectionsScreenVM.selectedFolderData.id
                         ), context = context, onTaskCompleted = {
                             collectionsScreenVM.changeRetrievedFoldersData(
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -425,10 +426,10 @@ fun CollectionsScreen(navController: NavController) {
         )
         RenameDialogBox(
             RenameDialogBoxParam(
-                onNoteChangeClickForLinks = null,
+                onNoteChangeClickForLinks = {},
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedFolderName.value,
-                onTitleChangeClickForLinks = null,
+                onTitleChangeClickForLinks = {},
                 onTitleRenamed = {
                     collectionsScreenVM.changeRetrievedFoldersData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(

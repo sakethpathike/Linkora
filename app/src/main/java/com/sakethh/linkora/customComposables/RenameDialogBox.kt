@@ -37,10 +37,9 @@ import kotlinx.coroutines.launch
 
 data class RenameDialogBoxParam(
     val shouldDialogBoxAppear: MutableState<Boolean>,
-    val webURLForTitle: String? = null,
     val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
-    val onNoteChangeClickForLinks: ((webURL: String, newNote: String) -> Unit?)?,
-    val onTitleChangeClickForLinks: ((webURL: String, newTitle: String) -> Unit?)?,
+    val onNoteChangeClickForLinks: ((newNote: String) -> Unit),
+    val onTitleChangeClickForLinks: ((newTitle: String) -> Unit),
     val inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
     val onTitleRenamed: () -> Unit = {},
     val currentFolderID: Long,
@@ -134,36 +133,42 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            customComposablesVM.updateBothNameAndNote(
-                                UpdateBothNameAndNoteParam(
-                                    renameDialogBoxParam = RenameDialogBoxParam(
-                                        shouldDialogBoxAppear = renameDialogBoxParam.shouldDialogBoxAppear,
-                                        onNoteChangeClickForLinks = { webURL: String, newNote: String ->
-                                            renameDialogBoxParam.onTitleChangeClickForLinks?.let {
-                                                it(
-                                                    webURL,
-                                                    newNote
-                                                )
-                                            }
-                                        },
-                                        onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
-                                            renameDialogBoxParam.onTitleChangeClickForLinks?.let {
-                                                it(
-                                                    webURL,
-                                                    newTitle
-                                                )
-                                            }
-                                        },
-                                        currentFolderID = renameDialogBoxParam.currentFolderID,
-                                        existingFolderName = renameDialogBoxParam.existingFolderName,
-                                        parentFolderID = renameDialogBoxParam.parentFolderID
-                                    ),
-                                    context = localContext,
-                                    newFolderOrTitleName = newFolderOrTitleName.value,
-                                    newNote = newNote.value,
-                                    parentFolderID = renameDialogBoxParam.parentFolderID,
+                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
+                                customComposablesVM.updateBothNameAndNote(
+                                    UpdateBothNameAndNoteParam(
+                                        renameDialogBoxParam = RenameDialogBoxParam(
+                                            shouldDialogBoxAppear = renameDialogBoxParam.shouldDialogBoxAppear,
+                                            currentFolderID = renameDialogBoxParam.currentFolderID,
+                                            existingFolderName = renameDialogBoxParam.existingFolderName,
+                                            parentFolderID = renameDialogBoxParam.parentFolderID,
+                                            onNoteChangeClickForLinks = {},
+                                            onTitleChangeClickForLinks = {},
+                                            inChildArchiveFolderScreen = renameDialogBoxParam.inChildArchiveFolderScreen
+                                        ),
+                                        context = localContext,
+                                        newFolderOrTitleName = newFolderOrTitleName.value,
+                                        newNote = newNote.value,
+                                        parentFolderID = renameDialogBoxParam.parentFolderID,
+                                    )
                                 )
-                            )
+                            } else {
+                                if (newFolderOrTitleName.value.isEmpty()) {
+                                    Toast.makeText(
+                                        localContext,
+                                        "title name can't be empty",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else if (newNote.value == "") {
+                                    renameDialogBoxParam.onTitleChangeClickForLinks(
+                                        newFolderOrTitleName.value
+                                    )
+                                } else {
+                                    renameDialogBoxParam.onTitleChangeClickForLinks(
+                                        newFolderOrTitleName.value
+                                    )
+                                    renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
+                                }
+                            }
                         }) {
                         Text(
                             text = "Change both name and note",
@@ -181,11 +186,7 @@ fun RenameDialogBox(
                             .align(Alignment.End),
                         onClick = {
                             if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.inChildArchiveFolderScreen.value) {
-                                if (renameDialogBoxParam.onNoteChangeClickForLinks != null && renameDialogBoxParam.webURLForTitle != null) {
-                                    renameDialogBoxParam.onNoteChangeClickForLinks.invoke(
-                                        renameDialogBoxParam.webURLForTitle, newNote.value
-                                    )
-                                }
+                                    renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
                                 renameDialogBoxParam.shouldDialogBoxAppear.value = false
                             } else {
                                 if (newNote.value.isEmpty()) {

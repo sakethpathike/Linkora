@@ -649,22 +649,21 @@ fun SpecificScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldRenameDialogBeVisible,
                 existingFolderName = "",
                 renameDialogBoxFor = OptionsBtmSheetType.LINK,
-                webURLForTitle = selectedWebURL.value,
-                onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+                onNoteChangeClickForLinks = { newNote: String ->
                     specificCollectionsScreenVM.onNoteChangeClickForLinks(
                         folderID = SpecificScreenVM.currentClickedFolderData.value.id,
-                        webURL,
+                        selectedWebURL.value,
                         newNote,
                         onTaskCompleted = {
 
                         }
                     )
                 },
-                onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+                onTitleChangeClickForLinks = {newTitle: String ->
                     specificCollectionsScreenVM.onTitleChangeClickForLinks(
                         folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         newTitle,
-                        webURL,
+                        selectedWebURL.value,
                         onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
                                 folderID = SpecificScreenVM.currentClickedFolderData.value.id,

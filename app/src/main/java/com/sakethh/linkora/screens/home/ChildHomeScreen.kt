@@ -300,23 +300,26 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
     RenameDialogBox(
         RenameDialogBoxParam(
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-            webURLForTitle = HomeScreenVM.tempImpLinkData.webURL,
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
-            onNoteChangeClickForLinks = { webURL: String, newNote: String ->
+            onNoteChangeClickForLinks = { newNote: String ->
                 homeScreenVM.onNoteChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    webURL,
+                    HomeScreenVM.tempImpLinkData.webURL,
                     newNote
                 )
+                shouldRenameDialogBoxAppear.value = false
+                Unit
             },
-            onTitleChangeClickForLinks = { webURL: String, newTitle: String ->
+            onTitleChangeClickForLinks = {newTitle: String ->
                 homeScreenVM.onTitleChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    webURL,
+                    HomeScreenVM.tempImpLinkData.webURL,
                     newTitle
                 )
-            }, currentFolderID = 0, parentFolderID = null
+            }, currentFolderID = 0, parentFolderID = null, onTitleRenamed = {
+                shouldRenameDialogBoxAppear.value = false
+            }
         )
     )
 

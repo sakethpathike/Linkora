@@ -139,7 +139,7 @@ fun AddNewFolderDialogBox(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                customFunctionsForLocalDB.createANewFolder(
+                                customFunctionsForLocalDB.createANewRootFolder(
                                     context = context,
                                     folderName = folderNameTextFieldValue.value,
                                     infoForSaving = noteTextFieldValue.value,
@@ -156,8 +156,7 @@ fun AddNewFolderDialogBox(
                                         }
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs,
-                                    folderID = addNewFolderDialogBoxParam.currentFolderID
+                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs
                                 )
                             }
                         }) {

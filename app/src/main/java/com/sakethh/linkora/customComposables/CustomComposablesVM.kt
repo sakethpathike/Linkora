@@ -31,13 +31,12 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
             }
 
             else -> {
-                if (updateBothNameAndNoteParam.renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                    fun updateFolderTitle() {
+                if (updateBothNameAndNoteParam.renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER && !updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                    fun updateRootFolderTitle() {
                         viewModelScope.launch {
                             val doesFolderExists = async {
-                                localDB.readDao().doesThisFolderExists(
-                                    folderName = updateBothNameAndNoteParam.newFolderOrTitleName,
-                                    parentFolderID = updateBothNameAndNoteParam.parentFolderID
+                                localDB.readDao().doesThisRootFolderExists(
+                                    folderName = updateBothNameAndNoteParam.newFolderOrTitleName
                                 )
                             }.await()
                             if (doesFolderExists) {
@@ -56,7 +55,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                     }
                     when (updateBothNameAndNoteParam.newNote) {
                         "" -> {
-                            updateFolderTitle()
+                            updateRootFolderTitle()
                         }
 
                         else -> {
@@ -66,30 +65,47 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                                         folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
                                         newNote = updateBothNameAndNoteParam.newNote
                                     )
-                                }, async { updateFolderTitle() })
+                                }, async { updateRootFolderTitle() })
                             }
                         }
                     }
                 } else {
-                    when (updateBothNameAndNoteParam.newNote) {
-                        "" -> {
-                            updateBothNameAndNoteParam.renameDialogBoxParam.webURLForTitle?.let {
-                                updateBothNameAndNoteParam.renameDialogBoxParam.onTitleChangeClickForLinks?.let { it1 ->
-                                    it1(
-                                        it, updateBothNameAndNoteParam.newFolderOrTitleName
+                    fun updateArchivedFolderTitle() {
+                        viewModelScope.launch {
+                            val doesFolderExists = async {
+                                updateBothNameAndNoteParam.renameDialogBoxParam.existingFolderName?.let {
+                                    localDB.readDao().doesThisArchiveFolderExists(
+                                        folderName = it
                                     )
                                 }
+                            }.await()
+                            if (doesFolderExists == true) {
+                                Toast.makeText(
+                                    updateBothNameAndNoteParam.context,
+                                    "folder name already exists",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            } else {
+                                localDB.updateDao().renameAFolderArchiveName(
+                                    folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
+                                    newFolderName = updateBothNameAndNoteParam.newFolderOrTitleName
+                                )
                             }
+                        }
+                    }
+                    when (updateBothNameAndNoteParam.newNote) {
+                        "" -> {
+                            updateArchivedFolderTitle()
                         }
 
                         else -> {
-                            updateBothNameAndNoteParam.renameDialogBoxParam.onTitleChangeClickForLinks
-                            updateBothNameAndNoteParam.renameDialogBoxParam.webURLForTitle?.let {
-                                updateBothNameAndNoteParam.renameDialogBoxParam.onNoteChangeClickForLinks?.let { it1 ->
-                                    it1(
-                                        it, updateBothNameAndNoteParam.newNote
+                            viewModelScope.launch {
+                                awaitAll(async {
+                                    localDB.updateDao().renameALinkInfoOfArchiveFolders(
+                                        folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
+                                        newInfo = updateBothNameAndNoteParam.newNote
                                     )
-                                }
+                                }, async { updateArchivedFolderTitle() })
                             }
                         }
                     }

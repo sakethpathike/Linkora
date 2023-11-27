@@ -16,6 +16,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import okhttp3.internal.notifyAll
 
 open class CustomFunctionsForLocalDB : ViewModel() {
 
@@ -28,18 +29,17 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         lateinit var localDB: LocalDataBase
     }
 
-    fun createANewFolder(
+    fun createANewRootFolder(
         context: Context, infoForSaving: String,
         onTaskCompleted: () -> Unit,
         parentFolderID: Long?,
         childFolderIDs: List<Long?>,
-        folderName: String,
-        folderID: Long?
+        folderName: String
     ) {
         var doesThisFolderExists = false
         viewModelScope.launch {
             doesThisFolderExists = localDB.readDao()
-                .doesThisFolderExists(parentFolderID=parentFolderID, folderName = folderName)
+                .doesThisRootFolderExists(folderName = folderName)
         }.invokeOnCompletion {
             if (doesThisFolderExists) {
                 viewModelScope.launch {
@@ -253,13 +253,13 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         var doesThisExistsInArchiveFolder = false
         viewModelScope.launch {
             doesThisExistsInArchiveFolder = localDB.readDao()
-                .doesThisArchiveFolderExists(folderID = archivedFolders.id)
+                .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
         }.invokeOnCompletion {
             if (doesThisExistsInArchiveFolder) {
                 viewModelScope.launch {
                     awaitAll(async {
                         localDB.deleteDao()
-                            .deleteAnArchiveFolder(folderID = archivedFolders.id)
+                            .deleteAnArchiveFolder(folderName = archivedFolders.archiveFolderName)
                     }, async {
                         localDB.deleteDao()
                             .deleteThisArchiveFolderData(folderID = archivedFolders.id)
@@ -300,7 +300,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                     }
                 }
                 viewModelScope.launch {
-                    OptionsBtmSheetVM().updateArchiveFolderCardData(folderID = archivedFolders.id)
+                    OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
                 }
             }
         }

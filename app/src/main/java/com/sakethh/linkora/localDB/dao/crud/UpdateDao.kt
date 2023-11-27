@@ -6,7 +6,7 @@ import androidx.room.Query
 @Dao
 interface UpdateDao {
     @Query("UPDATE archived_folders_table SET infoForSaving = :newInfo  WHERE id= :folderID")
-    suspend fun renameALinkInfoFromArchiveFolders(
+    suspend fun renameALinkInfoOfArchiveFolders(
         newInfo: String,
         folderID: Long,
     )
@@ -64,8 +64,8 @@ interface UpdateDao {
         folderID: Long,
     )
 
-    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolder = \"\", keyOfLinkedFolder =  :folderID WHERE keyOfArchiveLinkedFolder = :folderID")
-    suspend fun moveArchiveFolderBackToFolder(
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolder = 0, keyOfLinkedFolder =  :folderID WHERE keyOfArchiveLinkedFolder = :folderID")
+    suspend fun moveArchiveFolderBackToRootFolder(
         folderID: Long,
     )
 
