@@ -7,6 +7,7 @@ import androidx.room.Query
 interface DeleteDao {
     @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
+
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderID")
     suspend fun deleteALinkNoteFromArchiveBasedFolderLinks(
         webURL: String,
@@ -19,14 +20,18 @@ interface DeleteDao {
 
     @Query("UPDATE recently_visited_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromRecentlyVisited(webURL: String)
+
     @Query("UPDATE archived_folders_table SET infoForSaving = \"\"  WHERE id= :folderID")
     suspend fun deleteArchiveFolderNote(
         folderID: Long,
     )
+
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
+
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolder = :folderID AND isLinkedWithFolders=1")
     suspend fun deleteALinkInfoOfFolders(webURL: String, folderID: Long)
+
     @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
     suspend fun deleteALinkFromSavedLinks(webURL: String)
 

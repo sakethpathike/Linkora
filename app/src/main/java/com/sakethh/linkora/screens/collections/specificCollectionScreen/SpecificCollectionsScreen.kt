@@ -659,7 +659,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     )
                 },
-                onTitleChangeClickForLinks = {newTitle: String ->
+                onTitleChangeClickForLinks = { newTitle: String ->
                     specificCollectionsScreenVM.onTitleChangeClickForLinks(
                         folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         newTitle,

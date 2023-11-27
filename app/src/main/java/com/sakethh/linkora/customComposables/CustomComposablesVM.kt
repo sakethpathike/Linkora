@@ -18,6 +18,10 @@ data class UpdateBothNameAndNoteParam(
 )
 
 class CustomComposablesVM : CustomFunctionsForLocalDB() {
+    companion object {
+        var selectedFolderID: Long = 0
+    }
+
     fun updateBothNameAndNote(
         updateBothNameAndNoteParam: UpdateBothNameAndNoteParam
     ) {
@@ -69,7 +73,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                             }
                         }
                     }
-                } else if(updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                } else if (updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
                     fun updateArchivedFolderTitle() {
                         viewModelScope.launch {
                             val doesFolderExists = async {

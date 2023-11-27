@@ -67,6 +67,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
+import com.sakethh.linkora.customComposables.CustomComposablesVM
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ImportantLinks
@@ -341,7 +342,8 @@ fun NewLinkBtmSheet(
                                                                     activity?.finishAndRemoveTask()
                                                                 }
                                                             }
-                                                        }, folderID = 0
+                                                        },
+                                                        folderID = CustomComposablesVM.selectedFolderID
                                                     )
                                                 }
 
@@ -368,7 +370,8 @@ fun NewLinkBtmSheet(
                                                                     activity?.finishAndRemoveTask()
                                                                 }
                                                             }
-                                                        }, folderID = 0
+                                                        },
+                                                        folderID = CustomComposablesVM.selectedFolderID
                                                     )
                                                 }
 
@@ -404,7 +407,8 @@ fun NewLinkBtmSheet(
                                                                                     activity?.finishAndRemoveTask()
                                                                                 }
                                                                             }
-                                                                        }, folderID = 0
+                                                                        },
+                                                                        folderID = CustomComposablesVM.selectedFolderID
                                                                     )
                                                                 }
                                                         } else if (selectedFolder.value == "Important Links") {
@@ -472,7 +476,8 @@ fun NewLinkBtmSheet(
                                                                                     activity?.finishAndRemoveTask()
                                                                                 }
                                                                             }
-                                                                        }, folderID = 0
+                                                                        },
+                                                                        folderID = CustomComposablesVM.selectedFolderID
                                                                     )
                                                                 }
                                                         }
@@ -504,7 +509,8 @@ fun NewLinkBtmSheet(
                                                                         activity?.finishAndRemoveTask()
                                                                     }
                                                                 }
-                                                            }, folderID = 0
+                                                            },
+                                                            folderID = CustomComposablesVM.selectedFolderID
                                                         )
                                                     } else if (selectedFolder.value == "Important Links") {
                                                         isDataExtractingForTheLink.value = true
@@ -558,7 +564,8 @@ fun NewLinkBtmSheet(
                                                                         activity?.finishAndRemoveTask()
                                                                     }
                                                                 }
-                                                            }, folderID = 0
+                                                            },
+                                                            folderID = CustomComposablesVM.selectedFolderID
                                                         )
                                                     }
                                                 }
@@ -770,7 +777,10 @@ fun NewLinkBtmSheet(
                             }
                             items(IntentActivityData.foldersData.value) {
                                 SelectableFolderUIComponent(
-                                    onClick = { selectedFolder.value = it.folderName },
+                                    onClick = {
+                                        selectedFolder.value = it.folderName
+                                        CustomComposablesVM.selectedFolderID = it.id
+                                    },
                                     folderName = it.folderName,
                                     imageVector = Icons.Outlined.Folder,
                                     _isComponentSelected = selectedFolder.value == it.folderName
@@ -786,14 +796,16 @@ fun NewLinkBtmSheet(
             AddNewFolderDialogBox(
                 AddNewFolderDialogBoxParam(
                     shouldDialogBoxAppear = shouldNewFolderDialogBoxAppear,
-                    newFolderName = { folderName,folderID->
+                    newFolderData = { folderName, folderID ->
                         selectedFolder.value = folderName
+                        CustomComposablesVM.selectedFolderID = folderID
                     },
                     onCreated = {
                         newLinkBtmSheetUIParam.onFolderCreated()
                     },
                     parentFolderID = newLinkBtmSheetUIParam.parentFolderID,
-                    childFolderIDs = newLinkBtmSheetUIParam.childFolderIDs, currentFolderID = 0
+                    childFolderIDs = newLinkBtmSheetUIParam.childFolderIDs,
+                    currentFolderID = CustomComposablesVM.selectedFolderID
                 )
             )
         }

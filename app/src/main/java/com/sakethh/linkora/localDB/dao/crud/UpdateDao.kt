@@ -16,17 +16,22 @@ interface UpdateDao {
 
     @Query("UPDATE recently_visited_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
+
     @Query("UPDATE important_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromImpLinks(webURL: String, newTitle: String)
 
     @Query("UPDATE important_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromImpLinks(webURL: String, newInfo: String)
+
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfLinkedFolder = :folderID AND isLinkedWithFolders=1")
     suspend fun renameALinkInfoFromFolders(webURL: String, newInfo: String, folderID: Long)
+
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
+
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
+
     @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
 
@@ -43,6 +48,7 @@ interface UpdateDao {
         newTitle: String,
         folderID: Long,
     )
+
     @Query("UPDATE folders_table SET folderName = :newFolderName WHERE id = :folderID")
     suspend fun renameAFolderName(folderID: Long, newFolderName: String)
 

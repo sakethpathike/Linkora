@@ -108,7 +108,6 @@ fun AddNewLinkDialogBox(
         val selectedFolderName = rememberSaveable {
             mutableStateOf("Saved Links")
         }
-        var selectedFolderID: Long = 0
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .wrapContentHeight()
@@ -318,7 +317,7 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            }, folderID = selectedFolderID
+                                            }, folderID = CustomComposablesVM.selectedFolderID
                                         )
                                     }
 
@@ -337,7 +336,7 @@ fun AddNewLinkDialogBox(
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
                                                 }
-                                            }, folderID = selectedFolderID
+                                            }, folderID = CustomComposablesVM.selectedFolderID
                                         )
                                     }
 
@@ -360,7 +359,7 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                }, folderID = selectedFolderID
+                                                }, folderID = CustomComposablesVM.selectedFolderID
                                             )
                                         } else if (selectedFolderName.value == "Important Links") {
                                             isDataExtractingForTheLink.value = true
@@ -393,7 +392,7 @@ fun AddNewLinkDialogBox(
                                                     isDataExtractingForTheLink.value = false
                                                     shouldDialogBoxAppear.value = false
                                                     onTaskCompleted()
-                                                }, folderID = selectedFolderID
+                                                }, folderID = CustomComposablesVM.selectedFolderID
                                             )
                                         }
                                     }
@@ -530,7 +529,7 @@ fun AddNewLinkDialogBox(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
-                                        selectedFolderID = it.id
+                                        CustomComposablesVM.selectedFolderID = it.id
                                         coroutineScope.launch {
                                             if (btmModalSheetState.isVisible) {
                                                 btmModalSheetState.hide()
@@ -552,9 +551,9 @@ fun AddNewLinkDialogBox(
             AddNewFolderDialogBox(
                 AddNewFolderDialogBoxParam(
                     shouldDialogBoxAppear = isCreateANewFolderIconClicked,
-                    newFolderName = { folderName, folderID ->
+                    newFolderData = { folderName, folderID ->
                         selectedFolderName.value = folderName
-                        selectedFolderID = folderID
+                        CustomComposablesVM.selectedFolderID = folderID
                     },
                     onCreated = {
                         onTaskCompleted()
@@ -565,8 +564,10 @@ fun AddNewLinkDialogBox(
                         }.invokeOnCompletion {
                             isDropDownMenuIconClicked.value = false
                         }
-                    }, parentFolderID = parentFolderID,
-                    childFolderIDs = childFoldersIDs, currentFolderID = selectedFolderID
+                    },
+                    parentFolderID = parentFolderID,
+                    childFolderIDs = childFoldersIDs,
+                    currentFolderID = CustomComposablesVM.selectedFolderID
                 )
             )
         }

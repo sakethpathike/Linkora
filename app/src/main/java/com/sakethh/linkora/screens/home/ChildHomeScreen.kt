@@ -311,7 +311,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 shouldRenameDialogBoxAppear.value = false
                 Unit
             },
-            onTitleChangeClickForLinks = {newTitle: String ->
+            onTitleChangeClickForLinks = { newTitle: String ->
                 homeScreenVM.onTitleChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
                     HomeScreenVM.tempImpLinkData.webURL,

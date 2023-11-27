@@ -31,12 +31,13 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 
 data class AddNewFolderDialogBoxParam(
     val shouldDialogBoxAppear: MutableState<Boolean>,
-    val newFolderName: (String, Long) -> Unit = { folderName, folderID -> },
+    val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
     val parentFolderID: Long?,
     val currentFolderID: Long?,
@@ -144,16 +145,18 @@ fun AddNewFolderDialogBox(
                                     folderName = folderNameTextFieldValue.value,
                                     infoForSaving = noteTextFieldValue.value,
                                     onTaskCompleted = {
+                                        coroutineScope.launch {
+                                            async {
+                                                addNewFolderDialogBoxParam.newFolderData(
+                                                    folderNameTextFieldValue.value,
+                                                    CustomFunctionsForLocalDB.localDB.readDao()
+                                                        .getLatestAddedFolder().id
+                                                )
+                                            }.await()
+                                        }
                                         addNewFolderDialogBoxParam.onCreated()
                                         addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
                                             false
-                                        coroutineScope.launch {
-                                            addNewFolderDialogBoxParam.newFolderName(
-                                                folderNameTextFieldValue.value,
-                                                CustomFunctionsForLocalDB.localDB.readDao()
-                                                    .getLatestAddedFolder().id
-                                            )
-                                        }
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
                                     childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs
