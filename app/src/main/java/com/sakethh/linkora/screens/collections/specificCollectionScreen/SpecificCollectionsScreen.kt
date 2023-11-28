@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +54,7 @@ import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
+import com.sakethh.linkora.customComposables.CustomComposablesVM
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
@@ -64,8 +66,10 @@ import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -79,15 +83,18 @@ import kotlinx.coroutines.launch
 fun SpecificScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificScreenVM = viewModel()
     LaunchedEffect(key1 = Unit) {
-        specificCollectionsScreenVM.changeRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-            folderID = SpecificScreenVM.currentClickedFolderData.value.id
-        )
+        awaitAll(async {
+            specificCollectionsScreenVM.changeRetrievedData(
+                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+                folderID = SpecificScreenVM.currentClickedFolderData.value.id
+            )
+        }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
     }
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
     val specificFolderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
+    val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
     val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
     val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsState().value
     val archivedFoldersLinksData =
@@ -147,8 +154,7 @@ fun SpecificScreen(navController: NavController) {
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
-    val btmModalSheetStateForSavingLinks =
-        rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLinks = rememberModalBottomSheetState()
     val isMainFabRotated = rememberSaveable {
         mutableStateOf(false)
     }
@@ -194,7 +200,7 @@ fun SpecificScreen(navController: NavController) {
                 }
             }
         }, modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
-            TopAppBar(title = {
+            TopAppBar(colors = TopAppBarDefaults.topAppBarColors(), title = {
                 Text(
                     text = topBarText,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -255,11 +261,21 @@ fun SpecificScreen(navController: NavController) {
             ) {
                 when (SpecificScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                        if (childFoldersData.isNotEmpty()) {
+                            items(childFoldersData) {
+                                FolderIndividualComponent(folderName = it.folderName,
+                                    folderNote = it.infoForSaving,
+                                    onMoreIconClick = { /*TODO*/ },
+                                    onFolderClick = {
+                                        SpecificScreenVM.currentClickedFolderData.value = it
+                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    })
+                            }
+                        }
                         if (specificFolderLinksData.isNotEmpty()) {
                             items(specificFolderLinksData) {
                                 LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        title = it.title,
+                                    LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
@@ -296,7 +312,9 @@ fun SpecificScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false
                                                 )
                                             }
@@ -310,7 +328,9 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler,
                                                 onTaskCompleted = {},
                                                 forceOpenInExternalBrowser = true
                                             )
@@ -328,8 +348,7 @@ fun SpecificScreen(navController: NavController) {
                         if (savedLinksData.isNotEmpty()) {
                             items(savedLinksData) {
                                 LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        title = it.title,
+                                    LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
@@ -365,12 +384,15 @@ fun SpecificScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
-                                        webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = {
                                             specificCollectionsScreenVM.onLinkClick(
                                                 RecentlyVisited(
                                                     title = it.title,
@@ -378,7 +400,9 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler,
                                                 onTaskCompleted = {},
                                                 forceOpenInExternalBrowser = true
                                             )
@@ -396,8 +420,7 @@ fun SpecificScreen(navController: NavController) {
                         if (impLinksData.isNotEmpty()) {
                             items(impLinksData) {
                                 LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        title = it.title,
+                                    LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
@@ -433,12 +456,15 @@ fun SpecificScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
-                                        webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = {
                                             specificCollectionsScreenVM.onLinkClick(
                                                 RecentlyVisited(
                                                     title = it.title,
@@ -446,7 +472,9 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler,
                                                 onTaskCompleted = {},
                                                 forceOpenInExternalBrowser = true
                                             )
@@ -464,8 +492,7 @@ fun SpecificScreen(navController: NavController) {
                         if (archivedFoldersLinksData.isNotEmpty()) {
                             items(archivedFoldersLinksData) {
                                 LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        title = it.title,
+                                    LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
@@ -482,12 +509,15 @@ fun SpecificScreen(navController: NavController) {
                                                         baseURL = it.baseURL,
                                                         imgURL = it.imgURL,
                                                         infoForSaving = it.infoForSaving
-                                                    ), context = context, uriHandler = uriHandler,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false
                                                 )
                                             }
                                         },
-                                        webURL = it.webURL, onForceOpenInExternalBrowserClicked = {
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = {
                                             specificCollectionsScreenVM.onLinkClick(
                                                 RecentlyVisited(
                                                     title = it.title,
@@ -495,7 +525,9 @@ fun SpecificScreen(navController: NavController) {
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler,
                                                 onTaskCompleted = {},
                                                 forceOpenInExternalBrowser = true
                                             )
@@ -555,7 +587,8 @@ fun SpecificScreen(navController: NavController) {
                     )
                 },
                 onFolderCreated = {},
-                parentFolderID = null, childFolderIDs = emptyList()
+                parentFolderID = null,
+                childFolderIDs = emptyList()
             )
         )
         OptionsBtmSheetUI(
@@ -581,16 +614,14 @@ fun SpecificScreen(navController: NavController) {
                 },
                 onImportantLinkAdditionInTheTable = {
                     specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
-                        context,
-                        onTaskCompleted = {
+                        context, onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
                                 folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 )
                             )
-                        },
-                        tempImpLinkData
+                        }, tempImpLinkData
                     )
                 },
                 importantLinks = null,
@@ -620,10 +651,9 @@ fun SpecificScreen(navController: NavController) {
             )
         )
         DeleteDialogBox(
-            DeleteDialogBoxParam(
-                shouldDialogBoxAppear = shouldDeleteDialogBeVisible, onDeleteClick = {
-                    specificCollectionsScreenVM.onDeleteClick(
-                        folderID = SpecificScreenVM.currentClickedFolderData.value.id,
+            DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
+                onDeleteClick = {
+                    specificCollectionsScreenVM.onDeleteClick(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         selectedWebURL = selectedWebURL.value,
                         context,
                         onTaskCompleted = {
@@ -633,9 +663,9 @@ fun SpecificScreen(navController: NavController) {
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 )
                             )
-                        }
-                    )
-                }, deleteDialogBoxType = DataDialogBoxType.LINK,
+                        })
+                },
+                deleteDialogBoxType = DataDialogBoxType.LINK,
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -650,18 +680,15 @@ fun SpecificScreen(navController: NavController) {
                 existingFolderName = "",
                 renameDialogBoxFor = OptionsBtmSheetType.LINK,
                 onNoteChangeClickForLinks = { newNote: String ->
-                    specificCollectionsScreenVM.onNoteChangeClickForLinks(
-                        folderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                    specificCollectionsScreenVM.onNoteChangeClickForLinks(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         selectedWebURL.value,
                         newNote,
                         onTaskCompleted = {
 
-                        }
-                    )
+                        })
                 },
                 onTitleChangeClickForLinks = { newTitle: String ->
-                    specificCollectionsScreenVM.onTitleChangeClickForLinks(
-                        folderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                    specificCollectionsScreenVM.onTitleChangeClickForLinks(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         newTitle,
                         selectedWebURL.value,
                         onTaskCompleted = {
@@ -671,8 +698,7 @@ fun SpecificScreen(navController: NavController) {
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 )
                             )
-                        }
-                    )
+                        })
                 },
                 onTitleRenamed = {
                     specificCollectionsScreenVM.changeRetrievedData(
@@ -685,8 +711,7 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                 ),
                 currentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
-                parentFolderID = SpecificScreenVM
-                    .currentClickedFolderData.value.parentFolderID
+                parentFolderID = SpecificScreenVM.currentClickedFolderData.value.parentFolderID
             )
         )
         val collectionsScreenVM: CollectionsScreenVM = viewModel()
@@ -700,10 +725,12 @@ fun SpecificScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = null,
-                childFolderIDs = emptyList(), currentFolderID = null
+                parentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                childFolderIDs = emptyList(),
+                currentFolderID = null
             )
         )
+        CustomComposablesVM.selectedFolderID = SpecificScreenVM.currentClickedFolderData.value.id
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             screenType = SpecificScreenVM.screenType.value,
@@ -716,7 +743,7 @@ fun SpecificScreen(navController: NavController) {
                 )
             },
             childFoldersIDs = emptyList(),
-            parentFolderID = null,
+            parentFolderID = SpecificScreenVM.currentClickedFolderData.value.parentFolderID,
             specificFolderName = SpecificScreenVM.currentClickedFolderData.value.folderName
         )
         SortingBottomSheetUI(
@@ -750,6 +777,10 @@ fun SpecificScreen(navController: NavController) {
                 btmModalSheetState.hide()
             }
         } else {
+            if (SpecificScreenVM.currentClickedFolderData.value.parentFolderID != null) {
+                SpecificScreenVM.screenType.value = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                specificCollectionsScreenVM.updateFolderData(SpecificScreenVM.currentClickedFolderData.value.parentFolderID!!)
+            }
             navController.popBackStack()
         }
     }

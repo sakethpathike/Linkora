@@ -25,6 +25,9 @@ open class SpecificScreenVM : ViewModel() {
     private val _folderLinksData = MutableStateFlow(emptyList<LinksTable>())
     val folderLinksData = _folderLinksData.asStateFlow()
 
+    private val _childFoldersData = MutableStateFlow(emptyList<FoldersTable>())
+    val childFoldersData = _childFoldersData.asStateFlow()
+
     private val _savedLinksData = MutableStateFlow(emptyList<LinksTable>())
     val savedLinksTable = _savedLinksData.asStateFlow()
 
@@ -46,6 +49,23 @@ open class SpecificScreenVM : ViewModel() {
         val currentClickedFolderData = mutableStateOf(FoldersTable("", "", 0, 0, emptyList()))
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
+    }
+
+    fun retrieveChildFoldersData() {
+        viewModelScope.launch {
+            CustomFunctionsForLocalDB.localDB.readDao().getChildFoldersOfThisParentID(
+                currentClickedFolderData.value.id
+            ).collect {
+                _childFoldersData.emit(it)
+            }
+        }
+    }
+
+    fun updateFolderData(folderID: Long) {
+        viewModelScope.launch {
+            currentClickedFolderData.value = CustomFunctionsForLocalDB.localDB.readDao()
+                .getThisFolderData(folderID)
+        }
     }
 
     fun changeRetrievedData(

@@ -38,7 +38,10 @@ interface ReadDao {
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderID")
-    fun getThisFolderData(folderID: Long): Flow<List<LinksTable>>
+    fun getLinksOfThisFolder(folderID: Long): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM folders_table WHERE id = :folderID")
+    suspend fun getThisFolderData(folderID: Long): FoldersTable
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderID")
     fun getThisArchiveFolderData(folderID: Long): Flow<List<LinksTable>>
@@ -90,4 +93,7 @@ interface ReadDao {
 
     @Query("SELECT (SELECT COUNT(*) FROM recently_visited_table) == 0")
     suspend fun isHistoryLinksTableEmpty(): Boolean
+
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID")
+    fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
 }
