@@ -669,7 +669,7 @@ fun SpecificScreen(navController: NavController) {
         DeleteDialogBox(
             DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
-                    specificCollectionsScreenVM.onDeleteClick(folderID = CollectionsScreenVM.selectedFolderData.id,
+                    specificCollectionsScreenVM.onDeleteClick(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         selectedWebURL = selectedWebURL.value,
                         context,
                         onTaskCompleted = {

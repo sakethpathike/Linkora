@@ -56,7 +56,7 @@ class SettingsScreenVM(
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val currentAppVersion = "0.3.1"
+        const val currentAppVersion = "0.4.0"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
