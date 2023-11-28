@@ -42,6 +42,7 @@ data class AddNewFolderDialogBoxParam(
     val parentFolderID: Long?,
     val currentFolderID: Long?,
     val childFolderIDs: List<Long?>,
+    val inSpecificFolderScreen: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -140,7 +141,7 @@ fun AddNewFolderDialogBox(
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                customFunctionsForLocalDB.createANewRootFolder(
+                                customFunctionsForLocalDB.createANewFolder(
                                     context = context,
                                     folderName = folderNameTextFieldValue.value,
                                     infoForSaving = noteTextFieldValue.value,
@@ -159,7 +160,8 @@ fun AddNewFolderDialogBox(
                                             false
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs
+                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs,
+                                    inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen
                                 )
                             }
                         }) {

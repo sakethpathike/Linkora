@@ -158,6 +158,8 @@ fun SpecificScreen(navController: NavController) {
     val isMainFabRotated = rememberSaveable {
         mutableStateOf(false)
     }
+    val clickedFolderName = rememberSaveable { mutableStateOf("") }
+    val clickedFolderNote = rememberSaveable { mutableStateOf("") }
     val rotationAnimation = remember {
         Animatable(0f)
     }
@@ -265,7 +267,19 @@ fun SpecificScreen(navController: NavController) {
                             items(childFoldersData) {
                                 FolderIndividualComponent(folderName = it.folderName,
                                     folderNote = it.infoForSaving,
-                                    onMoreIconClick = { /*TODO*/ },
+                                    onMoreIconClick = {
+                                        selectedURLTitle.value = it.folderName
+                                        selectedURLOrFolderNote.value = it.infoForSaving
+                                        clickedFolderNote.value = it.infoForSaving
+                                        coroutineScope.launch {
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                        }
+                                        clickedFolderName.value = it.folderName
+                                        CollectionsScreenVM.selectedFolderData.id = it.id
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                        SpecificScreenVM.selectedBtmSheetType.value =
+                                            OptionsBtmSheetType.FOLDER
+                                    },
                                     onFolderClick = {
                                         SpecificScreenVM.currentClickedFolderData.value = it
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -279,6 +293,8 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificScreenVM.selectedBtmSheetType.value =
+                                                OptionsBtmSheetType.LINK
                                             selectedURLTitle.value = it.title
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
@@ -569,9 +585,6 @@ fun SpecificScreen(navController: NavController) {
                     })
             }
         }
-        val isDataExtractingFromLink = rememberSaveable {
-            mutableStateOf(false)
-        }
         NewLinkBtmSheet(
             NewLinkBtmSheetUIParam(
                 btmSheetState = btmModalSheetStateForSavingLink,
@@ -601,7 +614,7 @@ fun SpecificScreen(navController: NavController) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
                     SpecificScreenType.SAVED_LINKS_SCREEN -> OptionsBtmSheetType.LINK
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> OptionsBtmSheetType.LINK
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SpecificScreenVM.selectedBtmSheetType.value
                     else -> {
                         OptionsBtmSheetType.LINK
                     }
@@ -625,6 +638,9 @@ fun SpecificScreen(navController: NavController) {
                     )
                 },
                 importantLinks = null,
+                forAChildFolder = if (SpecificScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) mutableStateOf(
+                    false
+                ) else mutableStateOf(true),
                 onArchiveClick = {
                     specificCollectionsScreenVM.onArchiveClick(tempImpLinkData,
                         context,
@@ -643,17 +659,17 @@ fun SpecificScreen(navController: NavController) {
                     specificCollectionsScreenVM.onNoteDeleteCardClick(
                         selectedWebURL.value,
                         context,
-                        folderID = SpecificScreenVM.currentClickedFolderData.value.id
+                        folderID = CollectionsScreenVM.selectedFolderData.id
                     )
                 },
-                folderName = selectedURLOrFolderNote.value,
+                folderName = selectedURLTitle.value,
                 linkTitle = tempImpLinkData.title
             )
         )
         DeleteDialogBox(
             DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
-                    specificCollectionsScreenVM.onDeleteClick(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                    specificCollectionsScreenVM.onDeleteClick(folderID = CollectionsScreenVM.selectedFolderData.id,
                         selectedWebURL = selectedWebURL.value,
                         context,
                         onTaskCompleted = {
@@ -665,7 +681,7 @@ fun SpecificScreen(navController: NavController) {
                             )
                         })
                 },
-                deleteDialogBoxType = DataDialogBoxType.LINK,
+                deleteDialogBoxType = if (SpecificScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -676,9 +692,10 @@ fun SpecificScreen(navController: NavController) {
         )
         RenameDialogBox(
             RenameDialogBoxParam(
+                inASpecificScreen = true,
                 shouldDialogBoxAppear = shouldRenameDialogBeVisible,
-                existingFolderName = "",
-                renameDialogBoxFor = OptionsBtmSheetType.LINK,
+                existingFolderName = topBarText,
+                renameDialogBoxFor = SpecificScreenVM.selectedBtmSheetType.value,
                 onNoteChangeClickForLinks = { newNote: String ->
                     specificCollectionsScreenVM.onNoteChangeClickForLinks(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
                         selectedWebURL.value,
@@ -710,8 +727,8 @@ fun SpecificScreen(navController: NavController) {
                 inChildArchiveFolderScreen = mutableStateOf(
                     SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                 ),
-                currentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
-                parentFolderID = SpecificScreenVM.currentClickedFolderData.value.parentFolderID
+                currentFolderID = CollectionsScreenVM.selectedFolderData.id,
+                parentFolderID = SpecificScreenVM.currentClickedFolderData.value.id
             )
         )
         val collectionsScreenVM: CollectionsScreenVM = viewModel()
@@ -727,7 +744,8 @@ fun SpecificScreen(navController: NavController) {
                 },
                 parentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
                 childFolderIDs = emptyList(),
-                currentFolderID = null
+                currentFolderID = null,
+                inSpecificFolderScreen = true
             )
         )
         CustomComposablesVM.selectedFolderID = SpecificScreenVM.currentClickedFolderData.value.id

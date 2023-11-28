@@ -50,10 +50,10 @@ class OptionsBtmSheetVM : ViewModel() {
                 .doesThisArchiveFolderExists(folderName = folderName)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
-            archiveCardText.value = "Remove from Archive(s)"
+            archiveCardText.value = "Remove from Archive"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Move to Archive(s)"
+            archiveCardText.value = "Move to Archive"
         }
     }
 }

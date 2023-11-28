@@ -28,17 +28,26 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         lateinit var localDB: LocalDataBase
     }
 
-    fun createANewRootFolder(
+    fun createANewFolder(
         context: Context, infoForSaving: String,
         onTaskCompleted: () -> Unit,
         parentFolderID: Long?,
         childFolderIDs: List<Long?>,
-        folderName: String
+        folderName: String,
+        inSpecificFolderScreen: Boolean
     ) {
         var doesThisFolderExists = false
         viewModelScope.launch {
-            doesThisFolderExists = localDB.readDao()
-                .doesThisRootFolderExists(folderName = folderName)
+            doesThisFolderExists = if (!inSpecificFolderScreen) {
+                localDB.readDao()
+                    .doesThisRootFolderExists(folderName = folderName)
+            } else {
+                localDB.readDao()
+                    .doesThisChildFolderExists(
+                        folderName = folderName,
+                        parentFolderID = parentFolderID
+                    ) >= 1
+            }
         }.invokeOnCompletion {
             if (doesThisFolderExists) {
                 viewModelScope.launch {

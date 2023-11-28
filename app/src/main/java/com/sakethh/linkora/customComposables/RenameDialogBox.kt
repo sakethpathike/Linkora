@@ -44,7 +44,8 @@ data class RenameDialogBoxParam(
     val onTitleRenamed: () -> Unit = {},
     val currentFolderID: Long,
     val parentFolderID: Long?,
-    val existingFolderName: String?
+    val existingFolderName: String?,
+    val inASpecificScreen: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -143,7 +144,8 @@ fun RenameDialogBox(
                                             parentFolderID = renameDialogBoxParam.parentFolderID,
                                             onNoteChangeClickForLinks = {},
                                             onTitleChangeClickForLinks = {},
-                                            inChildArchiveFolderScreen = renameDialogBoxParam.inChildArchiveFolderScreen
+                                            inChildArchiveFolderScreen = renameDialogBoxParam.inChildArchiveFolderScreen,
+                                            inASpecificScreen = renameDialogBoxParam.inASpecificScreen
                                         ),
                                         context = localContext,
                                         newFolderOrTitleName = newFolderOrTitleName.value,

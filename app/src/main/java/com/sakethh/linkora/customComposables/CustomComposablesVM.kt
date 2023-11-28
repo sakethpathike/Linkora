@@ -36,13 +36,19 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
 
             else -> {
                 if (updateBothNameAndNoteParam.renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER && !updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
-                    fun updateRootFolderTitle() {
+                    fun updateFolderTitle() {
                         viewModelScope.launch {
-                            val doesFolderExists = async {
-                                localDB.readDao().doesThisRootFolderExists(
-                                    folderName = updateBothNameAndNoteParam.newFolderOrTitleName
-                                )
-                            }.await()
+                            val doesFolderExists =
+                                if (!updateBothNameAndNoteParam.renameDialogBoxParam.inASpecificScreen) {
+                                    localDB.readDao().doesThisRootFolderExists(
+                                        folderName = updateBothNameAndNoteParam.newFolderOrTitleName
+                                    )
+                                } else {
+                                    localDB.readDao().doesThisChildFolderExists(
+                                        folderName = updateBothNameAndNoteParam.newFolderOrTitleName,
+                                        parentFolderID = updateBothNameAndNoteParam.parentFolderID
+                                    ) >= 1
+                                }
                             if (doesFolderExists) {
                                 Toast.makeText(
                                     updateBothNameAndNoteParam.context,
@@ -59,7 +65,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                     }
                     when (updateBothNameAndNoteParam.newNote) {
                         "" -> {
-                            updateRootFolderTitle()
+                            updateFolderTitle()
                         }
 
                         else -> {
@@ -69,7 +75,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                                         folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
                                         newNote = updateBothNameAndNoteParam.newNote
                                     )
-                                }, async { updateRootFolderTitle() })
+                                }, async { updateFolderTitle() })
                             }
                         }
                     }

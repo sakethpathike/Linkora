@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
@@ -37,6 +38,7 @@ open class SpecificScreenVM : ViewModel() {
     private val _archiveFolderData = MutableStateFlow(emptyList<LinksTable>())
     val archiveFolderDataTable = _archiveFolderData.asStateFlow()
 
+
     val impLinkDataForBtmSheet = ImportantLinks(
         title = "",
         webURL = "",
@@ -49,6 +51,7 @@ open class SpecificScreenVM : ViewModel() {
         val currentClickedFolderData = mutableStateOf(FoldersTable("", "", 0, 0, emptyList()))
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
+        val selectedBtmSheetType = mutableStateOf(OptionsBtmSheetType.LINK)
     }
 
     fun retrieveChildFoldersData() {
@@ -391,6 +394,7 @@ open class SpecificScreenVM : ViewModel() {
                         .renameALinkTitleFromFolders(
                             webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
+
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -496,10 +500,17 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
-                        .deleteALinkFromSpecificFolder(
-                            folderID = folderID, webURL = selectedWebURL
-                        )
+                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteALinkFromSpecificFolder(
+                                folderID = folderID, webURL = selectedWebURL
+                            )
+                    } else {
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteAFolder(
+                                folderID = folderID
+                            )
+                    }
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -546,10 +557,17 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
-                        .deleteALinkInfoOfFolders(
-                            folderID = folderID, webURL = selectedWebURL
-                        )
+                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteALinkInfoOfFolders(
+                                folderID = folderID, webURL = selectedWebURL
+                            )
+                    } else {
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteAFolderNote(
+                                folderID = folderID
+                            )
+                    }
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }

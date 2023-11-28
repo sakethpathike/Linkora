@@ -70,6 +70,7 @@ data class OptionsBtmSheetUIParam @OptIn(ExperimentalMaterial3Api::class) constr
     val noteForSaving: String,
     val folderName: String,
     val linkTitle: String,
+    val forAChildFolder: MutableState<Boolean> = mutableStateOf(false)
 )
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -176,7 +177,7 @@ fun OptionsBtmSheetUI(
                             elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                         )
                     }
-                    if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value) {
+                    if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value && !optionsBtmSheetUIParam.forAChildFolder.value) {
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
                                 coroutineScope.launch {
@@ -259,6 +260,7 @@ fun OptionsBtmSheetUI(
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .combinedClickable(onClick = {}, onLongClick = {
                                     localClipBoardManager.setText(AnnotatedString(mutableStateNote.value))
                                     Toast
@@ -275,6 +277,7 @@ fun OptionsBtmSheetUI(
                             textAlign = TextAlign.Start,
                             lineHeight = 24.sp
                         )
+                        Spacer(modifier = Modifier.height(20.dp))
                     } else {
                         Spacer(modifier = Modifier.height(20.dp))
                         Box(
@@ -289,6 +292,7 @@ fun OptionsBtmSheetUI(
                                 lineHeight = 24.sp
                             )
                         }
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
                 Spacer(modifier = Modifier.height(5.dp))
