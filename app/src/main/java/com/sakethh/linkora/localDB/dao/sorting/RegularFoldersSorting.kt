@@ -8,16 +8,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface RegularFoldersSorting {
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL ORDER BY folderName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0 ORDER BY folderName COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL ORDER BY folderName COLLATE NOCASE DESC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0 ORDER BY folderName COLLATE NOCASE DESC")
     fun sortByZToA(): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL ORDER BY id COLLATE NOCASE DESC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0 ORDER BY id COLLATE NOCASE DESC")
     fun sortByLatestToOldest(): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL ORDER BY id COLLATE NOCASE ASC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0 ORDER BY id COLLATE NOCASE ASC")
     fun sortByOldestToLatest(): Flow<List<FoldersTable>>
 
 }

@@ -80,7 +80,6 @@ import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
@@ -399,7 +398,8 @@ fun CollectionsScreen(navController: NavController) {
                 },
                 importantLinks = null,
                 onArchiveClick = {
-                    customFunctionsForLocalDB.archiveFolderTableUpdater(
+                    customFunctionsForLocalDB.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.id)
+                    /*customFunctionsForLocalDB.archiveFolderTableUpdaterV9(
                         archivedFolders = ArchivedFolders(
                             archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
                             infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving,
@@ -411,7 +411,7 @@ fun CollectionsScreen(navController: NavController) {
                                 )
                             )
                         }
-                    )
+                    )*/
                 },
                 noteForSaving = clickedFolderNote.value,
                 onNoteDeleteCardClick = {
@@ -462,7 +462,6 @@ fun CollectionsScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             specificFolderName = "hi lol",
             screenType = SpecificScreenType.ROOT_SCREEN,
-            childFoldersIDs = emptyList(),
             parentFolderID = null
         )
         AddNewFolderDialogBox(
@@ -475,8 +474,7 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = null,
-                childFolderIDs = emptyList(), currentFolderID = null
+                parentFolderID = null, currentFolderID = null
             )
         )
         NewLinkBtmSheet(
@@ -494,7 +492,7 @@ fun CollectionsScreen(navController: NavController) {
                 }, onLinkSaved = {
 
                 },
-                parentFolderID = null, childFolderIDs = emptyList()
+                parentFolderID = null
             )
         )
         SortingBottomSheetUI(

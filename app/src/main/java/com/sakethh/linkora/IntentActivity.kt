@@ -49,7 +49,7 @@ class IntentActivity : ComponentActivity() {
                     btmSheetState = btmSheetState,
                     onLinkSaved = {},
                     onFolderCreated = {},
-                    parentFolderID = null, folderName = "", childFolderIDs = emptyList()
+                    parentFolderID = null, folderName = ""
                 )
             )
         }

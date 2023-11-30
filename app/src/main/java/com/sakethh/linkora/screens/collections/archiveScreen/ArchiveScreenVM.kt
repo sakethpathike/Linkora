@@ -58,8 +58,11 @@ class ArchiveScreenVM : SpecificScreenVM() {
     private val _archiveLinksData = MutableStateFlow(emptyList<ArchivedLinks>())
     val archiveLinksData = _archiveLinksData.asStateFlow()
 
-    private val _archiveFoldersData = MutableStateFlow(emptyList<ArchivedFolders>())
-    val archiveFoldersData = _archiveFoldersData.asStateFlow()
+    private val _archiveFoldersDataV9 = MutableStateFlow(emptyList<ArchivedFolders>())
+    val archiveFoldersDataV9 = _archiveFoldersDataV9.asStateFlow()
+
+    private val _archiveFoldersDataV10 = MutableStateFlow(emptyList<FoldersTable>())
+    val archiveFoldersDataV10 = _archiveFoldersDataV10.asStateFlow()
 
     init {
         changeRetrievedData(
@@ -130,9 +133,14 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByAToZ()
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByAToZV9()
                             .collect {
-                                _archiveFoldersData.emit(it)
+                                _archiveFoldersDataV9.emit(it)
+                            }
+                    }, async {
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByAToZV10()
+                            .collect {
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -146,9 +154,14 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByZToA()
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByZToAV9()
                             .collect {
-                                _archiveFoldersData.emit(it)
+                                _archiveFoldersDataV9.emit(it)
+                            }
+                    }, async {
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByZToAV10()
+                            .collect {
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -163,8 +176,13 @@ class ArchiveScreenVM : SpecificScreenVM() {
                             }
                     }, async {
                         CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
-                            .sortByLatestToOldest().collect {
-                                _archiveFoldersData.emit(it)
+                            .sortByLatestToOldestV9().collect {
+                                _archiveFoldersDataV9.emit(it)
+                            }
+                    }, async {
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                            .sortByLatestToOldestV10().collect {
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -179,8 +197,13 @@ class ArchiveScreenVM : SpecificScreenVM() {
                             }
                     }, async {
                         CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
-                            .sortByOldestToLatest().collect {
-                                _archiveFoldersData.emit(it)
+                            .sortByOldestToLatestV9().collect {
+                                _archiveFoldersDataV9.emit(it)
+                            }
+                    }, async {
+                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                            .sortByOldestToLatestV10().collect {
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -207,7 +230,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                 onTaskCompleted()
             }
         } else {
-            CustomFunctionsForLocalDB().archiveFolderTableUpdater(
+            CustomFunctionsForLocalDB().archiveFolderTableUpdaterV9(
                 ArchivedFolders(
                     archiveFolderName = selectedURLOrFolderName,
                     infoForSaving = ""
@@ -249,7 +272,14 @@ class ArchiveScreenVM : SpecificScreenVM() {
         }
     }
 
-    fun onUnArchiveClick(
+    fun onUnArchiveClickV10(folderID: Long) {
+        viewModelScope.launch {
+            CustomFunctionsForLocalDB.localDB.updateDao()
+                .moveArchivedFolderToRegularFolderV10(folderID)
+        }
+    }
+
+    fun onUnArchiveClickV9(
         context: Context,
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
@@ -278,7 +308,6 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    childFolderIDs = emptyList(),
                                     id = selectedFolderID
                                 )
                             )

@@ -87,8 +87,7 @@ data class NewLinkBtmSheetUIParam @OptIn(ExperimentalMaterial3Api::class) constr
     val btmSheetState: SheetState,
     val onLinkSaved: () -> Unit,
     val onFolderCreated: () -> Unit,
-    val parentFolderID: Long?,
-    val childFolderIDs: List<Long?>,
+    val parentFolderID: Long?
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -779,7 +778,6 @@ fun NewLinkBtmSheet(
                         newLinkBtmSheetUIParam.onFolderCreated()
                     },
                     parentFolderID = newLinkBtmSheetUIParam.parentFolderID,
-                    childFolderIDs = newLinkBtmSheetUIParam.childFolderIDs,
                     currentFolderID = CustomComposablesVM.selectedFolderID
                 )
             )

@@ -68,8 +68,7 @@ fun AddNewLinkDialogBox(
     screenType: SpecificScreenType,
     specificFolderName: String,
     onTaskCompleted: () -> Unit = {},
-    parentFolderID: Long?,
-    childFoldersIDs: List<Long?>
+    parentFolderID: Long?
 ) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
@@ -566,7 +565,6 @@ fun AddNewLinkDialogBox(
                         }
                     },
                     parentFolderID = parentFolderID,
-                    childFolderIDs = childFoldersIDs,
                     currentFolderID = CustomComposablesVM.selectedFolderID
                 )
             )

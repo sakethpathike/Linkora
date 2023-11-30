@@ -17,6 +17,7 @@ import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -38,6 +39,9 @@ open class SpecificScreenVM : ViewModel() {
     private val _archiveFolderData = MutableStateFlow(emptyList<LinksTable>())
     val archiveFolderDataTable = _archiveFolderData.asStateFlow()
 
+    private val _archiveSubFolderData = MutableStateFlow(emptyList<FoldersTable>())
+    val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
+
 
     val impLinkDataForBtmSheet = ImportantLinks(
         title = "",
@@ -48,9 +52,10 @@ open class SpecificScreenVM : ViewModel() {
     )
 
     companion object {
-        val currentClickedFolderData = mutableStateOf(FoldersTable("", "", 0, 0, emptyList()))
+        val currentClickedFolderData = mutableStateOf(FoldersTable("", "", 0, 0))
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
+        var isSelectedV9 = false
         val selectedBtmSheetType = mutableStateOf(OptionsBtmSheetType.LINK)
     }
 
@@ -161,37 +166,98 @@ open class SpecificScreenVM : ViewModel() {
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                            CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByAToZ(folderID = folderID).collect {
-                                    _archiveFolderData.emit(it)
+                            awaitAll(async {
+                                if (isSelectedV9) {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByAToZV9(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
+                                } else {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByAToZV10(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
                                 }
+                            }, async {
+                                CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                    .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                                    .collect {
+                                        _archiveSubFolderData.emit(it)
+                                    }
+                            })
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
-                            CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByZToA(folderID = folderID).collect {
-                                    _archiveFolderData.emit(it)
+                            awaitAll(async {
+                                if (isSelectedV9) {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByZToAV9(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
+                                } else {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByZToAV10(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
                                 }
+                            }, async {
+                                CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                    .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
+                                    .collect {
+                                        _archiveSubFolderData.emit(it)
+                                    }
+                            })
+
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
-                            CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByLatestToOldest(folderID = folderID).collect {
-                                    _archiveFolderData.emit(it)
+                            awaitAll(async {
+                                if (isSelectedV9) {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByLatestToOldestV9(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
+                                } else {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByLatestToOldestV10(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
                                 }
+                            }, async {
+                                CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                    .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
+                                    .collect {
+                                        _archiveSubFolderData.emit(it)
+                                    }
+                            })
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
-                            CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
-                                .sortByOldestToLatest(folderID = folderID).collect {
-                                    _archiveFolderData.emit(it)
+                            awaitAll(async {
+                                if (isSelectedV9) {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByOldestToLatestV9(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
+                                } else {
+                                    CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                        .sortLinksByOldestToLatestV10(folderID = folderID).collect {
+                                            _archiveFolderData.emit(it)
+                                        }
                                 }
+                            }, async {
+                                CustomFunctionsForLocalDB.localDB.archivedFolderLinksSorting()
+                                    .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
+                                    .collect {
+                                        _archiveSubFolderData.emit(it)
+                                    }
+                            })
                         }
                     }
                 }

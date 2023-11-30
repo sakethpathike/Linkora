@@ -49,7 +49,8 @@ import kotlinx.coroutines.launch
 fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavController) {
     val archiveScreenVM: ArchiveScreenVM = viewModel()
     val archiveLinksData = archiveScreenVM.archiveLinksData.collectAsState().value
-    val archiveFoldersData = archiveScreenVM.archiveFoldersData.collectAsState().value
+    val archiveFoldersDataV9 = archiveScreenVM.archiveFoldersDataV9.collectAsState().value
+    val archiveFoldersDataV10 = archiveScreenVM.archiveFoldersDataV10.collectAsState().value
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -136,8 +137,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 }
             } else {
-                if (archiveFoldersData.isNotEmpty()) {
-                    items(archiveFoldersData) {
+                if (archiveFoldersDataV9.isNotEmpty()) {
+                    items(archiveFoldersDataV9) {
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
@@ -150,6 +151,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 }
                             },
                             onFolderClick = {
+                                SpecificScreenVM.isSelectedV9 = true
                                 SpecificScreenVM.selectedArchiveFolderID =
                                     it.id
                                 SpecificScreenVM.screenType.value =
@@ -157,7 +159,33 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             })
                     }
-                } else {
+                }
+                if (archiveFoldersDataV10.isNotEmpty()) {
+                    items(archiveFoldersDataV10) {
+                        FolderIndividualComponent(folderName = it.folderName,
+                            folderNote = it.infoForSaving,
+                            onMoreIconClick = {
+                                SpecificScreenVM.selectedArchiveFolderID = it.id
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                selectedURLOrFolderName.value = it.folderName
+                                selectedFolderNote.value = it.infoForSaving
+                                coroutineScope.launch {
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                }
+                            },
+                            onFolderClick = {
+                                SpecificScreenVM.isSelectedV9 = false
+                                SpecificScreenVM.selectedArchiveFolderID =
+                                    it.id
+                                SpecificScreenVM.currentClickedFolderData.value.id = it.id
+                                SpecificScreenVM.screenType.value =
+                                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            })
+                    }
+                }
+
+                if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.isEmpty()) {
                     item {
                         DataEmptyScreen(text = "No folders were archived.")
                     }
@@ -171,19 +199,23 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 onUnarchiveClick = {
-                    archiveScreenVM.onUnArchiveClick(
-                        context = context,
-                        archiveScreenType = archiveScreenType,
-                        selectedURLOrFolderName = selectedURLOrFolderName.value,
-                        selectedURLOrFolderNote = selectedFolderNote.value,
-                        onTaskCompleted = {
-                            archiveScreenVM.changeRetrievedData(
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
+                    if (SpecificScreenVM.isSelectedV9) {
+                        archiveScreenVM.onUnArchiveClickV9(
+                            context = context,
+                            archiveScreenType = archiveScreenType,
+                            selectedURLOrFolderName = selectedURLOrFolderName.value,
+                            selectedURLOrFolderNote = selectedFolderNote.value,
+                            onTaskCompleted = {
+                                archiveScreenVM.changeRetrievedData(
+                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    )
                                 )
-                            )
-                        }, selectedFolderID = SpecificScreenVM.selectedArchiveFolderID
-                    )
+                            }, selectedFolderID = SpecificScreenVM.selectedArchiveFolderID
+                        )
+                    } else {
+                        archiveScreenVM.onUnArchiveClickV10(SpecificScreenVM.selectedArchiveFolderID)
+                    }
                 },
                 onDeleteCardClick = {
                     shouldDeleteDialogBoxAppear.value = true

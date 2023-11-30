@@ -21,8 +21,7 @@ class CollectionsScreenVM : ViewModel() {
     companion object {
         val selectedFolderData =
             FoldersTable(
-                folderName = "", infoForSaving = "", parentFolderID = 0,
-                childFolderIDs = emptyList()
+                folderName = "", infoForSaving = "", parentFolderID = 0
             )
     }
 

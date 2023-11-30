@@ -50,7 +50,7 @@ class ExportImpl {
                     archivedLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveFolders().collect {
+                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveFoldersV9().collect {
                     archivedFolders.addAll(it)
                 }
             }, async {

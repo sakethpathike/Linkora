@@ -198,15 +198,13 @@ fun ParentHomeScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
             specificFolderName = "Tea || Coffee ?",
-            parentFolderID = null,
-            childFoldersIDs = emptyList()
+            parentFolderID = null
         )
 
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
                 parentFolderID = null,
-                childFolderIDs = emptyList(),
                 currentFolderID = 0
             )
         )
@@ -218,7 +216,7 @@ fun ParentHomeScreen(navController: NavController) {
                 shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
                 onLinkSaved = {},
                 onFolderCreated = {},
-                parentFolderID = null, childFolderIDs = emptyList()
+                parentFolderID = null
             )
         )
     }

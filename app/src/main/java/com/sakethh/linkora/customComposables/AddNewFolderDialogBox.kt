@@ -41,7 +41,6 @@ data class AddNewFolderDialogBoxParam(
     val onCreated: () -> Unit = {},
     val parentFolderID: Long?,
     val currentFolderID: Long?,
-    val childFolderIDs: List<Long?>,
     val inSpecificFolderScreen: Boolean = false
 )
 
@@ -160,7 +159,6 @@ fun AddNewFolderDialogBox(
                                             false
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    childFolderIDs = addNewFolderDialogBoxParam.childFolderIDs,
                                     inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen
                                 )
                             }

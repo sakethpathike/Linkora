@@ -13,7 +13,6 @@ import com.sakethh.linkora.localDB.dao.crud.DeleteDao
 import com.sakethh.linkora.localDB.dao.crud.ReadDao
 import com.sakethh.linkora.localDB.dao.crud.UpdateDao
 import com.sakethh.linkora.localDB.dao.searching.LinksSearching
-import com.sakethh.linkora.localDB.dao.sorting.ArchiveFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.ArchivedLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.HistoryLinksSorting
@@ -21,6 +20,7 @@ import com.sakethh.linkora.localDB.dao.sorting.ImportantLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFolderLinksSorting
 import com.sakethh.linkora.localDB.dao.sorting.RegularFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.SavedLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.SpecificArchivedFolderDataSorting
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
@@ -31,7 +31,7 @@ import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.typeConverters.ChildIDFolderTypeConverter
 
 @Database(
-    version = 2,
+    version = 3,
     exportSchema = true,
     entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
@@ -43,7 +43,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun deleteDao(): DeleteDao
     abstract fun archivedFolderSorting(): ArchivedFoldersSorting
     abstract fun archivedLinksSorting(): ArchivedLinksSorting
-    abstract fun archivedFolderLinksSorting(): ArchiveFolderLinksSorting
+    abstract fun archivedFolderLinksSorting(): SpecificArchivedFolderDataSorting
     abstract fun importantLinksSorting(): ImportantLinksSorting
     abstract fun regularFolderLinksSorting(): RegularFolderLinksSorting
     abstract fun regularFolderSorting(): RegularFoldersSorting

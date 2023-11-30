@@ -99,6 +99,8 @@ fun SpecificScreen(navController: NavController) {
     val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsState().value
     val archivedFoldersLinksData =
         specificCollectionsScreenVM.archiveFolderDataTable.collectAsState().value
+    val archivedSubFoldersData =
+        specificCollectionsScreenVM.archiveSubFolderData.collectAsState().value
     val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet.copy()
     val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
@@ -505,6 +507,29 @@ fun SpecificScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                        if (archivedSubFoldersData.isNotEmpty()) {
+                            items(archivedSubFoldersData) {
+                                FolderIndividualComponent(folderName = it.folderName,
+                                    folderNote = it.infoForSaving,
+                                    onMoreIconClick = {
+                                        selectedURLTitle.value = it.folderName
+                                        selectedURLOrFolderNote.value = it.infoForSaving
+                                        clickedFolderNote.value = it.infoForSaving
+                                        coroutineScope.launch {
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                        }
+                                        clickedFolderName.value = it.folderName
+                                        CollectionsScreenVM.selectedFolderData.id = it.id
+                                        shouldOptionsBtmModalSheetBeVisible.value = true
+                                        SpecificScreenVM.selectedBtmSheetType.value =
+                                            OptionsBtmSheetType.FOLDER
+                                    },
+                                    onFolderClick = {
+                                        SpecificScreenVM.currentClickedFolderData.value = it
+                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    })
+                            }
+                        }
                         if (archivedFoldersLinksData.isNotEmpty()) {
                             items(archivedFoldersLinksData) {
                                 LinkUIComponent(
@@ -600,8 +625,7 @@ fun SpecificScreen(navController: NavController) {
                     )
                 },
                 onFolderCreated = {},
-                parentFolderID = null,
-                childFolderIDs = emptyList()
+                parentFolderID = null
             )
         )
         OptionsBtmSheetUI(
@@ -743,7 +767,6 @@ fun SpecificScreen(navController: NavController) {
                     )
                 },
                 parentFolderID = SpecificScreenVM.currentClickedFolderData.value.id,
-                childFolderIDs = emptyList(),
                 currentFolderID = null,
                 inSpecificFolderScreen = true
             )
@@ -760,7 +783,6 @@ fun SpecificScreen(navController: NavController) {
                     )
                 )
             },
-            childFoldersIDs = emptyList(),
             parentFolderID = SpecificScreenVM.currentClickedFolderData.value.parentFolderID,
             specificFolderName = SpecificScreenVM.currentClickedFolderData.value.folderName
         )

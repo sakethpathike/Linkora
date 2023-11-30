@@ -28,13 +28,16 @@ interface ReadDao {
     fun getAllArchiveLinks(): Flow<List<ArchivedLinks>>
 
     @Query("SELECT * FROM archived_folders_table")
-    fun getAllArchiveFolders(): Flow<List<ArchivedFolders>>
+    fun getAllArchiveFoldersV9(): Flow<List<ArchivedFolders>>
+
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=1")
+    fun getAllArchiveFoldersV10(): Flow<List<FoldersTable>>
 
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1")
     fun getAllArchiveFoldersLinks(): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0")
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderID")

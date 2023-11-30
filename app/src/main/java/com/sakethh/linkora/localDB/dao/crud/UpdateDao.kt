@@ -66,9 +66,15 @@ interface UpdateDao {
     )
 
     @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 1 , isLinkedWithFolders = 0, keyOfArchiveLinkedFolder = :folderID, keyOfLinkedFolder = \"\" WHERE keyOfLinkedFolder = :folderID")
-    suspend fun moveFolderDataToArchive(
+    suspend fun moveFolderLinksDataToArchive(
         folderID: Long,
     )
+
+    @Query("UPDATE folders_table SET isFolderArchived = 1 WHERE id=:folderID")
+    suspend fun moveAFolderToArchivesV10(folderID: Long)
+
+    @Query("UPDATE folders_table SET isFolderArchived = 0 WHERE id=:folderID")
+    suspend fun moveArchivedFolderToRegularFolderV10(folderID: Long)
 
     @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolder = 0, keyOfLinkedFolder =  :folderID WHERE keyOfArchiveLinkedFolder = :folderID")
     suspend fun moveArchiveFolderBackToRootFolder(

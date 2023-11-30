@@ -32,7 +32,6 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         context: Context, infoForSaving: String,
         onTaskCompleted: () -> Unit,
         parentFolderID: Long?,
-        childFolderIDs: List<Long?>,
         folderName: String,
         inSpecificFolderScreen: Boolean
     ) {
@@ -69,8 +68,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                             FoldersTable(
                                 folderName = folderName,
                                 infoForSaving = infoForSaving,
-                                parentFolderID = parentFolderID,
-                                childFolderIDs = childFolderIDs
+                                parentFolderID = parentFolderID
                             )
                         )
                     withContext(Dispatchers.Main) {
@@ -253,7 +251,13 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         }
     }
 
-    fun archiveFolderTableUpdater(
+    fun archiveAFolderV10(folderID: Long) {
+        viewModelScope.launch {
+            localDB.updateDao().moveAFolderToArchivesV10(folderID)
+        }
+    }
+
+    fun archiveFolderTableUpdaterV9(
         archivedFolders: ArchivedFolders,
         context: Context,
         onTaskCompleted: () -> Unit,
@@ -290,7 +294,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                 }.invokeOnCompletion {
                     viewModelScope.launch {
                         localDB.updateDao()
-                            .moveFolderDataToArchive(folderID = archivedFolders.id)
+                            .moveFolderLinksDataToArchive(folderID = archivedFolders.id)
                     }.invokeOnCompletion {
                         viewModelScope.launch {
                             localDB.deleteDao()
