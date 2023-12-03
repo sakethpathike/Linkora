@@ -351,6 +351,7 @@ fun CollectionsScreen(navController: NavController) {
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                 SpecificScreenVM.currentClickedFolderData.value =
                                     foldersData
+                                CollectionsScreenVM.rootFolderID = foldersData.id
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             })
                     }

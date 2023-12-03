@@ -98,8 +98,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
             }
         }
     }
-
-    fun onTitleChangeClickForLinks(
+    fun onTitleChangeClickForLinksV9(
         archiveScreenType: ArchiveScreenType,
         newTitle: String,
         webURL: String,
@@ -308,7 +307,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    id = selectedFolderID
+                                    id = selectedFolderID, childFolderIDs = emptyList()
                                 )
                             )
                     }, async {

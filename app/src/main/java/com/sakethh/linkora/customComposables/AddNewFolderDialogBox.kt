@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -159,7 +160,8 @@ fun AddNewFolderDialogBox(
                                             false
                                     },
                                     parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen
+                                    inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen,
+                                    rootParentID = CollectionsScreenVM.rootFolderID
                                 )
                             }
                         }) {

@@ -40,7 +40,7 @@ data class RenameDialogBoxParam(
     val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     val onNoteChangeClickForLinks: ((newNote: String) -> Unit),
     val onTitleChangeClickForLinks: ((newTitle: String) -> Unit),
-    val inChildArchiveFolderScreen: MutableState<Boolean> = mutableStateOf(false),
+    val selectedV9ArchivedFolder: MutableState<Boolean> = mutableStateOf(false),
     val onTitleRenamed: () -> Unit = {},
     val currentFolderID: Long,
     val parentFolderID: Long?,
@@ -144,7 +144,7 @@ fun RenameDialogBox(
                                             parentFolderID = renameDialogBoxParam.parentFolderID,
                                             onNoteChangeClickForLinks = {},
                                             onTitleChangeClickForLinks = {},
-                                            inChildArchiveFolderScreen = renameDialogBoxParam.inChildArchiveFolderScreen,
+                                            selectedV9ArchivedFolder = renameDialogBoxParam.selectedV9ArchivedFolder,
                                             inASpecificScreen = renameDialogBoxParam.inASpecificScreen
                                         ),
                                         context = localContext,
@@ -188,7 +188,7 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.selectedV9ArchivedFolder.value) {
                                 renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
                                 renameDialogBoxParam.shouldDialogBoxAppear.value = false
                             } else {

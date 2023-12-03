@@ -37,6 +37,7 @@ data class FoldersTable(
     var id: Long = 0,
 
     var parentFolderID: Long?,
+    var childFolderIDs: List<Long>,
     var isFolderArchived: Boolean = false
 )
 

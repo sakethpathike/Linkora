@@ -35,7 +35,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
             }
 
             else -> {
-                if (updateBothNameAndNoteParam.renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER && !updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                if (updateBothNameAndNoteParam.renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER && !updateBothNameAndNoteParam.renameDialogBoxParam.selectedV9ArchivedFolder.value) {
                     fun updateFolderTitle() {
                         viewModelScope.launch {
                             val doesFolderExists =
@@ -79,7 +79,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                             }
                         }
                     }
-                } else if (updateBothNameAndNoteParam.renameDialogBoxParam.inChildArchiveFolderScreen.value) {
+                } else if (updateBothNameAndNoteParam.renameDialogBoxParam.selectedV9ArchivedFolder.value) {
                     fun updateArchivedFolderTitle() {
                         viewModelScope.launch {
                             val doesFolderExists = async {

@@ -33,7 +33,8 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         onTaskCompleted: () -> Unit,
         parentFolderID: Long?,
         folderName: String,
-        inSpecificFolderScreen: Boolean
+        inSpecificFolderScreen: Boolean,
+        rootParentID: Long
     ) {
         var doesThisFolderExists = false
         viewModelScope.launch {
@@ -68,9 +69,16 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                             FoldersTable(
                                 folderName = folderName,
                                 infoForSaving = infoForSaving,
-                                parentFolderID = parentFolderID
+                                parentFolderID = parentFolderID,
+                                childFolderIDs = emptyList()
                             )
                         )
+                    if (parentFolderID != null) {
+                        localDB.createDao().addANewChildIdToARootAndParentFolders(
+                            rootParentID = rootParentID, currentID = localDB.readDao()
+                                .getLatestAddedFolder().id, parentID = parentFolderID
+                        )
+                    }
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,

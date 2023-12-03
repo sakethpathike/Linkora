@@ -166,6 +166,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
                                 SpecificScreenVM.selectedArchiveFolderID = it.id
+                                SpecificScreenVM.currentClickedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.folderName
                                 selectedFolderNote.value = it.infoForSaving
@@ -265,7 +266,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
         )
         RenameDialogBox(
             RenameDialogBoxParam(
-                inChildArchiveFolderScreen = mutableStateOf(archiveScreenType != ArchiveScreenType.LINKS),
+                selectedV9ArchivedFolder = mutableStateOf(SpecificScreenVM.isSelectedV9),
                 renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
                 existingFolderName = selectedURLOrFolderName.value,
@@ -278,18 +279,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     )
                 },
                 onTitleChangeClickForLinks = { newTitle: String ->
-                    archiveScreenVM.onTitleChangeClickForLinks(
-                        archiveScreenType = archiveScreenType,
-                        newTitle,
-                        selectedURLOrFolderName.value,
-                        onTaskCompleted = {
-                            archiveScreenVM.changeRetrievedData(
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
+                        archiveScreenVM.onTitleChangeClickForLinksV9(
+                            archiveScreenType = archiveScreenType,
+                            newTitle,
+                            selectedURLOrFolderName.value,
+                            onTaskCompleted = {
+                                archiveScreenVM.changeRetrievedData(
+                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    )
                                 )
-                            )
-                        }, folderID = SpecificScreenVM.selectedArchiveFolderID
-                    )
+                            }, folderID = SpecificScreenVM.selectedArchiveFolderID
+                        )
                 },
                 onTitleRenamed = {
                     archiveScreenVM.changeRetrievedData(

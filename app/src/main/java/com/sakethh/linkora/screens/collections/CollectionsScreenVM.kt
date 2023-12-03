@@ -19,9 +19,13 @@ class CollectionsScreenVM : ViewModel() {
     val foldersData = _foldersData.asStateFlow()
 
     companion object {
+        var rootFolderID: Long = 0
         val selectedFolderData =
             FoldersTable(
-                folderName = "", infoForSaving = "", parentFolderID = 0
+                folderName = "",
+                infoForSaving = "",
+                parentFolderID = 0,
+                childFolderIDs = emptyList()
             )
     }
 
@@ -89,10 +93,14 @@ class CollectionsScreenVM : ViewModel() {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
                 CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteAFolder(folderID = clickedFolderID)
+                    .deleteAllChildFoldersOfASpecificFolder(clickedFolderID)
+                CustomFunctionsForLocalDB.localDB.deleteDao()
+                    .deleteAFolder(
+                        folderID = clickedFolderID
+                    )
             }, async {
                 CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteThisFolderData(folderID = clickedFolderID)
+                    .deleteThisFolderLinks(folderID = clickedFolderID)
             })
         }
 

@@ -2,6 +2,11 @@ package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
 import androidx.room.Query
+import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 
 @Dao
 interface DeleteDao {
@@ -57,8 +62,24 @@ interface DeleteDao {
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
 
+    suspend fun deleteAllChildFoldersOfASpecificFolder(folderID: Long) {
+        val childFolders = CustomFunctionsForLocalDB.localDB.readDao()
+            .getThisFolderData(folderID)
+        val deletionAsync = mutableListOf<Deferred<Unit>>()
+        coroutineScope {
+            childFolders.childFolderIDs.forEach {
+                val deleteAFolder =
+                    async {
+                        deleteAFolder(it)
+                    }
+                deletionAsync.add(deleteAFolder)
+            }
+        }
+        deletionAsync.awaitAll()
+    }
+
     @Query("DELETE from links_table WHERE keyOfLinkedFolder = :folderID")
-    suspend fun deleteThisFolderData(folderID: Long)
+    suspend fun deleteThisFolderLinks(folderID: Long)
 
     @Query("DELETE from links_table WHERE keyOfArchiveLinkedFolder = :folderID")
     suspend fun deleteThisArchiveFolderData(folderID: Long)

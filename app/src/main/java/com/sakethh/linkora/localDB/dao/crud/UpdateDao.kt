@@ -2,6 +2,8 @@ package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Update
+import com.sakethh.linkora.localDB.dto.FoldersTable
 
 @Dao
 interface UpdateDao {
@@ -11,6 +13,8 @@ interface UpdateDao {
         folderID: Long,
     )
 
+    @Update
+    suspend fun updateAFolderData(foldersTable: FoldersTable)
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 

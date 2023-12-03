@@ -748,7 +748,7 @@ fun SpecificScreen(navController: NavController) {
                         ), folderID = SpecificScreenVM.currentClickedFolderData.value.id
                     )
                 },
-                inChildArchiveFolderScreen = mutableStateOf(
+                selectedV9ArchivedFolder = mutableStateOf(
                     SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                 ),
                 currentFolderID = CollectionsScreenVM.selectedFolderData.id,
