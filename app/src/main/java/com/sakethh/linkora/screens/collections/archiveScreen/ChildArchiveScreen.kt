@@ -178,7 +178,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 SpecificScreenVM.isSelectedV9 = false
                                 SpecificScreenVM.selectedArchiveFolderID =
                                     it.id
-                                SpecificScreenVM.currentClickedFolderData.value.id = it.id
+                                SpecificScreenVM.currentClickedFolderData.value = it
+                                SpecificScreenVM.inARegularFolder.value = false
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -279,18 +280,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     )
                 },
                 onTitleChangeClickForLinks = { newTitle: String ->
-                        archiveScreenVM.onTitleChangeClickForLinksV9(
-                            archiveScreenType = archiveScreenType,
-                            newTitle,
-                            selectedURLOrFolderName.value,
-                            onTaskCompleted = {
-                                archiveScreenVM.changeRetrievedData(
-                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                        SettingsScreenVM.Settings.selectedSortingType.value
-                                    )
+                    archiveScreenVM.onTitleChangeClickForLinksV9(
+                        archiveScreenType = archiveScreenType,
+                        newTitle,
+                        selectedURLOrFolderName.value,
+                        onTaskCompleted = {
+                            archiveScreenVM.changeRetrievedData(
+                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                    SettingsScreenVM.Settings.selectedSortingType.value
                                 )
-                            }, folderID = SpecificScreenVM.selectedArchiveFolderID
-                        )
+                            )
+                        }, folderID = SpecificScreenVM.selectedArchiveFolderID
+                    )
                 },
                 onTitleRenamed = {
                     archiveScreenVM.changeRetrievedData(

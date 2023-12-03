@@ -15,6 +15,7 @@ interface UpdateDao {
 
     @Update
     suspend fun updateAFolderData(foldersTable: FoldersTable)
+
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 

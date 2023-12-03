@@ -345,9 +345,10 @@ fun CollectionsScreen(navController: NavController) {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
                                 }
                                 clickedFolderName.value = foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData= foldersData
+                                CollectionsScreenVM.selectedFolderData = foldersData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
+                                SpecificScreenVM.inARegularFolder.value = true
                                 SpecificScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                 SpecificScreenVM.currentClickedFolderData.value =

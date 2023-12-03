@@ -4,7 +4,6 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
@@ -15,6 +14,7 @@ import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-open class SpecificScreenVM : ViewModel() {
+open class SpecificScreenVM : CollectionsScreenVM() {
     private val _folderLinksData = MutableStateFlow(emptyList<LinksTable>())
     val folderLinksData = _folderLinksData.asStateFlow()
 
@@ -60,13 +60,14 @@ open class SpecificScreenVM : ViewModel() {
                     0,
                     0,
                     childFolderIDs = emptyList(),
-                    
-                )
+
+                    )
             )
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
         var isSelectedV9 = false
         val selectedBtmSheetType = mutableStateOf(OptionsBtmSheetType.LINK)
+        val inARegularFolder = mutableStateOf(true)
     }
 
     fun retrieveChildFoldersData() {
@@ -556,10 +557,14 @@ open class SpecificScreenVM : ViewModel() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
-                        .deleteALinkFromArchiveFolderBasedLinks(
-                            webURL = selectedWebURL, archiveFolderID = folderID
-                        )
+                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                            .deleteALinkFromArchiveFolderBasedLinks(
+                                webURL = selectedWebURL, archiveFolderID = folderID
+                            )
+                    } else {
+                        onDeleteClick(folderID)
+                    }
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -582,18 +587,7 @@ open class SpecificScreenVM : ViewModel() {
                                 folderID = folderID, webURL = selectedWebURL
                             )
                     } else {
-                        awaitAll(async {
-                            CustomFunctionsForLocalDB.localDB.deleteDao()
-                                .deleteAllChildFoldersOfASpecificFolder(folderID)
-                            CustomFunctionsForLocalDB.localDB.deleteDao()
-                                .deleteAFolder(
-                                    folderID = folderID
-                                )
-                        }, async {
-                            CustomFunctionsForLocalDB.localDB.deleteDao()
-                                .deleteThisFolderLinks(folderID = folderID)
-                        })
-
+                        onDeleteClick(folderID)
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()

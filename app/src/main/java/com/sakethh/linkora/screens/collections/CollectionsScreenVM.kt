@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class CollectionsScreenVM : ViewModel() {
+open class CollectionsScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
     val foldersData = _foldersData.asStateFlow()
 
@@ -25,7 +25,7 @@ class CollectionsScreenVM : ViewModel() {
                 folderName = "",
                 infoForSaving = "",
                 parentFolderID = 0,
-                childFolderIDs = emptyList(), 
+                childFolderIDs = emptyList(),
             )
     }
 

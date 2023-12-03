@@ -98,6 +98,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
             }
         }
     }
+
     fun onTitleChangeClickForLinksV9(
         archiveScreenType: ArchiveScreenType,
         newTitle: String,
@@ -214,7 +215,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
         context: Context,
-        onTaskCompleted: () -> Unit,
+        onTaskCompleted: () -> Unit
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
@@ -229,14 +230,18 @@ class ArchiveScreenVM : SpecificScreenVM() {
                 onTaskCompleted()
             }
         } else {
-            CustomFunctionsForLocalDB().archiveFolderTableUpdaterV9(
-                ArchivedFolders(
-                    archiveFolderName = selectedURLOrFolderName,
-                    infoForSaving = ""
-                ), context = context, onTaskCompleted = {
-                    onTaskCompleted()
-                }
-            )
+            if (isSelectedV9) {
+                CustomFunctionsForLocalDB().archiveFolderTableUpdaterV9(
+                    ArchivedFolders(
+                        archiveFolderName = selectedURLOrFolderName,
+                        infoForSaving = ""
+                    ), context = context, onTaskCompleted = {
+                        onTaskCompleted()
+                    }
+                )
+            } else {
+                onDeleteClick(selectedArchiveFolderID)
+            }
         }
 
     }
@@ -307,7 +312,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    id = selectedFolderID, childFolderIDs = emptyList(), 
+                                    id = selectedFolderID, childFolderIDs = emptyList(),
                                 )
                             )
                     }, async {

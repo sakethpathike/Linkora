@@ -144,7 +144,11 @@ fun SpecificScreen(navController: NavController) {
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-            SpecificScreenVM.currentClickedFolderData.value.folderName
+            try {
+                SpecificScreenVM.currentClickedFolderData.value.folderName
+            } catch (_: java.lang.NullPointerException) {
+                ""
+            }
         }
 
         else -> {
@@ -539,6 +543,8 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificScreenVM.selectedBtmSheetType.value =
+                                                OptionsBtmSheetType.LINK
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             shouldOptionsBtmModalSheetBeVisible.value = true
@@ -756,9 +762,7 @@ fun SpecificScreen(navController: NavController) {
                         ), folderID = SpecificScreenVM.currentClickedFolderData.value.id
                     )
                 },
-                selectedV9ArchivedFolder = mutableStateOf(
-                    SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                ),
+                selectedV9ArchivedFolder = mutableStateOf(SpecificScreenVM.isSelectedV9),
                 currentFolderID = CollectionsScreenVM.selectedFolderData.id,
                 parentFolderID = SpecificScreenVM.currentClickedFolderData.value.id
             )
@@ -826,7 +830,13 @@ fun SpecificScreen(navController: NavController) {
             }
         } else {
             if (SpecificScreenVM.currentClickedFolderData.value.parentFolderID != null) {
-                SpecificScreenVM.screenType.value = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                if (SpecificScreenVM.inARegularFolder.value) {
+                    SpecificScreenVM.screenType.value =
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                } else {
+                    SpecificScreenVM.screenType.value =
+                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
+                }
                 specificCollectionsScreenVM.updateFolderData(SpecificScreenVM.currentClickedFolderData.value.parentFolderID!!)
             }
             navController.popBackStack()
