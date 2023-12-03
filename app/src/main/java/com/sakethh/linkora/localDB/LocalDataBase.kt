@@ -29,13 +29,14 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.typeConverters.ChildIDFolderTypeConverter
+import com.sakethh.linkora.localDB.typeConverters.ChildNameFolderTypeConverter
 
 @Database(
     version = 3,
     exportSchema = true,
     entities = [FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
-@TypeConverters(ChildIDFolderTypeConverter::class)
+@TypeConverters(ChildIDFolderTypeConverter::class, ChildNameFolderTypeConverter::class)
 abstract class LocalDataBase : RoomDatabase() {
     abstract fun createDao(): CreateDao
     abstract fun readDao(): ReadDao

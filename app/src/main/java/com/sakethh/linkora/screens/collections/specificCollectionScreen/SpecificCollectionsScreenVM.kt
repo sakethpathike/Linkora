@@ -1,7 +1,6 @@
 package com.sakethh.linkora.screens.collections.specificCollectionScreen
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
@@ -54,7 +53,16 @@ open class SpecificScreenVM : ViewModel() {
 
     companion object {
         val currentClickedFolderData =
-            mutableStateOf(FoldersTable("", "", 0, 0, childFolderIDs = emptyList()))
+            mutableStateOf(
+                FoldersTable(
+                    "",
+                    "",
+                    0,
+                    0,
+                    childFolderIDs = emptyList(),
+                    
+                )
+            )
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
         var isSelectedV9 = false
@@ -574,12 +582,18 @@ open class SpecificScreenVM : ViewModel() {
                                 folderID = folderID, webURL = selectedWebURL
                             )
                     } else {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
-                            .deleteAllChildFoldersOfASpecificFolder(folderID)
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
-                            .deleteAFolder(
-                                folderID = folderID
-                            )
+                        awaitAll(async {
+                            CustomFunctionsForLocalDB.localDB.deleteDao()
+                                .deleteAllChildFoldersOfASpecificFolder(folderID)
+                            CustomFunctionsForLocalDB.localDB.deleteDao()
+                                .deleteAFolder(
+                                    folderID = folderID
+                                )
+                        }, async {
+                            CustomFunctionsForLocalDB.localDB.deleteDao()
+                                .deleteThisFolderLinks(folderID = folderID)
+                        })
+
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()

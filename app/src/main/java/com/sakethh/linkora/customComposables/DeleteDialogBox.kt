@@ -15,10 +15,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -32,6 +35,8 @@ data class DeleteDialogBoxParam(
     val deleteDialogBoxType: DataDialogBoxType,
     val onDeleteClick: () -> Unit,
     val onDeleted: () -> Unit = {},
+    val totalIds:Long = 0,
+    val folderName: MutableState<String> = mutableStateOf("")
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,14 +55,27 @@ fun DeleteDialogBox(
                     }) {
                     Column {
                         Text(
-                            text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure want to delete the folder?" else "Are you sure want to delete entire Data?",
+                            text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else "Are you sure you want to delete all folders and links?",
                             color = AlertDialogDefaults.titleContentColor,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,
-                            modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
+                            modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 15.dp),
                             lineHeight = 27.sp,
                             textAlign = TextAlign.Start
                         )
+                        if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.totalIds > 0) {
+                            Text(
+                                text = "This folder deletion will also delete all its internal folder(s).",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(
+                                    top = 15.dp, start = 20.dp, end = 15.dp
+                                ),
+                                lineHeight = 18.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                         Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             modifier = Modifier
                                 .padding(

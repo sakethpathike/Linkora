@@ -32,6 +32,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -277,7 +278,7 @@ fun SpecificScreen(navController: NavController) {
                                             optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                         }
                                         clickedFolderName.value = it.folderName
-                                        CollectionsScreenVM.selectedFolderData.id = it.id
+                                        CollectionsScreenVM.selectedFolderData = it
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         SpecificScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
@@ -307,6 +308,7 @@ fun SpecificScreen(navController: NavController) {
                                                 this.title = it.title
                                                 this.infoForSaving = it.infoForSaving
                                             }
+
                                             tempImpLinkData.webURL = it.webURL
                                             shouldOptionsBtmModalSheetBeVisible.value = true
                                             coroutineScope.launch {
@@ -519,7 +521,7 @@ fun SpecificScreen(navController: NavController) {
                                             optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                         }
                                         clickedFolderName.value = it.folderName
-                                        CollectionsScreenVM.selectedFolderData.id = it.id
+                                        CollectionsScreenVM.selectedFolderData = it
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         SpecificScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
@@ -690,10 +692,16 @@ fun SpecificScreen(navController: NavController) {
                 linkTitle = tempImpLinkData.title
             )
         )
+        val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
+            mutableLongStateOf(
+                CollectionsScreenVM.selectedFolderData.childFolderIDs.size.toLong()
+            )
+        }
         DeleteDialogBox(
-            DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
+            DeleteDialogBoxParam(totalIds = totalFoldersCount.longValue,
+                shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
-                    specificCollectionsScreenVM.onDeleteClick(folderID = SpecificScreenVM.currentClickedFolderData.value.id,
+                    specificCollectionsScreenVM.onDeleteClick(folderID = CollectionsScreenVM.selectedFolderData.id,
                         selectedWebURL = selectedWebURL.value,
                         context,
                         onTaskCompleted = {

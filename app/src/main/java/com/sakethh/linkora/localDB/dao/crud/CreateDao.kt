@@ -35,20 +35,23 @@ interface CreateDao {
         var tempCurrentID = currentID
 
         while (true) {
+
             val currentFolderData =
                 CustomFunctionsForLocalDB.localDB.readDao().getThisFolderData(tempCurrentID)
 
-            val currentParentFolderData =
-                CustomFunctionsForLocalDB.localDB.readDao()
-                    .getThisFolderData(currentFolderData.parentFolderID ?: break)
+            val currentParentFolderData = CustomFunctionsForLocalDB.localDB.readDao()
+                .getThisFolderData(currentFolderData.parentFolderID ?: break)
 
             val currentParentFolderIdChildData =
                 currentParentFolderData.childFolderIDs.toMutableList()
+
             currentParentFolderIdChildData.add(tempCurrentID)
 
             if (!currentParentFolderIdChildData.contains(currentID)) {
                 currentParentFolderIdChildData.add(currentID)
+
             }
+
 
             currentParentFolderData.childFolderIDs =
                 currentParentFolderIdChildData.toImmutableList().distinct()

@@ -107,7 +107,7 @@ fun AddNewFolderDialogBox(
                         ),
                         label = {
                             Text(
-                                text = "Note for why you're creating this folder",
+                                text = "Note why you're creating this folder",
                                 color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp

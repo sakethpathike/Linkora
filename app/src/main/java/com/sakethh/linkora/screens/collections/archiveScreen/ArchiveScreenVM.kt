@@ -307,7 +307,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    id = selectedFolderID, childFolderIDs = emptyList()
+                                    id = selectedFolderID, childFolderIDs = emptyList(), 
                                 )
                             )
                     }, async {

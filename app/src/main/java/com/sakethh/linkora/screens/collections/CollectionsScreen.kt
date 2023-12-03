@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -344,7 +345,7 @@ fun CollectionsScreen(navController: NavController) {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
                                 }
                                 clickedFolderName.value = foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.id = foldersData.id
+                                CollectionsScreenVM.selectedFolderData= foldersData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificScreenVM.screenType.value =
@@ -443,8 +444,14 @@ fun CollectionsScreen(navController: NavController) {
                 parentFolderID = null
             )
         )
+        val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
+            mutableLongStateOf(
+                CollectionsScreenVM.selectedFolderData.childFolderIDs.size.toLong()
+            )
+        }
         DeleteDialogBox(
             DeleteDialogBoxParam(
+                totalIds = totalFoldersCount.value,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     collectionsScreenVM.onDeleteClick(CollectionsScreenVM.selectedFolderData.id)

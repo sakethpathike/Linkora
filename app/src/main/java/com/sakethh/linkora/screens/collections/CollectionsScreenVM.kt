@@ -20,12 +20,12 @@ class CollectionsScreenVM : ViewModel() {
 
     companion object {
         var rootFolderID: Long = 0
-        val selectedFolderData =
+        var selectedFolderData =
             FoldersTable(
                 folderName = "",
                 infoForSaving = "",
                 parentFolderID = 0,
-                childFolderIDs = emptyList()
+                childFolderIDs = emptyList(), 
             )
     }
 
