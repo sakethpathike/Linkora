@@ -48,7 +48,7 @@ interface UpdateDao {
     )
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderID")
-    suspend fun renameALinkTitleFromArchiveBasedFolderLinks(
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV9(
         webURL: String,
         newTitle: String,
         folderID: Long,

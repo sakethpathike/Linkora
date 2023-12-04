@@ -62,7 +62,7 @@ interface DeleteDao {
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
 
-    suspend fun deleteAllChildFoldersOfASpecificFolder(folderID: Long) {
+    suspend fun deleteAllChildFoldersAndLinksOfASpecificFolder(folderID: Long) {
         val childFolders = CustomFunctionsForLocalDB.localDB.readDao()
             .getThisFolderData(folderID)
         val deletionAsync = mutableListOf<Deferred<Unit>>()
@@ -71,6 +71,7 @@ interface DeleteDao {
                 val deleteAFolder =
                     async {
                         deleteAFolder(it)
+                        deleteThisFolderLinks(it)
                     }
                 deletionAsync.add(deleteAFolder)
             }

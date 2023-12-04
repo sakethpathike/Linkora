@@ -829,7 +829,10 @@ fun SpecificScreen(navController: NavController) {
                 btmModalSheetState.hide()
             }
         } else {
-            if (SpecificScreenVM.currentClickedFolderData.value.parentFolderID != null) {
+            if (SpecificScreenVM.currentClickedFolderData.value.parentFolderID != null
+                && (SpecificScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        || SpecificScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
+            ) {
                 if (SpecificScreenVM.inARegularFolder.value) {
                     SpecificScreenVM.screenType.value =
                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN

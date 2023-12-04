@@ -2,10 +2,15 @@ package com.sakethh.linkora.customComposables
 
 
 import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -14,6 +19,7 @@ import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -54,6 +60,9 @@ fun AddNewFolderDialogBox(
     val context = LocalContext.current
     val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
     val coroutineScope = rememberCoroutineScope()
+    val isFolderCreationInProgress = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (addNewFolderDialogBoxParam.shouldDialogBoxAppear.value) {
         val folderNameTextFieldValue = rememberSaveable {
             mutableStateOf("")
@@ -63,10 +72,14 @@ fun AddNewFolderDialogBox(
         }
         LinkoraTheme {
             AlertDialog(modifier = Modifier
+                .wrapContentHeight()
+                .animateContentSize()
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = {
-                    addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
+                    if (!isFolderCreationInProgress.value) {
+                        addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
+                    }
                 }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
@@ -76,12 +89,10 @@ fun AddNewFolderDialogBox(
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
                     )
-                    OutlinedTextField(
+                    OutlinedTextField(readOnly = isFolderCreationInProgress.value,
                         maxLines = 1,
                         modifier = Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 30.dp
+                            start = 20.dp, end = 20.dp, top = 30.dp
                         ),
                         label = {
                             Text(
@@ -98,12 +109,10 @@ fun AddNewFolderDialogBox(
                         onValueChange = {
                             folderNameTextFieldValue.value = it
                         })
-                    OutlinedTextField(
+                    OutlinedTextField(readOnly = isFolderCreationInProgress.value,
                         maxLines = 1,
                         modifier = Modifier.padding(
-                            start = 20.dp,
-                            end = 20.dp,
-                            top = 15.dp
+                            start = 20.dp, end = 20.dp, top = 15.dp
                         ),
                         label = {
                             Text(
@@ -120,79 +129,81 @@ fun AddNewFolderDialogBox(
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier
-                            .padding(
-                                end = 20.dp,
-                                top = 20.dp,
-                            )
-                            .align(Alignment.End),
-                        onClick = {
-                            if (folderNameTextFieldValue.value.isEmpty()) {
-                                Toast.makeText(
-                                    context,
-                                    "folder name can't be empty",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else if (folderNameTextFieldValue.value == "Saved Links") {
-                                Toast.makeText(
-                                    context,
-                                    "\"Saved Links\" already exists by default, choose another name :)",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            } else {
-                                customFunctionsForLocalDB.createANewFolder(
-                                    context = context,
-                                    folderName = folderNameTextFieldValue.value,
-                                    infoForSaving = noteTextFieldValue.value,
-                                    onTaskCompleted = {
-                                        coroutineScope.launch {
-                                            async {
-                                                addNewFolderDialogBoxParam.newFolderData(
-                                                    folderNameTextFieldValue.value,
-                                                    CustomFunctionsForLocalDB.localDB.readDao()
-                                                        .getLatestAddedFolder().id
-                                                )
-                                            }.await()
-                                        }
-                                        addNewFolderDialogBoxParam.onCreated()
-                                        addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
-                                            false
-                                    },
-                                    parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen,
-                                    rootParentID = CollectionsScreenVM.rootFolderID
+                    if (!isFolderCreationInProgress.value) {
+                        Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            modifier = Modifier
+                                .padding(
+                                    end = 20.dp,
+                                    top = 20.dp,
                                 )
-                            }
-                        }) {
-                        Text(
-                            text = "Create",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
-                    }
-                    androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
-                        border = BorderStroke(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.secondary
-                        ),
-                        modifier = Modifier
-                            .padding(
-                                end = 20.dp,
-                                top = 10.dp,
-                                bottom = 30.dp
+                                .align(Alignment.End),
+                            onClick = {
+                                isFolderCreationInProgress.value = true
+                                if (folderNameTextFieldValue.value.isEmpty()) {
+                                    Toast.makeText(
+                                        context, "folder name can't be empty", Toast.LENGTH_SHORT
+                                    ).show()
+                                } else if (folderNameTextFieldValue.value == "Saved Links") {
+                                    Toast.makeText(
+                                        context,
+                                        "\"Saved Links\" already exists by default, choose another name :)",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    customFunctionsForLocalDB.createANewFolder(
+                                        context = context,
+                                        folderName = folderNameTextFieldValue.value,
+                                        infoForSaving = noteTextFieldValue.value,
+                                        onTaskCompleted = {
+                                            coroutineScope.launch {
+                                                async {
+                                                    addNewFolderDialogBoxParam.newFolderData(
+                                                        folderNameTextFieldValue.value,
+                                                        CustomFunctionsForLocalDB.localDB.readDao()
+                                                            .getLatestAddedFolder().id
+                                                    )
+                                                }.await()
+                                            }
+                                            addNewFolderDialogBoxParam.onCreated()
+                                            addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
+                                                false
+                                            isFolderCreationInProgress.value = false
+                                        },
+                                        parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
+                                        inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen,
+                                        rootParentID = CollectionsScreenVM.rootFolderID
+                                    )
+                                }
+                            }) {
+                            Text(
+                                text = "Create",
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
                             )
-                            .align(Alignment.End),
-                        onClick = {
-                            addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
-                        }) {
-                        Text(
-                            text = "Cancel",
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
+                        }
+                        androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
+                            border = BorderStroke(
+                                width = 1.dp, color = MaterialTheme.colorScheme.secondary
+                            ),
+                            modifier = Modifier
+                                .padding(
+                                    end = 20.dp, top = 10.dp, bottom = 30.dp
+                                )
+                                .align(Alignment.End),
+                            onClick = {
+                                addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
+                            }) {
+                            Text(
+                                text = "Cancel",
+                                color = MaterialTheme.colorScheme.secondary,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
+                            )
+                        }
+                    } else {
+                        Spacer(modifier = Modifier.height(40.dp))
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                     }
                 }
             }

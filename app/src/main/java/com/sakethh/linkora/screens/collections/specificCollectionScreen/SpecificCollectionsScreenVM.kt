@@ -443,10 +443,18 @@ open class SpecificScreenVM : CollectionsScreenVM() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
-                        .renameALinkTitleFromArchiveBasedFolderLinks(
-                            webURL = webURL, newTitle = newTitle, folderID = folderID
+                    if (isSelectedV9) {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .renameALinkTitleFromArchiveBasedFolderLinksV9(
+                                webURL = webURL, newTitle = newTitle, folderID = folderID
+                            )
+                    } else {
+                        CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromFolders(
+                            webURL = webURL,
+                            newTitle = newTitle,
+                            folderID = folderID
                         )
+                    }
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -502,10 +510,18 @@ open class SpecificScreenVM : CollectionsScreenVM() {
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
-                        .renameALinkInfoFromArchiveBasedFolderLinks(
-                            webURL = webURL, newInfo = newNote, folderID = folderID
+                    if (isSelectedV9) {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .renameALinkInfoFromArchiveBasedFolderLinks(
+                                webURL = webURL, newInfo = newNote, folderID = folderID
+                            )
+                    } else {
+                        CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromFolders(
+                            webURL = webURL,
+                            newInfo = newNote,
+                            folderID = folderID
                         )
+                    }
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -558,10 +574,18 @@ open class SpecificScreenVM : CollectionsScreenVM() {
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
-                            .deleteALinkFromArchiveFolderBasedLinks(
-                                webURL = selectedWebURL, archiveFolderID = folderID
-                            )
+                        if (isSelectedV9) {
+                            CustomFunctionsForLocalDB.localDB.deleteDao()
+                                .deleteALinkFromArchiveFolderBasedLinks(
+                                    webURL = selectedWebURL, archiveFolderID = folderID
+                                )
+                        } else {
+                            CustomFunctionsForLocalDB.localDB.deleteDao()
+                                .deleteALinkFromSpecificFolder(
+                                    webURL = selectedWebURL,
+                                    folderID = folderID
+                                )
+                        }
                     } else {
                         onDeleteClick(folderID)
                     }

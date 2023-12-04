@@ -93,7 +93,7 @@ open class CollectionsScreenVM : ViewModel() {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
                 CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteAllChildFoldersOfASpecificFolder(clickedFolderID)
+                    .deleteAllChildFoldersAndLinksOfASpecificFolder(clickedFolderID)
                 CustomFunctionsForLocalDB.localDB.deleteDao()
                     .deleteAFolder(
                         folderID = clickedFolderID

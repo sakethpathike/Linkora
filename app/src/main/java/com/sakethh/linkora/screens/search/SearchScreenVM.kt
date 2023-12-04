@@ -359,7 +359,7 @@ class SearchScreenVM : SpecificScreenVM() {
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
                     CustomFunctionsForLocalDB.localDB.updateDao()
-                        .renameALinkTitleFromArchiveBasedFolderLinks(
+                        .renameALinkTitleFromArchiveBasedFolderLinksV9(
                             webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
                 }
