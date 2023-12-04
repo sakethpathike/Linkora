@@ -7,6 +7,7 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.outlined.Sort
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -27,7 +29,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -209,59 +210,82 @@ fun SpecificScreen(navController: NavController) {
                 }
             }
         }, modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
-            TopAppBar(colors = TopAppBarDefaults.topAppBarColors(), title = {
-                Text(
-                    text = topBarText,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier.fillMaxWidth(0.75f)
-                )
-            }, actions = {
-                when (SpecificScreenVM.screenType.value) {
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        if (impLinksData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+            Column {
+                TopAppBar(title = {
+                    Text(
+                        text = topBarText,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 24.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.fillMaxWidth(0.75f)
+                    )
+                }, actions = {
+                    when (SpecificScreenVM.screenType.value) {
+                        SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                            if (impLinksData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Sort,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        if (archivedFoldersLinksData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                            if (archivedFoldersLinksData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Sort,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        if (savedLinksData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                            if (savedLinksData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Sort,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        if (specificFolderLinksData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                            if (specificFolderLinksData.isNotEmpty()) {
+                                IconButton(onClick = {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Sort,
+                                        contentDescription = null
+                                    )
+                                }
                             }
                         }
+
+                        SpecificScreenType.INTENT_ACTIVITY -> {
+
+                        }
+
+                        SpecificScreenType.ROOT_SCREEN -> {
+
+                        }
                     }
-
-                    SpecificScreenType.INTENT_ACTIVITY -> {
-
-                    }
-
-                    SpecificScreenType.ROOT_SCREEN -> {
-
-                    }
-                }
-            })
+                })
+                Divider(color = MaterialTheme.colorScheme.outline)
+            }
         }) {
             LazyColumn(
                 modifier = Modifier

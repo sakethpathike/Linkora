@@ -143,12 +143,14 @@ fun AddNewFolderDialogBox(
                                     Toast.makeText(
                                         context, "folder name can't be empty", Toast.LENGTH_SHORT
                                     ).show()
+                                    isFolderCreationInProgress.value = false
                                 } else if (folderNameTextFieldValue.value == "Saved Links") {
                                     Toast.makeText(
                                         context,
                                         "\"Saved Links\" already exists by default, choose another name :)",
                                         Toast.LENGTH_SHORT
                                     ).show()
+                                    isFolderCreationInProgress.value = false
                                 } else {
                                     customFunctionsForLocalDB.createANewFolder(
                                         context = context,

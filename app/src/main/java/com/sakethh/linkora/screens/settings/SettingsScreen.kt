@@ -11,10 +11,12 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -35,6 +37,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,7 +66,7 @@ import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.composables.ImportConflictDialog
 import com.sakethh.linkora.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.screens.settings.composables.PermissionDialog
-import com.sakethh.linkora.screens.settings.composables.SettingComponent
+import com.sakethh.linkora.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsDataComposable
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -138,6 +141,14 @@ fun SettingsScreen(navController: NavController) {
             LazyColumn(modifier = Modifier.padding(it)) {
                 item {
                     Card(
+                        border = BorderStroke(
+                            1.dp,
+                            contentColorFor(MaterialTheme.colorScheme.surface)
+                        ),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
+                        ),
                         modifier = Modifier
                             .padding(15.dp)
                             .fillMaxWidth()
@@ -257,13 +268,17 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                    )
+                    Spacer(
+                        modifier = Modifier.padding(
+                            bottom = 10.dp
+                        )
                     )
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
                     item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Follow System Theme",
                                 doesDescriptionExists = false,
                                 isSwitchNeeded = true,
@@ -285,23 +300,13 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(
-                                topStart = 10.dp,
-                                topEnd = 10.dp,
-                                bottomStart = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp,
-                                bottomEnd = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp
-                            ),
-                            topPadding = 20.dp
+                                })
                         )
                     }
                 }
                 if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
                     item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
                                 doesDescriptionExists = false,
                                 description = null,
@@ -323,23 +328,13 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(
-                                bottomEnd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
-                                bottomStart = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
-                                topStart = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp,
-                                topEnd = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp
-                            ),
-                            topPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 20.dp else 1.dp
+                                })
                         )
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                     item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
                                 doesDescriptionExists = true,
                                 description = "Change colour themes within the app based on your wallpaper.",
@@ -361,34 +356,45 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
-                            topPadding = 1.dp
+                                })
                         )
                     }
                 }
-
+                item {
+                    Divider(
+                        thickness = 0.25.dp,
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
                 item {
                     Text(
                         text = "General",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                    )
+                    Spacer(
+                        modifier = Modifier.padding(
+                            bottom = 10.dp
+                        )
                     )
                 }
                 items(generalSectionData) { settingsUIElement ->
-                    SettingComponent(
-                        settingsUIElement = settingsUIElement,
-                        data = generalSectionData,
-                        isSingleComponent = false,
-                        forListOfSettings = true,
+                    RegularSettingComponent(
+                        settingsUIElement = settingsUIElement
                     )
                 }
                 item {
-                    Spacer(modifier = Modifier.padding(top = 40.dp))
+                    Divider(
+                        thickness = 0.25.dp,
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
+                item {
+                    Spacer(modifier = Modifier.padding(top = 20.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Data",
@@ -417,7 +423,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                     Spacer(
                         modifier = Modifier.padding(
-                            bottom = 20.dp
+                            bottom = 10.dp
                         )
                     )
                 }
@@ -427,44 +433,6 @@ fun SettingsScreen(navController: NavController) {
                             onClick = {
                                 settingsUIElement.onSwitchStateChange()
                             },
-                            shape = RoundedCornerShape(
-                                topStart = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                topEnd = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomStart = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomEnd = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                            ),
                             title = settingsUIElement.title,
                             description = it1,
                             icon = settingsUIElement.icon!!
@@ -473,58 +441,62 @@ fun SettingsScreen(navController: NavController) {
 
                 }
                 item {
+                    Divider(
+                        thickness = 0.25.dp,
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
+                item {
                     Text(
                         text = "Privacy",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp, bottom = 10.dp)
                     )
                 }
                 item {
-                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp)
-                            .clickable {
-                                privacySectionData.onSwitchStateChange()
+                    Box(modifier = Modifier.clickable {
+                        privacySectionData.onSwitchStateChange()
+                    }) {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .padding(
+                                        start = 15.dp
+                                    )
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = privacySectionData.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 16.sp,
+                                )
+                                Switch(
+                                    checked = privacySectionData.isSwitchEnabled.value,
+                                    onCheckedChange = {
+                                        privacySectionData.onSwitchStateChange()
+                                    },
+                                    modifier = Modifier.padding(
+                                        top = 15.dp, end = 15.dp
+                                    )
+                                )
                             }
-                            .animateContentSize(),
-                        shape = RoundedCornerShape(10.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
                             Text(
-                                text = privacySectionData.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 16.sp,
+                                text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 14.sp,
                                 modifier = Modifier.padding(
-                                    top = 15.dp, start = 15.dp
-                                )
-                            )
-                            Switch(
-                                checked = privacySectionData.isSwitchEnabled.value,
-                                onCheckedChange = {
-                                    privacySectionData.onSwitchStateChange()
-                                },
-                                modifier = Modifier.padding(
-                                    top = 15.dp, end = 15.dp
-                                )
+                                    top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
+                                ),
+                                lineHeight = 16.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Text(
-                            text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(
-                                top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
-                            ),
-                            lineHeight = 16.sp,
-                            textAlign = TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis
-                        )
                     }
                 }
                 item {
