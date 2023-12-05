@@ -9,28 +9,28 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface SpecificArchivedFolderDataSorting {
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder = :folderID ORDER BY title COLLATE NOCASE ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10 = :folderID ORDER BY title COLLATE NOCASE ASC")
     fun sortLinksByAToZV9(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderID ORDER BY title COLLATE NOCASE DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10=:folderID ORDER BY title COLLATE NOCASE DESC")
     fun sortLinksByZToAV9(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderID ORDER BY id COLLATE NOCASE DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10=:folderID ORDER BY id COLLATE NOCASE DESC")
     fun sortLinksByLatestToOldestV9(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderID ORDER BY id COLLATE NOCASE ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10=:folderID ORDER BY id COLLATE NOCASE ASC")
     fun sortLinksByOldestToLatestV9(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder = :folderID ORDER BY title COLLATE NOCASE ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10 = :folderID ORDER BY title COLLATE NOCASE ASC")
     fun sortLinksByAToZV10(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder = :folderID ORDER BY title COLLATE NOCASE DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10 = :folderID ORDER BY title COLLATE NOCASE DESC")
     fun sortLinksByZToAV10(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder = :folderID ORDER BY id COLLATE NOCASE DESC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10 = :folderID ORDER BY id COLLATE NOCASE DESC")
     fun sortLinksByLatestToOldestV10(folderID: Long?): Flow<List<LinksTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder = :folderID ORDER BY id COLLATE NOCASE ASC")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10 = :folderID ORDER BY id COLLATE NOCASE ASC")
     fun sortLinksByOldestToLatestV10(folderID: Long?): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID ORDER BY folderName COLLATE NOCASE ASC")

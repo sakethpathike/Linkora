@@ -94,12 +94,22 @@ abstract class LocalDataBase : RoomDatabase() {
 
         }
 
+        private val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                database.execSQL("DROP TABLE IF EXISTS folders_table_new")
+                database.execSQL("CREATE TABLE IF NOT EXISTS `folders_table_new` (`folderName` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentFolderID` INTEGER, `childFolderIDs` TEXT, `isFolderArchived` INTEGER NOT NULL DEFAULT 0)")
+                database.execSQL("INSERT INTO folders_table_new (folderName, infoForSaving, id) SELECT folderName, infoForSaving, id FROM folders_table")
+                database.execSQL("DROP TABLE IF EXISTS folders_table")
+                database.execSQL("ALTER TABLE folders_table_new RENAME TO folders_table")
+            }
+        }
+
         fun getLocalDB(context: Context): LocalDataBase {
             val instance = dbInstance
             return instance ?: synchronized(this) {
                 val roomDBInstance = Room.databaseBuilder(
                     context.applicationContext, LocalDataBase::class.java, "linkora_db"
-                ).addMigrations(MIGRATION_1_2).build()
+                ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
                 dbInstance = roomDBInstance
                 return roomDBInstance
             }

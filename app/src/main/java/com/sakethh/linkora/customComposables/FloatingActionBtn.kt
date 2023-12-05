@@ -122,11 +122,11 @@ fun FloatingActionBtn(
                     )
                 ) {
                     androidx.compose.material3.FloatingActionButton(onClick = {
-                            floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
-                                false
-                            floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
-                            floatingActionBtnParam.isMainFabRotated.value = false
-                        }) {
+                        floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
+                            false
+                        floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
+                        floatingActionBtnParam.isMainFabRotated.value = false
+                    }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Default.CreateNewFolder,
                             contentDescription = null

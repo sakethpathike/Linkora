@@ -723,7 +723,7 @@ fun SpecificScreen(navController: NavController) {
         )
         val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
             mutableLongStateOf(
-                CollectionsScreenVM.selectedFolderData.childFolderIDs.size.toLong()
+                CollectionsScreenVM.selectedFolderData.childFolderIDs?.size?.toLong() ?: 0
             )
         }
         DeleteDialogBox(

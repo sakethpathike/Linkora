@@ -13,7 +13,7 @@ interface DeleteDao {
     @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
 
-    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderID")
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :folderID")
     suspend fun deleteALinkNoteFromArchiveBasedFolderLinks(
         webURL: String,
         folderID: Long,
@@ -34,7 +34,7 @@ interface DeleteDao {
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
 
-    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolder = :folderID AND isLinkedWithFolders=1")
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1")
     suspend fun deleteALinkInfoOfFolders(webURL: String, folderID: Long)
 
     @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
@@ -49,11 +49,11 @@ interface DeleteDao {
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromArchiveLinks(webURL: String)
 
-    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :archiveFolderID AND isLinkedWithArchivedFolder=1 AND isLinkedWithSavedLinks = 0 AND isLinkedWithSavedLinks=0")
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :archiveFolderID AND isLinkedWithArchivedFolder=1 AND isLinkedWithSavedLinks = 0 AND isLinkedWithSavedLinks=0")
     suspend fun deleteALinkFromArchiveFolderBasedLinks(webURL: String, archiveFolderID: Long)
 
 
-    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfLinkedFolder = :folderID AND isLinkedWithFolders=1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithSavedLinks=0")
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithSavedLinks=0")
     suspend fun deleteALinkFromSpecificFolder(webURL: String, folderID: Long)
 
     @Query("DELETE from recently_visited_table WHERE webURL = :webURL")
@@ -67,7 +67,7 @@ interface DeleteDao {
             .getThisFolderData(folderID)
         val deletionAsync = mutableListOf<Deferred<Unit>>()
         coroutineScope {
-            childFolders.childFolderIDs.forEach {
+            childFolders.childFolderIDs?.forEach {
                 val deleteAFolder =
                     async {
                         deleteAFolder(it)
@@ -79,10 +79,10 @@ interface DeleteDao {
         deletionAsync.awaitAll()
     }
 
-    @Query("DELETE from links_table WHERE keyOfLinkedFolder = :folderID")
+    @Query("DELETE from links_table WHERE keyOfLinkedFolderV10 = :folderID")
     suspend fun deleteThisFolderLinks(folderID: Long)
 
-    @Query("DELETE from links_table WHERE keyOfArchiveLinkedFolder = :folderID")
+    @Query("DELETE from links_table WHERE keyOfArchiveLinkedFolderV10 = :folderID")
     suspend fun deleteThisArchiveFolderData(folderID: Long)
 
 

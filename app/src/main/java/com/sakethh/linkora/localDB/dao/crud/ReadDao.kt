@@ -40,13 +40,13 @@ interface ReadDao {
     @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0")
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderID")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
     fun getLinksOfThisFolder(folderID: Long): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM folders_table WHERE id = :folderID")
     suspend fun getThisFolderData(folderID: Long): FoldersTable
 
-    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolder=:folderID")
+    @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10=:folderID")
     fun getThisArchiveFolderData(folderID: Long): Flow<List<LinksTable>>
 
     @Query("SELECT EXISTS(SELECT * FROM important_links_table WHERE webURL = :webURL)")
@@ -55,7 +55,7 @@ interface ReadDao {
     @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks=1)")
     suspend fun doesThisExistsInSavedLinks(webURL: String): Boolean
 
-    @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND keyOfLinkedFolder=:folderID)")
+    @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND keyOfLinkedFolderV10=:folderID)")
     suspend fun doesThisLinkExistsInAFolder(webURL: String, folderID: Long): Boolean
 
     @Query("SELECT EXISTS(SELECT * FROM archived_links_table WHERE webURL = :webURL)")

@@ -353,11 +353,11 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 infoForSaving = selectedArchivedLinkData.value.infoForSaving,
                                 isLinkedWithSavedLinks = true,
                                 isLinkedWithFolders = false,
-                                keyOfLinkedFolder = 0,
+                                keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolder = 0
+                                keyOfArchiveLinkedFolderV10 = 0
                             )
                         )
                     CustomFunctionsForLocalDB.localDB.deleteDao()

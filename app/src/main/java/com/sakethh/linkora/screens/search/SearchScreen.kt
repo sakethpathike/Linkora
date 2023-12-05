@@ -249,14 +249,14 @@ fun SearchScreen(navController: NavController) {
                                                         SearchScreenVM.selectedLinkType =
                                                             SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
                                                         SearchScreenVM.selectedFolderID =
-                                                            it.keyOfArchiveLinkedFolder
+                                                            it.keyOfArchiveLinkedFolderV10
                                                     }
 
                                                     it.isLinkedWithFolders -> {
                                                         SearchScreenVM.selectedLinkType =
                                                             SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
                                                         SearchScreenVM.selectedFolderID =
-                                                            it.keyOfLinkedFolder
+                                                            it.keyOfLinkedFolderV10
                                                     }
 
                                                     it.isLinkedWithSavedLinks -> {

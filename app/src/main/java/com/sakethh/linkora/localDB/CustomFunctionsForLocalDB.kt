@@ -396,11 +396,11 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 infoForSaving = noteForSaving,
                                 isLinkedWithSavedLinks = false,
                                 isLinkedWithFolders = true,
-                                keyOfLinkedFolder = folderID,
+                                keyOfLinkedFolderV10 = folderID,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolder = 0
+                                keyOfArchiveLinkedFolderV10 = 0
                             )
                             if (linkData != null) {
                                 localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
@@ -474,11 +474,11 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 infoForSaving = noteForSaving,
                                 isLinkedWithSavedLinks = false,
                                 isLinkedWithFolders = false,
-                                keyOfLinkedFolder = 0,
+                                keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = true,
-                                keyOfArchiveLinkedFolder = folderID
+                                keyOfArchiveLinkedFolderV10 = folderID
                             )
                             if (linkData != null) {
                                 localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
@@ -551,11 +551,11 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 infoForSaving = noteForSaving,
                                 isLinkedWithSavedLinks = true,
                                 isLinkedWithFolders = false,
-                                keyOfLinkedFolder = 0,
+                                keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolder = 0
+                                keyOfArchiveLinkedFolderV10 = 0
                             )
                             localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                             withContext(Dispatchers.Main) {

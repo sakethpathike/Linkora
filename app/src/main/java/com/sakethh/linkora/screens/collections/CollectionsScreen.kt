@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddLink
@@ -471,7 +470,7 @@ fun CollectionsScreen(navController: NavController) {
         )
         val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
             mutableLongStateOf(
-                CollectionsScreenVM.selectedFolderData.childFolderIDs.size.toLong()
+                CollectionsScreenVM.selectedFolderData.childFolderIDs?.size?.toLong() ?: 0
             )
         }
         DeleteDialogBox(
