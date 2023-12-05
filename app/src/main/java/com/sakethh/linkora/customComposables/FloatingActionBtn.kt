@@ -56,7 +56,6 @@ fun FloatingActionBtn(
             )
         ) {
             androidx.compose.material3.FloatingActionButton(
-                shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
                 onClick = {
                     coroutineScope.launch {
                         kotlinx.coroutines.awaitAll(
@@ -122,10 +121,7 @@ fun FloatingActionBtn(
                         androidx.compose.animation.core.tween(300)
                     )
                 ) {
-                    androidx.compose.material3.FloatingActionButton(
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(
-                            10.dp
-                        ), onClick = {
+                    androidx.compose.material3.FloatingActionButton(onClick = {
                             floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
                                 false
                             floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
@@ -177,7 +173,6 @@ fun FloatingActionBtn(
                 androidx.compose.material3.FloatingActionButton(modifier = androidx.compose.ui.Modifier.rotate(
                     floatingActionBtnParam.rotationAnimation.value
                 ),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp),
                     onClick = {
                         if (floatingActionBtnParam.isMainFabRotated.value) {
                             floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =

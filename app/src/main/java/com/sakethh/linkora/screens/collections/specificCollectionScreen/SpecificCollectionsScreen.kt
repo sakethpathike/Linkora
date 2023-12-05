@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.outlined.Sort
@@ -193,7 +192,7 @@ fun SpecificScreen(navController: NavController) {
                     )
                 )
             } else if (SpecificScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
-                FloatingActionButton(shape = RoundedCornerShape(10.dp), onClick = {
+                FloatingActionButton(onClick = {
                     if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
                         shouldNewLinkDialogBoxBeVisible.value = true
                     } else {
@@ -284,7 +283,7 @@ fun SpecificScreen(navController: NavController) {
                         }
                     }
                 })
-                Divider(color = MaterialTheme.colorScheme.outline)
+                Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
             }
         }) {
             LazyColumn(

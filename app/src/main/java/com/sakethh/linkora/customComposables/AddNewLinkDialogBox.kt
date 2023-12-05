@@ -4,15 +4,16 @@ import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -21,26 +22,30 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
-import androidx.compose.material.LocalContentColor
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.CreateNewFolder
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
@@ -51,6 +56,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -61,7 +68,6 @@ import com.sakethh.linkora.screens.collections.specificCollectionScreen.Specific
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
-import okhttp3.internal.trimSubstring
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -130,7 +136,7 @@ fun AddNewLinkDialogBox(
                     )
                     OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                         modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 30.dp
+                            start = 20.dp, end = 20.dp, top = 20.dp
                         ),
                         label = {
                             Text(
@@ -147,7 +153,7 @@ fun AddNewLinkDialogBox(
                         onValueChange = {
                             linkTextFieldValue.value = it
                         })
-                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
                         OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
                             modifier = Modifier.padding(
                                 start = 20.dp, end = 20.dp, top = 15.dp
@@ -162,7 +168,6 @@ fun AddNewLinkDialogBox(
                             },
                             textStyle = MaterialTheme.typography.titleSmall,
                             singleLine = true,
-                            shape = RoundedCornerShape(5.dp),
                             value = titleTextFieldValue.value,
                             onValueChange = {
                                 titleTextFieldValue.value = it
@@ -182,406 +187,440 @@ fun AddNewLinkDialogBox(
                         },
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
                         value = noteTextFieldValue.value,
                         onValueChange = {
                             noteTextFieldValue.value = it
                         })
-                    if (screenType == SpecificScreenType.ROOT_SCREEN) {
-                        Row(
-                            Modifier.padding(
-                                start = 20.dp, end = 20.dp, top = 30.dp
-                            ), horizontalArrangement = Arrangement.SpaceBetween
+                    if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                        Card(
+                            border = BorderStroke(
+                                1.dp,
+                                contentColorFor(MaterialTheme.colorScheme.surface)
+                            ),
+                            colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp, top = 15.dp)
                         ) {
-                            Text(
-                                text = "Save in",
-                                color = AlertDialogDefaults.textContentColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(top = 15.dp)
-                            )
-                            Row(modifier = Modifier
-                                .padding(start = 15.dp, end = 15.dp)
-                                .clip(RoundedCornerShape(50.dp))
-                                .border(
-                                    shape = RoundedCornerShape(50.dp),
-                                    width = 1.dp,
-                                    color = AlertDialogDefaults.textContentColor
-                                )
-                                .clickable {
-                                    if (!isDataExtractingForTheLink.value) {
-                                        isDropDownMenuIconClicked.value = true
-                                    }
-                                }) {
-                                Spacer(modifier = Modifier.width(10.dp))
-                                Text(
-                                    text = if (selectedFolderName.value.length <= 9) selectedFolderName.value else selectedFolderName.value.trimSubstring(
-                                        0, 6
-                                    ) + "...",
-                                    color = AlertDialogDefaults.textContentColor,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 18.sp,
-                                    maxLines = 1,
-                                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
-                                IconButton(onClick = {
-                                    if (!isDataExtractingForTheLink.value) {
-                                        isDropDownMenuIconClicked.value = true
-                                    }
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.ArrowDropDown,
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight() .padding(
+                                        top = 10.dp, bottom = 10.dp
+                                    ),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Box(
+                                    contentAlignment = Alignment.CenterStart
+                                ) {
+                                    androidx.compose.material3.Icon(
+                                        imageVector = Icons.Outlined.Info,
                                         contentDescription = null,
-                                        tint = AlertDialogDefaults.textContentColor
+                                        modifier = Modifier
+                                            .padding(
+                                                start = 10.dp, end = 10.dp
+                                            )
                                     )
                                 }
-                                Spacer(modifier = Modifier.width(10.dp))
+                                Text(
+                                    text = "Title will be automatically detected as this setting is enabled.",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 14.sp,
+                                    lineHeight = 18.sp,
+                                    textAlign = TextAlign.Start,
+                                    modifier = Modifier
+                                        .padding(end = 10.dp)
+                                )
                             }
-                        }
-                    }
-                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                        Row(modifier = Modifier
-                            .clickable {
-                                if (!isDataExtractingForTheLink.value) {
-                                    isAutoDetectTitleEnabled.value = !isAutoDetectTitleEnabled.value
+                        }}
+                        if (screenType == SpecificScreenType.ROOT_SCREEN) {
+                            Row(
+                                Modifier.padding(
+                                    start = 20.dp, end = 20.dp, top = 20.dp
+                                ), horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = "Save in",
+                                    color = LocalContentColor.current,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.padding(top = 15.dp)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                OutlinedButton(border = BorderStroke(
+                                    width = 1.dp, color = MaterialTheme.colorScheme.primary
+                                ), onClick = {
+                                    if (!isDataExtractingForTheLink.value) {
+                                        isDropDownMenuIconClicked.value = true
+                                    }
+                                }) {
+                                    Text(
+                                        text = selectedFolderName.value,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 18.sp,
+                                        maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.fillMaxWidth(0.80f)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Icon(tint = MaterialTheme.colorScheme.primary,
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = null,
+                                        modifier = Modifier.clickable {
+                                            if (!isDataExtractingForTheLink.value) {
+                                                isDropDownMenuIconClicked.value = true
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
                                 }
                             }
-                            .fillMaxWidth()
-                            .padding(
-                                top = 20.dp, start = 10.dp
-
-                            ), verticalAlignment = Alignment.CenterVertically) {
-                            androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink.value,
-                                checked = isAutoDetectTitleEnabled.value,
-                                onCheckedChange = {
-                                    isAutoDetectTitleEnabled.value = it
-                                })
-                            Text(
-                                text = "Force Auto-detect title",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
                         }
-                    }
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier
-                            .padding(
-                                end = 20.dp, top = 20.dp
-                            )
-                            .align(Alignment.End),
-                        onClick = {
-                            if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isEmpty()) {
-                                Toast.makeText(
-                                    context, "add a link", Toast.LENGTH_SHORT
-                                ).show()
-                            } else if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isNotEmpty()) {
-                                isDataExtractingForTheLink.value = true
-                                when (screenType) {
-                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                        customFunctionsForLocalDB.importantLinkTableUpdater(
-                                            ImportantLinks(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                infoForSaving = noteTextFieldValue.value,
-                                                baseURL = "",
-                                                imgURL = ""
-                                            ),
-                                            context = context,
-                                            inImportantLinksScreen = true,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                            onTaskCompleted = {
-                                                onTaskCompleted()
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                }
-                                            })
-                                    }
-
-                                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-
-                                    }
-
-                                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                            title = titleTextFieldValue.value,
-                                            webURL = linkTextFieldValue.value,
-                                            noteForSaving = noteTextFieldValue.value,
-                                            folderName = selectedFolderName.value,
-                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                            context = context,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                            onTaskCompleted = {
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                    onTaskCompleted()
-                                                }
-                                            }, folderID = CustomComposablesVM.selectedFolderID
-                                        )
-                                    }
-
-                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                            title = titleTextFieldValue.value,
-                                            webURL = linkTextFieldValue.value,
-                                            noteForSaving = noteTextFieldValue.value,
-                                            folderName = specificFolderName,
-                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                            context = context,
-                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                            onTaskCompleted = {
-                                                if (linkTextFieldValue.value.isNotEmpty()) {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                    onTaskCompleted()
-                                                }
-                                            }, folderID = CustomComposablesVM.selectedFolderID
-                                        )
-                                    }
-
-                                    SpecificScreenType.INTENT_ACTIVITY -> {
-
-                                    }
-
-                                    SpecificScreenType.ROOT_SCREEN -> {
-                                        if (selectedFolderName.value == "Saved Links") {
-                                            isDataExtractingForTheLink.value = true
-                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                folderName = selectedFolderName.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                onTaskCompleted = {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                    onTaskCompleted()
-                                                }, folderID = CustomComposablesVM.selectedFolderID
-                                            )
-                                        } else if (selectedFolderName.value == "Important Links") {
-                                            isDataExtractingForTheLink.value = true
-                                            customFunctionsForLocalDB.importantLinkTableUpdater(
-                                                ImportantLinks(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    infoForSaving = noteTextFieldValue.value,
-                                                    baseURL = "",
-                                                    imgURL = ""
-                                                ),
-                                                context = context,
-                                                inImportantLinksScreen = true,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                onTaskCompleted = {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                    onTaskCompleted()
-                                                })
-                                        } else {
-                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                folderName = selectedFolderName.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                onTaskCompleted = {
-                                                    isDataExtractingForTheLink.value = false
-                                                    shouldDialogBoxAppear.value = false
-                                                    onTaskCompleted()
-                                                }, folderID = CustomComposablesVM.selectedFolderID
-                                            )
+                        if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        if (!isDataExtractingForTheLink.value) {
+                                            isAutoDetectTitleEnabled.value =
+                                                !isAutoDetectTitleEnabled.value
                                         }
                                     }
-                                }
-                                if (!isDataExtractingForTheLink.value) {
-                                    shouldDialogBoxAppear.value = false
-                                    onTaskCompleted()
-                                }
+                                    .padding(
+                                        start = 10.dp, end = 20.dp
+                                    ), verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink.value,
+                                    checked = isAutoDetectTitleEnabled.value,
+                                    onCheckedChange = {
+                                        isAutoDetectTitleEnabled.value = it
+                                    })
+                                Text(
+                                    text = "Force Auto-detect title",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
                             }
-                        }) {
-                        if (isDataExtractingForTheLink.value) {
-                            Column {
-                                CircularProgressIndicator(
-                                    modifier = Modifier.size(20.dp),
-                                    strokeWidth = 2.5.dp,
-                                    color = LocalContentColor.current
+                        }
+                        if (!isDataExtractingForTheLink.value) {
+                            Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp,
+                                        top = 20.dp,
+                                        start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .align(Alignment.End),
+                                onClick = {
+                                    if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isEmpty()) {
+                                        Toast.makeText(
+                                            context, "add a link", Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else if (!isDataExtractingForTheLink.value && linkTextFieldValue.value.isNotEmpty()) {
+                                        isDataExtractingForTheLink.value = true
+                                        when (screenType) {
+                                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                                customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                    ImportantLinks(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        infoForSaving = noteTextFieldValue.value,
+                                                        baseURL = "",
+                                                        imgURL = ""
+                                                    ),
+                                                    context = context,
+                                                    inImportantLinksScreen = true,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        onTaskCompleted()
+                                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                        }
+                                                    })
+                                            }
+
+                                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+
+                                            }
+
+                                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = selectedFolderName.value,
+                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        }
+                                                    },
+                                                    folderID = CustomComposablesVM.selectedFolderID
+                                                )
+                                            }
+
+                                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = specificFolderName,
+                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        }
+                                                    },
+                                                    folderID = CustomComposablesVM.selectedFolderID
+                                                )
+                                            }
+
+                                            SpecificScreenType.INTENT_ACTIVITY -> {
+
+                                            }
+
+                                            SpecificScreenType.ROOT_SCREEN -> {
+                                                if (selectedFolderName.value == "Saved Links") {
+                                                    isDataExtractingForTheLink.value = true
+                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        folderName = selectedFolderName.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        },
+                                                        folderID = CustomComposablesVM.selectedFolderID
+                                                    )
+                                                } else if (selectedFolderName.value == "Important Links") {
+                                                    isDataExtractingForTheLink.value = true
+                                                    customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                        ImportantLinks(
+                                                            title = titleTextFieldValue.value,
+                                                            webURL = linkTextFieldValue.value,
+                                                            infoForSaving = noteTextFieldValue.value,
+                                                            baseURL = "",
+                                                            imgURL = ""
+                                                        ),
+                                                        context = context,
+                                                        inImportantLinksScreen = true,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        })
+                                                } else {
+                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        folderName = selectedFolderName.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        },
+                                                        folderID = CustomComposablesVM.selectedFolderID
+                                                    )
+                                                }
+                                            }
+                                        }
+                                        if (!isDataExtractingForTheLink.value) {
+                                            shouldDialogBoxAppear.value = false
+                                            onTaskCompleted()
+                                        }
+                                    }
+                                }) {
+                                Text(
+                                    text = "Save",
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
+                                border = BorderStroke(
+                                    width = 1.dp, color = MaterialTheme.colorScheme.secondary
+                                ),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp, top = 10.dp, bottom = 30.dp, start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .align(Alignment.End),
+                                onClick = {
+                                    shouldDialogBoxAppear.value = false
+                                }) {
+                                Text(
+                                    text = "Cancel",
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
                                 )
                             }
                         } else {
-                            Text(
-                                text = "Save",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
+                            Spacer(modifier = Modifier.height(30.dp))
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                         }
                     }
-                    if (!isDataExtractingForTheLink.value) {
-                        androidx.compose.material3.OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
-                            border = BorderStroke(
-                                width = 1.dp, color = MaterialTheme.colorScheme.secondary
-                            ),
-                            modifier = Modifier
-                                .padding(
-                                    end = 20.dp, top = 10.dp, bottom = 30.dp
-                                )
-                                .align(Alignment.End),
-                            onClick = {
-                                shouldDialogBoxAppear.value = false
-                            }) {
-                            Text(
-                                text = "Cancel",
-                                color = MaterialTheme.colorScheme.secondary,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
-                    if (isDataExtractingForTheLink.value) {
-                        Spacer(modifier = Modifier.height(20.dp))
-                    }
-                }
-                if (isDropDownMenuIconClicked.value) {
-                    ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
-                        coroutineScope.launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
+                    if (isDropDownMenuIconClicked.value) {
+                        ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }.invokeOnCompletion {
+                                isDropDownMenuIconClicked.value = false
                             }
-                        }.invokeOnCompletion {
-                            isDropDownMenuIconClicked.value = false
-                        }
-                    }) {
-                        LazyColumn(modifier = Modifier
-                            .fillMaxWidth()
-                            .wrapContentHeight()) {
-                            item {
-                                Row(
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    modifier = Modifier.fillMaxWidth()
-                                ) {
-                                    Text(
-                                        text = "Save in :",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        fontSize = 24.sp,
-                                        modifier = Modifier.padding(
-                                            start = 20.dp
+                        }) {
+                            LazyColumn(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                            ) {
+                                item {
+                                    Row(
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier.fillMaxWidth()
+                                    ) {
+                                        Text(
+                                            text = "Save in:",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontSize = 24.sp,
+                                            modifier = Modifier.padding(
+                                                start = 20.dp
+                                            )
                                         )
+                                        Icon(imageVector = Icons.Outlined.CreateNewFolder,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .clickable {
+                                                    isCreateANewFolderIconClicked.value = true
+                                                }
+                                                .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
+                                                .size(30.dp),
+                                            tint = MaterialTheme.colorScheme.onSurface)
+                                    }
+                                }
+                                item {
+                                    Divider(
+                                        modifier = Modifier.padding(
+                                            start = 20.dp, end = 65.dp
+                                        ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                     )
-                                    Icon(imageVector = Icons.Outlined.CreateNewFolder,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .clickable {
-                                                isCreateANewFolderIconClicked.value = true
+                                }
+                                item {
+                                    SelectableFolderUIComponent(
+                                        onClick = {
+                                            selectedFolderName.value = "Saved Links"
+                                            coroutineScope.launch {
+                                                if (btmModalSheetState.isVisible) {
+                                                    btmModalSheetState.hide()
+                                                }
+                                            }.invokeOnCompletion {
+                                                coroutineScope.launch {
+                                                    if (btmModalSheetState.isVisible) {
+                                                        btmModalSheetState.hide()
+                                                    }
+                                                }.invokeOnCompletion {
+                                                    isDropDownMenuIconClicked.value = false
+                                                }
                                             }
-                                            .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
-                                            .size(30.dp),
-                                        tint = MaterialTheme.colorScheme.onSurface)
+                                        },
+                                        folderName = "Saved Links",
+                                        imageVector = Icons.Outlined.Link,
+                                        _isComponentSelected = selectedFolderName.value == "Saved Links"
+                                    )
+                                }
+                                item {
+                                    SelectableFolderUIComponent(
+                                        onClick = {
+                                            selectedFolderName.value = "Important Links"
+                                            coroutineScope.launch {
+                                                if (btmModalSheetState.isVisible) {
+                                                    btmModalSheetState.hide()
+                                                }
+                                            }.invokeOnCompletion {
+                                                coroutineScope.launch {
+                                                    if (btmModalSheetState.isVisible) {
+                                                        btmModalSheetState.hide()
+                                                    }
+                                                }.invokeOnCompletion {
+                                                    isDropDownMenuIconClicked.value = false
+                                                }
+                                            }
+                                        },
+                                        folderName = "Important Links",
+                                        imageVector = Icons.Outlined.StarOutline,
+                                        _isComponentSelected = selectedFolderName.value == "Important Links"
+                                    )
+                                }
+                                items(foldersTableData) {
+                                    SelectableFolderUIComponent(
+                                        onClick = {
+                                            selectedFolderName.value = it.folderName
+                                            CustomComposablesVM.selectedFolderID = it.id
+                                            coroutineScope.launch {
+                                                if (btmModalSheetState.isVisible) {
+                                                    btmModalSheetState.hide()
+                                                }
+                                            }.invokeOnCompletion {
+                                                isDropDownMenuIconClicked.value = false
+                                            }
+                                        },
+                                        folderName = it.folderName,
+                                        imageVector = Icons.Outlined.Folder,
+                                        _isComponentSelected = selectedFolderName.value == it.folderName
+                                    )
+                                }
+                                item {
+                                    Spacer(modifier = Modifier.height(20.dp))
                                 }
                             }
-                            item {
-                                Divider(
-                                    modifier = Modifier.padding(
-                                        start = 20.dp, end = 65.dp
-                                    ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                                )
-                            }
-                            item {
-                                SelectableFolderUIComponent(
-                                    onClick = {
-                                        selectedFolderName.value = "Saved Links"
-                                        coroutineScope.launch {
-                                            if (btmModalSheetState.isVisible) {
-                                                btmModalSheetState.hide()
-                                            }
-                                        }.invokeOnCompletion {
-                                            coroutineScope.launch {
-                                                if (btmModalSheetState.isVisible) {
-                                                    btmModalSheetState.hide()
-                                                }
-                                            }.invokeOnCompletion {
-                                                isDropDownMenuIconClicked.value = false
-                                            }
-                                        }
-                                    },
-                                    folderName = "Saved Links",
-                                    imageVector = Icons.Outlined.Link,
-                                    _isComponentSelected = selectedFolderName.value == "Saved Links"
-                                )
-                            }
-                            item {
-                                SelectableFolderUIComponent(
-                                    onClick = {
-                                        selectedFolderName.value = "Important Links"
-                                        coroutineScope.launch {
-                                            if (btmModalSheetState.isVisible) {
-                                                btmModalSheetState.hide()
-                                            }
-                                        }.invokeOnCompletion {
-                                            coroutineScope.launch {
-                                                if (btmModalSheetState.isVisible) {
-                                                    btmModalSheetState.hide()
-                                                }
-                                            }.invokeOnCompletion {
-                                                isDropDownMenuIconClicked.value = false
-                                            }
-                                        }
-                                    },
-                                    folderName = "Important Links",
-                                    imageVector = Icons.Outlined.StarOutline,
-                                    _isComponentSelected = selectedFolderName.value == "Important Links"
-                                )
-                            }
-                            items(foldersTableData) {
-                                SelectableFolderUIComponent(
-                                    onClick = {
-                                        selectedFolderName.value = it.folderName
-                                        CustomComposablesVM.selectedFolderID = it.id
-                                        coroutineScope.launch {
-                                            if (btmModalSheetState.isVisible) {
-                                                btmModalSheetState.hide()
-                                            }
-                                        }.invokeOnCompletion {
-                                            isDropDownMenuIconClicked.value = false
-                                        }
-                                    },
-                                    folderName = it.folderName,
-                                    imageVector = Icons.Outlined.Folder,
-                                    _isComponentSelected = selectedFolderName.value == it.folderName
-                                )
-                            }
-                            item {
-                                Spacer(modifier = Modifier.height(20.dp))
-                            }
                         }
                     }
                 }
-            }
-            AddNewFolderDialogBox(
-                AddNewFolderDialogBoxParam(
-                    shouldDialogBoxAppear = isCreateANewFolderIconClicked,
-                    newFolderData = { folderName, folderID ->
-                        selectedFolderName.value = folderName
-                        CustomComposablesVM.selectedFolderID = folderID
-                    },
-                    onCreated = {
-                        onTaskCompleted()
-                        coroutineScope.launch {
-                            if (btmModalSheetState.isVisible) {
-                                btmModalSheetState.hide()
+                AddNewFolderDialogBox(
+                    AddNewFolderDialogBoxParam(
+                        shouldDialogBoxAppear = isCreateANewFolderIconClicked,
+                        newFolderData = { folderName, folderID ->
+                            selectedFolderName.value = folderName
+                            CustomComposablesVM.selectedFolderID = folderID
+                        },
+                        onCreated = {
+                            onTaskCompleted()
+                            coroutineScope.launch {
+                                if (btmModalSheetState.isVisible) {
+                                    btmModalSheetState.hide()
+                                }
+                            }.invokeOnCompletion {
+                                isDropDownMenuIconClicked.value = false
                             }
-                        }.invokeOnCompletion {
-                            isDropDownMenuIconClicked.value = false
-                        }
-                    },
-                    parentFolderID = parentFolderID,
-                    currentFolderID = CustomComposablesVM.selectedFolderID
+                        },
+                        parentFolderID = parentFolderID,
+                        currentFolderID = CustomComposablesVM.selectedFolderID
+                    )
                 )
-            )
+            }
         }
     }
-}

@@ -310,7 +310,7 @@ class SettingsScreenVM(
         val shouldDarkThemeBeEnabled = mutableStateOf(false)
         val isInAppWebTabEnabled = mutableStateOf(true)
         val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
-        val isBtmSheetEnabledForSavingLinks = mutableStateOf(true)
+        val isBtmSheetEnabledForSavingLinks = mutableStateOf(false)
         val isHomeScreenEnabled = mutableStateOf(true)
         val isSendCrashReportsEnabled = mutableStateOf(true)
         val selectedSortingType = mutableStateOf("")
@@ -393,7 +393,7 @@ class SettingsScreenVM(
                     isBtmSheetEnabledForSavingLinks.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                         dataStore = context.dataStore
-                    ) ?: true
+                    ) ?: false
                 }, async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),

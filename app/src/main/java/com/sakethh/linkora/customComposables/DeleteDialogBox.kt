@@ -3,6 +3,7 @@ package com.sakethh.linkora.customComposables
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -80,7 +81,9 @@ fun DeleteDialogBox(
                                 .padding(
                                     end = 20.dp,
                                     top = 20.dp,
+                                    start = 20.dp
                                 )
+                                .fillMaxWidth()
                                 .align(Alignment.End),
                             onClick = {
                                 deleteDialogBoxParam.onDeleteClick()
@@ -103,8 +106,9 @@ fun DeleteDialogBox(
                                 .padding(
                                     end = 20.dp,
                                     top = 10.dp,
-                                    bottom = 30.dp
+                                    bottom = 30.dp, start = 20.dp
                                 )
+                                .fillMaxWidth()
                                 .align(Alignment.End),
                             onClick = {
                                 deleteDialogBoxParam.shouldDialogBoxAppear.value = false

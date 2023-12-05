@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -81,7 +82,7 @@ fun RenameDialogBox(
                     )
                     OutlinedTextField(maxLines = 1,
                         modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 30.dp
+                            start = 20.dp, end = 20.dp, top = 20.dp
                         ),
                         label = {
                             Text(
@@ -93,7 +94,6 @@ fun RenameDialogBox(
                         },
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
                         value = newFolderOrTitleName.value,
                         onValueChange = {
                             newFolderOrTitleName.value = it
@@ -112,7 +112,6 @@ fun RenameDialogBox(
                         },
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
                         value = newNote.value,
                         onValueChange = {
                             newNote.value = it
@@ -127,10 +126,11 @@ fun RenameDialogBox(
                     )
                     Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
+                            .fillMaxWidth()
                             .padding(
                                 end = 20.dp,
                                 top = 20.dp,
-                                start = 40.dp
+                                start = 20.dp
                             )
                             .align(Alignment.End),
                         onClick = {
@@ -185,7 +185,9 @@ fun RenameDialogBox(
                             .padding(
                                 end = 20.dp,
                                 top = 10.dp,
+                                start = 20.dp
                             )
+                            .fillMaxWidth()
                             .align(Alignment.End),
                         onClick = {
                             if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.selectedV9ArchivedFolder.value) {
@@ -223,8 +225,9 @@ fun RenameDialogBox(
                         ),
                         modifier = Modifier
                             .padding(
-                                end = 20.dp, top = 10.dp, bottom = 30.dp
+                                end = 20.dp, start = 20.dp, top = 10.dp, bottom = 30.dp
                             )
+                            .fillMaxWidth()
                             .align(Alignment.End),
                         onClick = {
                             renameDialogBoxParam.shouldDialogBoxAppear.value = false

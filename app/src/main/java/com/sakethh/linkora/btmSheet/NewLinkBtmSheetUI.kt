@@ -824,6 +824,7 @@ fun SelectableFolderUIComponent(
                 modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart
             ) {
                 Icon(
+                    tint = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                     imageVector = imageVector,
                     contentDescription = null,
                     modifier = Modifier
@@ -844,7 +845,7 @@ fun SelectableFolderUIComponent(
             ) {
                 Text(
                     text = folderName,
-                    color = MaterialTheme.colorScheme.onSurface,
+                    color = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     lineHeight = 20.sp,
@@ -863,7 +864,8 @@ fun SelectableFolderUIComponent(
                         Icon(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = null,
-                            modifier = Modifier.size(26.dp)
+                            modifier = Modifier.size(26.dp),
+                            tint = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current
                         )
                         Spacer(modifier = Modifier.width(20.dp))
                     }

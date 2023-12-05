@@ -151,7 +151,8 @@ fun SearchScreen(navController: NavController) {
                 },
                 placeholder = {
                     Text(
-                        text = "Search", style = MaterialTheme.typography.titleSmall
+                        text = "Search titles to find links",
+                        style = MaterialTheme.typography.titleSmall
                     )
                 },
                 content = {

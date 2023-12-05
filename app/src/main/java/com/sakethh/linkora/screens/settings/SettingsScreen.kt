@@ -129,14 +129,17 @@ fun SettingsScreen(navController: NavController) {
     val privacySectionData = settingsScreenVM.privacySection(context)
     LinkoraTheme {
         Scaffold(topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = "Settings",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp
-                )
-            })
+            Column {
+                TopAppBar(title = {
+                    Text(
+                        text = "Settings",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 24.sp
+                    )
+                })
+                Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+            }
         }) {
             LazyColumn(modifier = Modifier.padding(it)) {
                 item {

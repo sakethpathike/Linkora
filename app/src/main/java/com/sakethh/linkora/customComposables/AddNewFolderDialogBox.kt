@@ -92,7 +92,7 @@ fun AddNewFolderDialogBox(
                     OutlinedTextField(readOnly = isFolderCreationInProgress.value,
                         maxLines = 1,
                         modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 30.dp
+                            start = 20.dp, end = 20.dp, top = 20.dp
                         ),
                         label = {
                             Text(
@@ -104,7 +104,6 @@ fun AddNewFolderDialogBox(
                         },
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
                         value = folderNameTextFieldValue.value,
                         onValueChange = {
                             folderNameTextFieldValue.value = it
@@ -124,7 +123,6 @@ fun AddNewFolderDialogBox(
                         },
                         textStyle = MaterialTheme.typography.titleSmall,
                         singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
                         value = noteTextFieldValue.value,
                         onValueChange = {
                             noteTextFieldValue.value = it
@@ -135,7 +133,9 @@ fun AddNewFolderDialogBox(
                                 .padding(
                                     end = 20.dp,
                                     top = 20.dp,
+                                    start = 20.dp
                                 )
+                                .fillMaxWidth()
                                 .align(Alignment.End),
                             onClick = {
                                 isFolderCreationInProgress.value = true
@@ -189,8 +189,9 @@ fun AddNewFolderDialogBox(
                                 width = 1.dp, color = MaterialTheme.colorScheme.secondary
                             ),
                             modifier = Modifier
+                                .fillMaxWidth()
                                 .padding(
-                                    end = 20.dp, top = 10.dp, bottom = 30.dp
+                                    start = 20.dp, end = 20.dp, top = 10.dp, bottom = 30.dp
                                 )
                                 .align(Alignment.End),
                             onClick = {
