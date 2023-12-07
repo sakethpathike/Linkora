@@ -23,7 +23,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 
-open class SpecificScreenVM : CollectionsScreenVM() {
+open class SpecificCollectionsScreenVM : CollectionsScreenVM() {
     private val _folderLinksData = MutableStateFlow(emptyList<LinksTable>())
     val folderLinksData = _folderLinksData.asStateFlow()
 
@@ -60,8 +60,7 @@ open class SpecificScreenVM : CollectionsScreenVM() {
                     0,
                     0,
                     childFolderIDs = emptyList(),
-
-                    )
+                )
             )
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
         var selectedArchiveFolderID: Long = 0
@@ -464,7 +463,7 @@ open class SpecificScreenVM : CollectionsScreenVM() {
 
     fun onTitleChangeClickForLinks(
         folderID: Long, newTitle: String, webURL: String,
-        onTaskCompleted: () -> Unit,
+        onTaskCompleted: () -> Unit, folderName: String
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -483,8 +482,10 @@ open class SpecificScreenVM : CollectionsScreenVM() {
                 viewModelScope.launch {
                     if (isSelectedV9) {
                         CustomFunctionsForLocalDB.localDB.updateDao()
-                            .renameALinkTitleFromArchiveBasedFolderLinksV10(
-                                webURL = webURL, newTitle = newTitle, folderID = folderID
+                            .renameALinkTitleFromArchiveBasedFolderLinksV9(
+                                webURL = webURL,
+                                newTitle = newTitle,
+                                folderName = currentClickedFolderData.value.folderName
                             )
                     } else {
                         CustomFunctionsForLocalDB.localDB.updateDao()
@@ -513,14 +514,21 @@ open class SpecificScreenVM : CollectionsScreenVM() {
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
-                        .renameALinkTitleFromFoldersV10(
-                            webURL = webURL, newTitle = newTitle, folderID = folderID
-                        )
+                if (isSelectedV9) {
+                    viewModelScope.launch {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .renameALinkTitleFromFoldersV9(webURL, newTitle, folderName)
+                    }
+                } else {
+                    viewModelScope.launch {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .renameALinkTitleFromFoldersV10(
+                                webURL = webURL, newTitle = newTitle, folderID = folderID
+                            )
 
-                }.invokeOnCompletion {
-                    onTaskCompleted()
+                    }.invokeOnCompletion {
+                        onTaskCompleted()
+                    }
                 }
                 Unit
             }
@@ -551,8 +559,10 @@ open class SpecificScreenVM : CollectionsScreenVM() {
                 viewModelScope.launch {
                     if (isSelectedV9) {
                         CustomFunctionsForLocalDB.localDB.updateDao()
-                            .renameALinkInfoFromArchiveBasedFolderLinksV10(
-                                webURL = webURL, newInfo = newNote, folderID = folderID
+                            .renameALinkInfoFromArchiveBasedFolderLinksV9(
+                                webURL = webURL,
+                                newInfo = newNote,
+                                folderName = currentClickedFolderData.value.folderName
                             )
                     } else {
                         CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromFoldersV10(
@@ -581,10 +591,18 @@ open class SpecificScreenVM : CollectionsScreenVM() {
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
-                        .renameALinkInfoFromFoldersV10(
-                            webURL = webURL, newInfo = newNote, folderID = folderID
+                    if (isSelectedV9) {
+                        CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromFoldersV9(
+                            webURL,
+                            newNote,
+                            folderName = currentClickedFolderData.value.folderName
                         )
+                    } else {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .renameALinkInfoFromFoldersV10(
+                                webURL = webURL, newInfo = newNote, folderID = folderID
+                            )
+                    }
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }

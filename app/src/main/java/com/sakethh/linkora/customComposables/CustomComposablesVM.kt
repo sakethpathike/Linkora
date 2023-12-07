@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -19,7 +20,7 @@ data class UpdateBothNameAndNoteParam(
 
 class CustomComposablesVM : CustomFunctionsForLocalDB() {
     companion object {
-        var selectedFolderID: Long = 0
+        var selectedFolderID: Long? = 0
     }
 
     fun updateBothNameAndNote(
@@ -60,6 +61,14 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                                     folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
                                     newFolderName = updateBothNameAndNoteParam.newFolderOrTitleName
                                 )
+                                if (SpecificCollectionsScreenVM.isSelectedV9) {
+                                    updateBothNameAndNoteParam.renameDialogBoxParam.existingFolderName?.let {
+                                        localDB.updateDao().renameFolderNameForExistingFolderDataV9(
+                                            currentFolderName = it,
+                                            newFolderName = updateBothNameAndNoteParam.newFolderOrTitleName
+                                        )
+                                    }
+                                }
                             }
                         }
                     }

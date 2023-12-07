@@ -39,7 +39,7 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -52,30 +52,30 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: NavController) {
     val homeScreenVM: HomeScreenVM = viewModel()
-    val specificScreenVM: SpecificScreenVM = viewModel()
+    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
     LaunchedEffect(key1 = Unit) {
         awaitAll(async {
-            specificScreenVM.changeRetrievedData(
+            specificCollectionsScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
                 ),
                 folderID = 0,
                 screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
             )
         }, async {
-            specificScreenVM.changeRetrievedData(
+            specificCollectionsScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
                 ),
                 folderID = 0,
                 screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
             )
         })
     }
-    val savedLinksData = specificScreenVM.savedLinksTable.collectAsState().value
-    val impLinksData = specificScreenVM.impLinksTable.collectAsState().value
+    val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
+    val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsState().value
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -268,7 +268,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                     shouldDeleteDialogBoxAppear.value = true
                 },
                 onImportantLinkAdditionInTheTable = {
-                    specificScreenVM.onImportantLinkAdditionInTheTable(
+                    specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
                         context, {}, HomeScreenVM.tempImpLinkData
                     )
                 },

@@ -348,43 +348,47 @@ fun AddNewLinkDialogBox(
                                         }
 
                                         SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                folderName = selectedFolderName.value,
-                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                onTaskCompleted = {
-                                                    if (linkTextFieldValue.value.isNotEmpty()) {
-                                                        isDataExtractingForTheLink.value = false
-                                                        shouldDialogBoxAppear.value = false
-                                                        onTaskCompleted()
-                                                    }
-                                                },
-                                                folderID = CustomComposablesVM.selectedFolderID
-                                            )
+                                            CustomComposablesVM.selectedFolderID?.let {
+                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = selectedFolderName.value,
+                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        }
+                                                    },
+                                                    folderID = it
+                                                )
+                                            }
                                         }
 
                                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                            customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                title = titleTextFieldValue.value,
-                                                webURL = linkTextFieldValue.value,
-                                                noteForSaving = noteTextFieldValue.value,
-                                                folderName = specificFolderName,
-                                                savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                context = context,
-                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                onTaskCompleted = {
-                                                    if (linkTextFieldValue.value.isNotEmpty()) {
-                                                        isDataExtractingForTheLink.value = false
-                                                        shouldDialogBoxAppear.value = false
-                                                        onTaskCompleted()
-                                                    }
-                                                },
-                                                folderID = CustomComposablesVM.selectedFolderID
-                                            )
+                                            CustomComposablesVM.selectedFolderID?.let {
+                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = specificFolderName,
+                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        if (linkTextFieldValue.value.isNotEmpty()) {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        }
+                                                    },
+                                                    folderID = it
+                                                )
+                                            }
                                         }
 
                                         SpecificScreenType.INTENT_ACTIVITY -> {
@@ -394,21 +398,23 @@ fun AddNewLinkDialogBox(
                                         SpecificScreenType.ROOT_SCREEN -> {
                                             if (selectedFolderName.value == "Saved Links") {
                                                 isDataExtractingForTheLink.value = true
-                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    folderName = selectedFolderName.value,
-                                                    noteForSaving = noteTextFieldValue.value,
-                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                    context = context,
-                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                    onTaskCompleted = {
-                                                        isDataExtractingForTheLink.value = false
-                                                        shouldDialogBoxAppear.value = false
-                                                        onTaskCompleted()
-                                                    },
-                                                    folderID = CustomComposablesVM.selectedFolderID
-                                                )
+                                                CustomComposablesVM.selectedFolderID?.let {
+                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        folderName = selectedFolderName.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        },
+                                                        folderID = it
+                                                    )
+                                                }
                                             } else if (selectedFolderName.value == "Important Links") {
                                                 isDataExtractingForTheLink.value = true
                                                 customFunctionsForLocalDB.importantLinkTableUpdater(
@@ -428,21 +434,23 @@ fun AddNewLinkDialogBox(
                                                         onTaskCompleted()
                                                     })
                                             } else {
-                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                    title = titleTextFieldValue.value,
-                                                    webURL = linkTextFieldValue.value,
-                                                    folderName = selectedFolderName.value,
-                                                    noteForSaving = noteTextFieldValue.value,
-                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                    context = context,
-                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                    onTaskCompleted = {
-                                                        isDataExtractingForTheLink.value = false
-                                                        shouldDialogBoxAppear.value = false
-                                                        onTaskCompleted()
-                                                    },
-                                                    folderID = CustomComposablesVM.selectedFolderID
-                                                )
+                                                CustomComposablesVM.selectedFolderID?.let {
+                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        folderName = selectedFolderName.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            shouldDialogBoxAppear.value = false
+                                                            onTaskCompleted()
+                                                        },
+                                                        folderID = it
+                                                    )
+                                                }
                                             }
                                         }
                                     }

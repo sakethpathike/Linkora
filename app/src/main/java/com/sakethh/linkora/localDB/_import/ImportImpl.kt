@@ -17,13 +17,14 @@ class ImportImpl {
     suspend fun importToLocalDB(
         context: Context,
         exceptionType: MutableState<String?>,
-        json: String,
+        jsonString: String,
         shouldErrorDialogBeVisible: MutableState<Boolean>
     ) {
         try {
-            val jsonDeserialized = Json {
+            val json  =Json {
                 ignoreUnknownKeys = true
-            }.decodeFromString<ExportDTOv8>(json)
+            }
+            val jsonDeserialized = json.decodeFromString<ExportDTOv8>(jsonString)
             withContext(Dispatchers.IO) {
                 awaitAll(async {
                     CustomFunctionsForLocalDB.localDB.importDao()
@@ -51,6 +52,7 @@ class ImportImpl {
                 Toast.makeText(context, "Imported Data Successfully", Toast.LENGTH_SHORT).show()
             }
         } catch (e: IllegalArgumentException) {
+            e.printStackTrace()
             exceptionType.value = IllegalArgumentException().toString()
             shouldErrorDialogBeVisible.value = true
         } catch (e: SerializationException) {

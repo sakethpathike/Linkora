@@ -11,7 +11,7 @@ import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +30,7 @@ enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
 
-class ArchiveScreenVM : SpecificScreenVM() {
+class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
             title = "",
@@ -288,8 +288,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
         selectedURLOrFolderNote: String,
-        onTaskCompleted: () -> Unit,
-        selectedFolderID: Long
+        onTaskCompleted: () -> Unit
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
@@ -311,16 +310,19 @@ class ArchiveScreenVM : SpecificScreenVM() {
                             .addANewFolder(
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
-                                    infoForSaving = selectedURLOrFolderNote, parentFolderID = null,
-                                    id = selectedFolderID, childFolderIDs = emptyList(),
+                                    infoForSaving = selectedURLOrFolderNote,
+                                    parentFolderID = null,
+                                    childFolderIDs = emptyList(),
+                                    isV9BasedFolder = true
                                 )
                             )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.deleteDao()
                             .deleteAnArchiveFolderV9(folderName = selectedURLOrFolderName)
+                    }, async {
+                        CustomFunctionsForLocalDB.localDB.updateDao()
+                            .moveArchiveFolderBackToRootFolderV9(selectedURLOrFolderNote)
                     })
-                    CustomFunctionsForLocalDB.localDB.updateDao()
-                        .moveArchiveFolderBackToRootFolderV10(folderID = selectedFolderID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context, "Unarchived successfully", Toast.LENGTH_SHORT
@@ -355,7 +357,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                                 isLinkedWithFolders = false,
                                 keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = 0,
+                                keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = false,
                                 keyOfArchiveLinkedFolderV10 = 0
                             )

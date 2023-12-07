@@ -10,7 +10,7 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM.Companion.isSelectedV9
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -71,7 +71,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 folderName = folderName,
                                 infoForSaving = infoForSaving,
                                 parentFolderID = parentFolderID,
-                                childFolderIDs = emptyList()
+                                childFolderIDs = emptyList(), isV9BasedFolder = false
                             )
                         )
                     if (parentFolderID != null) {
@@ -404,9 +404,9 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 keyOfLinkedFolderV10 = folderID,
                                 keyOfLinkedFolder = folderName,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolderV10 = 0
+                                keyOfArchiveLinkedFolderV10 = 0,
+                                keyOfImpLinkedFolder = "",
                             )
                             if (linkData != null) {
                                 localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
@@ -486,7 +486,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 isLinkedWithFolders = false,
                                 keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = 0,
+                                keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = true,
                                 keyOfArchiveLinkedFolderV10 = folderID,
                                 keyOfArchiveLinkedFolder = folderName
@@ -564,7 +564,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 isLinkedWithFolders = false,
                                 keyOfLinkedFolderV10 = 0,
                                 isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = 0,
+                                keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = false,
                                 keyOfArchiveLinkedFolderV10 = 0
                             )

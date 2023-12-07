@@ -184,7 +184,7 @@ class SettingsScreenVM(
         viewModelScope.launch {
             ImportImpl().importToLocalDB(
                 exceptionType = exceptionType,
-                json = json,
+                jsonString = json,
                 context = context,
                 shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
             )

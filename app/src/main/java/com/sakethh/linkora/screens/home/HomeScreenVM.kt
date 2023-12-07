@@ -12,7 +12,7 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -21,7 +21,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HomeScreenVM : SpecificScreenVM() {
+class HomeScreenVM : SpecificCollectionsScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     enum class HomeScreenType {
@@ -88,13 +88,13 @@ class HomeScreenVM : SpecificScreenVM() {
                         webURL = webURL, newTitle = newTitle
                     )
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -110,13 +110,13 @@ class HomeScreenVM : SpecificScreenVM() {
                     CustomFunctionsForLocalDB.localDB.updateDao()
                         .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -178,13 +178,13 @@ class HomeScreenVM : SpecificScreenVM() {
                         ).show()
                     }
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -204,7 +204,7 @@ class HomeScreenVM : SpecificScreenVM() {
                     CustomFunctionsForLocalDB.localDB.deleteDao()
                         .deleteALinkFromImpLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
@@ -277,13 +277,13 @@ class HomeScreenVM : SpecificScreenVM() {
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -324,13 +324,13 @@ class HomeScreenVM : SpecificScreenVM() {
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    SpecificScreenVM().changeRetrievedData(
+                    SpecificCollectionsScreenVM().changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 }
                 Unit

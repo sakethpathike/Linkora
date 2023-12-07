@@ -84,7 +84,7 @@ interface UpdateDao {
 
     @Query("UPDATE links_table SET keyOfLinkedFolder = :newFolderName WHERE keyOfLinkedFolder = :currentFolderName")
     suspend fun renameFolderNameForExistingFolderDataV9(
-        currentFolderName: Long, newFolderName: Long
+        currentFolderName: String, newFolderName: String
     )
 
     @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 1 , isLinkedWithFolders = 0, keyOfArchiveLinkedFolder = :folderName, keyOfLinkedFolder = \"\" WHERE keyOfLinkedFolder = :folderName")
@@ -98,9 +98,14 @@ interface UpdateDao {
     @Query("UPDATE folders_table SET isFolderArchived = 0 WHERE id=:folderID")
     suspend fun moveArchivedFolderToRegularFolderV10(folderID: Long)
 
-    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolderV10 = 0, keyOfLinkedFolderV10 =  :folderID WHERE keyOfArchiveLinkedFolderV10 = :folderID")
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1,  keyOfLinkedFolderV10 =  :folderID, keyOfArchiveLinkedFolderV10 = NULL WHERE keyOfArchiveLinkedFolderV10 = :folderID")
     suspend fun moveArchiveFolderBackToRootFolderV10(
         folderID: Long,
+    )
+
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfLinkedFolder =  :folderName,keyOfArchiveLinkedFolder=\"\" WHERE keyOfArchiveLinkedFolder = :folderName AND isLinkedWithArchivedFolder = 1")
+    suspend fun moveArchiveFolderBackToRootFolderV9(
+        folderName: String,
     )
 
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE id = :folderID")

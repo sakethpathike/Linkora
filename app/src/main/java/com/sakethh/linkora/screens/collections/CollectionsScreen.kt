@@ -85,8 +85,8 @@ import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -204,7 +204,7 @@ fun CollectionsScreen(navController: NavController) {
                                 }
                             }
                             .clickable {
-                                SpecificScreenVM.screenType.value =
+                                SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             }
@@ -285,7 +285,7 @@ fun CollectionsScreen(navController: NavController) {
                             .wrapContentHeight()
                             .fillMaxWidth()
                             .clickable {
-                                SpecificScreenVM.screenType.value =
+                                SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SAVED_LINKS_SCREEN
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             }
@@ -359,6 +359,8 @@ fun CollectionsScreen(navController: NavController) {
                             folderName = foldersData.folderName,
                             folderNote = foldersData.infoForSaving,
                             onMoreIconClick = {
+                                SpecificCollectionsScreenVM.isSelectedV9 =
+                                    foldersData.isV9BasedFolder
                                 CollectionsScreenVM.selectedFolderData.folderName =
                                     foldersData.folderName
                                 CollectionsScreenVM.selectedFolderData.infoForSaving =
@@ -371,10 +373,12 @@ fun CollectionsScreen(navController: NavController) {
                                 CollectionsScreenVM.selectedFolderData = foldersData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
-                                SpecificScreenVM.inARegularFolder.value = true
-                                SpecificScreenVM.screenType.value =
+                                SpecificCollectionsScreenVM.isSelectedV9 =
+                                    foldersData.isV9BasedFolder
+                                SpecificCollectionsScreenVM.inARegularFolder.value = true
+                                SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                SpecificScreenVM.currentClickedFolderData.value =
+                                SpecificCollectionsScreenVM.currentClickedFolderData.value =
                                     foldersData
                                 CollectionsScreenVM.rootFolderID = foldersData.id
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)

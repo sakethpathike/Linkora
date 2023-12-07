@@ -49,7 +49,7 @@ import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -64,7 +64,7 @@ import kotlinx.coroutines.launch
 fun ParentHomeScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = viewModel()
-    val specificScreenVM: SpecificScreenVM = viewModel()
+    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -181,21 +181,21 @@ fun ParentHomeScreen(navController: NavController) {
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = {
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                    folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                    folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                 )
-                specificScreenVM.changeRetrievedData(
+                specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                    folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
+                    folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
                 )
             },
             bottomModalSheetState = sortingBtmSheetState
