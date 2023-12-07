@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -89,7 +90,7 @@ open class CollectionsScreenVM : ViewModel() {
         }
     }
 
-    fun onDeleteClick(clickedFolderID: Long) {
+    fun onRegularFolderDeleteClick(clickedFolderID: Long, clickedFolderName: String) {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
                 CustomFunctionsForLocalDB.localDB.deleteDao()
@@ -99,8 +100,13 @@ open class CollectionsScreenVM : ViewModel() {
                         folderID = clickedFolderID
                     )
             }, async {
-                CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteThisFolderLinks(folderID = clickedFolderID)
+                if (!isSelectedV9) {
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                        .deleteThisFolderLinksV10(folderID = clickedFolderID)
+                } else {
+                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                        .deleteThisFolderLinksV9(folderName = clickedFolderName)
+                }
             })
         }
 

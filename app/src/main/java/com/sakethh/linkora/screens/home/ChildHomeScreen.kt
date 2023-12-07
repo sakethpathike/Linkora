@@ -58,13 +58,19 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             specificScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
-                ), folderID = 0, screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                ),
+                folderID = 0,
+                screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
+                folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
             )
         }, async {
             specificScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                     SettingsScreenVM.Settings.selectedSortingType.value
-                ), folderID = 0, screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                ),
+                folderID = 0,
+                screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
             )
         })
     }

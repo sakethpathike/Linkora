@@ -184,12 +184,18 @@ fun ParentHomeScreen(navController: NavController) {
                 specificScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderID = 0, screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    ),
+                    folderID = 0,
+                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
+                    folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
                 )
                 specificScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
-                    ), folderID = 0, screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    ),
+                    folderID = 0,
+                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                    folderName = SpecificScreenVM.currentClickedFolderData.value.folderName
                 )
             },
             bottomModalSheetState = sortingBtmSheetState

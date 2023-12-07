@@ -10,8 +10,8 @@ class ChildNameFolderTypeConverter {
 
 
     @TypeConverter
-    fun toJson(jsonString: String): List<String?> {
-        return Json.decodeFromString(jsonString)
+    fun toJson(jsonString: String?): List<String?>? {
+        return jsonString?.let { Json.decodeFromString(it) }
     }
 
     @TypeConverter

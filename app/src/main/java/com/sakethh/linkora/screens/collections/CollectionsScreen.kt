@@ -478,7 +478,10 @@ fun CollectionsScreen(navController: NavController) {
                 totalIds = totalFoldersCount.value,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
-                    collectionsScreenVM.onDeleteClick(CollectionsScreenVM.selectedFolderData.id)
+                    collectionsScreenVM.onRegularFolderDeleteClick(
+                        CollectionsScreenVM.selectedFolderData.id,
+                        CollectionsScreenVM.selectedFolderData.folderName
+                    )
                 },
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,
                 onDeleted = {

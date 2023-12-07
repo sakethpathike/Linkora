@@ -7,10 +7,10 @@ import com.sakethh.linkora.localDB.dto.FoldersTable
 
 @Dao
 interface UpdateDao {
-    @Query("UPDATE archived_folders_table SET infoForSaving = :newInfo  WHERE id= :folderID")
-    suspend fun renameALinkInfoOfArchiveFolders(
+    @Query("UPDATE archived_folders_table SET infoForSaving = :newInfo  WHERE archiveFolderName= :folderName")
+    suspend fun renameInfoOfArchiveFoldersV9(
         newInfo: String,
-        folderID: Long,
+        folderName: String,
     )
 
     @Update
@@ -29,7 +29,10 @@ interface UpdateDao {
     suspend fun renameALinkInfoFromImpLinks(webURL: String, newInfo: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1")
-    suspend fun renameALinkInfoFromFolders(webURL: String, newInfo: String, folderID: Long)
+    suspend fun renameALinkInfoFromFoldersV10(webURL: String, newInfo: String, folderID: Long)
+
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
+    suspend fun renameALinkInfoFromFoldersV9(webURL: String, newInfo: String, folderName: String)
 
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
@@ -41,38 +44,52 @@ interface UpdateDao {
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :folderID")
-    suspend fun renameALinkInfoFromArchiveBasedFolderLinks(
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinksV10(
         webURL: String,
         newInfo: String,
         folderID: Long,
     )
 
+    @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinksV9(
+        webURL: String,
+        newInfo: String,
+        folderName: String,
+    )
+
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :folderID")
-    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV9(
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV10(
         webURL: String,
         newTitle: String,
         folderID: Long,
+    )
+
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName")
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV9(
+        webURL: String,
+        newTitle: String,
+        folderName: String,
     )
 
     @Query("UPDATE folders_table SET folderName = :newFolderName WHERE id = :folderID")
     suspend fun renameAFolderName(folderID: Long, newFolderName: String)
 
     @Query("UPDATE archived_folders_table SET archiveFolderName = :newFolderName WHERE id= :folderID")
-    suspend fun renameAFolderArchiveName(folderID: Long, newFolderName: String)
+    suspend fun renameAFolderArchiveNameV9(folderID: Long, newFolderName: String)
 
-    @Query("UPDATE links_table SET keyOfArchiveLinkedFolderV10 = :newFolderID WHERE keyOfArchiveLinkedFolderV10 = :currentFolderID")
-    suspend fun renameFolderIDForExistingArchivedFolderData(
-        currentFolderID: Long, newFolderID: Long
+    @Query("UPDATE links_table SET keyOfArchiveLinkedFolder = :newFolderName WHERE keyOfArchiveLinkedFolder = :currentFolderName")
+    suspend fun renameFolderNameForExistingArchivedFolderDataV9(
+        currentFolderName: Long, newFolderName: String
     )
 
-    @Query("UPDATE links_table SET keyOfLinkedFolderV10 = :newFolderID WHERE keyOfLinkedFolderV10 = :currentFolderID")
-    suspend fun renameFolderIDForExistingFolderData(
-        currentFolderID: Long, newFolderID: Long
+    @Query("UPDATE links_table SET keyOfLinkedFolder = :newFolderName WHERE keyOfLinkedFolder = :currentFolderName")
+    suspend fun renameFolderNameForExistingFolderDataV9(
+        currentFolderName: Long, newFolderName: Long
     )
 
-    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 1 , isLinkedWithFolders = 0, keyOfArchiveLinkedFolderV10 = :folderID, keyOfLinkedFolderV10 = \"\" WHERE keyOfLinkedFolderV10 = :folderID")
-    suspend fun moveFolderLinksDataToArchive(
-        folderID: Long,
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 1 , isLinkedWithFolders = 0, keyOfArchiveLinkedFolder = :folderName, keyOfLinkedFolder = \"\" WHERE keyOfLinkedFolder = :folderName")
+    suspend fun moveFolderLinksDataToArchiveV9(
+        folderName: String,
     )
 
     @Query("UPDATE folders_table SET isFolderArchived = 1 WHERE id=:folderID")
@@ -82,19 +99,22 @@ interface UpdateDao {
     suspend fun moveArchivedFolderToRegularFolderV10(folderID: Long)
 
     @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfArchiveLinkedFolderV10 = 0, keyOfLinkedFolderV10 =  :folderID WHERE keyOfArchiveLinkedFolderV10 = :folderID")
-    suspend fun moveArchiveFolderBackToRootFolder(
+    suspend fun moveArchiveFolderBackToRootFolderV10(
         folderID: Long,
     )
 
     @Query("UPDATE folders_table SET infoForSaving = :newNote WHERE id = :folderID")
-    suspend fun renameAFolderNote(folderID: Long, newNote: String)
+    suspend fun renameAFolderNoteV10(folderID: Long, newNote: String)
 
     @Query("UPDATE archived_folders_table SET infoForSaving = :newNote WHERE id = :folderID")
-    suspend fun renameArchivedFolderNote(folderID: Long, newNote: String)
+    suspend fun renameArchivedFolderNoteV9(folderID: Long, newNote: String)
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1")
-    suspend fun renameALinkTitleFromFolders(webURL: String, newTitle: String, folderID: Long)
+    suspend fun renameALinkTitleFromFoldersV10(webURL: String, newTitle: String, folderID: Long)
+
+    @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
+    suspend fun renameALinkTitleFromFoldersV9(webURL: String, newTitle: String, folderName: String)
 }

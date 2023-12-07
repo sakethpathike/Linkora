@@ -10,6 +10,7 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -104,7 +105,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
             viewModelScope.launch {
                 localDB.updateDao()
                     .renameAFolderName(folderID = folderID, newFolderName = newFolderName)
-                localDB.updateDao().renameAFolderNote(folderID = folderID, infoForFolder)
+                localDB.updateDao().renameAFolderNoteV10(folderID = folderID, infoForFolder)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -273,16 +274,16 @@ open class CustomFunctionsForLocalDB : ViewModel() {
         var doesThisExistsInArchiveFolder = false
         viewModelScope.launch {
             doesThisExistsInArchiveFolder = localDB.readDao()
-                .doesThisArchiveFolderExists(folderName = archivedFolders.archiveFolderName)
+                .doesThisArchiveFolderExistsV9(folderName = archivedFolders.archiveFolderName)
         }.invokeOnCompletion {
             if (doesThisExistsInArchiveFolder) {
                 viewModelScope.launch {
                     awaitAll(async {
                         localDB.deleteDao()
-                            .deleteAnArchiveFolder(folderName = archivedFolders.archiveFolderName)
+                            .deleteAnArchiveFolderV9(folderName = archivedFolders.archiveFolderName)
                     }, async {
                         localDB.deleteDao()
-                            .deleteThisArchiveFolderData(folderID = archivedFolders.id)
+                            .deleteThisArchiveFolderDataV9(folderID = archivedFolders.archiveFolderName)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -302,7 +303,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                 }.invokeOnCompletion {
                     viewModelScope.launch {
                         localDB.updateDao()
-                            .moveFolderLinksDataToArchive(folderID = archivedFolders.id)
+                            .moveFolderLinksDataToArchiveV9(folderName = archivedFolders.archiveFolderName)
                     }.invokeOnCompletion {
                         viewModelScope.launch {
                             localDB.deleteDao()
@@ -342,10 +343,14 @@ open class CustomFunctionsForLocalDB : ViewModel() {
             CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS -> {
                 var doesThisLinkExists = false
                 viewModelScope.launch {
-                    doesThisLinkExists = localDB.readDao()
-                        .doesThisLinkExistsInAFolder(
-                            webURL, folderID
-                        )
+                    doesThisLinkExists = if (!isSelectedV9) {
+                        localDB.readDao()
+                            .doesThisLinkExistsInAFolderV10(
+                                webURL, folderID
+                            )
+                    } else {
+                        localDB.readDao().doesThisLinkExistsInAFolderV9(webURL, folderName)
+                    }
                 }.invokeOnCompletion {
                     if (!isNetworkAvailable(context)) {
                         viewModelScope.launch {
@@ -397,6 +402,7 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 isLinkedWithSavedLinks = false,
                                 isLinkedWithFolders = true,
                                 keyOfLinkedFolderV10 = folderID,
+                                keyOfLinkedFolder = folderName,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = false,
@@ -422,8 +428,12 @@ open class CustomFunctionsForLocalDB : ViewModel() {
             CustomFunctionsForLocalDBType.ARCHIVE_FOLDER_LINKS -> {
                 var doesThisLinkExistsInAFolder = false
                 viewModelScope.launch {
-                    doesThisLinkExistsInAFolder = localDB.readDao()
-                        .doesThisLinkExistsInAFolder(webURL, folderID)
+                    doesThisLinkExistsInAFolder = if (!isSelectedV9) {
+                        localDB.readDao()
+                            .doesThisLinkExistsInAFolderV10(webURL, folderID)
+                    } else {
+                        localDB.readDao().doesThisLinkExistsInAFolderV9(webURL, folderName)
+                    }
                 }.invokeOnCompletion {
                     if (!isNetworkAvailable(context)) {
                         viewModelScope.launch {
@@ -478,7 +488,8 @@ open class CustomFunctionsForLocalDB : ViewModel() {
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = 0,
                                 isLinkedWithArchivedFolder = true,
-                                keyOfArchiveLinkedFolderV10 = folderID
+                                keyOfArchiveLinkedFolderV10 = folderID,
+                                keyOfArchiveLinkedFolder = folderName
                             )
                             if (linkData != null) {
                                 localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)

@@ -71,7 +71,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                         else -> {
                             viewModelScope.launch {
                                 awaitAll(async {
-                                    localDB.updateDao().renameAFolderNote(
+                                    localDB.updateDao().renameAFolderNoteV10(
                                         folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
                                         newNote = updateBothNameAndNoteParam.newNote
                                     )
@@ -84,7 +84,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                         viewModelScope.launch {
                             val doesFolderExists = async {
                                 updateBothNameAndNoteParam.renameDialogBoxParam.existingFolderName?.let {
-                                    localDB.readDao().doesThisArchiveFolderExists(
+                                    localDB.readDao().doesThisArchiveFolderExistsV9(
                                         folderName = it
                                     )
                                 }
@@ -96,7 +96,7 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                                     Toast.LENGTH_SHORT
                                 ).show()
                             } else {
-                                localDB.updateDao().renameAFolderArchiveName(
+                                localDB.updateDao().renameAFolderArchiveNameV9(
                                     folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
                                     newFolderName = updateBothNameAndNoteParam.newFolderOrTitleName
                                 )
@@ -111,10 +111,12 @@ class CustomComposablesVM : CustomFunctionsForLocalDB() {
                         else -> {
                             viewModelScope.launch {
                                 awaitAll(async {
-                                    localDB.updateDao().renameALinkInfoOfArchiveFolders(
-                                        folderID = updateBothNameAndNoteParam.renameDialogBoxParam.currentFolderID,
-                                        newInfo = updateBothNameAndNoteParam.newNote
-                                    )
+                                    updateBothNameAndNoteParam.renameDialogBoxParam.existingFolderName?.let {
+                                        localDB.updateDao().renameInfoOfArchiveFoldersV9(
+                                            folderName = it,
+                                            newInfo = updateBothNameAndNoteParam.newNote
+                                        )
+                                    }
                                 }, async { updateArchivedFolderTitle() })
                             }
                         }

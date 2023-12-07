@@ -89,7 +89,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
         } else {
             viewModelScope.launch {
                 CustomFunctionsForLocalDB.localDB.updateDao()
-                    .renameArchivedFolderNote(
+                    .renameArchivedFolderNoteV9(
                         folderID = folderID,
                         newNote = newNote
                     )
@@ -116,7 +116,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
         } else {
             viewModelScope.launch {
                 CustomFunctionsForLocalDB.localDB.updateDao()
-                    .renameAFolderArchiveName(folderID, newTitle)
+                    .renameAFolderArchiveNameV9(folderID, newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -240,7 +240,7 @@ class ArchiveScreenVM : SpecificScreenVM() {
                     }
                 )
             } else {
-                onDeleteClick(selectedArchiveFolderID)
+                onRegularFolderDeleteClick(selectedArchiveFolderID, selectedURLOrFolderName)
             }
         }
 
@@ -317,10 +317,10 @@ class ArchiveScreenVM : SpecificScreenVM() {
                             )
                     }, async {
                         CustomFunctionsForLocalDB.localDB.deleteDao()
-                            .deleteAnArchiveFolder(folderName = selectedURLOrFolderName)
+                            .deleteAnArchiveFolderV9(folderName = selectedURLOrFolderName)
                     })
                     CustomFunctionsForLocalDB.localDB.updateDao()
-                        .moveArchiveFolderBackToRootFolder(folderID = selectedFolderID)
+                        .moveArchiveFolderBackToRootFolderV10(folderID = selectedFolderID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context, "Unarchived successfully", Toast.LENGTH_SHORT

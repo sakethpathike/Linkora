@@ -101,6 +101,21 @@ abstract class LocalDataBase : RoomDatabase() {
                 database.execSQL("INSERT INTO folders_table_new (folderName, infoForSaving, id) SELECT folderName, infoForSaving, id FROM folders_table")
                 database.execSQL("DROP TABLE IF EXISTS folders_table")
                 database.execSQL("ALTER TABLE folders_table_new RENAME TO folders_table")
+
+                database.execSQL("CREATE TABLE IF NOT EXISTS `links_table_new` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `webURL` TEXT NOT NULL, `baseURL` TEXT NOT NULL, `imgURL` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `isLinkedWithSavedLinks` INTEGER NOT NULL, `isLinkedWithFolders` INTEGER NOT NULL, `keyOfLinkedFolderV10` INTEGER, `keyOfLinkedFolder` TEXT, `isLinkedWithImpFolder` INTEGER NOT NULL, `keyOfImpLinkedFolder` INTEGER NOT NULL, `isLinkedWithArchivedFolder` INTEGER NOT NULL, `keyOfArchiveLinkedFolderV10` INTEGER, `keyOfArchiveLinkedFolder` TEXT)")
+                database.execSQL(
+                    "INSERT INTO links_table_new (id, title, webURL, baseURL, imgURL, " +
+                            "infoForSaving, isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolderV10, " +
+                            "keyOfLinkedFolder, isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
+                            "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolderV10, keyOfArchiveLinkedFolder) " +
+                            "SELECT id, title, webURL, baseURL, imgURL, infoForSaving, " +
+                            "isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolder, " +
+                            "keyOfLinkedFolder, isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
+                            "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolder, keyOfArchiveLinkedFolder " +
+                            "FROM links_table"
+                )
+                database.execSQL("DROP TABLE links_table")
+                database.execSQL("ALTER TABLE links_table_new RENAME TO links_table")
             }
         }
 

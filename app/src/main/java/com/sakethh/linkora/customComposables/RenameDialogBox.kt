@@ -202,7 +202,7 @@ fun RenameDialogBox(
                                     coroutineScope.launch {
                                         if (renameDialogBoxParam.existingFolderName != null) {
                                             CustomFunctionsForLocalDB.localDB.updateDao()
-                                                .renameAFolderNote(
+                                                .renameAFolderNoteV10(
                                                     folderID = renameDialogBoxParam.currentFolderID,
                                                     newNote = newNote.value
                                                 )
