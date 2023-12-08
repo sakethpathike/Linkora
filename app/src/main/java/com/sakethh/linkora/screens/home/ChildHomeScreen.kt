@@ -38,6 +38,7 @@ import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -61,7 +62,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 ),
                 folderID = 0,
                 screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
             )
         }, async {
             specificCollectionsScreenVM.changeRetrievedData(
@@ -70,7 +71,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 ),
                 folderID = 0,
                 screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
             )
         })
     }
@@ -308,7 +309,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
-            onNoteChangeClickForLinks = { newNote: String ->
+            onNoteChangeClick = { newNote: String ->
                 homeScreenVM.onNoteChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
                     HomeScreenVM.tempImpLinkData.webURL,
@@ -317,14 +318,12 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 shouldRenameDialogBoxAppear.value = false
                 Unit
             },
-            onTitleChangeClickForLinks = { newTitle: String ->
+            onTitleChangeClick = { newTitle: String ->
                 homeScreenVM.onTitleChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
                     HomeScreenVM.tempImpLinkData.webURL,
                     newTitle
                 )
-            }, currentFolderID = 0, parentFolderID = null, onTitleRenamed = {
-                shouldRenameDialogBoxAppear.value = false
             }
         )
     )

@@ -49,7 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import kotlinx.coroutines.launch
@@ -88,7 +88,7 @@ fun OptionsBtmSheetUI(
     }
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+    val updateDBVM: UpdateVM = viewModel()
     val localClipBoardManager = LocalClipboardManager.current
     if (optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(
@@ -154,7 +154,7 @@ fun OptionsBtmSheetUI(
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
                                 if (optionsBtmSheetUIParam.importantLinks != null && optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable == null) {
-                                    customFunctionsForLocalDB.importantLinkTableUpdater(
+                                    updateDBVM.importantLinkTableUpdater(
                                         importantLinks = optionsBtmSheetUIParam.importantLinks,
                                         context = context, onTaskCompleted = {
                                             optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable?.invoke()

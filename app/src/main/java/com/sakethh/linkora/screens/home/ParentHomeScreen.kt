@@ -48,6 +48,7 @@ import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -187,7 +188,7 @@ fun ParentHomeScreen(navController: NavController) {
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                    folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                    folderName = CollectionsScreenVM.selectedFolderData.value.folderName
                 )
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -195,7 +196,7 @@ fun ParentHomeScreen(navController: NavController) {
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                    folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                    folderName = CollectionsScreenVM.selectedFolderData.value.folderName
                 )
             },
             bottomModalSheetState = sortingBtmSheetState
@@ -203,8 +204,9 @@ fun ParentHomeScreen(navController: NavController) {
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            specificFolderName = "Tea || Coffee ?",
-            parentFolderID = null
+            parentFolderID = null, onSaveClick = {
+
+            }
         )
 
         AddNewFolderDialogBox(

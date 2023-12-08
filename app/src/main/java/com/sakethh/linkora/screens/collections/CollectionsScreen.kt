@@ -82,7 +82,8 @@ import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -152,7 +153,8 @@ fun CollectionsScreen(navController: NavController) {
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+    val updateVM: UpdateVM = viewModel()
+    val deleteVM: DeleteVM = viewModel()
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             FloatingActionBtn(
@@ -361,16 +363,16 @@ fun CollectionsScreen(navController: NavController) {
                             onMoreIconClick = {
                                 SpecificCollectionsScreenVM.isSelectedV9 =
                                     foldersData.isV9BasedFolder
-                                CollectionsScreenVM.selectedFolderData.folderName =
+                                CollectionsScreenVM.selectedFolderData.value.folderName =
                                     foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.infoForSaving =
+                                CollectionsScreenVM.selectedFolderData.value.infoForSaving =
                                     foldersData.infoForSaving
                                 clickedFolderNote.value = foldersData.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
                                 }
                                 clickedFolderName.value = foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData = foldersData
+                                CollectionsScreenVM.selectedFolderData.value = foldersData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificCollectionsScreenVM.isSelectedV9 =
@@ -378,7 +380,7 @@ fun CollectionsScreen(navController: NavController) {
                                 SpecificCollectionsScreenVM.inARegularFolder.value = true
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                SpecificCollectionsScreenVM.currentClickedFolderData.value =
+                                CollectionsScreenVM.selectedFolderData.value =
                                     foldersData
                                 CollectionsScreenVM.rootFolderID = foldersData.id
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -428,53 +430,30 @@ fun CollectionsScreen(navController: NavController) {
                 },
                 importantLinks = null,
                 onArchiveClick = {
-                    customFunctionsForLocalDB.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.id)
-                    /*customFunctionsForLocalDB.archiveFolderTableUpdaterV9(
-                        archivedFolders = ArchivedFolders(
-                            archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
-                            infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving,
-                            id = CollectionsScreenVM.selectedFolderData.id
-                        ), context = context, onTaskCompleted = {
-                            collectionsScreenVM.changeRetrievedFoldersData(
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
-                                )
-                            )
-                        }
-                    )*/
+                    updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
                 },
                 noteForSaving = clickedFolderNote.value,
                 onNoteDeleteCardClick = {
                     collectionsScreenVM.onNoteDeleteClick(
                         context,
-                        CollectionsScreenVM.selectedFolderData.id
+                        CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 linkTitle = "",
-                folderName = CollectionsScreenVM.selectedFolderData.folderName
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
             )
         )
         RenameDialogBox(
             RenameDialogBoxParam(
-                onNoteChangeClickForLinks = {},
+                onNoteChangeClick = {},
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedFolderName.value,
-                onTitleChangeClickForLinks = {},
-                onTitleRenamed = {
-                    collectionsScreenVM.changeRetrievedFoldersData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
-                    shouldRenameDialogBoxBeVisible.value = false
-                },
-                currentFolderID = CollectionsScreenVM.selectedFolderData.id,
-                parentFolderID = null
+                onTitleChangeClick = {}
             )
         )
         val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
             mutableLongStateOf(
-                CollectionsScreenVM.selectedFolderData.childFolderIDs?.size?.toLong() ?: 0
+                CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
             )
         }
         DeleteDialogBox(
@@ -482,9 +461,10 @@ fun CollectionsScreen(navController: NavController) {
                 totalIds = totalFoldersCount.value,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
-                    collectionsScreenVM.onRegularFolderDeleteClick(
-                        CollectionsScreenVM.selectedFolderData.id,
-                        CollectionsScreenVM.selectedFolderData.folderName
+                    deleteVM.onRegularFolderDeleteClick(
+                        CollectionsScreenVM.selectedFolderData.value.id,
+                        CollectionsScreenVM.selectedFolderData.value.folderName,
+                        isSelectedV9 = CollectionsScreenVM.selectedFolderData.value.isV9BasedFolder
                     )
                 },
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,
@@ -499,9 +479,10 @@ fun CollectionsScreen(navController: NavController) {
 
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            specificFolderName = "hi lol",
             screenType = SpecificScreenType.ROOT_SCREEN,
-            parentFolderID = null
+            parentFolderID = null, onSaveClick = {
+
+            }
         )
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(

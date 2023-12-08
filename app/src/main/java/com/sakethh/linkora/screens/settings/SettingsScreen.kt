@@ -59,7 +59,7 @@ import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
@@ -540,11 +540,11 @@ fun SettingsScreen(navController: NavController) {
             onClick = { activityResultLauncher.launch("text/*") },
             exceptionType = settingsScreenVM.exceptionType
         )
-        val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+        val deleteVM: DeleteVM = viewModel()
         ImportConflictDialog(isVisible = isImportConflictBoxVisible, onMergeClick = {
             activityResultLauncher.launch("text/*")
         }, onDeleteExistingDataClick = {
-            customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+            deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                 activityResultLauncher.launch("text/*")
             })
         }, onExportAndThenImportClick = {
@@ -557,7 +557,7 @@ fun SettingsScreen(navController: NavController) {
                 Toast.makeText(
                     context, "Successfully Exported", Toast.LENGTH_SHORT
                 ).show()
-                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                     activityResultLauncher.launch("text/*")
                 })
             }
@@ -584,7 +584,7 @@ fun SettingsScreen(navController: NavController) {
             DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
                 onDeleteClick = {
-                    customFunctionsForLocalDB.deleteEntireLinksAndFoldersData()
+                    deleteVM.deleteEntireLinksAndFoldersData()
                     Toast.makeText(
                         context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
                     ).show()

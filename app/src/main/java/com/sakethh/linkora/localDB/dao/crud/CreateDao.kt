@@ -2,7 +2,7 @@ package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
 import androidx.room.Insert
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
@@ -25,8 +25,8 @@ interface CreateDao {
     suspend fun addANewChildIdToARootAndParentFolders(
         rootParentID: Long, parentID: Long, currentID: Long
     ) {
-        val rootFolder = CustomFunctionsForLocalDB.localDB.readDao().getThisFolderData(rootParentID)
-        CustomFunctionsForLocalDB.localDB.updateDao().updateAFolderData(rootFolder)
+        val rootFolder = LocalDataBase.localDB.readDao().getThisFolderData(rootParentID)
+        LocalDataBase.localDB.updateDao().updateAFolderData(rootFolder)
         addIdsIntoParentHierarchy(currentID)
     }
 
@@ -37,9 +37,9 @@ interface CreateDao {
         while (true) {
 
             val currentFolderData =
-                CustomFunctionsForLocalDB.localDB.readDao().getThisFolderData(tempCurrentID)
+                LocalDataBase.localDB.readDao().getThisFolderData(tempCurrentID)
 
-            val currentParentFolderData = CustomFunctionsForLocalDB.localDB.readDao()
+            val currentParentFolderData = LocalDataBase.localDB.readDao()
                 .getThisFolderData(currentFolderData.parentFolderID ?: break)
 
             val currentParentFolderIdChildData =
@@ -56,7 +56,7 @@ interface CreateDao {
             currentParentFolderData.childFolderIDs =
                 currentParentFolderIdChildData?.toImmutableList()?.distinct()
 
-            CustomFunctionsForLocalDB.localDB.updateDao().updateAFolderData(currentParentFolderData)
+            LocalDataBase.localDB.updateDao().updateAFolderData(currentParentFolderData)
 
             tempCurrentID = currentParentFolderData.id
         }

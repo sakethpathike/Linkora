@@ -6,7 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
@@ -51,21 +51,21 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 if (query.isNotEmpty()) {
-                    CustomFunctionsForLocalDB.localDB.linksSearching()
+                    LocalDataBase.localDB.linksSearching()
                         .getFromImportantLinks(query = query).collect {
                             _impLinksQueriedData.emit(it)
                         }
                 }
             }, async {
                 if (query.isNotEmpty()) {
-                    CustomFunctionsForLocalDB.localDB.linksSearching()
+                    LocalDataBase.localDB.linksSearching()
                         .getFromLinksTableIncludingArchive(query = query).collect {
                             _linksTableQueriedData.emit(it)
                         }
                 }
             }, async {
                 if (query.isNotEmpty()) {
-                    CustomFunctionsForLocalDB.localDB.linksSearching()
+                    LocalDataBase.localDB.linksSearching()
                         .getFromArchiveLinks(query = query).collect {
                             _archiveLinksQueriedData.emit(it)
                         }
@@ -87,7 +87,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByAToZ().collect {
+                    LocalDataBase.localDB.historyLinksSorting().sortByAToZ().collect {
                         _historyLinksData.emit(it)
                     }
                 }
@@ -95,7 +95,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByZToA().collect {
+                    LocalDataBase.localDB.historyLinksSorting().sortByZToA().collect {
                         _historyLinksData.emit(it)
                     }
                 }
@@ -103,7 +103,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByLatestToOldest()
+                    LocalDataBase.localDB.historyLinksSorting().sortByLatestToOldest()
                         .collect {
                             _historyLinksData.emit(it)
                         }
@@ -112,7 +112,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.historyLinksSorting().sortByOldestToLatest()
+                    LocalDataBase.localDB.historyLinksSorting().sortByOldestToLatest()
                         .collect {
                             _historyLinksData.emit(it)
                         }
@@ -130,7 +130,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -140,7 +140,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -150,7 +150,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoOfFoldersV10(webURL = selectedWebURL, folderID = folderID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -160,7 +160,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -170,7 +170,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromArchiveLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -180,7 +180,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkNoteFromArchiveBasedFolderLinksV10(
                             folderID = folderID,
                             webURL = selectedWebURL
@@ -200,7 +200,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     ) {
         viewModelScope.launch {
             awaitAll(async {
-                CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+               updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                     title = HomeScreenVM.tempImpLinkData.title,
                     webURL = HomeScreenVM.tempImpLinkData.webURL,
                     baseURL = HomeScreenVM.tempImpLinkData.baseURL,
@@ -212,17 +212,17 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             }, async {
                 when (selectedLinkType) {
                     SelectedLinkType.HISTORY_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteARecentlyVisitedLink(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.SAVED_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromSavedLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.FOLDER_BASED_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromSpecificFolderV10(
                                 folderID = folderID,
                                 webURL = HomeScreenVM.tempImpLinkData.webURL
@@ -230,17 +230,17 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     }
 
                     SelectedLinkType.IMP_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.ARCHIVE_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromArchiveLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromArchiveFolderBasedLinksV10(
                                 archiveFolderID = folderID,
                                 webURL = HomeScreenVM.tempImpLinkData.webURL
@@ -259,7 +259,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkInfoFromRecentlyVisitedLinks(
                             webURL = webURL, newInfo = newNote
                         )
@@ -268,7 +268,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromSavedLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkInfoFromSavedLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -276,7 +276,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromFoldersV10(
+                    LocalDataBase.localDB.updateDao().renameALinkInfoFromFoldersV10(
                         webURL = webURL, newInfo = newNote, folderID = folderID
                     )
                 }
@@ -284,7 +284,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromImpLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkInfoFromImpLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -292,7 +292,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromArchiveLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkInfoFromArchiveLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -300,7 +300,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkInfoFromArchiveBasedFolderLinksV10(
                             webURL = webURL, newInfo = newNote, folderID = folderID
                         )
@@ -317,7 +317,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkTitleFromRecentlyVisited(
                             webURL = webURL, newTitle = newTitle
                         )
@@ -326,7 +326,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromSavedLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkTitleFromSavedLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }
@@ -334,7 +334,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromFoldersV10(
+                    LocalDataBase.localDB.updateDao().renameALinkTitleFromFoldersV10(
                         webURL = webURL, newTitle = newTitle, folderID = folderID
                     )
                 }
@@ -342,7 +342,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromImpLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkTitleFromImpLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }
@@ -350,7 +350,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromArchiveLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkTitleFromArchiveLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }
@@ -358,7 +358,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkTitleFromArchiveBasedFolderLinksV10(
                             webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
@@ -376,7 +376,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     ) {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.deleteDao().deleteARecentlyVisitedLink(
+                LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(
                     webURL = selectedWebURL
                 )
                 shouldDeleteBoxAppear.value = false
@@ -389,7 +389,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteALinkFromSavedLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinks(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -403,7 +403,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteALinkFromSpecificFolderV10(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromSpecificFolderV10(
                         webURL = selectedWebURL, folderID = folderID
                     )
                     shouldDeleteBoxAppear.value = false
@@ -417,7 +417,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteALinkFromImpLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -431,7 +431,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteALinkFromArchiveLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -445,7 +445,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkFromArchiveFolderBasedLinksV10(
                             webURL = selectedWebURL, archiveFolderID = folderID
                         )

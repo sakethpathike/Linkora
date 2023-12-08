@@ -52,8 +52,13 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun historyLinksSorting(): HistoryLinksSorting
     abstract fun linksSearching(): LinksSearching
     abstract fun importDao(): ImportDao
+    enum class LocalDataType {
+        FOLDER_BASED_LINKS, IMP_FOLDERS_LINKS, ARCHIVE_FOLDER_LINKS, SAVED_LINKS
+    }
 
     companion object {
+        lateinit var localDB: LocalDataBase
+
         @Volatile
         private var dbInstance: LocalDataBase? = null
 

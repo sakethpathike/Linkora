@@ -67,10 +67,14 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
-import com.sakethh.linkora.customComposables.CustomComposablesVM
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
+import com.sakethh.linkora.localDB.commonVMs.ReadVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -115,8 +119,10 @@ fun NewLinkBtmSheet(
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
-    val localDensity = LocalDensity.current
+    val createVM:CreateVM= viewModel()
+    val updateVM:UpdateVM= viewModel()
+    val deleteVM:DeleteVM= viewModel()
+    val readVM:ReadVM= viewModel()
     LaunchedEffect(key1 = Unit) {
         this.launch {
             awaitAll(async {
@@ -143,11 +149,11 @@ fun NewLinkBtmSheet(
             }, async {
                 coroutineScope.launch {
                     if (inIntentActivity.value) {
-                        CustomFunctionsForLocalDB.localDB = LocalDataBase.getLocalDB(context)
+                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
                     }
                 }.invokeOnCompletion {
                     coroutineScope.launch {
-                        CustomFunctionsForLocalDB.localDB.readDao().getAllRootFolders().collect {
+                        LocalDataBase.localDB.readDao().getAllRootFolders().collect {
                             IntentActivityData.foldersData.value = it
                         }
                     }
@@ -274,7 +280,7 @@ fun NewLinkBtmSheet(
                                         }
                                         when (newLinkBtmSheetUIParam.screenType) {
                                             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                                customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                updateVM.importantLinkTableUpdater(
                                                     ImportantLinks(
                                                         title = titleTextFieldValue.value,
                                                         webURL = linkTextFieldValue.value,
@@ -307,63 +313,59 @@ fun NewLinkBtmSheet(
                                             }
 
                                             SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                                CustomComposablesVM.selectedFolderID?.let {
-                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                        title = titleTextFieldValue.value,
-                                                        webURL = linkTextFieldValue.value,
-                                                        noteForSaving = noteTextFieldValue.value,
-                                                        folderName = selectedFolder.value,
-                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                        context = context,
-                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                        onTaskCompleted = {
-                                                            newLinkBtmSheetUIParam.onLinkSaved()
-                                                            isDataExtractingForTheLink.value = false
-                                                            coroutineScope.launch {
-                                                                if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                    newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                }
-                                                            }.invokeOnCompletion {
-                                                                newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                    false
-                                                                if (inIntentActivity.value) {
-                                                                    activity?.finishAndRemoveTask()
-                                                                }
+                                                createVM.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = selectedFolder.value,
+                                                    savingFor = LocalDataBase.LocalDataType.SAVED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        newLinkBtmSheetUIParam.onLinkSaved()
+                                                        isDataExtractingForTheLink.value = false
+                                                        coroutineScope.launch {
+                                                            if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                newLinkBtmSheetUIParam.btmSheetState.hide()
                                                             }
-                                                        },
-                                                        folderID = it
-                                                    )
-                                                }
+                                                        }.invokeOnCompletion {
+                                                            newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                false
+                                                            if (inIntentActivity.value) {
+                                                                activity?.finishAndRemoveTask()
+                                                            }
+                                                        }
+                                                    },
+                                                    folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                )
                                             }
 
                                             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                                CustomComposablesVM.selectedFolderID?.let {
-                                                    customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                        title = titleTextFieldValue.value,
-                                                        webURL = linkTextFieldValue.value,
-                                                        noteForSaving = noteTextFieldValue.value,
-                                                        folderName = folderName.value,
-                                                        savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                        context = context,
-                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                        onTaskCompleted = {
-                                                            newLinkBtmSheetUIParam.onLinkSaved()
-                                                            isDataExtractingForTheLink.value = false
-                                                            coroutineScope.launch {
-                                                                if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                    newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                }
-                                                            }.invokeOnCompletion {
-                                                                newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                    false
-                                                                if (inIntentActivity.value) {
-                                                                    activity?.finishAndRemoveTask()
-                                                                }
+                                                createVM.addANewLinkSpecificallyInFolders(
+                                                    title = titleTextFieldValue.value,
+                                                    webURL = linkTextFieldValue.value,
+                                                    noteForSaving = noteTextFieldValue.value,
+                                                    folderName = folderName.value,
+                                                    savingFor = LocalDataBase.LocalDataType.FOLDER_BASED_LINKS,
+                                                    context = context,
+                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                    onTaskCompleted = {
+                                                        newLinkBtmSheetUIParam.onLinkSaved()
+                                                        isDataExtractingForTheLink.value = false
+                                                        coroutineScope.launch {
+                                                            if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                newLinkBtmSheetUIParam.btmSheetState.hide()
                                                             }
-                                                        },
-                                                        folderID = it
-                                                    )
-                                                }
+                                                        }.invokeOnCompletion {
+                                                            newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                false
+                                                            if (inIntentActivity.value) {
+                                                                activity?.finishAndRemoveTask()
+                                                            }
+                                                        }
+                                                    },
+                                                    folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                )
                                             }
 
                                             SpecificScreenType.INTENT_ACTIVITY -> {
@@ -374,40 +376,38 @@ fun NewLinkBtmSheet(
                                                             Intent.EXTRA_TEXT
                                                         )?.let {
                                                             linkTextFieldValue.value = it
-                                                            CustomComposablesVM.selectedFolderID?.let { it1 ->
-                                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                                    title = titleTextFieldValue.value,
-                                                                    webURL = linkTextFieldValue.value,
-                                                                    folderName = selectedFolder.value,
-                                                                    noteForSaving = noteTextFieldValue.value,
-                                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                                    context = context,
-                                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                                    onTaskCompleted = {
-                                                                        isDataExtractingForTheLink.value =
-                                                                            false
-                                                                        coroutineScope.launch {
-                                                                            if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                                newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                            }
-                                                                        }.invokeOnCompletion {
-                                                                            newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                                false
-                                                                            if (inIntentActivity.value) {
-                                                                                activity?.finishAndRemoveTask()
-                                                                            }
+                                                            createVM.addANewLinkSpecificallyInFolders(
+                                                                title = titleTextFieldValue.value,
+                                                                webURL = linkTextFieldValue.value,
+                                                                folderName = selectedFolder.value,
+                                                                noteForSaving = noteTextFieldValue.value,
+                                                                savingFor = LocalDataBase.LocalDataType.SAVED_LINKS,
+                                                                context = context,
+                                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                                onTaskCompleted = {
+                                                                    isDataExtractingForTheLink.value =
+                                                                        false
+                                                                    coroutineScope.launch {
+                                                                        if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                            newLinkBtmSheetUIParam.btmSheetState.hide()
                                                                         }
-                                                                    },
-                                                                    folderID = it1
-                                                                )
-                                                            }
+                                                                    }.invokeOnCompletion {
+                                                                        newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                            false
+                                                                        if (inIntentActivity.value) {
+                                                                            activity?.finishAndRemoveTask()
+                                                                        }
+                                                                    }
+                                                                },
+                                                                folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                            )
                                                         }
                                                     } else if (selectedFolder.value == "Important Links") {
                                                         intentData.value!!.getStringExtra(
                                                             Intent.EXTRA_TEXT
                                                         )?.let {
                                                             linkTextFieldValue.value = it
-                                                            customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                            updateVM.importantLinkTableUpdater(
                                                                 ImportantLinks(
                                                                     title = titleTextFieldValue.value,
                                                                     webURL = linkTextFieldValue.value,
@@ -440,33 +440,31 @@ fun NewLinkBtmSheet(
                                                             Intent.EXTRA_TEXT
                                                         )?.let {
                                                             linkTextFieldValue.value = it
-                                                            CustomComposablesVM.selectedFolderID?.let { it1 ->
-                                                                customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                                    title = titleTextFieldValue.value,
-                                                                    webURL = linkTextFieldValue.value,
-                                                                    folderName = selectedFolder.value,
-                                                                    noteForSaving = noteTextFieldValue.value,
-                                                                    savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                                    context = context,
-                                                                    autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                                    onTaskCompleted = {
-                                                                        isDataExtractingForTheLink.value =
-                                                                            false
-                                                                        coroutineScope.launch {
-                                                                            if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                                newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                            }
-                                                                        }.invokeOnCompletion {
-                                                                            newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                                false
-                                                                            if (inIntentActivity.value) {
-                                                                                activity?.finishAndRemoveTask()
-                                                                            }
+                                                            createVM.addANewLinkSpecificallyInFolders(
+                                                                title = titleTextFieldValue.value,
+                                                                webURL = linkTextFieldValue.value,
+                                                                folderName = selectedFolder.value,
+                                                                noteForSaving = noteTextFieldValue.value,
+                                                                savingFor = LocalDataBase.LocalDataType.FOLDER_BASED_LINKS,
+                                                                context = context,
+                                                                autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                                onTaskCompleted = {
+                                                                    isDataExtractingForTheLink.value =
+                                                                        false
+                                                                    coroutineScope.launch {
+                                                                        if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                            newLinkBtmSheetUIParam.btmSheetState.hide()
                                                                         }
-                                                                    },
-                                                                    folderID = it1
-                                                                )
-                                                            }
+                                                                    }.invokeOnCompletion {
+                                                                        newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                            false
+                                                                        if (inIntentActivity.value) {
+                                                                            activity?.finishAndRemoveTask()
+                                                                        }
+                                                                    }
+                                                                },
+                                                                folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                            )
                                                         }
                                                     }
                                                 }
@@ -475,35 +473,33 @@ fun NewLinkBtmSheet(
                                             SpecificScreenType.ROOT_SCREEN -> {
                                                 if (selectedFolder.value == "Saved Links") {
                                                     isDataExtractingForTheLink.value = true
-                                                    CustomComposablesVM.selectedFolderID?.let {
-                                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                            title = titleTextFieldValue.value,
-                                                            webURL = linkTextFieldValue.value,
-                                                            noteForSaving = noteTextFieldValue.value,
-                                                            folderName = selectedFolder.value,
-                                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.SAVED_LINKS,
-                                                            context = context,
-                                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                            onTaskCompleted = {
-                                                                isDataExtractingForTheLink.value = false
-                                                                coroutineScope.launch {
-                                                                    if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                        newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                    }
-                                                                }.invokeOnCompletion {
-                                                                    newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                        false
-                                                                    if (inIntentActivity.value) {
-                                                                        activity?.finishAndRemoveTask()
-                                                                    }
+                                                    createVM.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        folderName = selectedFolder.value,
+                                                        savingFor = LocalDataBase.LocalDataType.SAVED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            coroutineScope.launch {
+                                                                if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                    newLinkBtmSheetUIParam.btmSheetState.hide()
                                                                 }
-                                                            },
-                                                            folderID = it
-                                                        )
-                                                    }
+                                                            }.invokeOnCompletion {
+                                                                newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                    false
+                                                                if (inIntentActivity.value) {
+                                                                    activity?.finishAndRemoveTask()
+                                                                }
+                                                            }
+                                                        },
+                                                        folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                    )
                                                 } else if (selectedFolder.value == "Important Links") {
                                                     isDataExtractingForTheLink.value = true
-                                                    customFunctionsForLocalDB.importantLinkTableUpdater(
+                                                    updateVM.importantLinkTableUpdater(
                                                         ImportantLinks(
                                                             title = titleTextFieldValue.value,
                                                             webURL = linkTextFieldValue.value,
@@ -529,32 +525,30 @@ fun NewLinkBtmSheet(
                                                             }
                                                         })
                                                 } else {
-                                                    CustomComposablesVM.selectedFolderID?.let {
-                                                        customFunctionsForLocalDB.addANewLinkSpecificallyInFolders(
-                                                            title = titleTextFieldValue.value,
-                                                            webURL = linkTextFieldValue.value,
-                                                            folderName = selectedFolder.value,
-                                                            noteForSaving = noteTextFieldValue.value,
-                                                            savingFor = CustomFunctionsForLocalDB.CustomFunctionsForLocalDBType.FOLDER_BASED_LINKS,
-                                                            context = context,
-                                                            autoDetectTitle = isAutoDetectTitleEnabled.value,
-                                                            onTaskCompleted = {
-                                                                isDataExtractingForTheLink.value = false
-                                                                coroutineScope.launch {
-                                                                    if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
-                                                                        newLinkBtmSheetUIParam.btmSheetState.hide()
-                                                                    }
-                                                                }.invokeOnCompletion {
-                                                                    newLinkBtmSheetUIParam.shouldUIBeVisible.value =
-                                                                        false
-                                                                    if (inIntentActivity.value) {
-                                                                        activity?.finishAndRemoveTask()
-                                                                    }
+                                                    createVM.addANewLinkSpecificallyInFolders(
+                                                        title = titleTextFieldValue.value,
+                                                        webURL = linkTextFieldValue.value,
+                                                        folderName = selectedFolder.value,
+                                                        noteForSaving = noteTextFieldValue.value,
+                                                        savingFor = LocalDataBase.LocalDataType.FOLDER_BASED_LINKS,
+                                                        context = context,
+                                                        autoDetectTitle = isAutoDetectTitleEnabled.value,
+                                                        onTaskCompleted = {
+                                                            isDataExtractingForTheLink.value = false
+                                                            coroutineScope.launch {
+                                                                if (newLinkBtmSheetUIParam.btmSheetState.isVisible) {
+                                                                    newLinkBtmSheetUIParam.btmSheetState.hide()
                                                                 }
-                                                            },
-                                                            folderID = it
-                                                        )
-                                                    }
+                                                            }.invokeOnCompletion {
+                                                                newLinkBtmSheetUIParam.shouldUIBeVisible.value =
+                                                                    false
+                                                                if (inIntentActivity.value) {
+                                                                    activity?.finishAndRemoveTask()
+                                                                }
+                                                            }
+                                                        },
+                                                        folderID = CollectionsScreenVM.selectedFolderData.value.id
+                                                    )
                                                 }
                                             }
                                         }
@@ -765,7 +759,7 @@ fun NewLinkBtmSheet(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         selectedFolder.value = it.folderName
-                                        CustomComposablesVM.selectedFolderID = it.id
+                                        CollectionsScreenVM.selectedFolderData.value.id = it.id
                                     },
                                     folderName = it.folderName,
                                     imageVector = Icons.Outlined.Folder,
@@ -784,13 +778,13 @@ fun NewLinkBtmSheet(
                     shouldDialogBoxAppear = shouldNewFolderDialogBoxAppear,
                     newFolderData = { folderName, folderID ->
                         selectedFolder.value = folderName
-                        CustomComposablesVM.selectedFolderID = folderID
+                        CollectionsScreenVM.selectedFolderData.value.id = folderID
                     },
                     onCreated = {
                         newLinkBtmSheetUIParam.onFolderCreated()
                     },
                     parentFolderID = newLinkBtmSheetUIParam.parentFolderID,
-                    currentFolderID = CustomComposablesVM.selectedFolderID
+                    currentFolderID = CollectionsScreenVM.selectedFolderData.value.id
                 )
             )
         }

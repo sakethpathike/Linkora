@@ -35,7 +35,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -48,7 +49,7 @@ data class AddNewFolderDialogBoxParam(
     val onCreated: () -> Unit = {},
     val parentFolderID: Long?,
     val currentFolderID: Long?,
-    val inSpecificFolderScreen: Boolean = false
+    val inAChildFolderScreen: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -58,7 +59,7 @@ fun AddNewFolderDialogBox(
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+    val createDBVM: CreateVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val isFolderCreationInProgress = rememberSaveable {
         mutableStateOf(false)
@@ -152,7 +153,7 @@ fun AddNewFolderDialogBox(
                                     ).show()
                                     isFolderCreationInProgress.value = false
                                 } else {
-                                    customFunctionsForLocalDB.createANewFolder(
+                                    createDBVM.createANewFolder(
                                         context = context,
                                         folderName = folderNameTextFieldValue.value,
                                         infoForSaving = noteTextFieldValue.value,
@@ -161,7 +162,7 @@ fun AddNewFolderDialogBox(
                                                 async {
                                                     addNewFolderDialogBoxParam.newFolderData(
                                                         folderNameTextFieldValue.value,
-                                                        CustomFunctionsForLocalDB.localDB.readDao()
+                                                        LocalDataBase.localDB.readDao()
                                                             .getLatestAddedFolder().id
                                                     )
                                                 }.await()
@@ -172,7 +173,7 @@ fun AddNewFolderDialogBox(
                                             isFolderCreationInProgress.value = false
                                         },
                                         parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                        inSpecificFolderScreen = addNewFolderDialogBoxParam.inSpecificFolderScreen,
+                                        inAChildFolderScreen = addNewFolderDialogBoxParam.inAChildFolderScreen,
                                         rootParentID = CollectionsScreenVM.rootFolderID
                                     )
                                 }

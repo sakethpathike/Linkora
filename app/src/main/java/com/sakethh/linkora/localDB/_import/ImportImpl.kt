@@ -3,7 +3,7 @@ package com.sakethh.linkora.localDB._import
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTOv8
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -27,22 +27,22 @@ class ImportImpl {
             val jsonDeserialized = json.decodeFromString<ExportDTOv8>(jsonString)
             withContext(Dispatchers.IO) {
                 awaitAll(async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllArchivedFolders(jsonDeserialized.archivedFolders)
                 }, async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllRegularFolders(jsonDeserialized.folders)
                 }, async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllArchivedLinks(jsonDeserialized.archivedLinks)
                 }, async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllHistoryLinks(jsonDeserialized.historyLinks)
                 }, async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllImportantLinks(jsonDeserialized.importantLinks)
                 }, async {
-                    CustomFunctionsForLocalDB.localDB.importDao()
+                    LocalDataBase.localDB.importDao()
                         .addAllLinks(jsonDeserialized.savedLinks)
                 })
             }

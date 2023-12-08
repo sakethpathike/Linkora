@@ -2,7 +2,7 @@ package com.sakethh.linkora.localDB.export
 
 import android.os.Build
 import android.os.Environment
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
@@ -34,27 +34,27 @@ class ExportImpl {
         val job = Job()
         CoroutineScope(job).launch {
             awaitAll(async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllFromLinksTable().collect {
+                LocalDataBase.localDB.readDao().getAllFromLinksTable().collect {
                     savedLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllImpLinks().collect {
+                LocalDataBase.localDB.readDao().getAllImpLinks().collect {
                     importantLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllRootFolders().collect {
+                LocalDataBase.localDB.readDao().getAllRootFolders().collect {
                     folders.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveLinks().collect {
+                LocalDataBase.localDB.readDao().getAllArchiveLinks().collect {
                     archivedLinks.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllArchiveFoldersV9().collect {
+                LocalDataBase.localDB.readDao().getAllArchiveFoldersV9().collect {
                     archivedFolders.addAll(it)
                 }
             }, async {
-                CustomFunctionsForLocalDB.localDB.readDao().getAllRecentlyVisitedLinks().collect {
+                LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks().collect {
                     historyLinks.addAll(it)
                 }
             })

@@ -32,10 +32,10 @@ import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -64,7 +64,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val shouldRenameDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
@@ -114,17 +113,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 },
                                 webURL = it.webURL,
                                 onForceOpenInExternalBrowserClicked = {
-                                    archiveScreenVM.onLinkClick(
-                                        RecentlyVisited(
-                                            title = it.title,
-                                            webURL = it.webURL,
-                                            baseURL = it.baseURL,
-                                            imgURL = it.imgURL,
-                                            infoForSaving = it.infoForSaving
-                                        ), context = context, uriHandler = uriHandler,
-                                        onTaskCompleted = {},
-                                        forceOpenInExternalBrowser = true
-                                    )
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
                                 })
                         )
                     }
@@ -142,7 +142,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
-                                SpecificCollectionsScreenVM.selectedArchiveFolderID = it.id
+                                CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
                                 selectedFolderNote.value = it.infoForSaving
@@ -152,11 +152,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             },
                             onFolderClick = {
                                 SpecificCollectionsScreenVM.isSelectedV9 = true
-                                SpecificCollectionsScreenVM.selectedArchiveFolderID =
+                                CollectionsScreenVM.selectedFolderData.value.id =
                                     it.id
-                                SpecificCollectionsScreenVM.currentClickedFolderData.value.id =
-                                    it.id
-                                SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                CollectionsScreenVM.selectedFolderData.value.folderName =
                                     it.archiveFolderName
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
@@ -169,8 +167,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.folderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
-                                SpecificCollectionsScreenVM.selectedArchiveFolderID = it.id
-                                SpecificCollectionsScreenVM.currentClickedFolderData.value.id = it.id
+                                CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.folderName
                                 selectedFolderNote.value = it.infoForSaving
@@ -180,9 +177,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             },
                             onFolderClick = {
                                 SpecificCollectionsScreenVM.isSelectedV9 = false
-                                SpecificCollectionsScreenVM.selectedArchiveFolderID =
-                                    it.id
-                                SpecificCollectionsScreenVM.currentClickedFolderData.value = it
+                                CollectionsScreenVM.selectedFolderData.value = it
                                 SpecificCollectionsScreenVM.inARegularFolder.value = false
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
@@ -220,7 +215,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             }
                         )
                     } else {
-                        archiveScreenVM.onUnArchiveClickV10(SpecificCollectionsScreenVM.selectedArchiveFolderID)
+                        archiveScreenVM.onUnArchiveClickV10(CollectionsScreenVM.selectedFolderData.value.id)
                     }
                 },
                 onDeleteCardClick = {
@@ -237,7 +232,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
                         context = context,
-                        onTaskCompleted = {}, folderID = SpecificCollectionsScreenVM.selectedArchiveFolderID
+                        onTaskCompleted = {}, folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
@@ -271,19 +266,18 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
         )
         RenameDialogBox(
             RenameDialogBoxParam(
-                selectedV9ArchivedFolder = mutableStateOf(SpecificCollectionsScreenVM.isSelectedV9),
                 renameDialogBoxFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
                 existingFolderName = selectedURLOrFolderName.value,
-                onNoteChangeClickForLinks = { newNote: String ->
+                onNoteChangeClick = { newNote: String ->
                     archiveScreenVM.onNoteChangeClickForLinks(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName.value,
                         newNote,
-                        onTaskCompleted = {}, folderID = SpecificCollectionsScreenVM.selectedArchiveFolderID
+                        onTaskCompleted = {}, folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
-                onTitleChangeClickForLinks = { newTitle: String ->
+                onTitleChangeClick = { newTitle: String ->
                     archiveScreenVM.onTitleChangeClickForLinksV9(
                         archiveScreenType = archiveScreenType,
                         newTitle,
@@ -294,18 +288,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 )
                             )
-                        }, folderID = SpecificCollectionsScreenVM.selectedArchiveFolderID
+                        }, folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
-                },
-                onTitleRenamed = {
-                    archiveScreenVM.changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
-                },
-                currentFolderID = SpecificCollectionsScreenVM.selectedArchiveFolderID,
-                parentFolderID = null
+                }
             )
         )
     }

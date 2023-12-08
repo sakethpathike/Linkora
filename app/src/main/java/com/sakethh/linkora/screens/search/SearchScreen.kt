@@ -544,7 +544,7 @@ fun SearchScreen(navController: NavController) {
             RenameDialogBoxParam(
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
                 existingFolderName = "",
-                onNoteChangeClickForLinks = { newNote ->
+                onNoteChangeClick = { newNote ->
                     searchScreenVM.onNoteChangeClickForLinks(
                         HomeScreenVM.tempImpLinkData.webURL,
                         newNote,
@@ -553,16 +553,14 @@ fun SearchScreen(navController: NavController) {
                     )
                 },
                 renameDialogBoxFor = OptionsBtmSheetType.LINK,
-                onTitleChangeClickForLinks = { newTitle ->
+                onTitleChangeClick = { newTitle ->
                     searchScreenVM.onTitleChangeClickForLinks(
                         HomeScreenVM.tempImpLinkData.webURL,
                         newTitle,
                         selectedLinkType = SearchScreenVM.selectedLinkType,
                         folderID = selectedFolderID
                     )
-                },
-                currentFolderID = selectedFolderID,
-                parentFolderID = null
+                }
             )
         )
         DeleteDialogBox(

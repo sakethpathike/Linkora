@@ -1,6 +1,5 @@
 package com.sakethh.linkora.customComposables
 
-import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -21,32 +20,22 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.launch
 
 data class RenameDialogBoxParam(
     val shouldDialogBoxAppear: MutableState<Boolean>,
     val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
-    val onNoteChangeClickForLinks: ((newNote: String) -> Unit),
-    val onTitleChangeClickForLinks: ((newTitle: String) -> Unit),
-    val selectedV9ArchivedFolder: MutableState<Boolean> = mutableStateOf(false),
-    val onTitleRenamed: () -> Unit = {},
-    val currentFolderID: Long,
-    val parentFolderID: Long?,
+    val onNoteChangeClick: ((newNote: String) -> Unit),
+    val onTitleChangeClick: ((newTitle: String) -> Unit),
     val existingFolderName: String?,
-    val inASpecificScreen: Boolean = false
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,9 +44,6 @@ fun RenameDialogBox(
     renameDialogBoxParam: RenameDialogBoxParam
 ) {
     val scrollState = rememberScrollState()
-    val localContext = LocalContext.current
-    val customComposablesVM: CustomComposablesVM = viewModel()
-    val coroutineScope = rememberCoroutineScope()
     if (renameDialogBoxParam.shouldDialogBoxAppear.value) {
         val newFolderOrTitleName = rememberSaveable {
             mutableStateOf("")
@@ -134,44 +120,12 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) {
-                                customComposablesVM.updateBothNameAndNote(
-                                    UpdateBothNameAndNoteParam(
-                                        renameDialogBoxParam = RenameDialogBoxParam(
-                                            shouldDialogBoxAppear = renameDialogBoxParam.shouldDialogBoxAppear,
-                                            currentFolderID = renameDialogBoxParam.currentFolderID,
-                                            existingFolderName = renameDialogBoxParam.existingFolderName,
-                                            parentFolderID = renameDialogBoxParam.parentFolderID,
-                                            onNoteChangeClickForLinks = {},
-                                            onTitleChangeClickForLinks = {},
-                                            selectedV9ArchivedFolder = renameDialogBoxParam.selectedV9ArchivedFolder,
-                                            inASpecificScreen = renameDialogBoxParam.inASpecificScreen
-                                        ),
-                                        context = localContext,
-                                        newFolderOrTitleName = newFolderOrTitleName.value,
-                                        newNote = newNote.value,
-                                        parentFolderID = renameDialogBoxParam.parentFolderID
-                                    )
-                                )
+                            if (newNote.value.isNotEmpty()) {
+                                renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                                renameDialogBoxParam.onNoteChangeClick(newNote.value)
                             } else {
-                                if (newFolderOrTitleName.value.isEmpty()) {
-                                    Toast.makeText(
-                                        localContext,
-                                        "title name can't be empty",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else if (newNote.value == "") {
-                                    renameDialogBoxParam.onTitleChangeClickForLinks(
-                                        newFolderOrTitleName.value
-                                    )
-                                } else {
-                                    renameDialogBoxParam.onTitleChangeClickForLinks(
-                                        newFolderOrTitleName.value
-                                    )
-                                    renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
-                                }
+                                renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
                             }
-                            renameDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
                             text = "Change both name and note",
@@ -190,27 +144,7 @@ fun RenameDialogBox(
                             .fillMaxWidth()
                             .align(Alignment.End),
                         onClick = {
-                            if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.LINK || renameDialogBoxParam.selectedV9ArchivedFolder.value) {
-                                renameDialogBoxParam.onNoteChangeClickForLinks(newNote.value)
-                                renameDialogBoxParam.shouldDialogBoxAppear.value = false
-                            } else {
-                                if (newNote.value.isEmpty()) {
-                                    Toast.makeText(
-                                        localContext, "note can't be empty", Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    coroutineScope.launch {
-                                        if (renameDialogBoxParam.existingFolderName != null) {
-                                            CustomFunctionsForLocalDB.localDB.updateDao()
-                                                .renameAFolderNoteV10(
-                                                    folderID = renameDialogBoxParam.currentFolderID,
-                                                    newNote = newNote.value
-                                                )
-                                        }
-                                    }
-                                    renameDialogBoxParam.shouldDialogBoxAppear.value = false
-                                }
-                            }
+                            renameDialogBoxParam.onNoteChangeClick(newNote.value)
                         }) {
                         Text(
                             text = "Change note only",

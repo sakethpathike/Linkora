@@ -8,7 +8,7 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 
 
 enum class OptionsBtmSheetType {
@@ -22,7 +22,7 @@ class OptionsBtmSheetVM : ViewModel() {
     val archiveCardIcon = mutableStateOf(Icons.Outlined.Archive)
     val archiveCardText = mutableStateOf("")
     suspend fun updateImportantCardData(url: String) {
-        if (CustomFunctionsForLocalDB.localDB.readDao()
+        if (LocalDataBase.localDB.readDao()
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
@@ -34,7 +34,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveLinkCardData(url: String) {
-        if (CustomFunctionsForLocalDB.localDB.readDao()
+        if (LocalDataBase.localDB.readDao()
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
@@ -46,7 +46,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveFolderCardData(folderName: String) {
-        if (CustomFunctionsForLocalDB.localDB.readDao()
+        if (LocalDataBase.localDB.readDao()
                 .doesThisArchiveFolderExistsV9(folderName = folderName)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive

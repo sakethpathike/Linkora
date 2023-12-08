@@ -5,14 +5,14 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -84,17 +84,17 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkTitleFromSavedLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkTitleFromSavedLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -107,16 +107,16 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -132,7 +132,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao().renameALinkInfoFromSavedLinks(
+                    LocalDataBase.localDB.updateDao().renameALinkInfoFromSavedLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -141,7 +141,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkInfoFromRecentlyVisitedLinks(
                             webURL = webURL, newInfo = newNote
                         )
@@ -151,7 +151,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.updateDao()
+                    LocalDataBase.localDB.updateDao()
                         .renameALinkInfoFromImpLinks(webURL = webURL, newInfo = newNote)
                 }
                 Unit
@@ -168,7 +168,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteALinkFromSavedLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinks(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -178,13 +178,13 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                         ).show()
                     }
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -192,7 +192,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao().deleteARecentlyVisitedLink(
+                    LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(
                         webURL = selectedWebURL
                     )
                 }
@@ -201,16 +201,16 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkFromImpLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -226,7 +226,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -237,7 +237,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -248,7 +248,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -265,7 +265,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -273,17 +273,17 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, onTaskCompleted = {})
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit
@@ -292,7 +292,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -302,7 +302,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
                         })
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
                     })
                 }
@@ -312,7 +312,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB().archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -320,17 +320,17 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, {})
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
-                    SpecificCollectionsScreenVM().changeRetrievedData(
+                    changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = SpecificCollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderName = selectedFolderData.value.folderName
                     )
                 }
                 Unit

@@ -2,10 +2,12 @@ package com.sakethh.linkora.screens.collections
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
@@ -21,13 +23,30 @@ open class CollectionsScreenVM : ViewModel() {
 
     companion object {
         var rootFolderID: Long = 0
-        var selectedFolderData =
-            FoldersTable(
-                folderName = "",
-                infoForSaving = "",
-                parentFolderID = 0,
-                childFolderIDs = emptyList(),
-            )
+        val selectedFolderData = mutableStateOf(FoldersTable(
+            folderName = "",
+            infoForSaving = "",
+            parentFolderID = 0,
+            childFolderIDs = emptyList(),
+        ))
+        var selectedLinkData = LinksTable(
+            id = 0L,
+            title = "",
+            webURL = "",
+            baseURL = "",
+            imgURL = "",
+            infoForSaving = "",
+            isLinkedWithSavedLinks = true,
+            isLinkedWithFolders = true,
+            keyOfLinkedFolderV10 = null,
+            keyOfLinkedFolder = null,
+            isLinkedWithImpFolder = false,
+            keyOfImpLinkedFolder = "",
+            keyOfImpLinkedFolderV10 = null,
+            isLinkedWithArchivedFolder = false,
+            keyOfArchiveLinkedFolderV10 = null,
+            keyOfArchiveLinkedFolder = null
+        )
     }
 
     init {
@@ -42,7 +61,7 @@ open class CollectionsScreenVM : ViewModel() {
         when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.regularFolderSorting().sortByAToZ()
+                    LocalDataBase.localDB.regularFolderSorting().sortByAToZ()
                         .collect {
                             _foldersData.emit(it)
                         }
@@ -51,7 +70,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.regularFolderSorting().sortByZToA()
+                    LocalDataBase.localDB.regularFolderSorting().sortByZToA()
                         .collect {
                             _foldersData.emit(it)
                         }
@@ -60,7 +79,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.regularFolderSorting()
+                    LocalDataBase.localDB.regularFolderSorting()
                         .sortByLatestToOldest()
                         .collect {
                             _foldersData.emit(it)
@@ -70,7 +89,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
-                    CustomFunctionsForLocalDB.localDB.regularFolderSorting()
+                    LocalDataBase.localDB.regularFolderSorting()
                         .sortByOldestToLatest()
                         .collect {
                             _foldersData.emit(it)
@@ -82,7 +101,7 @@ open class CollectionsScreenVM : ViewModel() {
 
     fun onNoteDeleteClick(context: Context, clickedFolderID: Long) {
         viewModelScope.launch {
-            CustomFunctionsForLocalDB.localDB.deleteDao()
+            LocalDataBase.localDB.deleteDao()
                 .deleteAFolderNote(folderID = clickedFolderID)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -90,25 +109,4 @@ open class CollectionsScreenVM : ViewModel() {
         }
     }
 
-    fun onRegularFolderDeleteClick(clickedFolderID: Long, clickedFolderName: String) {
-        viewModelScope.launch {
-            kotlinx.coroutines.awaitAll(async {
-                CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteAllChildFoldersAndLinksOfASpecificFolder(clickedFolderID)
-                CustomFunctionsForLocalDB.localDB.deleteDao()
-                    .deleteAFolder(
-                        folderID = clickedFolderID
-                    )
-            }, async {
-                if (!isSelectedV9) {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
-                        .deleteThisFolderLinksV10(folderID = clickedFolderID)
-                } else {
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
-                        .deleteThisFolderLinksV9(folderName = clickedFolderName)
-                }
-            })
-        }
-
-    }
 }

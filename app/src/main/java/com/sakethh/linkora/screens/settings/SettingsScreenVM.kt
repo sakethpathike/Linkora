@@ -21,7 +21,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB._import.ImportImpl
 import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
@@ -252,12 +252,12 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        if (CustomFunctionsForLocalDB.localDB.readDao()
-                                .isHistoryLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
-                                .isImpLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
-                                .isLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
-                                .isArchivedFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
-                                .isFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.readDao()
+                        if (LocalDataBase.localDB.readDao()
+                                .isHistoryLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isImpLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isArchivedFoldersTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isFoldersTableEmpty() && LocalDataBase.localDB.readDao()
                                 .isArchivedLinksTableEmpty()
                         ) {
                             activityResultLauncher.launch("text/*")

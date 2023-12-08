@@ -4,14 +4,18 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -30,7 +34,10 @@ enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
 
-class ArchiveScreenVM : SpecificCollectionsScreenVM() {
+class ArchiveScreenVM(
+    private val deleteVM: DeleteVM = DeleteVM(),
+    private val updateVM: UpdateVM = UpdateVM()
+) : ViewModel() {
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
             title = "",
@@ -81,14 +88,14 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.updateDao()
+                LocalDataBase.localDB.updateDao()
                     .renameALinkInfoFromArchiveLinks(webURL, newNote)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.updateDao()
+                LocalDataBase.localDB.updateDao()
                     .renameArchivedFolderNoteV9(
                         folderID = folderID,
                         newNote = newNote
@@ -108,14 +115,14 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.updateDao()
+                LocalDataBase.localDB.updateDao()
                     .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.updateDao()
+                LocalDataBase.localDB.updateDao()
                     .renameAFolderArchiveNameV9(folderID, newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
@@ -128,17 +135,17 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.archivedLinksSorting().sortByAToZ()
+                        LocalDataBase.localDB.archivedLinksSorting().sortByAToZ()
                             .collect {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByAToZV9()
+                        LocalDataBase.localDB.archivedFolderSorting().sortByAToZV9()
                             .collect {
                                 _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByAToZV10()
+                        LocalDataBase.localDB.archivedFolderSorting().sortByAToZV10()
                             .collect {
                                 _archiveFoldersDataV10.emit(it)
                             }
@@ -149,17 +156,17 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.archivedLinksSorting().sortByZToA()
+                        LocalDataBase.localDB.archivedLinksSorting().sortByZToA()
                             .collect {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByZToAV9()
+                        LocalDataBase.localDB.archivedFolderSorting().sortByZToAV9()
                             .collect {
                                 _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting().sortByZToAV10()
+                        LocalDataBase.localDB.archivedFolderSorting().sortByZToAV10()
                             .collect {
                                 _archiveFoldersDataV10.emit(it)
                             }
@@ -170,17 +177,17 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.archivedLinksSorting()
+                        LocalDataBase.localDB.archivedLinksSorting()
                             .sortByLatestToOldest().collect {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                        LocalDataBase.localDB.archivedFolderSorting()
                             .sortByLatestToOldestV9().collect {
                                 _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                        LocalDataBase.localDB.archivedFolderSorting()
                             .sortByLatestToOldestV10().collect {
                                 _archiveFoldersDataV10.emit(it)
                             }
@@ -191,17 +198,17 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.archivedLinksSorting()
+                        LocalDataBase.localDB.archivedLinksSorting()
                             .sortByOldestToLatest().collect {
                                 _archiveLinksData.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                        LocalDataBase.localDB.archivedFolderSorting()
                             .sortByOldestToLatestV9().collect {
                                 _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.archivedFolderSorting()
+                        LocalDataBase.localDB.archivedFolderSorting()
                             .sortByOldestToLatestV10().collect {
                                 _archiveFoldersDataV10.emit(it)
                             }
@@ -219,7 +226,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.deleteDao()
+                LocalDataBase.localDB.deleteDao()
                     .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -231,7 +238,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             }
         } else {
             if (isSelectedV9) {
-                CustomFunctionsForLocalDB().archiveFolderTableUpdaterV9(
+                updateVM.archiveFolderTableUpdaterV9(
                     ArchivedFolders(
                         archiveFolderName = selectedURLOrFolderName,
                         infoForSaving = ""
@@ -240,7 +247,10 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
                     }
                 )
             } else {
-                onRegularFolderDeleteClick(selectedArchiveFolderID, selectedURLOrFolderName)
+                deleteVM.onRegularFolderDeleteClick(
+                    CollectionsScreenVM.selectedFolderData.value.id,
+                    selectedURLOrFolderName, isSelectedV9
+                )
             }
         }
 
@@ -255,7 +265,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.deleteDao()
+                LocalDataBase.localDB.deleteDao()
                     .deleteArchiveFolderNote(folderID)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -265,7 +275,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             }
         } else {
             viewModelScope.launch {
-                CustomFunctionsForLocalDB.localDB.deleteDao()
+                LocalDataBase.localDB.deleteDao()
                     .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -278,7 +288,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
 
     fun onUnArchiveClickV10(folderID: Long) {
         viewModelScope.launch {
-            CustomFunctionsForLocalDB.localDB.updateDao()
+            LocalDataBase.localDB.updateDao()
                 .moveArchivedFolderToRegularFolderV10(folderID)
         }
     }
@@ -292,7 +302,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                if (CustomFunctionsForLocalDB.localDB.readDao()
+                if (LocalDataBase.localDB.readDao()
                         .doesThisRootFolderExists(
                             folderName = selectedURLOrFolderName
                         )
@@ -306,7 +316,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
                     }
                 } else {
                     awaitAll(async {
-                        CustomFunctionsForLocalDB.localDB.createDao()
+                        LocalDataBase.localDB.createDao()
                             .addANewFolder(
                                 foldersTable = FoldersTable(
                                     folderName = selectedURLOrFolderName,
@@ -317,10 +327,10 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
                                 )
                             )
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.deleteDao()
+                        LocalDataBase.localDB.deleteDao()
                             .deleteAnArchiveFolderV9(folderName = selectedURLOrFolderName)
                     }, async {
-                        CustomFunctionsForLocalDB.localDB.updateDao()
+                        LocalDataBase.localDB.updateDao()
                             .moveArchiveFolderBackToRootFolderV9(selectedURLOrFolderNote)
                     })
                     withContext(Dispatchers.Main) {
@@ -334,7 +344,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
             }
         } else {
             viewModelScope.launch {
-                if (CustomFunctionsForLocalDB.localDB.readDao()
+                if (LocalDataBase.localDB.readDao()
                         .doesThisExistsInSavedLinks(webURL = selectedArchivedLinkData.value.webURL)
                 ) {
                     withContext(Dispatchers.Main) {
@@ -345,7 +355,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
                         ).show()
                     }
                 } else {
-                    CustomFunctionsForLocalDB.localDB.createDao()
+                    LocalDataBase.localDB.createDao()
                         .addANewLinkToSavedLinksOrInFolders(
                             LinksTable(
                                 title = selectedArchivedLinkData.value.title,
@@ -362,7 +372,7 @@ class ArchiveScreenVM : SpecificCollectionsScreenVM() {
                                 keyOfArchiveLinkedFolderV10 = 0
                             )
                         )
-                    CustomFunctionsForLocalDB.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteALinkFromArchiveLinks(selectedArchivedLinkData.value.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
