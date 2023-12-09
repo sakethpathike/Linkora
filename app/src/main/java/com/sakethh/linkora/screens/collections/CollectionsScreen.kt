@@ -424,7 +424,7 @@ fun CollectionsScreen(navController: NavController) {
                         CollectionsScreenVM.selectedFolderData.value.id,
                         newFolderNote = it
                     )
-                    shouldRenameDialogBoxBeVisible.value=false
+                    shouldRenameDialogBoxBeVisible.value = false
                 },
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedFolderName.value,
@@ -438,7 +438,7 @@ fun CollectionsScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
-                    shouldRenameDialogBoxBeVisible.value=false
+                    shouldRenameDialogBoxBeVisible.value = false
                 }
             )
         )

@@ -27,6 +27,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS
     }
+
     val parentHomeScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
         ChildHomeScreen(homeScreenType = HomeScreenType.SAVED_LINKS)
     }), ArchiveScreenModal(name = "Important Links", screen = {
@@ -79,7 +80,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     fun onTitleChangeClickForLinks(
         selectedCardType: HomeScreenBtmSheetType,
         webURL: String,
-        linkID:Long,
+        linkID: Long,
         newTitle: String,
     ) {
         when (selectedCardType) {

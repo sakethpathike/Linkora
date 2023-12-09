@@ -57,7 +57,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -72,9 +71,7 @@ import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.ReadVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
-import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -119,10 +116,10 @@ fun NewLinkBtmSheet(
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val createVM:CreateVM= viewModel()
-    val updateVM:UpdateVM= viewModel()
-    val deleteVM:DeleteVM= viewModel()
-    val readVM:ReadVM= viewModel()
+    val createVM: CreateVM = viewModel()
+    val updateVM: UpdateVM = viewModel()
+    val deleteVM: DeleteVM = viewModel()
+    val readVM: ReadVM = viewModel()
     LaunchedEffect(key1 = Unit) {
         this.launch {
             awaitAll(async {

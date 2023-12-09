@@ -200,7 +200,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     ) {
         viewModelScope.launch {
             awaitAll(async {
-               updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                     title = HomeScreenVM.tempImpLinkData.title,
                     webURL = HomeScreenVM.tempImpLinkData.webURL,
                     baseURL = HomeScreenVM.tempImpLinkData.baseURL,

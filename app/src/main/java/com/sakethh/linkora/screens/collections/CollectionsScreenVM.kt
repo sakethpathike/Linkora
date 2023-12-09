@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,18 +21,22 @@ open class CollectionsScreenVM : ViewModel() {
 
     companion object {
         var rootFolderID: Long = 0
-        val selectedFolderData = mutableStateOf(FoldersTable(
-            folderName = "",
-            infoForSaving = "",
-            parentFolderID = 0,
-            childFolderIDs = emptyList(),
-        ))
-        val currentClickedFolderData = mutableStateOf(FoldersTable(
-            folderName = "",
-            infoForSaving = "",
-            parentFolderID = 0,
-            childFolderIDs = emptyList(),
-        ))
+        val selectedFolderData = mutableStateOf(
+            FoldersTable(
+                folderName = "",
+                infoForSaving = "",
+                parentFolderID = 0,
+                childFolderIDs = emptyList(),
+            )
+        )
+        val currentClickedFolderData = mutableStateOf(
+            FoldersTable(
+                folderName = "",
+                infoForSaving = "",
+                parentFolderID = 0,
+                childFolderIDs = emptyList(),
+            )
+        )
         var selectedLinkData = LinksTable(
             id = 0L,
             title = "",

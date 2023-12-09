@@ -476,7 +476,7 @@ fun SettingsScreen(navController: NavController) {
                                 Text(
                                     text = privacySectionData.title,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 16.sp,modifier = Modifier.padding(
+                                    fontSize = 16.sp, modifier = Modifier.padding(
                                         top = 15.dp
                                     )
                                 )

@@ -21,7 +21,7 @@ class ImportImpl {
         shouldErrorDialogBeVisible: MutableState<Boolean>
     ) {
         try {
-            val json  =Json {
+            val json = Json {
                 ignoreUnknownKeys = true
             }
             val jsonDeserialized = json.decodeFromString<ExportDTOv8>(jsonString)

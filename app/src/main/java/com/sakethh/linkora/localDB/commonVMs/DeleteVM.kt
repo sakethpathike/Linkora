@@ -3,14 +3,17 @@ package com.sakethh.linkora.localDB.commonVMs
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class DeleteVM : ViewModel() {
-    fun onRegularFolderDeleteClick(clickedFolderID: Long, clickedFolderName: String, isSelectedV9:Boolean) {
+    fun onRegularFolderDeleteClick(
+        clickedFolderID: Long,
+        clickedFolderName: String,
+        isSelectedV9: Boolean
+    ) {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
                 LocalDataBase.localDB.deleteDao()
@@ -31,6 +34,7 @@ class DeleteVM : ViewModel() {
         }
 
     }
+
     fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.Default) {

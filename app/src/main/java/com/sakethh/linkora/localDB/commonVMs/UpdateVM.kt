@@ -31,6 +31,7 @@ class UpdateVM : ViewModel() {
             LocalDataBase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
         }
     }
+
     fun updateImpLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao().renameALinkTitleFromImpLinks(linkID, newTitle)
@@ -42,6 +43,7 @@ class UpdateVM : ViewModel() {
             LocalDataBase.localDB.updateDao().renameALinkInfo(linkID, newNote)
         }
     }
+
     fun updateImpLinkNote(linkID: Long, newNote: String) {
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao().renameALinkInfoFromImpLinks(linkID, newNote)

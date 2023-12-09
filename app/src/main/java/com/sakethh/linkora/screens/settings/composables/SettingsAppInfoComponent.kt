@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,7 +69,9 @@ fun SettingsAppInfoComponent(
         Row {
             if (usingLocalIcon) {
                 Icon(
-                    painter = painterResource(id = localIcon), contentDescription = null, modifier = Modifier.padding(20.dp)
+                    painter = painterResource(id = localIcon),
+                    contentDescription = null,
+                    modifier = Modifier.padding(20.dp)
                 )
             } else {
                 if (icon != null) {

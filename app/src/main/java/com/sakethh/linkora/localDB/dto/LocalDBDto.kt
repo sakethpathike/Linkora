@@ -23,13 +23,13 @@ data class LinksTable(
 
     var isLinkedWithImpFolder: Boolean,
     var keyOfImpLinkedFolder: String,
-    var keyOfImpLinkedFolderV10: Long?=null,
+    var keyOfImpLinkedFolderV10: Long? = null,
 
     var isLinkedWithArchivedFolder: Boolean,
     var keyOfArchiveLinkedFolderV10: Long? = null,
     var keyOfArchiveLinkedFolder: String? = null,
 
-    var isBasedOnV9:Boolean=true
+    var isBasedOnV9: Boolean = true
 )
 
 @Serializable
