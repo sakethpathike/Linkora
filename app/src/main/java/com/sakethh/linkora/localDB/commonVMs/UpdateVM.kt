@@ -8,9 +8,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
-import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -21,6 +19,40 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class UpdateVM : ViewModel() {
+
+    fun updateFolderName(folderID: Long, newFolderName: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newFolderName)
+        }
+    }
+
+    fun updateRegularLinkTitle(linkID: Long, newTitle: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
+        }
+    }
+    fun updateImpLinkTitle(linkID: Long, newTitle: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameALinkTitleFromImpLinks(linkID, newTitle)
+        }
+    }
+
+    fun updateRegularLinkNote(linkID: Long, newNote: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameALinkInfo(linkID, newNote)
+        }
+    }
+    fun updateImpLinkNote(linkID: Long, newNote: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameALinkInfoFromImpLinks(linkID, newNote)
+        }
+    }
+
+    fun updateFolderNote(folderID: Long, newFolderNote: String) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.updateDao().renameAFolderNoteV10(folderID, newFolderNote)
+        }
+    }
 
     fun importantLinkTableUpdater(
         importantLinks: ImportantLinks,

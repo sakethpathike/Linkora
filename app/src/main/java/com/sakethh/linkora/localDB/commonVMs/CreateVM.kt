@@ -6,265 +6,235 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateVM : ViewModel() {
-    fun addANewLinkSpecificallyInFolders(
+
+    fun addANewLinkInImpLinks(
+        title: String,
+        webURL: String,
+        noteForSaving: String, autoDetectTitle: Boolean,
+        onTaskCompleted: () -> Unit,
+        context: Context
+    ) {
+        viewModelScope.launch {
+            val doesThisLinkExists = async {
+                LocalDataBase.localDB.readDao()
+                    .doesThisExistsInImpLinks(
+                        webURL
+                    )
+            }.await()
+            when (doesThisLinkExists) {
+                true -> {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"Important Links\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                else -> {
+                    if (!isNetworkAvailable(context)) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "network error, check your network connection and try again",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else if (!isAValidURL(webURL)) {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                        }
+                    } else {
+                        val linkDataExtractor = async {
+                            linkDataExtractor(webURL)
+                        }.await()
+                        LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
+                            importantLinks = ImportantLinks(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
+                                webURL = webURL,
+                                baseURL = webURL,
+                                imgURL = linkDataExtractor.imgURL,
+                                infoForSaving = noteForSaving
+                            )
+                        )
+                    }
+                }
+            }
+        }.invokeOnCompletion {
+            onTaskCompleted()
+        }
+    }
+
+    fun addANewLinkInSavedLinks(
+        title: String,
+        webURL: String,
+        noteForSaving: String, autoDetectTitle: Boolean,
+        onTaskCompleted: () -> Unit,
+        context: Context
+    ) {
+        var doesThisLinkExists = false
+        viewModelScope.launch {
+            doesThisLinkExists = LocalDataBase.localDB.readDao()
+                .doesThisExistsInSavedLinks(
+                    webURL
+                )
+        }.invokeOnCompletion {
+            if (!isNetworkAvailable(context)) {
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "network error, check your network connection and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else if (!isAValidURL(webURL)) {
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
+                    }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else if (doesThisLinkExists) {
+                viewModelScope.launch {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"Saved Links\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else {
+                viewModelScope.launch {
+                    val _linkDataExtractor = linkDataExtractor(webURL)
+                    val linkData = LinksTable(
+                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
+                        webURL = webURL,
+                        baseURL = _linkDataExtractor.baseURL,
+                        imgURL = _linkDataExtractor.imgURL,
+                        infoForSaving = noteForSaving,
+                        isLinkedWithSavedLinks = true,
+                        isLinkedWithFolders = false,
+                        keyOfLinkedFolderV10 = 0,
+                        isLinkedWithImpFolder = false,
+                        keyOfImpLinkedFolder = "",
+                        isLinkedWithArchivedFolder = false,
+                        keyOfArchiveLinkedFolderV10 = 0,
+                        isBasedOnV9 = false
+                    )
+                    LocalDataBase.localDB.createDao()
+                        .addANewLinkToSavedLinksOrInFolders(linkData)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
+                    }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            }
+        }
+    }
+
+    fun addANewLinkInAFolderV10(
         title: String,
         webURL: String,
         noteForSaving: String,
-        folderID: Long,
-        savingFor: LocalDataBase.LocalDataType,
+        parentFolderID: Long,
         context: Context,
-        autoDetectTitle: Boolean = false,
+        autoDetectTitle: Boolean,
         onTaskCompleted: () -> Unit,
         folderName: String
     ) {
-        when (savingFor) {
-            LocalDataBase.LocalDataType.FOLDER_BASED_LINKS -> {
-                var doesThisLinkExists = false
+        var doesThisLinkExists = false
+        viewModelScope.launch {
+            doesThisLinkExists = if (!SpecificCollectionsScreenVM.isSelectedV9) {
+                LocalDataBase.localDB.readDao()
+                    .doesThisLinkExistsInAFolderV10(
+                        webURL, parentFolderID
+                    )
+            } else {
+                LocalDataBase.localDB.readDao()
+                    .doesThisLinkExistsInAFolderV9(webURL, folderName)
+            }
+        }.invokeOnCompletion {
+            if (!isNetworkAvailable(context)) {
                 viewModelScope.launch {
-                    doesThisLinkExists = if (!SpecificCollectionsScreenVM.isSelectedV9) {
-                        LocalDataBase.localDB.readDao()
-                            .doesThisLinkExistsInAFolderV10(
-                                webURL, folderID
-                            )
-                    } else {
-                        LocalDataBase.localDB.readDao()
-                            .doesThisLinkExistsInAFolderV9(webURL, folderName)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "network error, check your network connection and try again",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }.invokeOnCompletion {
-                    if (!isNetworkAvailable(context)) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "network error, check your network connection and try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (try {
-                            webURL.split("/")[2]
-                            false
-                        } catch (_: Exception) {
-                            true
-                        }
-                    ) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (doesThisLinkExists) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "given link already exists in the \"${folderName.toString()}\"",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else {
-                        viewModelScope.launch {
-                            val linkDataExtractor = linkDataExtractor(webURL)
-                            val linkData = LinksTable(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                                webURL = webURL,
-                                baseURL = linkDataExtractor.baseURL,
-                                imgURL = linkDataExtractor.imgURL,
-                                infoForSaving = noteForSaving,
-                                isLinkedWithSavedLinks = false,
-                                isLinkedWithFolders = true,
-                                keyOfLinkedFolderV10 = folderID,
-                                keyOfLinkedFolder = folderName,
-                                isLinkedWithImpFolder = false,
-                                isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolderV10 = 0,
-                                keyOfImpLinkedFolder = "",
-                            )
-                            LocalDataBase.localDB.createDao()
-                                .addANewLinkToSavedLinksOrInFolders(linkData)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "added the url", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    }
+                    onTaskCompleted()
                 }
-            }
-
-            LocalDataBase.LocalDataType.IMP_FOLDERS_LINKS -> {
-            }
-
-            LocalDataBase.LocalDataType.ARCHIVE_FOLDER_LINKS -> {
-                var doesThisLinkExistsInAFolder = false
+            } else if (!isAValidURL(webURL)) {
                 viewModelScope.launch {
-                    doesThisLinkExistsInAFolder = if (!SpecificCollectionsScreenVM.isSelectedV9) {
-                        LocalDataBase.localDB.readDao()
-                            .doesThisLinkExistsInAFolderV10(webURL, folderID)
-                    } else {
-                        LocalDataBase.localDB.readDao()
-                            .doesThisLinkExistsInAFolderV9(webURL, folderName)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                     }
                 }.invokeOnCompletion {
-                    if (!isNetworkAvailable(context)) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "network error, check your network connection and try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (try {
-                            webURL.split("/")[2]
-                            false
-                        } catch (_: Exception) {
-                            true
-                        }
-                    ) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (doesThisLinkExistsInAFolder) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "given link already exists in the \"${folderName.toString()}\"",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else {
-                        viewModelScope.launch {
-                            val _linkDataExtractor = linkDataExtractor(webURL)
-                            val linkData = LinksTable(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
-                                webURL = webURL,
-                                baseURL = _linkDataExtractor.baseURL,
-                                imgURL = _linkDataExtractor.imgURL,
-                                infoForSaving = noteForSaving,
-                                isLinkedWithSavedLinks = false,
-                                isLinkedWithFolders = false,
-                                keyOfLinkedFolderV10 = 0,
-                                isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = true,
-                                keyOfArchiveLinkedFolderV10 = folderID,
-                                keyOfArchiveLinkedFolder = folderName
-                            )
-                            LocalDataBase.localDB.createDao()
-                                .addANewLinkToSavedLinksOrInFolders(linkData)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "added the link", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    }
+                    onTaskCompleted()
                 }
-            }
-
-            LocalDataBase.LocalDataType.SAVED_LINKS -> {
-                var doesThisLinkExists = false
+            } else if (doesThisLinkExists) {
                 viewModelScope.launch {
-                    doesThisLinkExists = LocalDataBase.localDB.readDao()
-                        .doesThisExistsInSavedLinks(
-                            webURL
-                        )
-                }.invokeOnCompletion {
-                    if (!isNetworkAvailable(context)) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "network error, check your network connection and try again",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (try {
-                            webURL.split("/")[2]
-                            false
-                        } catch (_: Exception) {
-                            true
-                        }
-                    ) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else if (doesThisLinkExists) {
-                        viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "given link already exists in the \"Saved Links\"",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    } else {
-                        viewModelScope.launch {
-                            val _linkDataExtractor = linkDataExtractor(webURL)
-                            val linkData = LinksTable(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
-                                webURL = webURL,
-                                baseURL = _linkDataExtractor.baseURL,
-                                imgURL = _linkDataExtractor.imgURL,
-                                infoForSaving = noteForSaving,
-                                isLinkedWithSavedLinks = true,
-                                isLinkedWithFolders = false,
-                                keyOfLinkedFolderV10 = 0,
-                                isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolderV10 = 0
-                            )
-                            LocalDataBase.localDB.createDao()
-                                .addANewLinkToSavedLinksOrInFolders(linkData)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "given link already exists in the \"${folderName}\"",
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else {
+                viewModelScope.launch {
+                    val linkDataExtractor = linkDataExtractor(webURL)
+                    val linkData = LinksTable(
+                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
+                        webURL = webURL,
+                        baseURL = linkDataExtractor.baseURL,
+                        imgURL = linkDataExtractor.imgURL,
+                        infoForSaving = noteForSaving,
+                        isLinkedWithSavedLinks = false,
+                        isLinkedWithFolders = true,
+                        keyOfLinkedFolderV10 = parentFolderID,
+                        keyOfLinkedFolder = folderName,
+                        isLinkedWithImpFolder = false,
+                        isLinkedWithArchivedFolder = false,
+                        keyOfArchiveLinkedFolderV10 = 0,
+                        keyOfImpLinkedFolder = "",
+                        isBasedOnV9 = false
+                    )
+                    LocalDataBase.localDB.createDao()
+                        .addANewLinkToSavedLinksOrInFolders(linkData)
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, "added the url", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                }.invokeOnCompletion {
+                    onTaskCompleted()
                 }
             }
         }
@@ -333,5 +303,14 @@ class CreateVM : ViewModel() {
                 }
             }
         }
+    }
+}
+
+private fun isAValidURL(webURL: String): Boolean {
+    return try {
+        webURL.split("/")[2]
+        true
+    } catch (_: Exception) {
+        false
     }
 }

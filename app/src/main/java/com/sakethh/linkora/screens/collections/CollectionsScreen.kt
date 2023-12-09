@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -34,7 +33,6 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -44,7 +42,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -82,6 +79,7 @@ import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -188,28 +186,20 @@ fun CollectionsScreen(navController: NavController) {
                     .fillMaxSize()
             ) {
                 item {
-                    Card(
-                        border = BorderStroke(
-                            1.dp,
-                            contentColorFor(MaterialTheme.colorScheme.surface)
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
-                        ), modifier = Modifier
-                            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .onGloballyPositioned {
-                                heightOfCard.value = with(localDensity) {
-                                    it.size.height.toDp()
-                                }
+                    Card(modifier = Modifier
+                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .onGloballyPositioned {
+                            heightOfCard.value = with(localDensity) {
+                                it.size.height.toDp()
                             }
-                            .clickable {
-                                SpecificCollectionsScreenVM.screenType.value =
-                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                            }
+                        }
+                        .clickable {
+                            SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                        }
                     ) {
                         Row(horizontalArrangement = Arrangement.Center) {
                             Icon(
@@ -231,21 +221,13 @@ fun CollectionsScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Card(
-                        border = BorderStroke(
-                            1.dp,
-                            contentColorFor(MaterialTheme.colorScheme.surface)
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
-                        ), modifier = Modifier
-                            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .clickable {
-                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                            }
+                    Card(modifier = Modifier
+                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .clickable {
+                            navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                        }
                     ) {
                         Row {
                             Icon(
@@ -274,23 +256,15 @@ fun CollectionsScreen(navController: NavController) {
                     )
                 }
                 item {
-                    Card(
-                        border = BorderStroke(
-                            1.dp,
-                            contentColorFor(MaterialTheme.colorScheme.surface)
-                        ),
-                        colors = CardDefaults.cardColors(
-                            containerColor = MaterialTheme.colorScheme.surface,
-                            contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
-                        ), modifier = Modifier
-                            .padding(end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .clickable {
-                                SpecificCollectionsScreenVM.screenType.value =
-                                    SpecificScreenType.SAVED_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                            }
+                    Card(modifier = Modifier
+                        .padding(end = 20.dp, start = 20.dp)
+                        .wrapContentHeight()
+                        .fillMaxWidth()
+                        .clickable {
+                            SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.SAVED_LINKS_SCREEN
+                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                        }
                     ) {
                         Row {
                             Icon(
@@ -380,7 +354,7 @@ fun CollectionsScreen(navController: NavController) {
                                 SpecificCollectionsScreenVM.inARegularFolder.value = true
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                CollectionsScreenVM.selectedFolderData.value =
+                                CollectionsScreenVM.currentClickedFolderData.value =
                                     foldersData
                                 CollectionsScreenVM.rootFolderID = foldersData.id
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -445,10 +419,27 @@ fun CollectionsScreen(navController: NavController) {
         )
         RenameDialogBox(
             RenameDialogBoxParam(
-                onNoteChangeClick = {},
+                onNoteChangeClick = {
+                    updateVM.updateFolderNote(
+                        CollectionsScreenVM.selectedFolderData.value.id,
+                        newFolderNote = it
+                    )
+                    shouldRenameDialogBoxBeVisible.value=false
+                },
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedFolderName.value,
-                onTitleChangeClick = {}
+                onTitleChangeClick = {
+                    updateVM.updateFolderName(
+                        folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                        newFolderName = it
+                    )
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
+                    shouldRenameDialogBoxBeVisible.value=false
+                }
             )
         )
         val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
@@ -476,13 +467,62 @@ fun CollectionsScreen(navController: NavController) {
                     )
                 })
         )
-
+        val isDataExtractingForTheLink = rememberSaveable {
+            mutableStateOf(false)
+        }
+        val createVM: CreateVM = viewModel()
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            parentFolderID = null, onSaveClick = {
-
-            }
+            parentFolderID = null,
+            onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
+                isDataExtractingForTheLink.value = true
+                if (selectedDefaultFolderName == "Saved Links") {
+                    createVM.addANewLinkInSavedLinks(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        context = context
+                    )
+                }
+                if (selectedDefaultFolderName == "Important Links") {
+                    createVM.addANewLinkInImpLinks(
+                        context = context,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected
+                    )
+                }
+                when {
+                    selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
+                        if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
+                            createVM.addANewLinkInAFolderV10(
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                parentFolderID = selectedNonDefaultFolderID,
+                                context = context,
+                                folderName = selectedDefaultFolderName,
+                                autoDetectTitle = isAutoDetectSelected,
+                                onTaskCompleted = {
+                                    shouldDialogForNewLinkAppear.value = false
+                                    isDataExtractingForTheLink.value = false
+                                })
+                        }
+                    }
+                }
+            },
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
@@ -494,7 +534,7 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = null, currentFolderID = null
+                parentFolderID = null
             )
         )
         NewLinkBtmSheet(

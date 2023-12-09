@@ -54,7 +54,6 @@ fun SettingsAppInfoComponent(
     }
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primary),
         shape = RoundedCornerShape(10.dp), modifier = Modifier
             .padding(top = 20.dp, end = 20.dp, start = 20.dp)
             .wrapContentHeight()
@@ -71,8 +70,7 @@ fun SettingsAppInfoComponent(
         Row {
             if (usingLocalIcon) {
                 Icon(
-                    painter = painterResource(id = localIcon), contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onPrimary, modifier = Modifier.padding(20.dp)
+                    painter = painterResource(id = localIcon), contentDescription = null, modifier = Modifier.padding(20.dp)
                 )
             } else {
                 if (icon != null) {
@@ -91,8 +89,7 @@ fun SettingsAppInfoComponent(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp,
-                    color = MaterialTheme.colorScheme.onPrimary
+                    fontSize = 16.sp
                 )
             }
         }

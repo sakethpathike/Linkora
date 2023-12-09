@@ -14,6 +14,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -22,7 +23,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
@@ -39,8 +39,8 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -51,8 +51,9 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: NavController) {
+fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
     val homeScreenVM: HomeScreenVM = viewModel()
+    HomeScreenVM.currentHomeScreenType = homeScreenType
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
     LaunchedEffect(key1 = Unit) {
         awaitAll(async {
@@ -93,6 +94,9 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedLinkID = rememberSaveable {
+        mutableLongStateOf(0)
+    }
     val selectedURLTitle = rememberSaveable {
         mutableStateOf("")
     }
@@ -115,6 +119,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    selectedLinkID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
@@ -184,6 +189,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    selectedLinkID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
@@ -313,17 +319,19 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, navController: 
                 homeScreenVM.onNoteChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
                     HomeScreenVM.tempImpLinkData.webURL,
+                    selectedLinkID.longValue,
                     newNote
                 )
                 shouldRenameDialogBoxAppear.value = false
-                Unit
             },
             onTitleChangeClick = { newTitle: String ->
                 homeScreenVM.onTitleChangeClickForLinks(
                     selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
                     HomeScreenVM.tempImpLinkData.webURL,
+                    selectedLinkID.longValue,
                     newTitle
                 )
+                shouldRenameDialogBoxAppear.value = false
             }
         )
     )

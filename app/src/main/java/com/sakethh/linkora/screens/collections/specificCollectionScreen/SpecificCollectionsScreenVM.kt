@@ -67,7 +67,7 @@ open class SpecificCollectionsScreenVM(
     fun retrieveChildFoldersData() {
         viewModelScope.launch {
             LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
-                selectedFolderData.value.id
+                currentClickedFolderData.value.id
             ).collect {
                 _childFoldersData.emit(it)
             }
@@ -76,7 +76,7 @@ open class SpecificCollectionsScreenVM(
 
     fun updateFolderData(folderID: Long) {
         viewModelScope.launch {
-            selectedFolderData.value = LocalDataBase.localDB.readDao()
+            currentClickedFolderData.value = LocalDataBase.localDB.readDao()
                 .getThisFolderData(folderID)
         }
     }
@@ -186,7 +186,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortSubFoldersByAToZ(parentFolderID = selectedFolderData.value.id)
+                                    .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
                                     .collect {
                                         _archiveSubFolderData.emit(it)
                                     }
@@ -210,7 +210,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortSubFoldersByZToA(parentFolderID = selectedFolderData.value.id)
+                                    .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
                                     .collect {
                                         _archiveSubFolderData.emit(it)
                                     }
@@ -236,7 +236,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortSubFoldersByLatestToOldest(parentFolderID = selectedFolderData.value.id)
+                                    .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
                                     .collect {
                                         _archiveSubFolderData.emit(it)
                                     }
@@ -261,7 +261,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortSubFoldersByOldestToLatest(parentFolderID = selectedFolderData.value.id)
+                                    .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
                                     .collect {
                                         _archiveSubFolderData.emit(it)
                                     }
@@ -454,159 +454,6 @@ open class SpecificCollectionsScreenVM(
 
             else -> {}
         }
-    }
-
-    fun onTitleChangeClickForLinks(
-        folderID: Long, newTitle: String, webURL: String,
-        onTaskCompleted: () -> Unit, folderName: String
-    ) {
-        when (screenType.value) {
-            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameALinkTitleFromImpLinks(
-                            webURL = webURL, newTitle = newTitle
-                        )
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    if (isSelectedV9) {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkTitleFromArchiveBasedFolderLinksV9(
-                                webURL = webURL,
-                                newTitle = newTitle,
-                                folderName = selectedFolderData.value.folderName
-                            )
-                    } else {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkTitleFromFoldersV10(
-                                webURL = webURL,
-                                newTitle = newTitle,
-                                folderID = folderID
-                            )
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameALinkTitleFromSavedLinks(
-                            webURL = webURL, newTitle = newTitle
-                        )
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                if (isSelectedV9) {
-                    viewModelScope.launch {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkTitleFromFoldersV9(webURL, newTitle, folderName)
-                    }
-                } else {
-                    viewModelScope.launch {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkTitleFromFoldersV10(
-                                webURL = webURL, newTitle = newTitle, folderID = folderID
-                            )
-
-                    }.invokeOnCompletion {
-                        onTaskCompleted()
-                    }
-                }
-                Unit
-            }
-
-            else -> {}
-        }
-
-    }
-
-    fun onNoteChangeClickForLinks(
-        folderID: Long, webURL: String, newNote: String,
-        onTaskCompleted: () -> Unit,
-    ) {
-        when (screenType.value) {
-            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameALinkInfoFromImpLinks(
-                            webURL = webURL, newInfo = newNote
-                        )
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    if (isSelectedV9) {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkInfoFromArchiveBasedFolderLinksV9(
-                                webURL = webURL,
-                                newInfo = newNote,
-                                folderName = selectedFolderData.value.folderName
-                            )
-                    } else {
-                        LocalDataBase.localDB.updateDao().renameALinkInfoFromFoldersV10(
-                            webURL = webURL,
-                            newInfo = newNote,
-                            folderID = folderID
-                        )
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameALinkInfoFromSavedLinks(
-                            webURL = webURL, newInfo = newNote
-                        )
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    if (isSelectedV9) {
-                        LocalDataBase.localDB.updateDao().renameALinkInfoFromFoldersV9(
-                            webURL,
-                            newNote,
-                            folderName = selectedFolderData.value.folderName
-                        )
-                    } else {
-                        LocalDataBase.localDB.updateDao()
-                            .renameALinkInfoFromFoldersV10(
-                                webURL = webURL, newInfo = newNote, folderID = folderID
-                            )
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                Unit
-            }
-
-            else -> {}
-        }
-
     }
 
     fun onDeleteClick(

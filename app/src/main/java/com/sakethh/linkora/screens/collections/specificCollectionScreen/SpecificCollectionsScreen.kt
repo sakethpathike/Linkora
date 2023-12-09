@@ -65,6 +65,8 @@ import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
@@ -86,13 +88,16 @@ fun SpecificScreen(navController: NavController) {
         awaitAll(async {
             specificCollectionsScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-                folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
             )
         }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
     }
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
+    }
+    val selectedLinkID = rememberSaveable {
+        mutableLongStateOf(0)
     }
     val specificFolderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
     val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
@@ -130,26 +135,19 @@ fun SpecificScreen(navController: NavController) {
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val topBarText = when (SpecificCollectionsScreenVM.screenType.value) {
         SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-            CollectionsScreenVM.selectedFolderData.value.folderName =
-                "Important Links"
             "Important Links"
         }
 
         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-            CollectionsScreenVM.selectedFolderData.value.folderName
+            CollectionsScreenVM.currentClickedFolderData.value.folderName
         }
 
         SpecificScreenType.SAVED_LINKS_SCREEN -> {
-            CollectionsScreenVM.selectedFolderData.value.folderName = "Saved Links"
             "Saved Links"
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-            try {
-                CollectionsScreenVM.selectedFolderData.value.folderName
-            } catch (_: java.lang.NullPointerException) {
-                ""
-            }
+            CollectionsScreenVM.currentClickedFolderData.value.folderName
         }
 
         else -> {
@@ -312,7 +310,7 @@ fun SpecificScreen(navController: NavController) {
                                             OptionsBtmSheetType.FOLDER
                                     },
                                     onFolderClick = {
-                                        CollectionsScreenVM.selectedFolderData.value =
+                                        CollectionsScreenVM.currentClickedFolderData.value =
                                             it
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                                     })
@@ -325,6 +323,7 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            selectedLinkID.longValue = it.id
                                             SpecificCollectionsScreenVM.isSelectedV9 =
                                                 it.keyOfLinkedFolderV10 == null
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -403,6 +402,9 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                OptionsBtmSheetType.LINK
+                                            selectedLinkID.longValue = it.id
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
@@ -475,6 +477,9 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                OptionsBtmSheetType.LINK
+                                            selectedLinkID.longValue = it.id
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
@@ -558,7 +563,7 @@ fun SpecificScreen(navController: NavController) {
                                             OptionsBtmSheetType.FOLDER
                                     },
                                     onFolderClick = {
-                                        CollectionsScreenVM.selectedFolderData.value =
+                                        CollectionsScreenVM.currentClickedFolderData.value =
                                             it
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                                     })
@@ -571,6 +576,7 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            selectedLinkID.longValue = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedWebURL.value = it.webURL
@@ -662,8 +668,8 @@ fun SpecificScreen(navController: NavController) {
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
-                        folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                        folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 },
                 onFolderCreated = {},
@@ -695,11 +701,11 @@ fun SpecificScreen(navController: NavController) {
                     specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
                         context, onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 ),
-                                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         }, tempImpLinkData
                     )
@@ -715,11 +721,11 @@ fun SpecificScreen(navController: NavController) {
                         CollectionsScreenVM.selectedFolderData.value.id,
                         onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 ),
-                                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         },
                         folderName = CollectionsScreenVM.selectedFolderData.value.folderName
@@ -753,11 +759,11 @@ fun SpecificScreen(navController: NavController) {
                         context = context,
                         onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
                                 ),
-                                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         },
                         folderName = CollectionsScreenVM.selectedFolderData.value.folderName
@@ -769,40 +775,82 @@ fun SpecificScreen(navController: NavController) {
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
-                        folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                        folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                     )
                 })
         )
+        val updateVM: UpdateVM = viewModel()
         RenameDialogBox(
             RenameDialogBoxParam(
                 shouldDialogBoxAppear = shouldRenameDialogBeVisible,
-                existingFolderName = topBarText,
+                existingFolderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onNoteChangeClick = { newNote: String ->
-                    specificCollectionsScreenVM.onNoteChangeClickForLinks(folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        selectedWebURL.value,
-                        newNote,
-                        onTaskCompleted = {
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) {
+                        updateVM.updateFolderNote(
+                            CollectionsScreenVM.selectedFolderData.value.id,
+                            newNote
+                        )
+                    } else {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkNote(
+                                selectedLinkID.longValue,
+                                newNote
+                            )
 
-                        })
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
+                                selectedLinkID.longValue,
+                                newNote
+                            )
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
+                                selectedLinkID.longValue,
+                                newNote
+                            )
+
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
+                                selectedLinkID.longValue,
+                                newNote
+                            )
+
+                            else -> {}
+                        }
+                    }
+                    shouldRenameDialogBeVisible.value = false
                 },
                 onTitleChangeClick = { newTitle: String ->
-                    specificCollectionsScreenVM.onTitleChangeClickForLinks(
-                        folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        newTitle,
-                        selectedWebURL.value,
-                        onTaskCompleted = {
-                            specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
-                                ),
-                                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) {
+                        updateVM.updateFolderName(
+                            CollectionsScreenVM.selectedFolderData.value.id,
+                            newTitle
+                        )
+                    } else {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkTitle(
+                                selectedLinkID.longValue,
+                                newTitle
                             )
-                        },
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
-                    )
+
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
+                                selectedLinkID.longValue,
+                                newTitle
+                            )
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
+                                selectedLinkID.longValue,
+                                newTitle
+                            )
+
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
+                                selectedLinkID.longValue,
+                                newTitle
+                            )
+
+                            else -> {}
+                        }
+                    }
+                    shouldRenameDialogBeVisible.value = false
                 }
             )
         )
@@ -817,28 +865,76 @@ fun SpecificScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = try {
-                    CollectionsScreenVM.selectedFolderData.value.id
-                } catch (_: NullPointerException) {
-                    null
-                },
-                currentFolderID = null,
+                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                 inAChildFolderScreen = true
             )
         )
+        val isDataExtractingForTheLink = rememberSaveable {
+            mutableStateOf(false)
+        }
+        val createVM: CreateVM = viewModel()
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
-            screenType = SpecificCollectionsScreenVM.screenType.value, onSaveClick = {
+            screenType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+            parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+            onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
+                isDataExtractingForTheLink.value = true
+                when (SpecificCollectionsScreenVM.screenType.value) {
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                        createVM.addANewLinkInAFolderV10(
+                            autoDetectTitle = isAutoDetectSelected,
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                            context = context,
+                            onTaskCompleted = {
+                                shouldNewLinkDialogBoxBeVisible.value = false
+                                isDataExtractingForTheLink.value = false
+                            },
+                            folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                        )
+                    }
 
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                        createVM.addANewLinkInImpLinks(
+                            autoDetectTitle = isAutoDetectSelected,
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            context = context,
+                            onTaskCompleted = {
+                                shouldNewLinkDialogBoxBeVisible.value = false
+                                isDataExtractingForTheLink.value = false
+                            },
+                        )
+                    }
+
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                        createVM.addANewLinkInSavedLinks(
+                            autoDetectTitle = isAutoDetectSelected,
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            context = context,
+                            onTaskCompleted = {
+                                shouldNewLinkDialogBoxBeVisible.value = false
+                                isDataExtractingForTheLink.value = false
+                            },
+                        )
+                    }
+
+                    else -> {}
+                }
             },
-            parentFolderID = null
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = it,
-                    folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                    folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                    folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                 )
             }, bottomModalSheetState = sortingBtmSheetState
         )
@@ -865,7 +961,7 @@ fun SpecificScreen(navController: NavController) {
                 btmModalSheetState.hide()
             }
         } else {
-            if (CollectionsScreenVM.selectedFolderData.value.parentFolderID != null
+            if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                         || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
             ) {
@@ -876,7 +972,7 @@ fun SpecificScreen(navController: NavController) {
                     SpecificCollectionsScreenVM.screenType.value =
                         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                 }
-                specificCollectionsScreenVM.updateFolderData(CollectionsScreenVM.selectedFolderData.value.parentFolderID!!)
+                specificCollectionsScreenVM.updateFolderData(CollectionsScreenVM.currentClickedFolderData.value.parentFolderID!!)
             }
             navController.popBackStack()
         }

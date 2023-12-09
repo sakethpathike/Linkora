@@ -276,17 +276,13 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkInfoFromFoldersV10(
-                        webURL = webURL, newInfo = newNote, folderID = folderID
-                    )
+
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkInfoFromImpLinks(
-                        webURL = webURL, newInfo = newNote
-                    )
+
                 }
             }
 
@@ -334,17 +330,13 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkTitleFromFoldersV10(
-                        webURL = webURL, newTitle = newTitle, folderID = folderID
-                    )
+
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkTitleFromImpLinks(
-                        webURL = webURL, newTitle = newTitle
-                    )
+
                 }
             }
 

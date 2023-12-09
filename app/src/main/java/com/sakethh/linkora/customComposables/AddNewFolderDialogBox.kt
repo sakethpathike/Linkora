@@ -48,7 +48,6 @@ data class AddNewFolderDialogBoxParam(
     val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
     val parentFolderID: Long?,
-    val currentFolderID: Long?,
     val inAChildFolderScreen: Boolean = false
 )
 

@@ -28,6 +28,8 @@ data class LinksTable(
     var isLinkedWithArchivedFolder: Boolean,
     var keyOfArchiveLinkedFolderV10: Long? = null,
     var keyOfArchiveLinkedFolder: String? = null,
+
+    var isBasedOnV9:Boolean=true
 )
 
 @Serializable

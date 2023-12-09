@@ -476,7 +476,9 @@ fun SettingsScreen(navController: NavController) {
                                 Text(
                                     text = privacySectionData.title,
                                     style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 16.sp,
+                                    fontSize = 16.sp,modifier = Modifier.padding(
+                                        top = 15.dp
+                                    )
                                 )
                                 Switch(
                                     checked = privacySectionData.isSwitchEnabled.value,

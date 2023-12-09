@@ -48,9 +48,10 @@ import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -66,6 +67,7 @@ fun ParentHomeScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = viewModel()
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
+    val createVM: CreateVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -201,19 +203,68 @@ fun ParentHomeScreen(navController: NavController) {
             },
             bottomModalSheetState = sortingBtmSheetState
         )
+        val isDataExtractingForTheLink = rememberSaveable {
+            mutableStateOf(false)
+        }
+        val context = LocalContext.current
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            parentFolderID = null, onSaveClick = {
-
-            }
+            parentFolderID = null,
+            onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
+                isDataExtractingForTheLink.value = true
+                if (selectedDefaultFolderName == "Saved Links") {
+                    createVM.addANewLinkInSavedLinks(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        context = context
+                    )
+                }
+                if (selectedDefaultFolderName == "Important Links") {
+                    createVM.addANewLinkInImpLinks(
+                        context = context,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected
+                    )
+                }
+                when {
+                    selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
+                        if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
+                            createVM.addANewLinkInAFolderV10(
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                parentFolderID = selectedNonDefaultFolderID,
+                                context = context,
+                                folderName = selectedDefaultFolderName,
+                                autoDetectTitle = isAutoDetectSelected,
+                                onTaskCompleted = {
+                                    shouldDialogForNewLinkAppear.value = false
+                                    isDataExtractingForTheLink.value = false
+                                })
+                        }
+                    }
+                }
+            },
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
 
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-                parentFolderID = null,
-                currentFolderID = 0
+                parentFolderID = null
             )
         )
         NewLinkBtmSheet(

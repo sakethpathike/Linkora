@@ -47,22 +47,19 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -74,12 +71,10 @@ import kotlinx.coroutines.launch
 fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     screenType: SpecificScreenType,
-    onSaveClick: () -> Unit,
-    parentFolderID: Long?
+    onSaveClick: (isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolder: String?, selectedNonDefaultFolderID: Long?) -> Unit,
+    parentFolderID: Long?,
+    isDataExtractingForTheLink: Boolean
 ) {
-    val isDataExtractingForTheLink = rememberSaveable {
-        mutableStateOf(false)
-    }
     val foldersTableData =
         LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
             initial = emptyList()
@@ -94,7 +89,7 @@ fun AddNewLinkDialogBox(
         mutableStateOf(false)
     }
     val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
-    if (isDataExtractingForTheLink.value) {
+    if (isDataExtractingForTheLink) {
         isDropDownMenuIconClicked.value = false
     }
     val scrollState = rememberScrollState()
@@ -112,6 +107,9 @@ fun AddNewLinkDialogBox(
         val selectedFolderName = rememberSaveable {
             mutableStateOf("Saved Links")
         }
+        val selectedFolderID = rememberSaveable {
+            mutableLongStateOf(0)
+        }
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .wrapContentHeight()
@@ -119,7 +117,7 @@ fun AddNewLinkDialogBox(
                 .clip(RoundedCornerShape(10.dp))
                 .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = {
-                    if (!isDataExtractingForTheLink.value) {
+                    if (!isDataExtractingForTheLink) {
                         shouldDialogBoxAppear.value = false
                     }
                 }) {
@@ -131,7 +129,7 @@ fun AddNewLinkDialogBox(
                         fontSize = 22.sp,
                         modifier = Modifier.padding(start = 20.dp, top = 30.dp)
                     )
-                    OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                    OutlinedTextField(readOnly = isDataExtractingForTheLink,
                         modifier = Modifier.padding(
                             start = 20.dp, end = 20.dp, top = 20.dp
                         ),
@@ -151,7 +149,7 @@ fun AddNewLinkDialogBox(
                             linkTextFieldValue.value = it
                         })
                     if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
-                        OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                        OutlinedTextField(readOnly = isDataExtractingForTheLink,
                             modifier = Modifier.padding(
                                 start = 20.dp, end = 20.dp, top = 15.dp
                             ),
@@ -170,7 +168,7 @@ fun AddNewLinkDialogBox(
                                 titleTextFieldValue.value = it
                             })
                     }
-                    OutlinedTextField(readOnly = isDataExtractingForTheLink.value,
+                    OutlinedTextField(readOnly = isDataExtractingForTheLink,
                         modifier = Modifier.padding(
                             start = 20.dp, end = 20.dp, top = 15.dp
                         ),
@@ -249,7 +247,7 @@ fun AddNewLinkDialogBox(
                             OutlinedButton(border = BorderStroke(
                                 width = 1.dp, color = MaterialTheme.colorScheme.primary
                             ), onClick = {
-                                if (!isDataExtractingForTheLink.value) {
+                                if (!isDataExtractingForTheLink) {
                                     isDropDownMenuIconClicked.value = true
                                 }
                             }) {
@@ -266,7 +264,7 @@ fun AddNewLinkDialogBox(
                                     imageVector = Icons.Default.ArrowDropDown,
                                     contentDescription = null,
                                     modifier = Modifier.clickable {
-                                        if (!isDataExtractingForTheLink.value) {
+                                        if (!isDataExtractingForTheLink) {
                                             isDropDownMenuIconClicked.value = true
                                         }
                                     }
@@ -281,7 +279,7 @@ fun AddNewLinkDialogBox(
                                 .padding(top = 20.dp)
                                 .fillMaxWidth()
                                 .clickable {
-                                    if (!isDataExtractingForTheLink.value) {
+                                    if (!isDataExtractingForTheLink) {
                                         isAutoDetectTitleEnabled.value =
                                             !isAutoDetectTitleEnabled.value
                                     }
@@ -290,7 +288,7 @@ fun AddNewLinkDialogBox(
                                     start = 10.dp, end = 20.dp
                                 ), verticalAlignment = Alignment.CenterVertically
                         ) {
-                            androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink.value,
+                            androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink,
                                 checked = isAutoDetectTitleEnabled.value,
                                 onCheckedChange = {
                                     isAutoDetectTitleEnabled.value = it
@@ -302,7 +300,7 @@ fun AddNewLinkDialogBox(
                             )
                         }
                     }
-                    if (!isDataExtractingForTheLink.value) {
+                    if (!isDataExtractingForTheLink) {
                         Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                             modifier = Modifier
                                 .padding(
@@ -313,7 +311,14 @@ fun AddNewLinkDialogBox(
                                 .fillMaxWidth()
                                 .align(Alignment.End),
                             onClick = {
-                                onSaveClick()
+                                onSaveClick(
+                                    isAutoDetectTitleEnabled.value,
+                                    linkTextFieldValue.value,
+                                    titleTextFieldValue.value,
+                                    noteTextFieldValue.value,
+                                    selectedFolderName.value,
+                                    selectedFolderID.longValue
+                                )
                             }) {
                             Text(
                                 text = "Save",
@@ -443,7 +448,7 @@ fun AddNewLinkDialogBox(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         selectedFolderName.value = it.folderName
-                                        CollectionsScreenVM.selectedFolderData.value.id = it.id
+                                        selectedFolderID.longValue = it.id
                                         coroutineScope.launch {
                                             if (btmModalSheetState.isVisible) {
                                                 btmModalSheetState.hide()
@@ -469,7 +474,7 @@ fun AddNewLinkDialogBox(
                     shouldDialogBoxAppear = isCreateANewFolderIconClicked,
                     newFolderData = { folderName, folderID ->
                         selectedFolderName.value = folderName
-                        CollectionsScreenVM.selectedFolderData.value.id = folderID
+                        selectedFolderID.longValue = folderID
                     },
                     onCreated = {
                         coroutineScope.launch {
@@ -480,8 +485,7 @@ fun AddNewLinkDialogBox(
                             isDropDownMenuIconClicked.value = false
                         }
                     },
-                    parentFolderID = parentFolderID,
-                    currentFolderID = CollectionsScreenVM.selectedFolderData.value.id
+                    parentFolderID = parentFolderID
                 )
             )
         }

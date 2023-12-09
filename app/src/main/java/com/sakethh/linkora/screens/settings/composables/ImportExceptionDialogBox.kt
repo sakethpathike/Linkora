@@ -3,6 +3,7 @@ package com.sakethh.linkora.screens.settings.composables
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -68,7 +69,9 @@ fun ImportExceptionDialogBox(
                     )
                     Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                         modifier = Modifier
+                            .fillMaxWidth()
                             .padding(
+                                start = 20.dp,
                                 end = 20.dp,
                                 top = 20.dp,
                             )
@@ -90,8 +93,10 @@ fun ImportExceptionDialogBox(
                             color = MaterialTheme.colorScheme.secondary
                         ),
                         modifier = Modifier
+                            .fillMaxWidth()
                             .padding(
                                 end = 20.dp,
+                                start = 20.dp,
                                 top = 10.dp,
                                 bottom = 30.dp
                             )

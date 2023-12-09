@@ -27,14 +27,14 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS
     }
-
     val parentHomeScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
-        ChildHomeScreen(homeScreenType = HomeScreenType.SAVED_LINKS, navController = it)
+        ChildHomeScreen(homeScreenType = HomeScreenType.SAVED_LINKS)
     }), ArchiveScreenModal(name = "Important Links", screen = {
-        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS, navController = it)
+        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS)
     }))
 
     companion object {
+        var currentHomeScreenType = HomeScreenType.SAVED_LINKS
         val tempImpLinkData = ImportantLinks(
             title = "", webURL = "", baseURL = "", imgURL = "", infoForSaving = ""
         )
@@ -79,6 +79,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     fun onTitleChangeClickForLinks(
         selectedCardType: HomeScreenBtmSheetType,
         webURL: String,
+        linkID:Long,
         newTitle: String,
     ) {
         when (selectedCardType) {
@@ -108,7 +109,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.updateDao()
-                        .renameALinkTitleFromImpLinks(webURL = webURL, newTitle = newTitle)
+                        .renameALinkTitleFromImpLinks(linkID, newTitle = newTitle)
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -127,6 +128,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     fun onNoteChangeClickForLinks(
         selectedCardType: HomeScreenBtmSheetType,
         webURL: String,
+        linkID: Long,
         newNote: String,
     ) {
         when (selectedCardType) {
@@ -152,7 +154,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.updateDao()
-                        .renameALinkInfoFromImpLinks(webURL = webURL, newInfo = newNote)
+                        .renameALinkInfoFromImpLinks(linkID, newInfo = newNote)
                 }
                 Unit
             }
