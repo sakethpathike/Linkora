@@ -37,8 +37,8 @@ import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
@@ -232,7 +232,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
                         context = context,
-                        onTaskCompleted = {}, folderID = CollectionsScreenVM.selectedFolderData.value.id
+                        onTaskCompleted = {},
+                        folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
@@ -274,7 +275,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName.value,
                         newNote,
-                        onTaskCompleted = {}, folderID = CollectionsScreenVM.selectedFolderData.value.id
+                        onTaskCompleted = {
+                            shouldRenameDialogBoxAppear.value = false
+                        }, folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 onTitleChangeClick = { newTitle: String ->
@@ -283,6 +286,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         newTitle,
                         selectedURLOrFolderName.value,
                         onTaskCompleted = {
+                            shouldRenameDialogBoxAppear.value = false
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value

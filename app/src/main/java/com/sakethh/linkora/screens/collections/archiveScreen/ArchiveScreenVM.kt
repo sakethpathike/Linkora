@@ -94,14 +94,20 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-            viewModelScope.launch {
-                LocalDataBase.localDB.updateDao()
-                    .renameArchivedFolderNoteV9(
-                        folderID = folderID,
-                        newNote = newNote
-                    )
-            }.invokeOnCompletion {
-                onTaskCompleted()
+            if (isSelectedV9) {
+                viewModelScope.launch {
+                    LocalDataBase.localDB.updateDao()
+                        .renameArchivedFolderNoteV9(
+                            folderID = folderID,
+                            newNote = newNote
+                        )
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else {
+                viewModelScope.launch {
+                    LocalDataBase.localDB.updateDao().renameAFolderNoteV10(folderID, newNote)
+                }
             }
         }
     }
@@ -121,11 +127,19 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-            viewModelScope.launch {
-                LocalDataBase.localDB.updateDao()
-                    .renameAFolderArchiveNameV9(folderID, newTitle)
-            }.invokeOnCompletion {
-                onTaskCompleted()
+            if (isSelectedV9) {
+                viewModelScope.launch {
+                    LocalDataBase.localDB.updateDao()
+                        .renameAFolderArchiveNameV9(folderID, newTitle)
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
+            } else {
+                viewModelScope.launch {
+                    LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newTitle)
+                }.invokeOnCompletion {
+                    onTaskCompleted()
+                }
             }
         }
     }
