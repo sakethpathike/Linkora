@@ -11,8 +11,7 @@ import kotlinx.coroutines.withContext
 class DeleteVM : ViewModel() {
     fun onRegularFolderDeleteClick(
         clickedFolderID: Long,
-        clickedFolderName: String,
-        isSelectedV9: Boolean
+        clickedFolderName: String
     ) {
         viewModelScope.launch {
             kotlinx.coroutines.awaitAll(async {
@@ -23,13 +22,8 @@ class DeleteVM : ViewModel() {
                         folderID = clickedFolderID
                     )
             }, async {
-                if (!isSelectedV9) {
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteThisFolderLinksV10(folderID = clickedFolderID)
-                } else {
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteThisFolderLinksV9(folderName = clickedFolderName)
-                }
+                LocalDataBase.localDB.deleteDao()
+                    .deleteThisFolderLinksV9(folderName = clickedFolderName)
             })
         }
     }

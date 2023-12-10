@@ -49,6 +49,9 @@ interface ReadDao {
     @Query("SELECT * FROM folders_table WHERE id = :folderID")
     suspend fun getThisFolderData(folderID: Long): FoldersTable
 
+    @Query("SELECT * FROM archived_folders_table WHERE id = :folderID")
+    suspend fun getThisArchiveFolderDataV9(folderID: Long): ArchivedFolders
+
     @Query("SELECT * FROM links_table WHERE isLinkedWithArchivedFolder=1 AND keyOfArchiveLinkedFolderV10=:folderID")
     fun getThisArchiveFolderLinksV10(folderID: Long): Flow<List<LinksTable>>
 

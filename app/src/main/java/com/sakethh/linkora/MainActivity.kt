@@ -2,6 +2,8 @@ package com.sakethh.linkora
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,17 +17,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -90,6 +95,40 @@ class MainActivity : ComponentActivity() {
                 }
             }
             LocalDataBase.localDB = LocalDataBase.getLocalDB(context = context)
+            coroutineScope.launch {
+                Log.d(
+                    "Test", SettingsScreenVM.Settings.readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(
+                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                        ), dataStore = context.dataStore
+                    ).toString()
+                )
+            }
+            LaunchedEffect(key1 = Unit) {
+                if (SettingsScreenVM.Settings.readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(
+                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                        ), dataStore = context.dataStore
+                    ) != true
+                ) {
+                    LocalDataBase.localDB.readDao().getAllArchiveFoldersV9().collect {
+                        if (it.isNotEmpty()) {
+                            UpdateVM().migrateArchiveFoldersV9toV10()
+                        }
+                    }
+                    LocalDataBase.localDB.readDao().getAllRootFolders().collect {
+                        if (it.isNotEmpty()) {
+                            UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
+                        }
+                    }
+                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(
+                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                        ), dataStore = context.dataStore, newValue = true
+                    )
+                    Toast.makeText(context, "Data Migrated successfully", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }

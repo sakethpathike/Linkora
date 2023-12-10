@@ -10,7 +10,6 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -139,8 +138,7 @@ class CreateVM : ViewModel() {
                         isLinkedWithImpFolder = false,
                         keyOfImpLinkedFolder = "",
                         isLinkedWithArchivedFolder = false,
-                        keyOfArchiveLinkedFolderV10 = 0,
-                        isBasedOnV9 = false
+                        keyOfArchiveLinkedFolderV10 = 0
                     )
                     LocalDataBase.localDB.createDao()
                         .addANewLinkToSavedLinksOrInFolders(linkData)
@@ -166,15 +164,10 @@ class CreateVM : ViewModel() {
     ) {
         var doesThisLinkExists = false
         viewModelScope.launch {
-            doesThisLinkExists = if (!SpecificCollectionsScreenVM.isSelectedV9) {
-                LocalDataBase.localDB.readDao()
-                    .doesThisLinkExistsInAFolderV10(
-                        webURL, parentFolderID
-                    )
-            } else {
-                LocalDataBase.localDB.readDao()
-                    .doesThisLinkExistsInAFolderV9(webURL, folderName)
-            }
+            LocalDataBase.localDB.readDao()
+                .doesThisLinkExistsInAFolderV10(
+                    webURL, parentFolderID
+                )
         }.invokeOnCompletion {
             if (!isNetworkAvailable(context)) {
                 viewModelScope.launch {
@@ -224,8 +217,7 @@ class CreateVM : ViewModel() {
                         isLinkedWithImpFolder = false,
                         isLinkedWithArchivedFolder = false,
                         keyOfArchiveLinkedFolderV10 = 0,
-                        keyOfImpLinkedFolder = "",
-                        isBasedOnV9 = false
+                        keyOfImpLinkedFolder = ""
                     )
                     LocalDataBase.localDB.createDao()
                         .addANewLinkToSavedLinksOrInFolders(linkData)
@@ -282,7 +274,7 @@ class CreateVM : ViewModel() {
                                 folderName = folderName,
                                 infoForSaving = infoForSaving,
                                 parentFolderID = parentFolderID,
-                                childFolderIDs = emptyList(), isV9BasedFolder = false
+                                childFolderIDs = emptyList()
                             )
                         )
                     if (parentFolderID != null) {

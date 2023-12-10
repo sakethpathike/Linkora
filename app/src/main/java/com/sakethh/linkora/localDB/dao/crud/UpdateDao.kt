@@ -4,6 +4,7 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Update
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.LinksTable
 
 @Dao
 interface UpdateDao {
@@ -15,6 +16,9 @@ interface UpdateDao {
 
     @Update
     suspend fun updateAFolderData(foldersTable: FoldersTable)
+
+    @Update
+    suspend fun updateALinkDataFromLinksTable(linksTable: LinksTable)
 
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
@@ -76,7 +80,7 @@ interface UpdateDao {
 
     @Query("UPDATE links_table SET keyOfArchiveLinkedFolder = :newFolderName WHERE keyOfArchiveLinkedFolder = :currentFolderName")
     suspend fun renameFolderNameForExistingArchivedFolderDataV9(
-        currentFolderName: Long, newFolderName: String
+        currentFolderName: String, newFolderName: String
     )
 
     @Query("UPDATE links_table SET keyOfLinkedFolder = :newFolderName WHERE keyOfLinkedFolder = :currentFolderName")
@@ -100,7 +104,7 @@ interface UpdateDao {
         folderID: Long,
     )
 
-    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfLinkedFolder =  :folderName,keyOfArchiveLinkedFolder=\"\" WHERE keyOfArchiveLinkedFolder = :folderName AND isLinkedWithArchivedFolder = 1")
+    @Query("UPDATE links_table SET isLinkedWithArchivedFolder = 0 , isLinkedWithFolders = 1, keyOfLinkedFolder =  :folderName,keyOfArchiveLinkedFolder=\"\" WHERE keyOfArchiveLinkedFolder = :folderName")
     suspend fun moveArchiveFolderBackToRootFolderV9(
         folderName: String,
     )

@@ -142,7 +142,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
-                                SpecificCollectionsScreenVM.isSelectedV9 = true
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
@@ -155,7 +154,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 CollectionsScreenVM.currentClickedFolderData.value.id = it.id
                                 CollectionsScreenVM.currentClickedFolderData.value.folderName =
                                     it.archiveFolderName
-                                SpecificCollectionsScreenVM.isSelectedV9 = true
                                 CollectionsScreenVM.selectedFolderData.value.id =
                                     it.id
                                 CollectionsScreenVM.selectedFolderData.value.folderName =
@@ -171,7 +169,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.folderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
-                                SpecificCollectionsScreenVM.isSelectedV9 = false
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.folderName
@@ -182,7 +179,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             },
                             onFolderClick = {
                                 CollectionsScreenVM.currentClickedFolderData.value = it
-                                SpecificCollectionsScreenVM.isSelectedV9 = false
                                 CollectionsScreenVM.selectedFolderData.value = it
                                 SpecificCollectionsScreenVM.inARegularFolder.value = false
                                 SpecificCollectionsScreenVM.screenType.value =
@@ -206,23 +202,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 onUnarchiveClick = {
-                    if (SpecificCollectionsScreenVM.isSelectedV9) {
-                        archiveScreenVM.onUnArchiveClickV9(
-                            context = context,
-                            archiveScreenType = archiveScreenType,
-                            selectedURLOrFolderName = selectedURLOrFolderName.value,
-                            selectedURLOrFolderNote = selectedFolderNote.value,
-                            onTaskCompleted = {
-                                archiveScreenVM.changeRetrievedData(
-                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                        SettingsScreenVM.Settings.selectedSortingType.value
-                                    )
-                                )
-                            }
-                        )
-                    } else {
-                        archiveScreenVM.onUnArchiveClickV10(CollectionsScreenVM.selectedFolderData.value.id)
-                    }
+                    archiveScreenVM.onUnArchiveClickV10(CollectionsScreenVM.selectedFolderData.value.id)
                 },
                 onDeleteCardClick = {
                     shouldDeleteDialogBoxAppear.value = true
@@ -277,7 +257,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
                 existingFolderName = selectedURLOrFolderName.value,
                 onNoteChangeClick = { newNote: String ->
-                    archiveScreenVM.onNoteChangeClickForLinks(
+                    archiveScreenVM.onNoteChangeClick(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName.value,
                         newNote,
@@ -287,10 +267,10 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     )
                 },
                 onTitleChangeClick = { newTitle: String ->
-                    archiveScreenVM.onTitleChangeClickForLinksV9(
+                    archiveScreenVM.onTitleChangeClick(
                         archiveScreenType = archiveScreenType,
-                        newTitle,
-                        selectedURLOrFolderName.value,
+                        newTitle = newTitle,
+                        webURL = selectedURLOrFolderName.value,
                         onTaskCompleted = {
                             shouldRenameDialogBoxAppear.value = false
                             archiveScreenVM.changeRetrievedData(

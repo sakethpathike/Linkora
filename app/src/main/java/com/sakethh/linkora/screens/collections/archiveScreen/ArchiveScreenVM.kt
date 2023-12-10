@@ -15,7 +15,6 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM.Companion.isSelectedV9
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -79,7 +78,7 @@ class ArchiveScreenVM(
         )
     }
 
-    fun onNoteChangeClickForLinks(
+    fun onNoteChangeClick(
         archiveScreenType: ArchiveScreenType,
         webURL: String,
         newNote: String,
@@ -94,25 +93,13 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-            if (isSelectedV9) {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameArchivedFolderNoteV9(
-                            folderID = folderID,
-                            newNote = newNote
-                        )
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            } else {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameAFolderNoteV10(folderID, newNote)
-                }
+            viewModelScope.launch {
+                LocalDataBase.localDB.updateDao().renameAFolderNoteV10(folderID, newNote)
             }
         }
     }
 
-    fun onTitleChangeClickForLinksV9(
+    fun onTitleChangeClick(
         archiveScreenType: ArchiveScreenType,
         newTitle: String,
         webURL: String,
@@ -127,19 +114,10 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-            if (isSelectedV9) {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
-                        .renameAFolderArchiveNameV9(folderID, newTitle)
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            } else {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newTitle)
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
+            viewModelScope.launch {
+                LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newTitle)
+            }.invokeOnCompletion {
+                onTaskCompleted()
             }
         }
     }
@@ -152,11 +130,6 @@ class ArchiveScreenVM(
                         LocalDataBase.localDB.archivedLinksSorting().sortByAToZ()
                             .collect {
                                 _archiveLinksData.emit(it)
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting().sortByAToZV9()
-                            .collect {
-                                _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting().sortByAToZV10()
@@ -173,11 +146,6 @@ class ArchiveScreenVM(
                         LocalDataBase.localDB.archivedLinksSorting().sortByZToA()
                             .collect {
                                 _archiveLinksData.emit(it)
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting().sortByZToAV9()
-                            .collect {
-                                _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting().sortByZToAV10()
@@ -197,11 +165,6 @@ class ArchiveScreenVM(
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting()
-                            .sortByLatestToOldestV9().collect {
-                                _archiveFoldersDataV9.emit(it)
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting()
                             .sortByLatestToOldestV10().collect {
                                 _archiveFoldersDataV10.emit(it)
                             }
@@ -215,11 +178,6 @@ class ArchiveScreenVM(
                         LocalDataBase.localDB.archivedLinksSorting()
                             .sortByOldestToLatest().collect {
                                 _archiveLinksData.emit(it)
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting()
-                            .sortByOldestToLatestV9().collect {
-                                _archiveFoldersDataV9.emit(it)
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting()
@@ -251,21 +209,10 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-            if (isSelectedV9) {
-                updateVM.archiveFolderTableUpdaterV9(
-                    ArchivedFolders(
-                        archiveFolderName = selectedURLOrFolderName,
-                        infoForSaving = ""
-                    ), context = context, onTaskCompleted = {
-                        onTaskCompleted()
-                    }
-                )
-            } else {
-                deleteVM.onRegularFolderDeleteClick(
-                    CollectionsScreenVM.selectedFolderData.value.id,
-                    selectedURLOrFolderName, isSelectedV9
-                )
-            }
+            deleteVM.onRegularFolderDeleteClick(
+                CollectionsScreenVM.selectedFolderData.value.id,
+                selectedURLOrFolderName
+            )
         }
 
     }
@@ -279,12 +226,7 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                if (isSelectedV9) {
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteArchiveFolderNote(folderID)
-                } else {
-                    LocalDataBase.localDB.deleteDao().deleteAFolderNote(folderID)
-                }
+                LocalDataBase.localDB.deleteDao().deleteAFolderNote(folderID)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
@@ -340,16 +282,12 @@ class ArchiveScreenVM(
                                     folderName = selectedURLOrFolderName,
                                     infoForSaving = selectedURLOrFolderNote,
                                     parentFolderID = null,
-                                    childFolderIDs = emptyList(),
-                                    isV9BasedFolder = true
+                                    childFolderIDs = emptyList()
                                 )
                             )
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
-                            .deleteAnArchiveFolderV9(folderName = selectedURLOrFolderName)
-                    }, async {
                         LocalDataBase.localDB.updateDao()
-                            .moveArchiveFolderBackToRootFolderV9(selectedURLOrFolderNote)
+                            .moveArchiveFolderBackToRootFolderV9(selectedURLOrFolderName)
                     })
                     withContext(Dispatchers.Main) {
                         Toast.makeText(

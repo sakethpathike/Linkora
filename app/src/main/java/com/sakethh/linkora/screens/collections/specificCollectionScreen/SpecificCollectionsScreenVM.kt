@@ -59,7 +59,6 @@ open class SpecificCollectionsScreenVM(
 
     companion object {
         val screenType = mutableStateOf(SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN)
-        var isSelectedV9 = false
         val selectedBtmSheetType = mutableStateOf(OptionsBtmSheetType.LINK)
         val inARegularFolder = mutableStateOf(true)
     }
@@ -173,17 +172,10 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             awaitAll(async {
-                                if (isSelectedV9) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByAToZV9(folderID = folderName).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                } else {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByAToZV10(folderID = folderID).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                }
+                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    .sortLinksByAToZV10(folderID = folderID).collect {
+                                        _archiveFolderData.emit(it)
+                                    }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
@@ -197,17 +189,10 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             awaitAll(async {
-                                if (isSelectedV9) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByZToAV9(folderID = folderName).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                } else {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByZToAV10(folderID = folderID).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                }
+                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    .sortLinksByZToAV10(folderID = folderID).collect {
+                                        _archiveFolderData.emit(it)
+                                    }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
@@ -222,18 +207,10 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             awaitAll(async {
-                                if (isSelectedV9) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByLatestToOldestV9(folderID = folderName)
-                                        .collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                } else {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByLatestToOldestV10(folderID = folderID).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                }
+                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    .sortLinksByLatestToOldestV10(folderID = folderID).collect {
+                                        _archiveFolderData.emit(it)
+                                    }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
@@ -247,18 +224,10 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             awaitAll(async {
-                                if (isSelectedV9) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByOldestToLatestV9(folderID = folderName)
-                                        .collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                } else {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByOldestToLatestV10(folderID = folderID).collect {
-                                            _archiveFolderData.emit(it)
-                                        }
-                                }
+                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    .sortLinksByOldestToLatestV10(folderID = folderID).collect {
+                                        _archiveFolderData.emit(it)
+                                    }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
@@ -275,65 +244,38 @@ open class SpecificCollectionsScreenVM(
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                            if (!isSelectedV9) {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByAToZV10(folderID = folderID).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            } else {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByAToZV9(folderID = folderName).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            }
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByAToZV10(folderID = folderID).collect {
+                                    _folderLinksData.emit(it)
+                                }
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
-                            if (!isSelectedV9) {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByZToAV10(folderID = folderID).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            } else {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByZToAV9(folderID = folderName).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            }
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByZToAV10(folderID = folderID).collect {
+                                    _folderLinksData.emit(it)
+                                }
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
-                            if (!isSelectedV9) {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByLatestToOldestV10(folderID = folderID).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            } else {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByLatestToOldestV9(folderID = folderName).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            }
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByLatestToOldestV10(folderID = folderID).collect {
+                                    _folderLinksData.emit(it)
+                                }
+
                         }
                     }
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
-                            if (!isSelectedV9) {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByOldestToLatestV10(folderID = folderID).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            } else {
-                                LocalDataBase.localDB.regularFolderLinksSorting()
-                                    .sortByOldestToLatestV9(folderID = folderName).collect {
-                                        _folderLinksData.emit(it)
-                                    }
-                            }
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByOldestToLatestV10(folderID = folderID).collect {
+                                    _folderLinksData.emit(it)
+                                }
                         }
                     }
                 }
@@ -435,17 +377,10 @@ open class SpecificCollectionsScreenVM(
                             }
                         )
                     }, async {
-                        if (!isSelectedV9) {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromSpecificFolderV10(
-                                    folderID = folderID, webURL = tempImpLinkData.webURL
-                                )
-                        } else {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromSpecificFolderV9(
-                                    folderName = folderName, webURL = tempImpLinkData.webURL
-                                )
-                        }
+                        LocalDataBase.localDB.deleteDao()
+                            .deleteALinkFromSpecificFolderV10(
+                                folderID = folderID, webURL = tempImpLinkData.webURL
+                            )
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -475,7 +410,7 @@ open class SpecificCollectionsScreenVM(
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     } else {
-                        deleteVM.onRegularFolderDeleteClick(folderID, folderName, isSelectedV9)
+                        deleteVM.onRegularFolderDeleteClick(folderID, folderName)
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -494,19 +429,12 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        if (!isSelectedV9) {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromSpecificFolderV10(
-                                    folderID = folderID, webURL = selectedWebURL
-                                )
-                        } else {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromSpecificFolderV9(
-                                    folderName = folderName, webURL = selectedWebURL
-                                )
-                        }
+                        LocalDataBase.localDB.deleteDao()
+                            .deleteALinkFromSpecificFolderV9(
+                                folderName = folderName, webURL = selectedWebURL
+                            )
                     } else {
-                        deleteVM.onRegularFolderDeleteClick(folderID, folderName, isSelectedV9)
+                        deleteVM.onRegularFolderDeleteClick(folderID, folderName)
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -540,17 +468,10 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        if (!isSelectedV9) {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFolders(
-                                    linkID = linkID
-                                )
-                        } else {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFolders(
-                                    linkID = linkID
-                                )
-                        }
+                        LocalDataBase.localDB.deleteDao()
+                            .deleteALinkInfoOfFolders(
+                                linkID = linkID
+                            )
                     } else {
                         LocalDataBase.localDB.deleteDao()
                             .deleteAFolderNote(
@@ -574,17 +495,10 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        if (!isSelectedV9) {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFolders(
-                                    linkID = linkID
-                                )
-                        } else {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFolders(
-                                    linkID = linkID
-                                )
-                        }
+                        LocalDataBase.localDB.deleteDao()
+                            .deleteALinkInfoOfFolders(
+                                linkID = linkID
+                            )
                     } else {
                         LocalDataBase.localDB.deleteDao()
                             .deleteAFolderNote(

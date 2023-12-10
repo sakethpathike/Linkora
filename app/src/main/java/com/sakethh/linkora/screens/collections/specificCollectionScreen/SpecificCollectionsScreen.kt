@@ -323,11 +323,7 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
-                                            SpecificCollectionsScreenVM.isSelectedV9 =
-                                                it.isBasedOnV9
                                             selectedLinkID.longValue = it.id
-                                            SpecificCollectionsScreenVM.isSelectedV9 =
-                                                it.keyOfLinkedFolderV10 == null
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedURLTitle.value = it.title
@@ -404,8 +400,6 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
-                                            SpecificCollectionsScreenVM.isSelectedV9 =
-                                                it.isBasedOnV9
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedLinkID.longValue = it.id
@@ -580,8 +574,6 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
-                                            SpecificCollectionsScreenVM.isSelectedV9 =
-                                                it.isBasedOnV9
                                             selectedLinkID.longValue = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK

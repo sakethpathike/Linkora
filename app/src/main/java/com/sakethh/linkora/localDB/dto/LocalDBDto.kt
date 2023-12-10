@@ -27,9 +27,7 @@ data class LinksTable(
 
     var isLinkedWithArchivedFolder: Boolean,
     var keyOfArchiveLinkedFolderV10: Long? = null,
-    var keyOfArchiveLinkedFolder: String? = null,
-
-    var isBasedOnV9: Boolean = true
+    var keyOfArchiveLinkedFolder: String? = null
 )
 
 @Serializable
@@ -44,7 +42,6 @@ data class FoldersTable(
     var parentFolderID: Long? = null,
     var childFolderIDs: List<Long>? = null,
     var isFolderArchived: Boolean = false,
-    var isV9BasedFolder: Boolean = true,
     var isMarkedAsImportant: Boolean = false
 )
 

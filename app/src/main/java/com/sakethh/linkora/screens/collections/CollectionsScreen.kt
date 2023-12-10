@@ -335,8 +335,6 @@ fun CollectionsScreen(navController: NavController) {
                             folderName = foldersData.folderName,
                             folderNote = foldersData.infoForSaving,
                             onMoreIconClick = {
-                                SpecificCollectionsScreenVM.isSelectedV9 =
-                                    foldersData.isV9BasedFolder
                                 CollectionsScreenVM.selectedFolderData.value.folderName =
                                     foldersData.folderName
                                 CollectionsScreenVM.selectedFolderData.value.infoForSaving =
@@ -349,8 +347,6 @@ fun CollectionsScreen(navController: NavController) {
                                 CollectionsScreenVM.selectedFolderData.value = foldersData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
-                                SpecificCollectionsScreenVM.isSelectedV9 =
-                                    foldersData.isV9BasedFolder
                                 SpecificCollectionsScreenVM.inARegularFolder.value = true
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
@@ -449,13 +445,12 @@ fun CollectionsScreen(navController: NavController) {
         }
         DeleteDialogBox(
             DeleteDialogBoxParam(
-                totalIds = totalFoldersCount.value,
+                totalIds = totalFoldersCount.longValue,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     deleteVM.onRegularFolderDeleteClick(
                         CollectionsScreenVM.selectedFolderData.value.id,
-                        CollectionsScreenVM.selectedFolderData.value.folderName,
-                        isSelectedV9 = CollectionsScreenVM.selectedFolderData.value.isV9BasedFolder
+                        CollectionsScreenVM.selectedFolderData.value.folderName
                     )
                 },
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,

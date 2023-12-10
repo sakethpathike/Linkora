@@ -4,10 +4,12 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTOv8
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.decodeFromString
@@ -18,7 +20,7 @@ class ImportImpl {
         context: Context,
         exceptionType: MutableState<String?>,
         jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>
+        shouldErrorDialogBeVisible: MutableState<Boolean>,
     ) {
         try {
             val json = Json {
@@ -48,6 +50,19 @@ class ImportImpl {
             }
             exceptionType.value = null
             shouldErrorDialogBeVisible.value = false
+            if (jsonDeserialized.appVersion <= 9) {
+                coroutineScope {
+                    awaitAll(async {
+                        if (jsonDeserialized.folders.isNotEmpty()) {
+                            UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
+                        }
+                    }, async {
+                        if (jsonDeserialized.archivedFolders.isNotEmpty()) {
+                            UpdateVM().migrateArchiveFoldersV9toV10()
+                        }
+                    })
+                }
+            }
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "Imported Data Successfully", Toast.LENGTH_SHORT).show()
             }
