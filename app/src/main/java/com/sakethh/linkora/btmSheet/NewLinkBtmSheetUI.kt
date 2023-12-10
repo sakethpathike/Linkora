@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -31,6 +32,7 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -84,11 +86,10 @@ data class NewLinkBtmSheetUIParam @OptIn(ExperimentalMaterial3Api::class) constr
     val inIntentActivity: Boolean,
     val shouldUIBeVisible: MutableState<Boolean>,
     val screenType: SpecificScreenType,
-    val folderName: String = "",
     val btmSheetState: SheetState,
-    val onLinkSaved: () -> Unit,
-    val onFolderCreated: () -> Unit,
-    val parentFolderID: Long?
+    val onLinkSaveClick: () -> Unit,
+    val parentFolderID: Long?,
+    val onFolderCreated: () -> Unit
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -103,9 +104,6 @@ fun NewLinkBtmSheet(
         rememberSaveable(inputs = arrayOf(newLinkBtmSheetUIParam.inIntentActivity)) {
             mutableStateOf(newLinkBtmSheetUIParam.inIntentActivity)
         }
-    val folderName = rememberSaveable(inputs = arrayOf(newLinkBtmSheetUIParam.folderName)) {
-        mutableStateOf(newLinkBtmSheetUIParam.folderName)
-    }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val activity = context as? Activity
@@ -115,6 +113,9 @@ fun NewLinkBtmSheet(
     }
     val shouldNewFolderDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
+    }
+    val folderName = rememberSaveable {
+        mutableStateOf("")
     }
     val createVM: CreateVM = viewModel()
     val updateVM: UpdateVM = viewModel()
@@ -139,7 +140,6 @@ fun NewLinkBtmSheet(
                         if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
                             val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
                             firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
-                            firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
                         }
                     }
                 }
@@ -326,27 +326,29 @@ fun NewLinkBtmSheet(
                                     linkTextFieldValue.value = it
                                 })
                         }
-                        if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                            item {
-                                OutlinedTextField(modifier = Modifier
-                                    .padding(
-                                        start = 20.dp, end = 20.dp, top = 20.dp
-                                    )
-                                    .fillMaxWidth(),
-                                    readOnly = isDataExtractingForTheLink.value,
-                                    label = {
-                                        Text(
-                                            text = "title of the link you're saving",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 12.sp
+                        item {
+                            Box(modifier = Modifier.animateContentSize()) {
+                                if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
+                                    OutlinedTextField(modifier = Modifier
+                                        .padding(
+                                            start = 20.dp, end = 20.dp, top = 20.dp
                                         )
-                                    },
-                                    textStyle = LocalTextStyle.current.copy(lineHeight = 22.sp),
-                                    shape = RoundedCornerShape(5.dp),
-                                    value = titleTextFieldValue.value,
-                                    onValueChange = {
-                                        titleTextFieldValue.value = it
-                                    })
+                                        .fillMaxWidth(),
+                                        readOnly = isDataExtractingForTheLink.value,
+                                        label = {
+                                            Text(
+                                                text = "title of the link you're saving",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 12.sp
+                                            )
+                                        },
+                                        textStyle = LocalTextStyle.current.copy(lineHeight = 22.sp),
+                                        shape = RoundedCornerShape(5.dp),
+                                        value = titleTextFieldValue.value,
+                                        onValueChange = {
+                                            titleTextFieldValue.value = it
+                                        })
+                                }
                             }
                         }
                         item {
@@ -373,48 +375,45 @@ fun NewLinkBtmSheet(
                         if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
                             item {
                                 Card(
-                                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
+                                    border = BorderStroke(
+                                        1.dp,
+                                        contentColorFor(MaterialTheme.colorScheme.surface)
+                                    ),
+                                    colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(start = 20.dp, end = 20.dp, top = 15.dp),
-                                    shape = RoundedCornerShape(10.dp)
+                                        .padding(start = 20.dp, end = 20.dp, top = 15.dp)
                                 ) {
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .requiredHeight(65.dp)
+                                            .wrapContentHeight()
+                                            .padding(
+                                                top = 10.dp, bottom = 10.dp
+                                            ),
+                                        verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Box(
-                                            modifier = Modifier.requiredHeight(65.dp),
                                             contentAlignment = Alignment.CenterStart
                                         ) {
-                                            Icon(
+                                            androidx.compose.material3.Icon(
                                                 imageVector = Icons.Outlined.Info,
                                                 contentDescription = null,
                                                 modifier = Modifier
                                                     .padding(
-                                                        start = 20.dp, end = 22.dp
+                                                        start = 10.dp, end = 10.dp
                                                     )
-                                                    .size(28.dp)
                                             )
                                         }
-                                        Box(
+                                        Text(
+                                            text = "Title will be automatically detected as this setting is enabled.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 14.sp,
+                                            lineHeight = 18.sp,
+                                            textAlign = TextAlign.Start,
                                             modifier = Modifier
-                                                .height(65.dp)
-                                                .fillMaxWidth(),
-                                            contentAlignment = Alignment.CenterStart
-                                        ) {
-                                            Text(
-                                                text = "Title will be automatically detected as this setting is enabled.",
-                                                style = MaterialTheme.typography.titleSmall,
-                                                fontSize = 14.sp,
-                                                modifier = Modifier.padding(
-                                                    end = 20.dp
-                                                ),
-                                                lineHeight = 18.sp,
-                                                textAlign = TextAlign.Start
-                                            )
-                                        }
+                                                .padding(end = 10.dp)
+                                        )
                                     }
                                 }
                             }

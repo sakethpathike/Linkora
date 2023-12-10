@@ -544,7 +544,7 @@ fun CollectionsScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
-                }, onLinkSaved = {
+                }, onLinkSaveClick = {
 
                 },
                 parentFolderID = null

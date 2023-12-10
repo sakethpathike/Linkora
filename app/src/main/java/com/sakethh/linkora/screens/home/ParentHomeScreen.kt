@@ -273,7 +273,7 @@ fun ParentHomeScreen(navController: NavController) {
                 inIntentActivity = false,
                 screenType = SpecificScreenType.ROOT_SCREEN,
                 shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                onLinkSaved = {},
+                onLinkSaveClick = {},
                 onFolderCreated = {},
                 parentFolderID = null
             )

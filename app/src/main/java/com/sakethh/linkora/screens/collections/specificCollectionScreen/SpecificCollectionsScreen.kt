@@ -655,13 +655,8 @@ fun SpecificScreen(navController: NavController) {
                 btmSheetState = btmModalSheetStateForSavingLink,
                 inIntentActivity = false,
                 screenType = SpecificCollectionsScreenVM.screenType.value,
-                folderName = try {
-                    CollectionsScreenVM.selectedFolderData.value.folderName
-                } catch (e: NullPointerException) {
-                    ""
-                },
                 shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                onLinkSaved = {
+                onLinkSaveClick = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
