@@ -458,7 +458,7 @@ open class SpecificCollectionsScreenVM(
 
     fun onDeleteClick(
         folderID: Long, selectedWebURL: String, context: Context,
-        onTaskCompleted: () -> Unit, folderName: String
+        onTaskCompleted: () -> Unit, folderName: String, linkID: Long
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -473,17 +473,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        if (!isSelectedV9) {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromArchiveFolderBasedLinksV10(
-                                    webURL = selectedWebURL, archiveFolderID = folderID
-                                )
-                        } else {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteALinkFromArchiveFolderBasedLinksV9(
-                                    folderName = folderName, webURL = selectedWebURL
-                                )
-                        }
+                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     } else {
                         deleteVM.onRegularFolderDeleteClick(folderID, folderName, isSelectedV9)
                     }
@@ -535,7 +525,7 @@ open class SpecificCollectionsScreenVM(
         selectedWebURL: String,
         context: Context,
         folderID: Long,
-        folderName: String
+        folderName: String, linkID: Long
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -549,15 +539,22 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    if (isSelectedV9) {
-                        LocalDataBase.localDB.deleteDao()
-                            .deleteALinkNoteFromArchiveBasedFolderLinksV9(
-                                folderName = folderName, webURL = selectedWebURL
-                            )
+                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        if (!isSelectedV9) {
+                            LocalDataBase.localDB.deleteDao()
+                                .deleteALinkInfoOfFolders(
+                                    linkID = linkID
+                                )
+                        } else {
+                            LocalDataBase.localDB.deleteDao()
+                                .deleteALinkInfoOfFolders(
+                                    linkID = linkID
+                                )
+                        }
                     } else {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkNoteFromArchiveBasedFolderLinksV10(
-                                folderID = folderID, webURL = selectedWebURL
+                            .deleteAFolderNote(
+                                folderID = folderID
                             )
                     }
                 }.invokeOnCompletion {
@@ -579,13 +576,13 @@ open class SpecificCollectionsScreenVM(
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         if (!isSelectedV9) {
                             LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFoldersV10(
-                                    folderID = folderID, webURL = selectedWebURL
+                                .deleteALinkInfoOfFolders(
+                                    linkID = linkID
                                 )
                         } else {
                             LocalDataBase.localDB.deleteDao()
-                                .deleteALinkInfoOfFoldersV9(
-                                    folderName = folderName, webURL = selectedWebURL
+                                .deleteALinkInfoOfFolders(
+                                    linkID = linkID
                                 )
                         }
                     } else {

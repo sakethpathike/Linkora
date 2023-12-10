@@ -323,6 +323,8 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificCollectionsScreenVM.isSelectedV9 =
+                                                it.isBasedOnV9
                                             selectedLinkID.longValue = it.id
                                             SpecificCollectionsScreenVM.isSelectedV9 =
                                                 it.keyOfLinkedFolderV10 == null
@@ -402,6 +404,8 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificCollectionsScreenVM.isSelectedV9 =
+                                                it.isBasedOnV9
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedLinkID.longValue = it.id
@@ -576,6 +580,8 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
+                                            SpecificCollectionsScreenVM.isSelectedV9 =
+                                                it.isBasedOnV9
                                             selectedLinkID.longValue = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
@@ -737,7 +743,8 @@ fun SpecificScreen(navController: NavController) {
                         selectedWebURL.value,
                         context,
                         folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
+                        linkID = selectedLinkID.longValue
                     )
                 },
                 folderName = selectedURLTitle.value,
@@ -766,7 +773,8 @@ fun SpecificScreen(navController: NavController) {
                                 folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         },
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
+                        linkID = selectedLinkID.longValue
                     )
                 },
                 deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,

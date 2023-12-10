@@ -44,7 +44,8 @@ data class FoldersTable(
     var parentFolderID: Long? = null,
     var childFolderIDs: List<Long>? = null,
     var isFolderArchived: Boolean = false,
-    var isV9BasedFolder: Boolean = true
+    var isV9BasedFolder: Boolean = true,
+    var isMarkedAsImportant: Boolean = false
 )
 
 @Serializable

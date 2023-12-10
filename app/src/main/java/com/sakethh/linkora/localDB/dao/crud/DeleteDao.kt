@@ -40,11 +40,8 @@ interface DeleteDao {
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
 
-    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1")
-    suspend fun deleteALinkInfoOfFoldersV10(webURL: String, folderID: Long)
-
-    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
-    suspend fun deleteALinkInfoOfFoldersV9(webURL: String, folderName: String)
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE id = :linkID AND isLinkedWithFolders=1")
+    suspend fun deleteALinkInfoOfFolders(linkID: Long)
 
     @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
     suspend fun deleteALinkFromSavedLinks(webURL: String)
@@ -56,13 +53,16 @@ interface DeleteDao {
     suspend fun deleteALinkFromImpLinks(webURL: String)
 
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
-    suspend fun deleteALinkFromArchiveLinks(webURL: String)
+    suspend fun deleteALinkFromArchiveLinksV9(webURL: String)
 
-    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :archiveFolderID AND isLinkedWithArchivedFolder=1 AND isLinkedWithSavedLinks = 0 AND isLinkedWithSavedLinks=0")
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :archiveFolderID AND isLinkedWithArchivedFolder=1")
     suspend fun deleteALinkFromArchiveFolderBasedLinksV10(webURL: String, archiveFolderID: Long)
 
-    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName AND isLinkedWithArchivedFolder=1 AND isLinkedWithSavedLinks = 0 AND isLinkedWithSavedLinks=0")
+    @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolder = :folderName AND isLinkedWithArchivedFolder=1")
     suspend fun deleteALinkFromArchiveFolderBasedLinksV9(webURL: String, folderName: String)
+
+    @Query("DELETE from links_table WHERE id = :linkID")
+    suspend fun deleteALinkFromLinksTable(linkID: Long)
 
 
     @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfLinkedFolderV10 = :folderID AND isLinkedWithFolders=1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithSavedLinks=0")

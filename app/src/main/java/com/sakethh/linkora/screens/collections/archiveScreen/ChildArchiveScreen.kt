@@ -142,6 +142,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
+                                SpecificCollectionsScreenVM.isSelectedV9 = true
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
@@ -151,6 +152,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 }
                             },
                             onFolderClick = {
+                                CollectionsScreenVM.currentClickedFolderData.value.id = it.id
+                                CollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                    it.archiveFolderName
                                 SpecificCollectionsScreenVM.isSelectedV9 = true
                                 CollectionsScreenVM.selectedFolderData.value.id =
                                     it.id
@@ -167,6 +171,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         FolderIndividualComponent(folderName = it.folderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
+                                SpecificCollectionsScreenVM.isSelectedV9 = false
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.folderName
@@ -176,6 +181,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 }
                             },
                             onFolderClick = {
+                                CollectionsScreenVM.currentClickedFolderData.value = it
                                 SpecificCollectionsScreenVM.isSelectedV9 = false
                                 CollectionsScreenVM.selectedFolderData.value = it
                                 SpecificCollectionsScreenVM.inARegularFolder.value = false

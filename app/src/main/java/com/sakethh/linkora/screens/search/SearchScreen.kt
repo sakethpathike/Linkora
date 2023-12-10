@@ -179,6 +179,7 @@ fun SearchScreen(navController: NavController) {
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
+                                                SearchScreenVM.selectedLinkID = it.id
                                                 selectedLinkTitle.value = it.title
                                                 SearchScreenVM.selectedLinkType =
                                                     SearchScreenVM.SelectedLinkType.IMP_LINKS
@@ -243,6 +244,7 @@ fun SearchScreen(navController: NavController) {
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
+                                                SearchScreenVM.selectedLinkID = it.id
                                                 selectedLinkTitle.value = it.title
                                                 when {
                                                     it.isLinkedWithArchivedFolder -> {
@@ -325,6 +327,7 @@ fun SearchScreen(navController: NavController) {
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
+                                                SearchScreenVM.selectedLinkID = it.id
                                                 selectedLinkTitle.value = it.title
                                                 SearchScreenVM.selectedLinkType =
                                                     SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
@@ -440,6 +443,7 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    SearchScreenVM.selectedLinkID = it.id
                                     selectedLinkTitle.value = it.title
                                     SearchScreenVM.selectedLinkType =
                                         SearchScreenVM.SelectedLinkType.HISTORY_LINKS
@@ -549,8 +553,9 @@ fun SearchScreen(navController: NavController) {
                         HomeScreenVM.tempImpLinkData.webURL,
                         newNote,
                         selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID
+                        folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
                     )
+                    shouldRenameDialogBoxAppear.value = false
                 },
                 renameDialogBoxFor = OptionsBtmSheetType.LINK,
                 onTitleChangeClick = { newTitle ->
@@ -558,8 +563,9 @@ fun SearchScreen(navController: NavController) {
                         HomeScreenVM.tempImpLinkData.webURL,
                         newTitle,
                         selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID
+                        folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
                     )
+                    shouldRenameDialogBoxAppear.value = false
                 }
             )
         )

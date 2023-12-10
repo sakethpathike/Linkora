@@ -9,24 +9,6 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LinksSearching {
-    @Query(
-        "SELECT *\n" +
-                "                FROM links_table\n" +
-                "WHERE LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
-                "    AND title <> :query\n" +
-                "    AND (\n" +
-                "        LOWER(title) LIKE LOWER(:query)\n" +
-                "        OR LOWER(title) LIKE LOWER(:query) || '%'\n" +
-                "        OR LOWER(title) LIKE '%' || LOWER(:query) || '%'\n" +
-                "    )\n" +
-                "ORDER BY CASE\n" +
-                "    WHEN LOWER(title) LIKE LOWER(:query) THEN 1\n" +
-                "    WHEN LOWER(title) LIKE LOWER(:query) || '%' THEN 2\n" +
-                "    WHEN LOWER(title) LIKE '%' || LOWER(:query) || '%' THEN 3\n" +
-                "    ELSE 4\n" +
-                "END;\n"
-    )
-    fun getFromLinksTableExcludingArchive(query: String): Flow<List<LinksTable>>
 
     @Query(
         "SELECT *\n" +

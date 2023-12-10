@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 3,
-    "identityHash": "a4292e5b921ef35f1541940822c03fd0",
+    "identityHash": "a4b8186ebc4a9be5a8a658dc498026f4",
     "entities": [
       {
         "tableName": "folders_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`folderName` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentFolderID` INTEGER, `childFolderIDs` TEXT, `isFolderArchived` INTEGER NOT NULL, `isV9BasedFolder` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`folderName` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentFolderID` INTEGER, `childFolderIDs` TEXT, `isFolderArchived` INTEGER NOT NULL, `isV9BasedFolder` INTEGER NOT NULL, `isMarkedAsImportant` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "folderName",
@@ -47,6 +47,12 @@
           {
             "fieldPath": "isV9BasedFolder",
             "columnName": "isV9BasedFolder",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isMarkedAsImportant",
+            "columnName": "isMarkedAsImportant",
             "affinity": "INTEGER",
             "notNull": true
           }
@@ -394,7 +400,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4292e5b921ef35f1541940822c03fd0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'a4b8186ebc4a9be5a8a658dc498026f4')"
     ]
   }
 }

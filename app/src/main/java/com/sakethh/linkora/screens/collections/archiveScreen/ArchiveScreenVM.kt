@@ -241,7 +241,7 @@ class ArchiveScreenVM(
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
                 LocalDataBase.localDB.deleteDao()
-                    .deleteALinkFromArchiveLinks(webURL = selectedURLOrFolderName)
+                    .deleteALinkFromArchiveLinksV9(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context, "removed the link from archive permanently", Toast.LENGTH_SHORT
@@ -279,8 +279,12 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                LocalDataBase.localDB.deleteDao()
-                    .deleteArchiveFolderNote(folderID)
+                if (isSelectedV9) {
+                    LocalDataBase.localDB.deleteDao()
+                        .deleteArchiveFolderNote(folderID)
+                } else {
+                    LocalDataBase.localDB.deleteDao().deleteAFolderNote(folderID)
+                }
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
@@ -387,7 +391,7 @@ class ArchiveScreenVM(
                             )
                         )
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromArchiveLinks(selectedArchivedLinkData.value.webURL)
+                        .deleteALinkFromArchiveLinksV9(selectedArchivedLinkData.value.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,

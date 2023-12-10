@@ -32,7 +32,6 @@ class DeleteVM : ViewModel() {
                 }
             })
         }
-
     }
 
     fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {

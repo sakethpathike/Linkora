@@ -22,8 +22,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchScreenVM : SpecificCollectionsScreenVM() {
-
+class SearchScreenVM() : SpecificCollectionsScreenVM() {
     enum class SelectedLinkType {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS
     }
@@ -33,6 +32,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         val isSearchEnabled = mutableStateOf(false)
         val focusRequester = FocusRequester()
         var selectedFolderID: Long = 0
+        var selectedLinkID: Long = 0
     }
 
     private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
@@ -151,7 +151,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkInfoOfFoldersV10(webURL = selectedWebURL, folderID = folderID)
+                        .deleteALinkInfoOfFolders(linkID = selectedLinkID)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
@@ -236,7 +236,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
                     SelectedLinkType.ARCHIVE_LINKS -> {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromArchiveLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            .deleteALinkFromArchiveLinksV9(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
@@ -254,7 +254,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     fun onNoteChangeClickForLinks(
         webURL: String,
         newNote: String, selectedLinkType: SelectedLinkType,
-        folderID: Long
+        folderID: Long, linkID: Long
     ) {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
@@ -276,13 +276,13 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-
+                    updateVM.updateRegularLinkNote(linkID, newNote)
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-
+                    updateVM.updateImpLinkNote(linkID, newNote)
                 }
             }
 
@@ -308,7 +308,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     fun onTitleChangeClickForLinks(
         webURL: String,
         newTitle: String, selectedLinkType: SelectedLinkType,
-        folderID: Long,
+        folderID: Long, linkID: Long
     ) {
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
@@ -330,13 +330,13 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-
+                    updateVM.updateRegularLinkTitle(linkID, newTitle)
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-
+                    updateVM.updateImpLinkTitle(linkID, newTitle)
                 }
             }
 
@@ -423,7 +423,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinksV9(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false

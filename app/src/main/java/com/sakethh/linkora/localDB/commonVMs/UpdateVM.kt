@@ -169,7 +169,7 @@ class UpdateVM : ViewModel() {
             if (doesArchiveLinkExists) {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromArchiveLinks(webURL = archivedLinks.webURL)
+                        .deleteALinkFromArchiveLinksV9(webURL = archivedLinks.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
