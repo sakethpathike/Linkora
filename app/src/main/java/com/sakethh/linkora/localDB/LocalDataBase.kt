@@ -101,23 +101,24 @@ abstract class LocalDataBase : RoomDatabase() {
 
         private val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(database: SupportSQLiteDatabase) {
+
                 database.execSQL("DROP TABLE IF EXISTS folders_table_new")
-                database.execSQL("CREATE TABLE IF NOT EXISTS `folders_table_new` (`folderName` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentFolderID` INTEGER, `childFolderIDs` TEXT, `isFolderArchived` INTEGER NOT NULL DEFAULT 0)")
-                database.execSQL("INSERT INTO folders_table_new (folderName, infoForSaving, id) SELECT folderName, infoForSaving, id FROM folders_table")
-                database.execSQL("DROP TABLE IF EXISTS folders_table")
+                database.execSQL(
+                    "CREATE TABLE IF NOT EXISTS `folders_table_new` (`folderName` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `parentFolderID` INTEGER DEFAULT NULL, `childFolderIDs` TEXT DEFAULT NULL, `isFolderArchived` INTEGER NOT NULL DEFAULT 0, `isMarkedAsImportant` INTEGER NOT NULL DEFAULT 0)"
+                )
+                database.execSQL(
+                    "INSERT INTO folders_table_new (folderName, infoForSaving, id) " + "SELECT folderName, infoForSaving, id FROM folders_table"
+                )
+                database.execSQL("DROP TABLE folders_table")
                 database.execSQL("ALTER TABLE folders_table_new RENAME TO folders_table")
 
-                database.execSQL("CREATE TABLE IF NOT EXISTS `links_table_new` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `webURL` TEXT NOT NULL, `baseURL` TEXT NOT NULL, `imgURL` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `isLinkedWithSavedLinks` INTEGER NOT NULL, `isLinkedWithFolders` INTEGER NOT NULL, `keyOfLinkedFolderV10` INTEGER, `keyOfLinkedFolder` TEXT, `isLinkedWithImpFolder` INTEGER NOT NULL, `keyOfImpLinkedFolder` INTEGER NOT NULL, `isLinkedWithArchivedFolder` INTEGER NOT NULL, `keyOfArchiveLinkedFolderV10` INTEGER, `keyOfArchiveLinkedFolder` TEXT)")
+
+                database.execSQL("DROP TABLE IF EXISTS links_table_new")
                 database.execSQL(
-                    "INSERT INTO links_table_new (id, title, webURL, baseURL, imgURL, " +
-                            "infoForSaving, isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolderV10, " +
-                            "keyOfLinkedFolder, isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
-                            "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolderV10, keyOfArchiveLinkedFolder) " +
-                            "SELECT id, title, webURL, baseURL, imgURL, infoForSaving, " +
-                            "isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolder, " +
-                            "keyOfLinkedFolder, isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
-                            "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolder, keyOfArchiveLinkedFolder " +
-                            "FROM links_table"
+                    "CREATE TABLE IF NOT EXISTS `links_table_new` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `title` TEXT NOT NULL, `webURL` TEXT NOT NULL, `baseURL` TEXT NOT NULL, `imgURL` TEXT NOT NULL, `infoForSaving` TEXT NOT NULL, `isLinkedWithSavedLinks` INTEGER NOT NULL, `isLinkedWithFolders` INTEGER NOT NULL, `keyOfLinkedFolderV10` INTEGER DEFAULT NULL, `keyOfLinkedFolder` TEXT, `isLinkedWithImpFolder` INTEGER NOT NULL, `keyOfImpLinkedFolder` TEXT NOT NULL, `keyOfImpLinkedFolderV10` INTEGER DEFAULT NULL, `isLinkedWithArchivedFolder` INTEGER NOT NULL, `keyOfArchiveLinkedFolderV10` INTEGER DEFAULT NULL, `keyOfArchiveLinkedFolder` TEXT)"
+                )
+                database.execSQL(
+                    "INSERT INTO links_table_new (id, title, webURL, baseURL, imgURL, infoForSaving, " + "isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolder, " + "isLinkedWithImpFolder, keyOfImpLinkedFolder, " + "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolder) " + "SELECT id, title, webURL, baseURL, imgURL, infoForSaving, " + "isLinkedWithSavedLinks, isLinkedWithFolders, keyOfLinkedFolder, " + "isLinkedWithImpFolder, keyOfImpLinkedFolder," + "isLinkedWithArchivedFolder, keyOfArchiveLinkedFolder " + "FROM links_table"
                 )
                 database.execSQL("DROP TABLE links_table")
                 database.execSQL("ALTER TABLE links_table_new RENAME TO links_table")
