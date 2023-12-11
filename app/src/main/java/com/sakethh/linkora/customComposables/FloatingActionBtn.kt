@@ -99,7 +99,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = "Create new folder",
+                            text = "Create a new folder",
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
@@ -159,7 +159,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = "Add new link",
+                            text = "Add a new link",
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,

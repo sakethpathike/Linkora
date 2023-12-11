@@ -529,7 +529,8 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = null
+                parentFolderID = null,
+                inAChildFolderScreen = false
             )
         )
         NewLinkBtmSheet(

@@ -60,6 +60,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -122,11 +123,17 @@ fun AddNewLinkDialogBox(
                 }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
-                        text = "Save new link",
+                        text = when (screenType) {
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> "Add a new link in \"Important Links\""
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> "Add a new link in \"Saved Links\""
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> "Add a new link in \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\""
+                            else -> "Add a new link"
+                        },
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
+                        lineHeight = 28.sp
                     )
                     OutlinedTextField(readOnly = isDataExtractingForTheLink,
                         modifier = Modifier.padding(
@@ -236,7 +243,7 @@ fun AddNewLinkDialogBox(
                             ), horizontalArrangement = Arrangement.SpaceBetween
                         ) {
                             Text(
-                                text = "Save in",
+                                text = "Add in",
                                 color = LocalContentColor.current,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 18.sp,
@@ -372,7 +379,7 @@ fun AddNewLinkDialogBox(
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text(
-                                        text = "Save in:",
+                                        text = "Add in:",
                                         style = MaterialTheme.typography.titleMedium,
                                         fontSize = 24.sp,
                                         modifier = Modifier.padding(
@@ -484,7 +491,8 @@ fun AddNewLinkDialogBox(
                             isDropDownMenuIconClicked.value = false
                         }
                     },
-                    parentFolderID = parentFolderID
+                    parentFolderID = parentFolderID,
+                    inAChildFolderScreen = screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                 )
             )
         }

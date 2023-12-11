@@ -264,7 +264,7 @@ fun ParentHomeScreen(navController: NavController) {
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-                parentFolderID = null
+                parentFolderID = null, inAChildFolderScreen = false
             )
         )
         NewLinkBtmSheet(

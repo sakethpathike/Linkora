@@ -48,7 +48,7 @@ data class AddNewFolderDialogBoxParam(
     val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
     val parentFolderID: Long?,
-    val inAChildFolderScreen: Boolean = false
+    val inAChildFolderScreen: Boolean
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,11 +83,12 @@ fun AddNewFolderDialogBox(
                 }) {
                 Column(modifier = Modifier.verticalScroll(scrollState)) {
                     Text(
-                        text = "Create new folder",
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) "Create a new internal folder in \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else "Create a new folder",
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
+                        lineHeight = 28.sp
                     )
                     OutlinedTextField(readOnly = isFolderCreationInProgress.value,
                         maxLines = 1,

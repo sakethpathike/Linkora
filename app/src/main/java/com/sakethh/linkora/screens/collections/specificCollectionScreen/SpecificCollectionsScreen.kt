@@ -922,7 +922,7 @@ fun SpecificScreen(navController: NavController) {
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
-            screenType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+            screenType = SpecificCollectionsScreenVM.screenType.value,
             parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
                 isDataExtractingForTheLink.value = true

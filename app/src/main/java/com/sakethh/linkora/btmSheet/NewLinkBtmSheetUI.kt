@@ -206,15 +206,21 @@ fun NewLinkBtmSheet(
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Spacer(modifier = Modifier.requiredHeight(15.dp))
                             Text(
-                                text = if (inIntentActivity.value || newLinkBtmSheetUIParam.screenType == SpecificScreenType.ROOT_SCREEN) "Selected folder:" else "Will be saved in:",
+                                text = if (inIntentActivity.value || newLinkBtmSheetUIParam.screenType == SpecificScreenType.ROOT_SCREEN) "Selected folder:" else "Link will be added in:",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.padding(start = 10.dp)
                             )
                             Spacer(modifier = Modifier.requiredHeight(8.dp))
                             Text(
-                                text = if (inIntentActivity.value || newLinkBtmSheetUIParam.screenType == SpecificScreenType.ROOT_SCREEN) selectedFolder.value else folderName.value,
-                                style = MaterialTheme.typography.titleMedium,
+                                text = when (newLinkBtmSheetUIParam.screenType) {
+                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> "Important Links"
+                                    SpecificScreenType.SAVED_LINKS_SCREEN -> "Saved Links"
+                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> folderName.value
+                                    SpecificScreenType.INTENT_ACTIVITY -> selectedFolder.value
+                                    SpecificScreenType.ROOT_SCREEN -> selectedFolder.value
+                                    else -> ""
+                                }, style = MaterialTheme.typography.titleMedium,
                                 fontSize = 20.sp,
                                 maxLines = 3,
                                 modifier = Modifier
@@ -423,7 +429,15 @@ fun NewLinkBtmSheet(
                                     modifier = Modifier.padding(20.dp),
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
-                                OutlinedButton(
+                                OutlinedButton(border = BorderStroke(
+                                    1.dp,
+                                    contentColorFor(MaterialTheme.colorScheme.surface)
+                                ),
+                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                                        containerColor =
+                                        MaterialTheme.colorScheme.surface,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                    ),
                                     modifier = Modifier.padding(
                                         start = 20.dp,
                                         end = 20.dp
@@ -457,11 +471,21 @@ fun NewLinkBtmSheet(
                                 Spacer(modifier = Modifier.requiredHeight(20.dp))
                             }
                             item {
-                                OutlinedButton(modifier = Modifier.padding(
-                                    start = 20.dp, end = 20.dp
-                                ), onClick = {
-                                    shouldNewFolderDialogBoxAppear.value = true
-                                }) {
+                                OutlinedButton(border = BorderStroke(
+                                    1.dp,
+                                    contentColorFor(MaterialTheme.colorScheme.surface)
+                                ),
+                                    colors = androidx.compose.material3.ButtonDefaults.outlinedButtonColors(
+                                        containerColor =
+                                        MaterialTheme.colorScheme.surface,
+                                        contentColor = MaterialTheme.colorScheme.onSurface
+                                    ),
+                                    modifier = Modifier.padding(
+                                        start = 20.dp, end = 20.dp
+                                    ),
+                                    onClick = {
+                                        shouldNewFolderDialogBoxAppear.value = true
+                                    }) {
                                     Text(
                                         text = "Create a new folder",
                                         style = MaterialTheme.typography.titleSmall,
@@ -526,7 +550,8 @@ fun NewLinkBtmSheet(
                     onCreated = {
                         newLinkBtmSheetUIParam.onFolderCreated()
                     },
-                    parentFolderID = newLinkBtmSheetUIParam.parentFolderID
+                    parentFolderID = newLinkBtmSheetUIParam.parentFolderID,
+                    inAChildFolderScreen = newLinkBtmSheetUIParam.screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                 )
             )
         }
