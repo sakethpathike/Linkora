@@ -273,9 +273,65 @@ fun ParentHomeScreen(navController: NavController) {
                 inIntentActivity = false,
                 screenType = SpecificScreenType.ROOT_SCREEN,
                 shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                onLinkSaveClick = {},
+                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
+                    isDataExtractingForTheLink.value = true
+                    if (selectedDefaultFolder == "Saved Links") {
+                        createVM.addANewLinkInSavedLinks(
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            context = context
+                        )
+                    }
+                    if (selectedDefaultFolder == "Important Links") {
+                        createVM.addANewLinkInImpLinks(
+                            context = context,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected
+                        )
+                    }
+                    when {
+                        selectedDefaultFolder != "Important Links" && selectedDefaultFolder != "Saved Links" -> {
+                            if (selectedNonDefaultFolderID != null && selectedDefaultFolder != null) {
+                                createVM.addANewLinkInAFolderV10(
+                                    title = title,
+                                    webURL = webURL,
+                                    noteForSaving = note,
+                                    parentFolderID = selectedNonDefaultFolderID,
+                                    context = context,
+                                    folderName = selectedDefaultFolder,
+                                    autoDetectTitle = isAutoDetectSelected,
+                                    onTaskCompleted = {
+                                        coroutineScope.launch {
+                                            btmModalSheetStateForSavingLinks.hide()
+                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                            isDataExtractingForTheLink.value = false
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                },
                 onFolderCreated = {},
-                parentFolderID = null
+                parentFolderID = null,
+                isDataExtractingForTheLink = isDataExtractingForTheLink
             )
         )
     }

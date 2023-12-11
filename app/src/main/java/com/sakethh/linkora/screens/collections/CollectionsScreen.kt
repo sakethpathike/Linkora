@@ -544,10 +544,65 @@ fun CollectionsScreen(navController: NavController) {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
-                }, onLinkSaveClick = {
-
                 },
-                parentFolderID = null
+                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
+                    isDataExtractingForTheLink.value = true
+                    if (selectedDefaultFolder == "Saved Links") {
+                        createVM.addANewLinkInSavedLinks(
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            context = context
+                        )
+                    }
+                    if (selectedDefaultFolder == "Important Links") {
+                        createVM.addANewLinkInImpLinks(
+                            context = context,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected
+                        )
+                    }
+                    when {
+                        selectedDefaultFolder != "Important Links" && selectedDefaultFolder != "Saved Links" -> {
+                            if (selectedNonDefaultFolderID != null && selectedDefaultFolder != null) {
+                                createVM.addANewLinkInAFolderV10(
+                                    title = title,
+                                    webURL = webURL,
+                                    noteForSaving = note,
+                                    parentFolderID = selectedNonDefaultFolderID,
+                                    context = context,
+                                    folderName = selectedDefaultFolder,
+                                    autoDetectTitle = isAutoDetectSelected,
+                                    onTaskCompleted = {
+                                        coroutineScope.launch {
+                                            btmModalSheetStateForSavingLinks.hide()
+                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                            isDataExtractingForTheLink.value = false
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                },
+                parentFolderID = null,
+                isDataExtractingForTheLink = isDataExtractingForTheLink
             )
         )
         SortingBottomSheetUI(

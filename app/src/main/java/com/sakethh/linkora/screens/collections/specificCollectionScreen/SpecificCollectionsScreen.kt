@@ -93,8 +93,12 @@ fun SpecificScreen(navController: NavController) {
             )
         }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
     }
+    val createVM: CreateVM = viewModel()
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
+    }
+    val isDataExtractingForTheLink = rememberSaveable {
+        mutableStateOf(false)
     }
     val selectedLinkID = rememberSaveable {
         mutableLongStateOf(0)
@@ -656,17 +660,69 @@ fun SpecificScreen(navController: NavController) {
                 inIntentActivity = false,
                 screenType = SpecificCollectionsScreenVM.screenType.value,
                 shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                onLinkSaveClick = {
-                    specificCollectionsScreenVM.changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        ),
-                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                        folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
-                    )
+                currentFolder = CollectionsScreenVM.currentClickedFolderData.value.folderName,
+                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
+                    isDataExtractingForTheLink.value = true
+                    when (SpecificCollectionsScreenVM.screenType.value) {
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                            createVM.addANewLinkInAFolderV10(
+                                autoDetectTitle = isAutoDetectSelected,
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                                context = context,
+                                onTaskCompleted = {
+                                    coroutineScope.launch {
+                                        btmModalSheetStateForSavingLinks.hide()
+                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                        isDataExtractingForTheLink.value = false
+                                    }
+                                },
+                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                            )
+                        }
+
+                        SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                            createVM.addANewLinkInImpLinks(
+                                autoDetectTitle = isAutoDetectSelected,
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                context = context,
+                                onTaskCompleted = {
+                                    coroutineScope.launch {
+                                        btmModalSheetStateForSavingLinks.hide()
+                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                        isDataExtractingForTheLink.value = false
+                                    }
+                                },
+                            )
+                        }
+
+                        SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                            createVM.addANewLinkInSavedLinks(
+                                autoDetectTitle = isAutoDetectSelected,
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                context = context,
+                                onTaskCompleted = {
+                                    coroutineScope.launch {
+                                        btmModalSheetStateForSavingLinks.hide()
+                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                        isDataExtractingForTheLink.value = false
+                                    }
+                                },
+                            )
+                        }
+
+                        else -> {}
+                    }
                 },
                 onFolderCreated = {},
-                parentFolderID = null
+                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                isDataExtractingForTheLink = isDataExtractingForTheLink
             )
         )
         OptionsBtmSheetUI(
@@ -864,10 +920,6 @@ fun SpecificScreen(navController: NavController) {
                 inAChildFolderScreen = true
             )
         )
-        val isDataExtractingForTheLink = rememberSaveable {
-            mutableStateOf(false)
-        }
-        val createVM: CreateVM = viewModel()
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             screenType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
