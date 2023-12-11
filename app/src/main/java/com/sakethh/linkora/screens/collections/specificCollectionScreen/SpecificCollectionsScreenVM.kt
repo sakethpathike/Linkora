@@ -410,7 +410,7 @@ open class SpecificCollectionsScreenVM(
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     } else {
-                        deleteVM.onRegularFolderDeleteClick(folderID, folderName)
+                        deleteVM.onRegularFolderDeleteClick(folderID)
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -434,7 +434,7 @@ open class SpecificCollectionsScreenVM(
                                 folderName = folderName, webURL = selectedWebURL
                             )
                     } else {
-                        deleteVM.onRegularFolderDeleteClick(folderID, folderName)
+                        deleteVM.onRegularFolderDeleteClick(folderID)
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()

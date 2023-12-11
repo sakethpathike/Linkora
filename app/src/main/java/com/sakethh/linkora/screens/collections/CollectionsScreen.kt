@@ -329,30 +329,30 @@ fun CollectionsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
                 if (foldersData.isNotEmpty()) {
-                    itemsIndexed(foldersData) { folderIndex, foldersData ->
+                    itemsIndexed(foldersData) { folderIndex, folderData ->
                         FolderIndividualComponent(
                             showMoreIcon = true,
-                            folderName = foldersData.folderName,
-                            folderNote = foldersData.infoForSaving,
+                            folderName = folderData.folderName,
+                            folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
                                 CollectionsScreenVM.selectedFolderData.value.folderName =
-                                    foldersData.folderName
+                                    folderData.folderName
                                 CollectionsScreenVM.selectedFolderData.value.infoForSaving =
-                                    foldersData.infoForSaving
-                                clickedFolderNote.value = foldersData.infoForSaving
+                                    folderData.infoForSaving
+                                clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
                                 }
-                                clickedFolderName.value = foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.value = foldersData
+                                clickedFolderName.value = folderData.folderName
+                                CollectionsScreenVM.selectedFolderData.value = folderData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             }, onFolderClick = {
                                 SpecificCollectionsScreenVM.inARegularFolder.value = true
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                 CollectionsScreenVM.currentClickedFolderData.value =
-                                    foldersData
-                                CollectionsScreenVM.rootFolderID = foldersData.id
+                                    folderData
+                                CollectionsScreenVM.rootFolderID = folderData.id
                                 navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                             })
                     }
@@ -449,8 +449,7 @@ fun CollectionsScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     deleteVM.onRegularFolderDeleteClick(
-                        CollectionsScreenVM.selectedFolderData.value.id,
-                        CollectionsScreenVM.selectedFolderData.value.folderName
+                        CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,

@@ -5,7 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
-import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTOv8
+import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -26,7 +26,7 @@ class ImportImpl {
             val json = Json {
                 ignoreUnknownKeys = true
             }
-            val jsonDeserialized = json.decodeFromString<ExportDTOv8>(jsonString)
+            val jsonDeserialized = json.decodeFromString<ExportDTO>(jsonString)
             withContext(Dispatchers.IO) {
                 awaitAll(async {
                     LocalDataBase.localDB.importDao()

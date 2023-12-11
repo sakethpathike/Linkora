@@ -209,9 +209,9 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
+
             deleteVM.onRegularFolderDeleteClick(
-                CollectionsScreenVM.selectedFolderData.value.id,
-                selectedURLOrFolderName
+                CollectionsScreenVM.selectedFolderData.value.id
             )
         }
 

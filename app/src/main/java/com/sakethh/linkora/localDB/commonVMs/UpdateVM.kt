@@ -13,10 +13,8 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -263,39 +261,38 @@ class UpdateVM : ViewModel() {
 
     fun migrateRegularFoldersLinksDataFromV9toV10() {
         val localDataBase = LocalDataBase.localDB
-        val asyncProcesses = mutableListOf<Deferred<Unit>>()
         viewModelScope.launch {
             localDataBase.readDao().getAllRootFolders().collect { rootFolders ->
-                rootFolders.forEach { eachFolder ->
-                    val currentProcess = async {
-                        localDataBase.readDao().getLinksOfThisFolderV9(eachFolder.folderName)
-                            .collect { links ->
-                                links.forEach { link ->
-                                    val linkProcess = async {
-                                        link.keyOfLinkedFolderV10 = eachFolder.id
-                                        localDataBase.updateDao()
-                                            .updateALinkDataFromLinksTable(link)
-                                    }
-                                    asyncProcesses.add(linkProcess)
-                                }
+                rootFolders.forEach { currentFolder ->
+                    async {
+                        currentFolder.childFolderIDs = emptyList()
+                        localDataBase.updateDao().updateAFolderData(currentFolder)
+                    }.await()
+                    localDataBase.readDao().getLinksOfThisFolderV9(currentFolder.folderName)
+                        .collect { links ->
+                            links.forEach { currentLink ->
+                                async {
+                                    currentLink.keyOfLinkedFolderV10 = currentFolder.id
+                                    localDataBase.updateDao()
+                                        .updateALinkDataFromLinksTable(currentLink)
+                                }.await()
                             }
-                    }
-                    asyncProcesses.add(currentProcess)
+                        }
                 }
             }
-            asyncProcesses.awaitAll()
         }
     }
 
     fun migrateArchiveFoldersV9toV10() {
+        val localDataBase = LocalDataBase.localDB
         viewModelScope.launch {
-            LocalDataBase.localDB.readDao().getAllArchiveFoldersV9().collect { archiveFolders ->
-                archiveFolders.forEach { eachFolder ->
+            localDataBase.readDao().getAllArchiveFoldersV9().collect { archiveFolders ->
+                archiveFolders.forEach { currentFolder ->
                     async {
-                        LocalDataBase.localDB.createDao().addANewFolder(
+                        localDataBase.createDao().addANewFolder(
                             FoldersTable(
-                                folderName = eachFolder.archiveFolderName,
-                                infoForSaving = eachFolder.archiveFolderName,
+                                folderName = currentFolder.archiveFolderName,
+                                infoForSaving = currentFolder.infoForSaving,
                                 parentFolderID = null,
                                 childFolderIDs = emptyList(),
                                 isFolderArchived = true,
@@ -303,20 +300,25 @@ class UpdateVM : ViewModel() {
                             )
                         )
                     }.await()
-                    val latestAddedFolderID =
-                        LocalDataBase.localDB.readDao().getLatestAddedFolder().id
-                    LocalDataBase.localDB.readDao()
-                        .getThisArchiveFolderLinksV9(eachFolder.archiveFolderName)
+                    val latestAddedFolderID = async {
+                        localDataBase.readDao().getLatestAddedFolder().id
+                    }.await()
+                    localDataBase.readDao()
+                        .getThisArchiveFolderLinksV9(currentFolder.archiveFolderName)
                         .collect { archiveLinks ->
-                            archiveLinks.forEach { archiveLink ->
-                                archiveLink.keyOfLinkedFolderV10 = latestAddedFolderID
-                                archiveLink.isLinkedWithFolders = true
-                                LocalDataBase.localDB.updateDao()
-                                    .updateALinkDataFromLinksTable(archiveLink)
+                            archiveLinks.forEach { currentArchiveLink ->
+                                async {
+                                    currentArchiveLink.isLinkedWithFolders = true
+                                    currentArchiveLink.keyOfLinkedFolderV10 = latestAddedFolderID
+                                    localDataBase.updateDao()
+                                        .updateALinkDataFromLinksTable(currentArchiveLink)
+                                }.await()
                             }
+                            async {
+                                localDataBase.deleteDao()
+                                    .deleteAnArchiveFolderV9(currentFolder.id)
+                            }.await()
                         }
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteAnArchiveFolderV9(eachFolder.id)
                 }
             }
         }
