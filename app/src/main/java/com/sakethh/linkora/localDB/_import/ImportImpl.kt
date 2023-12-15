@@ -22,29 +22,38 @@ class ImportImpl {
         jsonString: String,
         shouldErrorDialogBeVisible: MutableState<Boolean>,
     ) {
+        val localDataBase = LocalDataBase.localDB
         try {
             val json = Json {
                 ignoreUnknownKeys = true
             }
             val jsonDeserialized = json.decodeFromString<ExportDTO>(jsonString)
+
+            val _latestImpLinksTableID = localDataBase.readDao().getLastIDOfImpLinksTable()
+            var latestImpLinksTableID = _latestImpLinksTableID
+            jsonDeserialized.importantLinks.forEach {
+                it.id = _latestImpLinksTableID + 1
+                latestImpLinksTableID++
+            }
+
             withContext(Dispatchers.IO) {
                 awaitAll(async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllArchivedFolders(jsonDeserialized.archivedFolders)
                 }, async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllRegularFolders(jsonDeserialized.folders)
                 }, async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllArchivedLinks(jsonDeserialized.archivedLinks)
                 }, async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllHistoryLinks(jsonDeserialized.historyLinks)
                 }, async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllImportantLinks(jsonDeserialized.importantLinks)
                 }, async {
-                    LocalDataBase.localDB.importDao()
+                    localDataBase.importDao()
                         .addAllLinks(jsonDeserialized.savedLinks)
                 })
             }
@@ -64,7 +73,11 @@ class ImportImpl {
                 }
             }
             withContext(Dispatchers.Main) {
-                Toast.makeText(context, "Imported Data Successfully", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    context,
+                    if (jsonDeserialized.appVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.appVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.appVersion}",
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()

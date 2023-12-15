@@ -25,7 +25,7 @@ interface LinksSearching {
                 "    ELSE 4\n" +
                 "END;\n"
     )
-    fun getFromLinksTableIncludingArchive(query: String): Flow<List<LinksTable>>
+    fun getFromLinksTable(query: String): Flow<List<LinksTable>>
 
     @Query(
         "SELECT *\n" +

@@ -100,9 +100,6 @@ fun SpecificScreen(navController: NavController) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
     }
-    val selectedLinkID = rememberSaveable {
-        mutableLongStateOf(0)
-    }
     val specificFolderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
     val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
     val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
@@ -327,7 +324,7 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
-                                            selectedLinkID.longValue = it.id
+                                            CollectionsScreenVM.selectedFolderData.value.id = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedURLTitle.value = it.title
@@ -406,7 +403,7 @@ fun SpecificScreen(navController: NavController) {
                                         onMoreIconCLick = {
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
-                                            selectedLinkID.longValue = it.id
+                                            CollectionsScreenVM.selectedFolderData.value.id = it.id
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
@@ -481,7 +478,7 @@ fun SpecificScreen(navController: NavController) {
                                         onMoreIconCLick = {
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
-                                            selectedLinkID.longValue = it.id
+                                            CollectionsScreenVM.selectedFolderData.value.id = it.id
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
@@ -578,7 +575,7 @@ fun SpecificScreen(navController: NavController) {
                                         webBaseURL = it.baseURL,
                                         imgURL = it.imgURL,
                                         onMoreIconCLick = {
-                                            selectedLinkID.longValue = it.id
+                                            CollectionsScreenVM.selectedFolderData.value.id = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             selectedWebURL.value = it.webURL
@@ -787,7 +784,7 @@ fun SpecificScreen(navController: NavController) {
                         context,
                         folderID = CollectionsScreenVM.selectedFolderData.value.id,
                         folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
-                        linkID = selectedLinkID.longValue
+                        linkID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 folderName = selectedURLTitle.value,
@@ -817,7 +814,7 @@ fun SpecificScreen(navController: NavController) {
                             )
                         },
                         folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
-                        linkID = selectedLinkID.longValue
+                        linkID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
@@ -846,22 +843,22 @@ fun SpecificScreen(navController: NavController) {
                     } else {
                         when (SpecificCollectionsScreenVM.screenType.value) {
                             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkNote(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newNote
                             )
 
                             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newNote
                             )
 
                             SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newNote
                             )
 
                             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newNote
                             )
 
@@ -879,22 +876,22 @@ fun SpecificScreen(navController: NavController) {
                     } else {
                         when (SpecificCollectionsScreenVM.screenType.value) {
                             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkTitle(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newTitle
                             )
 
                             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newTitle
                             )
 
                             SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newTitle
                             )
 
                             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                selectedLinkID.longValue,
+                                CollectionsScreenVM.selectedFolderData.value.id,
                                 newTitle
                             )
 

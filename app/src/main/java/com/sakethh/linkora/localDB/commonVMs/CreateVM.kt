@@ -162,13 +162,13 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         folderName: String
     ) {
-        var doesThisLinkExists = false
         viewModelScope.launch {
-            LocalDataBase.localDB.readDao()
-                .doesThisLinkExistsInAFolderV10(
-                    webURL, parentFolderID
-                )
-        }.invokeOnCompletion {
+            val doesThisLinkExists = async {
+                LocalDataBase.localDB.readDao()
+                    .doesThisLinkExistsInAFolderV10(
+                        webURL, parentFolderID
+                    )
+            }.await()
             if (!isNetworkAvailable(context)) {
                 viewModelScope.launch {
                     withContext(Dispatchers.Main) {
@@ -279,8 +279,10 @@ class CreateVM : ViewModel() {
                         )
                     if (parentFolderID != null) {
                         LocalDataBase.localDB.createDao().addANewChildIdToARootAndParentFolders(
-                            rootParentID = rootParentID, currentID = LocalDataBase.localDB.readDao()
-                                .getLatestAddedFolder().id, parentID = parentFolderID
+                            rootParentID = rootParentID,
+                            currentID = LocalDataBase.localDB.readDao()
+                                .getLatestAddedFolder().id,
+                            parentID = parentFolderID
                         )
                     }
                     withContext(Dispatchers.Main) {

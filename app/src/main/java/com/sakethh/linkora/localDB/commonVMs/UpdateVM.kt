@@ -28,7 +28,9 @@ class UpdateVM : ViewModel() {
 
     fun updateRegularLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
+            async {
+                LocalDataBase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
+            }.await()
         }
     }
 
@@ -40,7 +42,9 @@ class UpdateVM : ViewModel() {
 
     fun updateRegularLinkNote(linkID: Long, newNote: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameALinkInfo(linkID, newNote)
+            async {
+                LocalDataBase.localDB.updateDao().renameALinkInfo(linkID, newNote)
+            }.await()
         }
     }
 

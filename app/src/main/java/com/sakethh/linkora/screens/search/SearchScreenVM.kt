@@ -19,6 +19,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -47,30 +48,41 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
     private val _archiveLinksQueriedData = MutableStateFlow(emptyList<ArchivedLinks>())
     val archiveLinksQueriedData = _archiveLinksQueriedData.asStateFlow()
 
-    fun retrieveSearchQueryData(query: String) {
+    private val _searchQuery = MutableStateFlow("")
+    val searchQuery = _searchQuery.asStateFlow()
+
+    init {
         viewModelScope.launch {
-            awaitAll(async {
-                if (query.isNotEmpty()) {
-                    LocalDataBase.localDB.linksSearching()
-                        .getFromImportantLinks(query = query).collect {
-                            _impLinksQueriedData.emit(it)
-                        }
-                }
-            }, async {
-                if (query.isNotEmpty()) {
-                    LocalDataBase.localDB.linksSearching()
-                        .getFromLinksTableIncludingArchive(query = query).collect {
-                            _linksTableQueriedData.emit(it)
-                        }
-                }
-            }, async {
-                if (query.isNotEmpty()) {
-                    LocalDataBase.localDB.linksSearching()
-                        .getFromArchiveLinks(query = query).collect {
-                            _archiveLinksQueriedData.emit(it)
-                        }
-                }
-            })
+            searchQuery.collectLatest { query ->
+                awaitAll(async {
+                    if (query.isNotEmpty()) {
+                        LocalDataBase.localDB.linksSearching()
+                            .getFromImportantLinks(query = query).collect { retrievedData ->
+                                _impLinksQueriedData.emit(retrievedData)
+                            }
+                    }
+                }, async {
+                    if (query.isNotEmpty()) {
+                        LocalDataBase.localDB.linksSearching()
+                            .getFromLinksTable(query = query).collect { retrievedData ->
+                                _linksTableQueriedData.emit(retrievedData)
+                            }
+                    }
+                }, async {
+                    if (query.isNotEmpty()) {
+                        LocalDataBase.localDB.linksSearching()
+                            .getFromArchiveLinks(query = query).collect { retrievedData ->
+                                _archiveLinksQueriedData.emit(retrievedData)
+                            }
+                    }
+                })
+            }
+        }
+    }
+
+    fun changeSearchQuery(newQuery: String) {
+        viewModelScope.launch {
+            _searchQuery.emit(newQuery)
         }
     }
 

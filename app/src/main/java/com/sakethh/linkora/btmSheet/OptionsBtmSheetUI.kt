@@ -92,6 +92,7 @@ fun OptionsBtmSheetUI(
     val localClipBoardManager = LocalClipboardManager.current
     if (optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(
+            dragHandle = {},
             sheetState = optionsBtmSheetUIParam.btmModalSheetState,
             onDismissRequest = {
                 coroutineScope.launch {
@@ -295,7 +296,6 @@ fun OptionsBtmSheetUI(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-                Spacer(modifier = Modifier.height(5.dp))
             }
         }
     }

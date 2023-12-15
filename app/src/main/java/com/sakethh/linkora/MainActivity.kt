@@ -19,7 +19,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
@@ -37,11 +36,11 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
         }
-        if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
-            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-            firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
-            firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
-        }
+        /* if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
+             val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+             firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
+             firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
+         }*/
         setContent {
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()

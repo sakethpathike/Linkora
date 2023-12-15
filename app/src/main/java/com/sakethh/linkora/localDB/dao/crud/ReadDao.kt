@@ -16,16 +16,16 @@ interface ReadDao {
     fun getAllSavedLinks(): Flow<List<LinksTable>>
 
     @Query("SELECT * FROM links_table")
-    fun getAllFromLinksTable(): Flow<List<LinksTable>>
+    suspend fun getAllFromLinksTable(): List<LinksTable>
 
     @Query("SELECT * FROM recently_visited_table")
-    fun getAllRecentlyVisitedLinks(): Flow<List<RecentlyVisited>>
+    suspend fun getAllRecentlyVisitedLinks(): List<RecentlyVisited>
 
     @Query("SELECT * FROM important_links_table")
-    fun getAllImpLinks(): Flow<List<ImportantLinks>>
+    suspend fun getAllImpLinks(): List<ImportantLinks>
 
     @Query("SELECT * FROM archived_links_table")
-    fun getAllArchiveLinks(): Flow<List<ArchivedLinks>>
+    suspend fun getAllArchiveLinks(): List<ArchivedLinks>
 
     @Query("SELECT * FROM archived_folders_table")
     fun getAllArchiveFoldersV9(): Flow<List<ArchivedFolders>>
@@ -39,6 +39,9 @@ interface ReadDao {
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0")
     fun getAllRootFolders(): Flow<List<FoldersTable>>
+
+    @Query("SELECT * FROM folders_table")
+    suspend fun getAllFolders(): List<FoldersTable>
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
     fun getLinksOfThisFolderV10(folderID: Long): Flow<List<LinksTable>>
@@ -66,6 +69,21 @@ interface ReadDao {
 
     @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND keyOfLinkedFolderV10=:folderID)")
     suspend fun doesThisLinkExistsInAFolderV10(webURL: String, folderID: Long): Boolean
+
+    @Query("SELECT MAX(id) FROM folders_table")
+    suspend fun getLastIDOfFoldersTable(): Long
+
+    @Query("SELECT MAX(id) FROM recently_visited_table")
+    suspend fun getLastIDOfHistoryTable(): Long
+
+    @Query("SELECT MAX(id) FROM links_table")
+    suspend fun getLastIDOfLinksTable(): Long
+
+    @Query("SELECT MAX(id) FROM important_links_table")
+    suspend fun getLastIDOfImpLinksTable(): Long
+
+    @Query("SELECT MAX(id) FROM archived_links_table")
+    suspend fun getLastIDOfArchivedLinksTable(): Long
 
     @Query("SELECT EXISTS(SELECT * FROM links_table WHERE webURL = :webURL AND keyOfLinkedFolder=:folderName)")
     suspend fun doesThisLinkExistsInAFolderV9(webURL: String, folderName: String): Boolean

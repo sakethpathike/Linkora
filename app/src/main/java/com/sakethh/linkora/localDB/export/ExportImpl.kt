@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.export
 
 import android.os.Build
 import android.os.Environment
+import android.util.Log
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
@@ -10,11 +11,8 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.localDB.dto.exportImportDTOs.ExportDTO
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
@@ -30,41 +28,50 @@ class ExportImpl {
     private val archivedFolders = mutableListOf<ArchivedFolders>()
     private val historyLinks = mutableListOf<RecentlyVisited>()
 
-    init {
-        val job = Job()
-        CoroutineScope(job).launch {
-            awaitAll(async {
-                LocalDataBase.localDB.readDao().getAllFromLinksTable().collect {
-                    savedLinks.addAll(it)
-                }
-            }, async {
-                LocalDataBase.localDB.readDao().getAllImpLinks().collect {
-                    importantLinks.addAll(it)
-                }
-            }, async {
-                LocalDataBase.localDB.readDao().getAllRootFolders().collect {
-                    folders.addAll(it)
-                }
-            }, async {
-                LocalDataBase.localDB.readDao().getAllArchiveLinks().collect {
-                    archivedLinks.addAll(it)
-                }
-            }, async {
-                LocalDataBase.localDB.readDao().getAllArchiveFoldersV9().collect {
-                    archivedFolders.addAll(it)
-                }
-            }, async {
-                LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks().collect {
-                    historyLinks.addAll(it)
-                }
-            })
-        }.start()
-        if (job.isCompleted) {
-            job.cancel()
-        }
-    }
 
-    fun exportToAFile() {
+    suspend fun exportToAFile() = coroutineScope {
+        val exportAllLinks = async {
+            savedLinks.addAll(LocalDataBase.localDB.readDao().getAllFromLinksTable())
+            Log.d(
+                "data collection",
+                LocalDataBase.localDB.readDao().getAllFromLinksTable().toString()
+            )
+        }
+        val exportImpLinks = async {
+            importantLinks.addAll(
+                LocalDataBase.localDB.readDao().getAllImpLinks()
+            )
+            Log.d("data collection", LocalDataBase.localDB.readDao().getAllImpLinks().toString())
+
+        }
+        val exportAllFolders = async {
+            folders.addAll(
+                LocalDataBase.localDB.readDao().getAllFolders()
+            )
+            Log.d("data collection", LocalDataBase.localDB.readDao().getAllFolders().toString())
+
+        }
+        val exportArchiveLinks = async {
+            archivedLinks.addAll(
+                LocalDataBase.localDB.readDao().getAllArchiveLinks()
+            )
+            Log.d(
+                "data collection", LocalDataBase.localDB.readDao().getAllArchiveLinks()
+                    .toString()
+            )
+
+        }
+        val exportHistoryLinks = async {
+            historyLinks.addAll(
+                LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks()
+            )
+            Log.d(
+                "data collection",
+                LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks().toString()
+            )
+
+        }
+
         val defaultFolder = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
             File(Environment.getExternalStorageDirectory(), "Linkora/Exports")
         } else {
@@ -81,10 +88,13 @@ class ExportImpl {
                 "Linkora/Exports"
             ).mkdirs()
         }
-
+        exportAllFolders.await()
+        exportArchiveLinks.await()
+        exportHistoryLinks.await()
+        exportImpLinks.await()
+        exportAllLinks.await()
         val file = File(
-            defaultFolder,
-            "LinkoraExport-${
+            defaultFolder, "LinkoraExport-${
                 getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
             }.txt"
         )
@@ -101,6 +111,5 @@ class ExportImpl {
                 )
             )
         )
-
     }
 }

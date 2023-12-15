@@ -1,5 +1,6 @@
 package com.sakethh.linkora.customComposables
 
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -44,6 +46,7 @@ fun RenameDialogBox(
     renameDialogBoxParam: RenameDialogBoxParam
 ) {
     val scrollState = rememberScrollState()
+    val localContext = LocalContext.current
     if (renameDialogBoxParam.shouldDialogBoxAppear.value) {
         val newFolderOrTitleName = rememberSaveable {
             mutableStateOf("")
@@ -120,11 +123,19 @@ fun RenameDialogBox(
                             )
                             .align(Alignment.End),
                         onClick = {
-                            if (newNote.value.isNotEmpty()) {
-                                renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
-                                renameDialogBoxParam.onNoteChangeClick(newNote.value)
+                            if (newFolderOrTitleName.value.isNotEmpty()) {
+                                if (newNote.value.isNotEmpty()) {
+                                    renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                                    renameDialogBoxParam.onNoteChangeClick(newNote.value)
+                                } else {
+                                    renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                                }
                             } else {
-                                renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                                Toast.makeText(
+                                    localContext,
+                                    "Title can't be empty",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }) {
                         Text(

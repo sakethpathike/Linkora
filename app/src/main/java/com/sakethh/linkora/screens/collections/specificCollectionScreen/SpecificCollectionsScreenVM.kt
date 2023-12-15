@@ -22,6 +22,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -67,7 +68,7 @@ open class SpecificCollectionsScreenVM(
         viewModelScope.launch {
             LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
                 currentClickedFolderData.value.id
-            ).collect {
+            ).collectLatest {
                 _childFoldersData.emit(it)
             }
         }
@@ -92,7 +93,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByAToZ()
-                                .collect {
+                                .collectLatest {
                                     _savedLinksData.emit(it)
                                 }
                         }
@@ -101,7 +102,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByZToA()
-                                .collect {
+                                .collectLatest {
                                     _savedLinksData.emit(it)
                                 }
                         }
@@ -110,7 +111,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting()
-                                .sortByLatestToOldest().collect {
+                                .sortByLatestToOldest().collectLatest {
                                     _savedLinksData.emit(it)
                                 }
                         }
@@ -119,7 +120,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting()
-                                .sortByOldestToLatest().collect {
+                                .sortByOldestToLatest().collectLatest {
                                     _savedLinksData.emit(it)
                                 }
                         }
@@ -132,7 +133,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting()
-                                .sortByAToZ().collect {
+                                .sortByAToZ().collectLatest {
                                     _impLinksData.emit(it)
                                 }
                         }
@@ -141,7 +142,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting()
-                                .sortByZToA().collect {
+                                .sortByZToA().collectLatest {
                                     _impLinksData.emit(it)
                                 }
                         }
@@ -150,7 +151,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting()
-                                .sortByLatestToOldest().collect {
+                                .sortByLatestToOldest().collectLatest {
                                     _impLinksData.emit(it)
                                 }
                         }
@@ -159,7 +160,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting()
-                                .sortByOldestToLatest().collect {
+                                .sortByOldestToLatest().collectLatest {
                                     _impLinksData.emit(it)
                                 }
                         }
@@ -173,13 +174,13 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortLinksByAToZV10(folderID = folderID).collect {
+                                    .sortLinksByAToZV10(folderID = folderID).collectLatest {
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                                    .collect {
+                                    .collectLatest {
                                         _archiveSubFolderData.emit(it)
                                     }
                             })
@@ -190,13 +191,13 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortLinksByZToAV10(folderID = folderID).collect {
+                                    .sortLinksByZToAV10(folderID = folderID).collectLatest {
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
-                                    .collect {
+                                    .collectLatest {
                                         _archiveSubFolderData.emit(it)
                                     }
                             })
@@ -208,13 +209,14 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortLinksByLatestToOldestV10(folderID = folderID).collect {
+                                    .sortLinksByLatestToOldestV10(folderID = folderID)
+                                    .collectLatest {
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
-                                    .collect {
+                                    .collectLatest {
                                         _archiveSubFolderData.emit(it)
                                     }
                             })
@@ -225,13 +227,14 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
-                                    .sortLinksByOldestToLatestV10(folderID = folderID).collect {
+                                    .sortLinksByOldestToLatestV10(folderID = folderID)
+                                    .collectLatest {
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
                                 LocalDataBase.localDB.archivedFolderLinksSorting()
                                     .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
-                                    .collect {
+                                    .collectLatest {
                                         _archiveSubFolderData.emit(it)
                                     }
                             })
@@ -245,7 +248,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByAToZV10(folderID = folderID).collect {
+                                .sortByAToZV10(folderID = folderID).collectLatest {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -254,7 +257,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByZToAV10(folderID = folderID).collect {
+                                .sortByZToAV10(folderID = folderID).collectLatest {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -263,7 +266,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByLatestToOldestV10(folderID = folderID).collect {
+                                .sortByLatestToOldestV10(folderID = folderID).collectLatest {
                                     _folderLinksData.emit(it)
                                 }
 
@@ -273,7 +276,7 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByOldestToLatestV10(folderID = folderID).collect {
+                                .sortByOldestToLatestV10(folderID = folderID).collectLatest {
                                     _folderLinksData.emit(it)
                                 }
                         }
@@ -430,9 +433,7 @@ open class SpecificCollectionsScreenVM(
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSpecificFolderV9(
-                                folderName = folderName, webURL = selectedWebURL
-                            )
+                            .deleteALinkFromLinksTable(linkID)
                     } else {
                         deleteVM.onRegularFolderDeleteClick(folderID)
                     }

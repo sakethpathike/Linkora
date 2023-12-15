@@ -67,10 +67,12 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(navController: NavController) {
     val searchScreenVM: SearchScreenVM = viewModel()
+
     val recentlyVisitedLinksData = searchScreenVM.historyLinksData.collectAsState().value
     val impLinksData = searchScreenVM.impLinksQueriedData.collectAsState().value
     val linksTableData = searchScreenVM.linksTableData.collectAsState().value
     val archiveLinksTableData = searchScreenVM.archiveLinksQueriedData.collectAsState().value
+
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val shouldSortingBottomSheetAppear = rememberSaveable {
@@ -90,9 +92,7 @@ fun SearchScreen(navController: NavController) {
     }
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM = viewModel<OptionsBtmSheetVM>()
-    val query = rememberSaveable {
-        mutableStateOf("")
-    }
+    val searchTextField = searchScreenVM.searchQuery.collectAsState().value
     val sortingBtmSheetState = rememberModalBottomSheetState()
     val optionsBtmSheetState = rememberModalBottomSheetState()
     val shouldRenameDialogBoxAppear = rememberSaveable {
@@ -105,7 +105,7 @@ fun SearchScreen(navController: NavController) {
         mutableStateOf("")
     }
     if (!SearchScreenVM.isSearchEnabled.value) {
-        query.value = ""
+        searchScreenVM.changeSearchQuery("")
     }
     LinkoraTheme {
         Column {
@@ -113,11 +113,11 @@ fun SearchScreen(navController: NavController) {
                 trailingIcon = {
                     if (SearchScreenVM.isSearchEnabled.value) {
                         IconButton(onClick = {
-                            if (query.value == "") {
+                            if (searchTextField == "") {
                                 SearchScreenVM.focusRequester.freeFocus()
                                 SearchScreenVM.isSearchEnabled.value = false
                             } else {
-                                query.value = ""
+                                searchScreenVM.changeSearchQuery("")
                             }
                         }) {
                             Icon(imageVector = Icons.Default.Clear, contentDescription = null)
@@ -133,14 +133,12 @@ fun SearchScreen(navController: NavController) {
                     )
                     .fillMaxWidth()
                     .focusRequester(SearchScreenVM.focusRequester),
-                query = query.value,
+                query = searchTextField,
                 onQueryChange = {
-                    query.value = it
-                    searchScreenVM.retrieveSearchQueryData(query = it)
+                    searchScreenVM.changeSearchQuery(it)
                 },
                 onSearch = {
-                    query.value = it
-                    searchScreenVM.retrieveSearchQueryData(query = it)
+                    searchScreenVM.changeSearchQuery(it)
                 },
                 active = SearchScreenVM.isSearchEnabled.value,
                 onActiveChange = {
@@ -160,13 +158,13 @@ fun SearchScreen(navController: NavController) {
                         modifier = Modifier.fillMaxSize()
                     ) {
                         when {
-                            query.value.isEmpty() -> {
+                            searchTextField.isEmpty() -> {
                                 item {
                                     DataEmptyScreen(text = "Search Linkora: Retrieve all the links you saved.")
                                 }
                             }
 
-                            query.value.isNotEmpty() && (linksTableData.isEmpty() && impLinksData.isEmpty() && archiveLinksTableData.isEmpty()) -> {
+                            searchTextField.isNotEmpty() && (linksTableData.isEmpty() && impLinksData.isEmpty() && archiveLinksTableData.isEmpty()) -> {
                                 item {
                                     DataEmptyScreen(text = "No Matching Links Found. Try a Different Search.")
                                 }

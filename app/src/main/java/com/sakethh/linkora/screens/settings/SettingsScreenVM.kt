@@ -197,8 +197,8 @@ class SettingsScreenVM(
         runtimePermission: ManagedActivityResultLauncher<String, Boolean>
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            exportImpl.exportToAFile()
             viewModelScope.launch {
+                exportImpl.exportToAFile()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context, "Successfully Exported", Toast.LENGTH_SHORT
@@ -210,8 +210,8 @@ class SettingsScreenVM(
                 context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             )) {
                 PackageManager.PERMISSION_GRANTED -> {
-                    exportImpl.exportToAFile()
                     viewModelScope.launch {
+                        exportImpl.exportToAFile()
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context, "Successfully Exported", Toast.LENGTH_SHORT
