@@ -12,7 +12,6 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 
 class ImportImpl {
@@ -29,13 +28,36 @@ class ImportImpl {
             }
             val jsonDeserialized = json.decodeFromString<ExportDTO>(jsonString)
 
-            val _latestImpLinksTableID = localDataBase.readDao().getLastIDOfImpLinksTable()
-            var latestImpLinksTableID = _latestImpLinksTableID
+            var latestImpLinksTableID = localDataBase.readDao().getLastIDOfImpLinksTable()
+            var latestSavedLinksTableID = localDataBase.readDao().getLastIDOfLinksTable()
+            var latestFoldersTableID = localDataBase.readDao().getLastIDOfFoldersTable()
+            var latestArchiveLinksTableID = localDataBase.readDao().getLastIDOfArchivedLinksTable()
+            var latestHistoryLinksTableID = localDataBase.readDao().getLastIDOfHistoryTable()
+
             jsonDeserialized.importantLinks.forEach {
-                it.id = _latestImpLinksTableID + 1
+                it.id = latestImpLinksTableID + 1
                 latestImpLinksTableID++
             }
-
+            jsonDeserialized.savedLinks.forEach {
+                it.id = latestSavedLinksTableID + 1
+                latestSavedLinksTableID++
+            }
+            jsonDeserialized.folders.forEach {
+                it.id = latestFoldersTableID + 1
+                latestFoldersTableID++
+            }
+            jsonDeserialized.archivedLinks.forEach {
+                it.id = latestArchiveLinksTableID + 1
+                latestArchiveLinksTableID++
+            }
+            jsonDeserialized.historyLinks.forEach {
+                it.id = latestHistoryLinksTableID + 1
+                latestHistoryLinksTableID++
+            }
+            jsonDeserialized.archivedFolders.forEach {
+                it.id = latestFoldersTableID + 1
+                latestFoldersTableID++
+            }
             withContext(Dispatchers.IO) {
                 awaitAll(async {
                     localDataBase.importDao()

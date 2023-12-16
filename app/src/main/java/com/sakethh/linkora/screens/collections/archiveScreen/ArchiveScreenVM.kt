@@ -276,14 +276,15 @@ class ArchiveScreenVM(
                     }
                 } else {
                     awaitAll(async {
+                        val foldersTable = FoldersTable(
+                            folderName = selectedURLOrFolderName,
+                            infoForSaving = selectedURLOrFolderNote,
+                            parentFolderID = null,
+                        )
+                        foldersTable.childFolderIDs = emptyList()
                         LocalDataBase.localDB.createDao()
                             .addANewFolder(
-                                foldersTable = FoldersTable(
-                                    folderName = selectedURLOrFolderName,
-                                    infoForSaving = selectedURLOrFolderNote,
-                                    parentFolderID = null,
-                                    childFolderIDs = emptyList()
-                                )
+                                foldersTable = foldersTable
                             )
                     }, async {
                         LocalDataBase.localDB.updateDao()

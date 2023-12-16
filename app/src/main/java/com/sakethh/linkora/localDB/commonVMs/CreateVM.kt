@@ -268,14 +268,15 @@ class CreateVM : ViewModel() {
 
             } else {
                 viewModelScope.launch {
+                    val foldersTable = FoldersTable(
+                        folderName = folderName,
+                        infoForSaving = infoForSaving,
+                        parentFolderID = parentFolderID,
+                    )
+                    foldersTable.childFolderIDs = emptyList()
                     LocalDataBase.localDB.createDao()
                         .addANewFolder(
-                            FoldersTable(
-                                folderName = folderName,
-                                infoForSaving = infoForSaving,
-                                parentFolderID = parentFolderID,
-                                childFolderIDs = emptyList()
-                            )
+                            foldersTable
                         )
                     if (parentFolderID != null) {
                         LocalDataBase.localDB.createDao().addANewChildIdToARootAndParentFolders(

@@ -8,7 +8,7 @@ import kotlinx.serialization.Serializable
 @Entity(tableName = "links_table")
 data class LinksTable(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     val title: String,
     val webURL: String,
     val baseURL: String,
@@ -40,7 +40,7 @@ data class FoldersTable(
     var id: Long = 0,
 
     var parentFolderID: Long? = null,
-    var childFolderIDs: List<Long>? = null,
+    var childFolderIDs: List<Long>? = emptyList(),
     var isFolderArchived: Boolean = false,
     var isMarkedAsImportant: Boolean = false
 )
@@ -95,7 +95,7 @@ data class ImportantFolders(
 @Entity(tableName = "recently_visited_table")
 data class RecentlyVisited(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     var title: String,
     var webURL: String,
     var baseURL: String,

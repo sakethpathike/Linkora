@@ -25,16 +25,14 @@ open class CollectionsScreenVM : ViewModel() {
             FoldersTable(
                 folderName = "",
                 infoForSaving = "",
-                parentFolderID = 0,
-                childFolderIDs = emptyList(),
+                parentFolderID = 0
             )
         )
         val currentClickedFolderData = mutableStateOf(
             FoldersTable(
                 folderName = "",
                 infoForSaving = "",
-                parentFolderID = 0,
-                childFolderIDs = emptyList(),
+                parentFolderID = 0
             )
         )
         var selectedLinkData = LinksTable(

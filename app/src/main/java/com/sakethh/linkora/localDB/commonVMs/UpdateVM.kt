@@ -293,15 +293,16 @@ class UpdateVM : ViewModel() {
             localDataBase.readDao().getAllArchiveFoldersV9().collect { archiveFolders ->
                 archiveFolders.forEach { currentFolder ->
                     async {
+                        val foldersTable = FoldersTable(
+                            folderName = currentFolder.archiveFolderName,
+                            infoForSaving = currentFolder.infoForSaving,
+                            parentFolderID = null,
+                            isFolderArchived = true,
+                            isMarkedAsImportant = false
+                        )
+                        foldersTable.childFolderIDs = emptyList()
                         localDataBase.createDao().addANewFolder(
-                            FoldersTable(
-                                folderName = currentFolder.archiveFolderName,
-                                infoForSaving = currentFolder.infoForSaving,
-                                parentFolderID = null,
-                                childFolderIDs = emptyList(),
-                                isFolderArchived = true,
-                                isMarkedAsImportant = false
-                            )
+                            foldersTable
                         )
                     }.await()
                     val latestAddedFolderID = async {
