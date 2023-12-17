@@ -28,55 +28,25 @@ class ImportImpl {
             }
             val jsonDeserialized = json.decodeFromString<ExportDTO>(jsonString)
 
-            var latestImpLinksTableID = localDataBase.readDao().getLastIDOfImpLinksTable()
-            var latestSavedLinksTableID = localDataBase.readDao().getLastIDOfLinksTable()
-            var latestFoldersTableID = localDataBase.readDao().getLastIDOfFoldersTable()
-            var latestArchiveLinksTableID = localDataBase.readDao().getLastIDOfArchivedLinksTable()
-            var latestHistoryLinksTableID = localDataBase.readDao().getLastIDOfHistoryTable()
-
-            jsonDeserialized.importantLinks.forEach {
-                it.id = latestImpLinksTableID + 1
-                latestImpLinksTableID++
-            }
-            jsonDeserialized.savedLinks.forEach {
-                it.id = latestSavedLinksTableID + 1
-                latestSavedLinksTableID++
-            }
-            jsonDeserialized.folders.forEach {
-                it.id = latestFoldersTableID + 1
-                latestFoldersTableID++
-            }
-            jsonDeserialized.archivedLinks.forEach {
-                it.id = latestArchiveLinksTableID + 1
-                latestArchiveLinksTableID++
-            }
-            jsonDeserialized.historyLinks.forEach {
-                it.id = latestHistoryLinksTableID + 1
-                latestHistoryLinksTableID++
-            }
-            jsonDeserialized.archivedFolders.forEach {
-                it.id = latestFoldersTableID + 1
-                latestFoldersTableID++
-            }
             withContext(Dispatchers.IO) {
                 awaitAll(async {
                     localDataBase.importDao()
-                        .addAllArchivedFolders(jsonDeserialized.archivedFolders)
+                        .addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
                 }, async {
                     localDataBase.importDao()
-                        .addAllRegularFolders(jsonDeserialized.folders)
+                        .addAllRegularFolders(jsonDeserialized.foldersTable)
                 }, async {
                     localDataBase.importDao()
-                        .addAllArchivedLinks(jsonDeserialized.archivedLinks)
+                        .addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
                 }, async {
                     localDataBase.importDao()
-                        .addAllHistoryLinks(jsonDeserialized.historyLinks)
+                        .addAllHistoryLinks(jsonDeserialized.historyLinksTable)
                 }, async {
                     localDataBase.importDao()
-                        .addAllImportantLinks(jsonDeserialized.importantLinks)
+                        .addAllImportantLinks(jsonDeserialized.importantLinksTable)
                 }, async {
                     localDataBase.importDao()
-                        .addAllLinks(jsonDeserialized.savedLinks)
+                        .addAllLinks(jsonDeserialized.linksTable)
                 })
             }
             exceptionType.value = null
@@ -84,11 +54,11 @@ class ImportImpl {
             if (jsonDeserialized.appVersion <= 9) {
                 coroutineScope {
                     awaitAll(async {
-                        if (jsonDeserialized.folders.isNotEmpty()) {
+                        if (jsonDeserialized.foldersTable.isNotEmpty()) {
                             UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
                         }
                     }, async {
-                        if (jsonDeserialized.archivedFolders.isNotEmpty()) {
+                        if (jsonDeserialized.archivedFoldersTable.isNotEmpty()) {
                             UpdateVM().migrateArchiveFoldersV9toV10()
                         }
                     })

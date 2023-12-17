@@ -8,12 +8,12 @@ import kotlinx.serialization.json.Json
 class ChildIDFolderTypeConverter {
 
     @TypeConverter
-    fun toJson(jsonString: String?): List<Long?>? {
+    fun toJson(jsonString: String?): List<Long>? {
         return jsonString?.let { Json.decodeFromString(it) }
     }
 
     @TypeConverter
-    fun toString(idList: List<Long?>?): String {
+    fun toString(idList: List<Long>?): String {
         return Json.encodeToString(idList)
     }
 }

@@ -67,6 +67,7 @@ import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
+import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
@@ -108,7 +109,7 @@ fun SpecificScreen(navController: NavController) {
         specificCollectionsScreenVM.archiveFolderDataTable.collectAsState().value
     val archivedSubFoldersData =
         specificCollectionsScreenVM.archiveSubFolderData.collectAsState().value
-    val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet.copy()
+    val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet
     val btmModalSheetState = rememberModalBottomSheetState()
     val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
@@ -310,6 +311,7 @@ fun SpecificScreen(navController: NavController) {
                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
                                     },
+                                    showMoreIcon = true,
                                     onFolderClick = {
                                         CollectionsScreenVM.currentClickedFolderData.value =
                                             it
@@ -331,14 +333,13 @@ fun SpecificScreen(navController: NavController) {
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
-                                                this.webURL = it.webURL
-                                                this.baseURL = it.baseURL
-                                                this.imgURL = it.imgURL
-                                                this.title = it.title
-                                                this.infoForSaving = it.infoForSaving
+                                                this.webURL.value = it.webURL
+                                                this.baseURL.value = it.baseURL
+                                                this.imgURL.value = it.imgURL
+                                                this.title.value = it.title
+                                                this.infoForSaving.value = it.infoForSaving
                                             }
-
-                                            tempImpLinkData.webURL = it.webURL
+                                            tempImpLinkData.webURL.value = it.webURL
                                             shouldOptionsBtmModalSheetBeVisible.value = true
                                             coroutineScope.launch {
                                                 awaitAll(async {
@@ -407,13 +408,12 @@ fun SpecificScreen(navController: NavController) {
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
-                                                this.webURL = it.webURL
-                                                this.baseURL = it.baseURL
-                                                this.imgURL = it.imgURL
-                                                this.title = it.title
-                                                this.infoForSaving = it.infoForSaving
+                                                this.webURL.value = it.webURL
+                                                this.baseURL.value = it.baseURL
+                                                this.imgURL.value = it.imgURL
+                                                this.title.value = it.title
+                                                this.infoForSaving.value = it.infoForSaving
                                             }
-                                            tempImpLinkData.webURL = it.webURL
                                             shouldOptionsBtmModalSheetBeVisible.value = true
                                             coroutineScope.launch {
                                                 awaitAll(async {
@@ -482,13 +482,12 @@ fun SpecificScreen(navController: NavController) {
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             tempImpLinkData.apply {
-                                                this.webURL = it.webURL
-                                                this.baseURL = it.baseURL
-                                                this.imgURL = it.imgURL
-                                                this.title = it.title
-                                                this.infoForSaving = it.infoForSaving
+                                                this.webURL.value = it.webURL
+                                                this.baseURL.value = it.baseURL
+                                                this.imgURL.value = it.imgURL
+                                                this.title.value = it.title
+                                                this.infoForSaving.value = it.infoForSaving
                                             }
-                                            tempImpLinkData.webURL = it.webURL
                                             shouldOptionsBtmModalSheetBeVisible.value = true
                                             coroutineScope.launch {
                                                 awaitAll(async {
@@ -549,6 +548,7 @@ fun SpecificScreen(navController: NavController) {
                                 FolderIndividualComponent(folderName = it.folderName,
                                     folderNote = it.infoForSaving,
                                     onMoreIconClick = {
+                                        CollectionsScreenVM.selectedFolderData.value = it
                                         selectedURLTitle.value = it.folderName
                                         selectedURLOrFolderNote.value = it.infoForSaving
                                         clickedFolderNote.value = it.infoForSaving
@@ -556,11 +556,11 @@ fun SpecificScreen(navController: NavController) {
                                             optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                         }
                                         clickedFolderName.value = it.folderName
-                                        CollectionsScreenVM.selectedFolderData.value = it
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
                                     },
+                                    showMoreIcon = true,
                                     onFolderClick = {
                                         CollectionsScreenVM.currentClickedFolderData.value =
                                             it
@@ -578,6 +578,13 @@ fun SpecificScreen(navController: NavController) {
                                             CollectionsScreenVM.selectedFolderData.value.id = it.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
+                                            tempImpLinkData.apply {
+                                                this.webURL.value = it.webURL
+                                                this.baseURL.value = it.baseURL
+                                                this.imgURL.value = it.imgURL
+                                                this.title.value = it.title
+                                                this.infoForSaving.value = it.infoForSaving
+                                            }
                                             selectedWebURL.value = it.webURL
                                             selectedURLOrFolderNote.value = it.infoForSaving
                                             shouldOptionsBtmModalSheetBeVisible.value = true
@@ -730,7 +737,7 @@ fun SpecificScreen(navController: NavController) {
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> SpecificCollectionsScreenVM.selectedBtmSheetType.value
                     SpecificScreenType.SAVED_LINKS_SCREEN -> OptionsBtmSheetType.LINK
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SpecificCollectionsScreenVM.selectedBtmSheetType.value
                     else -> {
@@ -753,7 +760,13 @@ fun SpecificScreen(navController: NavController) {
                                 ),
                                 folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
-                        }, tempImpLinkData
+                        }, ImportantLinks(
+                            title = tempImpLinkData.title.value,
+                            webURL = tempImpLinkData.webURL.value,
+                            baseURL = tempImpLinkData.baseURL.value,
+                            imgURL = tempImpLinkData.imgURL.value,
+                            infoForSaving = tempImpLinkData.infoForSaving.value
+                        )
                     )
                 },
                 importantLinks = null,
@@ -762,7 +775,13 @@ fun SpecificScreen(navController: NavController) {
                 ) else mutableStateOf(true),
                 onArchiveClick = {
                     specificCollectionsScreenVM.onArchiveClick(
-                        tempImpLinkData,
+                        ImportantLinks(
+                            title = tempImpLinkData.title.value,
+                            webURL = tempImpLinkData.webURL.value,
+                            baseURL = tempImpLinkData.baseURL.value,
+                            imgURL = tempImpLinkData.imgURL.value,
+                            infoForSaving = tempImpLinkData.infoForSaving.value
+                        ),
                         context,
                         CollectionsScreenVM.selectedFolderData.value.id,
                         onTaskCompleted = {
@@ -788,7 +807,7 @@ fun SpecificScreen(navController: NavController) {
                     )
                 },
                 folderName = selectedURLTitle.value,
-                linkTitle = tempImpLinkData.title
+                linkTitle = tempImpLinkData.title.value
             )
         )
         val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {

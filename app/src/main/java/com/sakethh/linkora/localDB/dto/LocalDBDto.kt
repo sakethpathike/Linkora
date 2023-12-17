@@ -40,7 +40,7 @@ data class FoldersTable(
     var id: Long = 0,
 
     var parentFolderID: Long? = null,
-    var childFolderIDs: List<Long>? = emptyList(),
+    var childFolderIDs: List<Long>? = null,
     var isFolderArchived: Boolean = false,
     var isMarkedAsImportant: Boolean = false
 )

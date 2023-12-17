@@ -140,6 +140,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 if (archiveFoldersDataV9.isNotEmpty()) {
                     items(archiveFoldersDataV9) {
                         FolderIndividualComponent(folderName = it.archiveFolderName,
+                            showMoreIcon = true,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
@@ -177,6 +178,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                 }
                             },
+                            showMoreIcon = true,
                             onFolderClick = {
                                 CollectionsScreenVM.currentClickedFolderData.value = it
                                 CollectionsScreenVM.selectedFolderData.value = it

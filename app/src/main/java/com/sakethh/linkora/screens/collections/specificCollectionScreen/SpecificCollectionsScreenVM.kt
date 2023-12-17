@@ -2,6 +2,7 @@ package com.sakethh.linkora.screens.collections.specificCollectionScreen
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
@@ -25,6 +26,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+data class MutableImportantLinks(
+    val title: MutableState<String>,
+    val webURL: MutableState<String>,
+    val baseURL: MutableState<String>,
+    val imgURL: MutableState<String>,
+    val infoForSaving: MutableState<String>,
+    var id: Long = 0,
+)
 
 open class SpecificCollectionsScreenVM(
     val updateVM: UpdateVM = UpdateVM(),
@@ -50,12 +59,12 @@ open class SpecificCollectionsScreenVM(
     val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
 
 
-    val impLinkDataForBtmSheet = ImportantLinks(
-        title = "",
-        webURL = "",
-        baseURL = "",
-        imgURL = "",
-        infoForSaving = ""
+    val impLinkDataForBtmSheet = MutableImportantLinks(
+        title = mutableStateOf(""),
+        webURL = mutableStateOf(""),
+        baseURL = mutableStateOf(""),
+        imgURL = mutableStateOf(""),
+        infoForSaving = mutableStateOf("")
     )
 
     companion object {

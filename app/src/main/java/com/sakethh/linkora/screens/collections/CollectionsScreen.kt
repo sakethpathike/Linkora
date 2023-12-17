@@ -652,7 +652,7 @@ fun FolderIndividualComponent(
     onMoreIconClick: () -> Unit,
     onFolderClick: () -> Unit,
     maxLines: Int = 1,
-    showMoreIcon: Boolean = true,
+    showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
 ) {
     Column {

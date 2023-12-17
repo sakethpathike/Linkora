@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
@@ -118,6 +119,7 @@ interface UpdateDao {
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)
 
+    @Transaction
     @Query("UPDATE links_table SET title = :newTitle WHERE id = :linkID")
     suspend fun renameALinkTitle(linkID: Long, newTitle: String)
 
