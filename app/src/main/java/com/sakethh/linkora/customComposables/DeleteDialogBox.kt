@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 enum class DataDialogBoxType {
@@ -36,7 +37,7 @@ data class DeleteDialogBoxParam(
     val onDeleteClick: () -> Unit,
     val onDeleted: () -> Unit = {},
     val totalIds: Long = 0,
-    val folderName: MutableState<String> = mutableStateOf("")
+    val folderName: MutableState<String> = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName)
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

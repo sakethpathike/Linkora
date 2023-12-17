@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -21,6 +22,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
+import androidx.compose.material.Surface
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.CreateNewFolder
@@ -58,6 +60,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.DialogProperties
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
@@ -111,57 +114,43 @@ fun AddNewLinkDialogBox(
             mutableLongStateOf(0)
         }
         LinkoraTheme {
-            AlertDialog(modifier = Modifier
-                .wrapContentHeight()
-                .animateContentSize()
-                .clip(RoundedCornerShape(10.dp))
-                .background(AlertDialogDefaults.containerColor),
+            AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(AlertDialogDefaults.containerColor),
                 onDismissRequest = {
                     if (!isDataExtractingForTheLink) {
                         shouldDialogBoxAppear.value = false
                     }
                 }) {
-                Column(modifier = Modifier.verticalScroll(scrollState)) {
-                    Text(
-                        text = when (screenType) {
-                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> "Add a new link in \"Important Links\""
-                            SpecificScreenType.SAVED_LINKS_SCREEN -> "Add a new link in \"Saved Links\""
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> "Add a new link in \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\""
-                            else -> "Add a new link"
-                        },
-                        color = AlertDialogDefaults.titleContentColor,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
-                        lineHeight = 28.sp
-                    )
-                    OutlinedTextField(readOnly = isDataExtractingForTheLink,
-                        modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 20.dp
-                        ),
-                        label = {
-                            Text(
-                                text = "Link",
-                                color = AlertDialogDefaults.textContentColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 12.sp
-                            )
-                        },
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        singleLine = true,
-                        shape = RoundedCornerShape(5.dp),
-                        value = linkTextFieldValue.value,
-                        onValueChange = {
-                            linkTextFieldValue.value = it
-                        })
-                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.surface
+                ) {
+                    Column(modifier = Modifier.verticalScroll(scrollState)) {
+                        Text(
+                            text = when (screenType) {
+                                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> "Add a new link in \"Important Links\""
+                                SpecificScreenType.SAVED_LINKS_SCREEN -> "Add a new link in \"Saved Links\""
+                                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> "Add a new link in \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\""
+                                else -> "Add a new link"
+                            },
+                            color = AlertDialogDefaults.titleContentColor,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 22.sp,
+                            modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 20.dp),
+                            lineHeight = 28.sp
+                        )
                         OutlinedTextField(readOnly = isDataExtractingForTheLink,
-                            modifier = Modifier.padding(
-                                start = 20.dp, end = 20.dp, top = 15.dp
-                            ),
+                            modifier = Modifier
+                                .padding(
+                                    start = 20.dp, end = 20.dp, top = 20.dp
+                                )
+                                .fillMaxWidth(),
                             label = {
                                 Text(
-                                    text = "Title for the link",
+                                    text = "Link",
                                     color = AlertDialogDefaults.textContentColor,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
@@ -169,193 +158,229 @@ fun AddNewLinkDialogBox(
                             },
                             textStyle = MaterialTheme.typography.titleSmall,
                             singleLine = true,
-                            value = titleTextFieldValue.value,
+                            shape = RoundedCornerShape(5.dp),
+                            value = linkTextFieldValue.value,
                             onValueChange = {
-                                titleTextFieldValue.value = it
+                                linkTextFieldValue.value = it
                             })
-                    }
-                    OutlinedTextField(readOnly = isDataExtractingForTheLink,
-                        modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 15.dp
-                        ),
-                        label = {
-                            Text(
-                                text = "Note for why you're saving this link",
-                                color = AlertDialogDefaults.textContentColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 12.sp
-                            )
-                        },
-                        textStyle = MaterialTheme.typography.titleSmall,
-                        singleLine = true,
-                        value = noteTextFieldValue.value,
-                        onValueChange = {
-                            noteTextFieldValue.value = it
-                        })
-                    if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                        Card(
-                            border = BorderStroke(
-                                1.dp,
-                                contentColorFor(MaterialTheme.colorScheme.surface)
-                            ),
-                            colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                        Box(modifier = Modifier.animateContentSize()) {
+                            if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
+                                OutlinedTextField(readOnly = isDataExtractingForTheLink,
+                                    modifier = Modifier
+                                        .padding(
+                                            start = 20.dp, end = 20.dp, top = 15.dp
+                                        )
+                                        .fillMaxWidth(),
+                                    label = {
+                                        Text(
+                                            text = "Title for the link",
+                                            color = AlertDialogDefaults.textContentColor,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 12.sp
+                                        )
+                                    },
+                                    textStyle = MaterialTheme.typography.titleSmall,
+                                    singleLine = true,
+                                    value = titleTextFieldValue.value,
+                                    onValueChange = {
+                                        titleTextFieldValue.value = it
+                                    })
+                            }
+                        }
+                        OutlinedTextField(readOnly = isDataExtractingForTheLink,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp, top = 15.dp)
-                        ) {
-                            Row(
+                                .padding(
+                                    start = 20.dp, end = 20.dp, top = 15.dp
+                                )
+                                .fillMaxWidth(),
+                            label = {
+                                Text(
+                                    text = "Note for why you're saving this link",
+                                    color = AlertDialogDefaults.textContentColor,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 12.sp
+                                )
+                            },
+                            textStyle = MaterialTheme.typography.titleSmall,
+                            singleLine = true,
+                            value = noteTextFieldValue.value,
+                            onValueChange = {
+                                noteTextFieldValue.value = it
+                            })
+                        if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                            Card(
+                                border = BorderStroke(
+                                    1.dp,
+                                    contentColorFor(MaterialTheme.colorScheme.surface)
+                                ),
+                                colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(
-                                        top = 10.dp, bottom = 10.dp
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically
+                                    .padding(start = 20.dp, end = 20.dp, top = 15.dp)
                             ) {
-                                Box(
-                                    contentAlignment = Alignment.CenterStart
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .padding(
+                                            top = 10.dp, bottom = 10.dp
+                                        ),
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    androidx.compose.material3.Icon(
-                                        imageVector = Icons.Outlined.Info,
-                                        contentDescription = null,
+                                    Box(
+                                        contentAlignment = Alignment.CenterStart
+                                    ) {
+                                        androidx.compose.material3.Icon(
+                                            imageVector = Icons.Outlined.Info,
+                                            contentDescription = null,
+                                            modifier = Modifier
+                                                .padding(
+                                                    start = 10.dp, end = 10.dp
+                                                )
+                                        )
+                                    }
+                                    Text(
+                                        text = "Title will be automatically detected as this setting is enabled.",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 14.sp,
+                                        lineHeight = 18.sp,
+                                        textAlign = TextAlign.Start,
                                         modifier = Modifier
-                                            .padding(
-                                                start = 10.dp, end = 10.dp
-                                            )
+                                            .padding(end = 10.dp)
                                     )
                                 }
-                                Text(
-                                    text = "Title will be automatically detected as this setting is enabled.",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 14.sp,
-                                    lineHeight = 18.sp,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier
-                                        .padding(end = 10.dp)
-                                )
                             }
                         }
-                    }
-                    if (screenType == SpecificScreenType.ROOT_SCREEN) {
-                        Row(
-                            Modifier.padding(
-                                start = 20.dp, end = 20.dp, top = 20.dp
-                            ), horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
-                            Text(
-                                text = "Add in",
-                                color = LocalContentColor.current,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 18.sp,
-                                modifier = Modifier.padding(top = 15.dp)
-                            )
-                            Spacer(modifier = Modifier.width(10.dp))
-                            OutlinedButton(border = BorderStroke(
-                                width = 1.dp, color = MaterialTheme.colorScheme.primary
-                            ), onClick = {
-                                if (!isDataExtractingForTheLink) {
-                                    isDropDownMenuIconClicked.value = true
-                                }
-                            }) {
+                        if (screenType == SpecificScreenType.ROOT_SCREEN) {
+                            Row(
+                                Modifier.padding(
+                                    start = 20.dp, end = 20.dp, top = 20.dp
+                                ), horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
                                 Text(
-                                    text = selectedFolderName.value,
-                                    color = MaterialTheme.colorScheme.primary,
+                                    text = "Add in",
+                                    color = LocalContentColor.current,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 18.sp,
-                                    maxLines = 1, overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier.fillMaxWidth(0.80f)
+                                    modifier = Modifier.padding(top = 15.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                Icon(tint = MaterialTheme.colorScheme.primary,
-                                    imageVector = Icons.Default.ArrowDropDown,
-                                    contentDescription = null,
-                                    modifier = Modifier.clickable {
-                                        if (!isDataExtractingForTheLink) {
-                                            isDropDownMenuIconClicked.value = true
-                                        }
+                                OutlinedButton(border = BorderStroke(
+                                    width = 1.dp, color = MaterialTheme.colorScheme.primary
+                                ), onClick = {
+                                    if (!isDataExtractingForTheLink) {
+                                        isDropDownMenuIconClicked.value = true
                                     }
-                                )
-                                Spacer(modifier = Modifier.width(10.dp))
+                                }) {
+                                    Text(
+                                        text = selectedFolderName.value,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 18.sp,
+                                        maxLines = 1, overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.fillMaxWidth(0.80f)
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Icon(tint = MaterialTheme.colorScheme.primary,
+                                        imageVector = Icons.Default.ArrowDropDown,
+                                        contentDescription = null,
+                                        modifier = Modifier.clickable {
+                                            if (!isDataExtractingForTheLink) {
+                                                isDropDownMenuIconClicked.value = true
+                                            }
+                                        }
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                }
                             }
                         }
-                    }
-                    if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
-                        Row(
-                            modifier = Modifier
-                                .padding(top = 20.dp)
-                                .fillMaxWidth()
-                                .clickable {
-                                    if (!isDataExtractingForTheLink) {
-                                        isAutoDetectTitleEnabled.value =
-                                            !isAutoDetectTitleEnabled.value
+                        if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                            Row(
+                                modifier = Modifier
+                                    .padding(top = 20.dp)
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        if (!isDataExtractingForTheLink) {
+                                            isAutoDetectTitleEnabled.value =
+                                                !isAutoDetectTitleEnabled.value
+                                        }
                                     }
-                                }
-                                .padding(
-                                    start = 10.dp, end = 20.dp
-                                ), verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink,
-                                checked = isAutoDetectTitleEnabled.value,
-                                onCheckedChange = {
-                                    isAutoDetectTitleEnabled.value = it
-                                })
-                            Text(
-                                text = "Force Auto-detect title",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
+                                    .padding(
+                                        start = 10.dp, end = 20.dp
+                                    ), verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink,
+                                    checked = isAutoDetectTitleEnabled.value,
+                                    onCheckedChange = {
+                                        isAutoDetectTitleEnabled.value = it
+                                    })
+                                Text(
+                                    text = "Force Auto-detect title",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                        if (!isDataExtractingForTheLink) {
+                            Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp,
+                                        top = 20.dp,
+                                        start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .align(Alignment.End),
+                                onClick = {
+                                    onSaveClick(
+                                        isAutoDetectTitleEnabled.value,
+                                        linkTextFieldValue.value,
+                                        titleTextFieldValue.value,
+                                        noteTextFieldValue.value,
+                                        selectedFolderName.value,
+                                        selectedFolderID.longValue
+                                    )
+                                }) {
+                                Text(
+                                    text = "Save",
+                                    color = MaterialTheme.colorScheme.onPrimary,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
+                            OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
+                                border = BorderStroke(
+                                    width = 1.dp, color = MaterialTheme.colorScheme.secondary
+                                ),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp, top = 10.dp, start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .align(Alignment.End),
+                                onClick = {
+                                    shouldDialogBoxAppear.value = false
+                                }) {
+                                Text(
+                                    text = "Cancel",
+                                    color = MaterialTheme.colorScheme.secondary,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        } else {
+                            Spacer(modifier = Modifier.height(30.dp))
+                            LinearProgressIndicator(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(start = 20.dp, end = 20.dp)
                             )
                         }
-                    }
-                    if (!isDataExtractingForTheLink) {
-                        Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                            modifier = Modifier
-                                .padding(
-                                    end = 20.dp,
-                                    top = 20.dp,
-                                    start = 20.dp
-                                )
-                                .fillMaxWidth()
-                                .align(Alignment.End),
-                            onClick = {
-                                onSaveClick(
-                                    isAutoDetectTitleEnabled.value,
-                                    linkTextFieldValue.value,
-                                    titleTextFieldValue.value,
-                                    noteTextFieldValue.value,
-                                    selectedFolderName.value,
-                                    selectedFolderID.longValue
-                                )
-                            }) {
-                            Text(
-                                text = "Save",
-                                color = MaterialTheme.colorScheme.onPrimary,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                        OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
-                            border = BorderStroke(
-                                width = 1.dp, color = MaterialTheme.colorScheme.secondary
-                            ),
-                            modifier = Modifier
-                                .padding(
-                                    end = 20.dp, top = 10.dp, bottom = 30.dp, start = 20.dp
-                                )
-                                .fillMaxWidth()
-                                .align(Alignment.End),
-                            onClick = {
-                                shouldDialogBoxAppear.value = false
-                            }) {
-                            Text(
-                                text = "Cancel",
-                                color = MaterialTheme.colorScheme.secondary,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                    } else {
-                        Spacer(modifier = Modifier.height(30.dp))
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        Divider(
+                            thickness = 1.dp,
+                            modifier = Modifier.padding(20.dp),
+                            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                        )
                     }
                 }
                 if (isDropDownMenuIconClicked.value) {
