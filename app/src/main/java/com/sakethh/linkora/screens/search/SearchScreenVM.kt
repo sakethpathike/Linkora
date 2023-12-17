@@ -56,24 +56,24 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             searchQuery.collectLatest { query ->
                 awaitAll(async {
                     if (query.isNotEmpty()) {
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromImportantLinks(query = query).collect { retrievedData ->
-                                _impLinksQueriedData.emit(retrievedData)
-                            }
+                        _impLinksQueriedData.emit(
+                            LocalDataBase.localDB.linksSearching()
+                                .getFromImportantLinks(query = query)
+                        )
                     }
                 }, async {
                     if (query.isNotEmpty()) {
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromLinksTable(query = query).collect { retrievedData ->
-                                _linksTableQueriedData.emit(retrievedData)
-                            }
+                        _linksTableQueriedData.emit(
+                            LocalDataBase.localDB.linksSearching()
+                                .getFromLinksTable(query = query)
+                        )
                     }
                 }, async {
                     if (query.isNotEmpty()) {
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromArchiveLinks(query = query).collect { retrievedData ->
-                                _archiveLinksQueriedData.emit(retrievedData)
-                            }
+                        _archiveLinksQueriedData.emit(
+                            LocalDataBase.localDB.linksSearching()
+                                .getFromArchiveLinks(query = query)
+                        )
                     }
                 })
             }

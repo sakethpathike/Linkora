@@ -55,7 +55,7 @@ class SettingsScreenVM(
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val currentAppVersion = "0.4.0"
+        const val currentAppVersion = "0.4.0-alpha01"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
@@ -312,6 +312,7 @@ class SettingsScreenVM(
         val isBtmSheetEnabledForSavingLinks = mutableStateOf(false)
         val isHomeScreenEnabled = mutableStateOf(true)
         val isSendCrashReportsEnabled = mutableStateOf(true)
+        val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -368,6 +369,11 @@ class SettingsScreenVM(
                 }, async {
                     isInAppWebTabEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                        dataStore = context.dataStore
+                    ) ?: false
+                }, async {
+                    didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
                         dataStore = context.dataStore
                     ) ?: false
                 }, async {

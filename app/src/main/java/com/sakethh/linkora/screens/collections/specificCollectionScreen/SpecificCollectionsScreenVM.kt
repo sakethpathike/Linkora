@@ -304,8 +304,8 @@ open class SpecificCollectionsScreenVM(
     }
 
     fun onArchiveClick(
-        tempImpLinkData: ImportantLinks, context: Context, folderID: Long,
-        onTaskCompleted: () -> Unit, folderName: String
+        tempImpLinkData: ImportantLinks, context: Context, linkID: Long,
+        onTaskCompleted: () -> Unit
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -390,9 +390,7 @@ open class SpecificCollectionsScreenVM(
                         )
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSpecificFolderV10(
-                                folderID = folderID, webURL = tempImpLinkData.webURL
-                            )
+                            .deleteALinkFromLinksTable(linkID)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()

@@ -14,7 +14,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
@@ -93,14 +93,14 @@ data class NewLinkBtmSheetUIParam @OptIn(ExperimentalMaterial3Api::class) constr
 fun NewLinkBtmSheet(
     newLinkBtmSheetUIParam: NewLinkBtmSheetUIParam
 ) {
+    val context = LocalContext.current
+    val activity = context as Activity
     val inIntentActivity =
         rememberSaveable(inputs = arrayOf(newLinkBtmSheetUIParam.inIntentActivity)) {
             mutableStateOf(newLinkBtmSheetUIParam.inIntentActivity)
         }
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
-    val activity = context as? Activity
-    val intent = activity?.intent
+    val intent = activity.intent
     val intentData = rememberSaveable(inputs = arrayOf(intent)) {
         mutableStateOf(intent)
     }
@@ -202,6 +202,7 @@ fun NewLinkBtmSheet(
                             .fillMaxWidth()
                             .wrapContentHeight()
                             .animateContentSize()
+                            .navigationBarsPadding()
                     ) {
                         Column(modifier = Modifier.fillMaxWidth()) {
                             Spacer(modifier = Modifier.requiredHeight(15.dp))
@@ -295,7 +296,6 @@ fun NewLinkBtmSheet(
                                     }
                                 }
                             }
-                            Spacer(modifier = Modifier.height(20.dp))
                         }
                     }
                 }) {

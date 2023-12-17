@@ -7,7 +7,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.LaunchedEffect
@@ -31,11 +30,13 @@ import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.async
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+    @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +65,7 @@ class MainActivity : ComponentActivity() {
                 systemUIController.setNavigationBarColor(NavigationVM.btmNavBarContainerColor.value)
                 systemUIController.setStatusBarColor(MaterialTheme.colorScheme.surface)
                 LaunchedEffect(key1 = currentRoute) {
-                    if (NavigationRoutes.values().any {
+                    if (NavigationRoutes.entries.any {
                             it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute && it.name != NavigationRoutes.ARCHIVE_SCREEN.name
                         }) {
 
@@ -95,31 +96,58 @@ class MainActivity : ComponentActivity() {
                 }
             }
             LocalDataBase.localDB = LocalDataBase.getLocalDB(context = context)
-            LaunchedEffect(key1 = Unit) {
-                if (SettingsScreenVM.Settings.readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(
-                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
-                        ), dataStore = context.dataStore
-                    ) == null
-                ) {
-                    LocalDataBase.localDB.readDao().getAllArchiveFoldersV9().collect {
-                        if (it.isNotEmpty()) {
-                            UpdateVM().migrateArchiveFoldersV9toV10()
+            LaunchedEffect(key1 = SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
+                if (!SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
+                    CoroutineScope(Dispatchers.IO).launch {
+                        try {
+                            this.launch {
+                                if (LocalDataBase.localDB.readDao().getAllArchiveFoldersV9List()
+                                        .isNotEmpty()
+                                ) {
+                                    UpdateVM().migrateArchiveFoldersV9toV10()
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                            context,
+                                            "Archived folders Data Migrated successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                }
+                            }
+
+                            if (LocalDataBase.localDB.readDao().getAllRootFoldersList()
+                                    .isNotEmpty()
+                            ) {
+                                UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "Root folders Data Migrated successfully",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        } finally {
+                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(
+                                    SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                ), dataStore = context.dataStore, newValue = true
+                            )
+                            SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value =
+                                SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                    preferenceKey = booleanPreferencesKey(
+                                        SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                    ), dataStore = context.dataStore
+                                ) ?: true
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    "Data Migrated Successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
                         }
                     }
-                    LocalDataBase.localDB.readDao().getAllRootFolders().collect {
-                        if (it.isNotEmpty()) {
-                            UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
-                        }
-                    }
-                    async {
-                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(
-                                SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
-                            ), dataStore = context.dataStore, newValue = true
-                        )
-                    }.await()
-                    Toast.makeText(context, "Data Migrated successfully", Toast.LENGTH_SHORT).show()
                 }
             }
         }

@@ -338,6 +338,7 @@ fun SpecificScreen(navController: NavController) {
                                                 this.imgURL.value = it.imgURL
                                                 this.title.value = it.title
                                                 this.infoForSaving.value = it.infoForSaving
+                                                this.id = it.id
                                             }
                                             tempImpLinkData.webURL.value = it.webURL
                                             shouldOptionsBtmModalSheetBeVisible.value = true
@@ -783,7 +784,7 @@ fun SpecificScreen(navController: NavController) {
                             infoForSaving = tempImpLinkData.infoForSaving.value
                         ),
                         context,
-                        CollectionsScreenVM.selectedFolderData.value.id,
+                        linkID = tempImpLinkData.id,
                         onTaskCompleted = {
                             specificCollectionsScreenVM.changeRetrievedData(
                                 folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
@@ -793,7 +794,6 @@ fun SpecificScreen(navController: NavController) {
                                 folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         },
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName
                     )
                 },
                 noteForSaving = selectedURLOrFolderNote.value,

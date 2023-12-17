@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -104,7 +105,11 @@ fun OptionsBtmSheetUI(
                     isNoteBtnSelected.value = false
                 }
             }) {
-            Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
+            Column(
+                modifier = Modifier
+                    .navigationBarsPadding()
+                    .verticalScroll(rememberScrollState())
+            ) {
                 FolderIndividualComponent(
                     folderName = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) optionsBtmSheetUIParam.folderName else optionsBtmSheetUIParam.linkTitle,
                     folderNote = "",

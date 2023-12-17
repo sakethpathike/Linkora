@@ -5,7 +5,6 @@ import androidx.room.Query
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LinksSearching {
@@ -25,7 +24,7 @@ interface LinksSearching {
                 "    ELSE 4\n" +
                 "END;\n"
     )
-    fun getFromLinksTable(query: String): Flow<List<LinksTable>>
+    suspend fun getFromLinksTable(query: String): List<LinksTable>
 
     @Query(
         "SELECT *\n" +
@@ -42,7 +41,7 @@ interface LinksSearching {
                 "    ELSE 4\n" +
                 "END;\n"
     )
-    fun getFromImportantLinks(query: String): Flow<List<ImportantLinks>>
+    suspend fun getFromImportantLinks(query: String): List<ImportantLinks>
 
     @Query(
         "SELECT *\n" +
@@ -59,5 +58,5 @@ interface LinksSearching {
                 "    ELSE 4\n" +
                 "END;\n"
     )
-    fun getFromArchiveLinks(query: String): Flow<List<ArchivedLinks>>
+    suspend fun getFromArchiveLinks(query: String): List<ArchivedLinks>
 }

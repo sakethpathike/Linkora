@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
@@ -18,6 +19,7 @@ data class LinksTable(
     var isLinkedWithSavedLinks: Boolean,
 
     var isLinkedWithFolders: Boolean,
+    @SerialName("keyOfLinkedFolderV10")
     var keyOfLinkedFolderV10: Long? = null,
     var keyOfLinkedFolder: String? = null,
 
