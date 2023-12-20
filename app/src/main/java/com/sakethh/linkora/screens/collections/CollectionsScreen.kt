@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.collections
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.Animatable
@@ -93,6 +94,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsScreen(navController: NavController) {
@@ -335,10 +337,8 @@ fun CollectionsScreen(navController: NavController) {
                             folderName = folderData.folderName,
                             folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
-                                CollectionsScreenVM.selectedFolderData.value.folderName =
-                                    folderData.folderName
-                                CollectionsScreenVM.selectedFolderData.value.infoForSaving =
-                                    folderData.infoForSaving
+                                CollectionsScreenVM.selectedFolderData.value =
+                                    folderData
                                 clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
@@ -438,14 +438,11 @@ fun CollectionsScreen(navController: NavController) {
                 }
             )
         )
-        val totalFoldersCount = remember(CollectionsScreenVM.selectedFolderData) {
-            mutableLongStateOf(
-                CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
-            )
-        }
         DeleteDialogBox(
             DeleteDialogBoxParam(
-                totalIds = totalFoldersCount.longValue,
+                totalIds = mutableLongStateOf(
+                    CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
+                ),
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     deleteVM.onRegularFolderDeleteClick(

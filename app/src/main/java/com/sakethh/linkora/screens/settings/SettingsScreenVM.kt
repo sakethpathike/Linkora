@@ -55,7 +55,7 @@ class SettingsScreenVM(
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val currentAppVersion = "0.4.0-alpha01"
+        const val currentAppVersion = "0.4.0-alpha02"
         val latestAppInfoFromServer = MutableStateAppInfoDTO(
             mutableStateOf(""),
             mutableStateOf(""),
@@ -240,7 +240,7 @@ class SettingsScreenVM(
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
         activityResultLauncher: ManagedActivityResultLauncher<String, Uri?>,
-        isImportConflictDialogVisible: MutableState<Boolean>
+        importModalBtmSheetState: MutableState<Boolean>
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
@@ -261,7 +261,7 @@ class SettingsScreenVM(
                         ) {
                             activityResultLauncher.launch("text/*")
                         } else {
-                            isImportConflictDialogVisible.value = true
+                            importModalBtmSheetState.value = true
                         }
                     }
                 },

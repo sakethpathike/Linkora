@@ -38,6 +38,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -63,7 +64,7 @@ import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.screens.settings.composables.ImportConflictDialog
+import com.sakethh.linkora.screens.settings.composables.ImportConflictBtmSheet
 import com.sakethh.linkora.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.screens.settings.composables.RegularSettingComponent
@@ -77,6 +78,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val importModalBottomSheetState = rememberModalBottomSheetState()
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
@@ -116,7 +118,7 @@ fun SettingsScreen(navController: NavController) {
         context,
         isDialogBoxVisible = isPermissionDialogBoxVisible,
         activityResultLauncher = activityResultLauncher,
-        isImportConflictDialogVisible = isImportConflictBoxVisible
+        importModalBtmSheetState = isImportConflictBoxVisible
     )
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
@@ -543,47 +545,84 @@ fun SettingsScreen(navController: NavController) {
             exceptionType = settingsScreenVM.exceptionType
         )
         val deleteVM: DeleteVM = viewModel()
-        ImportConflictDialog(isVisible = isImportConflictBoxVisible, onMergeClick = {
-            activityResultLauncher.launch("text/*")
-        }, onDeleteExistingDataClick = {
-            deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+        ImportConflictBtmSheet(
+            isUIVisible = isImportConflictBoxVisible,
+            modalBottomSheetState = importModalBottomSheetState,
+            onMergeClick = {
                 activityResultLauncher.launch("text/*")
-            })
-        }, onExportAndThenImportClick = {
-            fun exportDataToAFile() {
-                settingsScreenVM.exportDataToAFile(
-                    context = context,
-                    isDialogBoxVisible = isPermissionDialogBoxVisible,
-                    runtimePermission = runtimePermission
-                )
-                Toast.makeText(
-                    context, "Successfully Exported", Toast.LENGTH_SHORT
-                ).show()
+            },
+            onDeleteExistingDataClick = {
                 deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                     activityResultLauncher.launch("text/*")
                 })
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                exportDataToAFile()
-            } else {
-                when (ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )) {
-                    PackageManager.PERMISSION_GRANTED -> {
-                        exportDataToAFile()
-                    }
+            },
+            onDataExportClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    settingsScreenVM.exportDataToAFile(
+                        context = context,
+                        isDialogBoxVisible = isPermissionDialogBoxVisible,
+                        runtimePermission = runtimePermission
+                    )
+                } else {
+                    when (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )) {
+                        PackageManager.PERMISSION_GRANTED -> {
+                            settingsScreenVM.exportDataToAFile(
+                                context = context,
+                                isDialogBoxVisible = isPermissionDialogBoxVisible,
+                                runtimePermission = runtimePermission
+                            )
+                            Toast.makeText(
+                                context, "Successfully Exported", Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    else -> {
-                        runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        Toast.makeText(
-                            context, "Permission required to write the data", Toast.LENGTH_SHORT
-                        ).show()
+                        else -> {
+                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Toast.makeText(
+                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
-            }
-        })
+            },
+            onExportAndThenImportClick = {
+                fun exportDataToAFile() {
+                    settingsScreenVM.exportDataToAFile(
+                        context = context,
+                        isDialogBoxVisible = isPermissionDialogBoxVisible,
+                        runtimePermission = runtimePermission
+                    )
+                    Toast.makeText(
+                        context, "Successfully Exported", Toast.LENGTH_SHORT
+                    ).show()
+                    deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                        activityResultLauncher.launch("text/*")
+                    })
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    exportDataToAFile()
+                } else {
+                    when (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )) {
+                        PackageManager.PERMISSION_GRANTED -> {
+                            exportDataToAFile()
+                        }
+
+                        else -> {
+                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Toast.makeText(
+                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            })
         DeleteDialogBox(
-            DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+            DeleteDialogBoxParam(
+                shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
                 onDeleteClick = {
                     deleteVM.deleteEntireLinksAndFoldersData()

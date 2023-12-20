@@ -2,29 +2,36 @@ package com.sakethh.linkora.customComposables
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -55,28 +62,60 @@ fun RenameDialogBox(
             mutableStateOf("")
         }
         LinkoraTheme {
-            AlertDialog(modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { renameDialogBoxParam.shouldDialogBoxAppear.value = false }) {
-                Column(modifier = Modifier.verticalScroll(scrollState)) {
+            AlertDialog(confirmButton = {
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    renameDialogBoxParam.onNoteChangeClick(newNote.value)
+                }) {
                     Text(
-                        text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"${renameDialogBoxParam.existingFolderName}\" folder:" else "Change Link's Data:",
-                        color = AlertDialogDefaults.titleContentColor,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontSize = 22.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 30.dp, end = 25.dp),
-                        lineHeight = 27.sp,
-                        textAlign = TextAlign.Start
+                        text = "Change note only",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 16.sp
                     )
+                }
+                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                    if (newFolderOrTitleName.value.isNotEmpty()) {
+                        if (newNote.value.isNotEmpty()) {
+                            renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                            renameDialogBoxParam.onNoteChangeClick(newNote.value)
+                        } else {
+                            renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
+                        }
+                    } else {
+                        Toast.makeText(
+                            localContext, "Title can't be empty", Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }) {
+                    Text(
+                        text = "Change both name and note",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 16.sp
+                    )
+                }
+            }, dismissButton = {
+                OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                    renameDialogBoxParam.shouldDialogBoxAppear.value = false
+                }) {
+                    Text(
+                        text = "Cancel",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 16.sp
+                    )
+                }
+            }, title = {
+                Text(
+                    text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"${renameDialogBoxParam.existingFolderName}\" folder:" else "Change Link's Data:",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 22.sp,
+                    lineHeight = 27.sp,
+                    textAlign = TextAlign.Start
+                )
+            }, text = {
+                Column(modifier = Modifier.verticalScroll(scrollState)) {
                     OutlinedTextField(maxLines = 1,
-                        modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 20.dp
-                        ),
                         label = {
                             Text(
                                 text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "New Name" else "New title",
-                                color = AlertDialogDefaults.textContentColor,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -87,105 +126,56 @@ fun RenameDialogBox(
                         onValueChange = {
                             newFolderOrTitleName.value = it
                         })
-                    OutlinedTextField(maxLines = 1,
-                        modifier = Modifier.padding(
-                            start = 20.dp, end = 20.dp, top = 15.dp
-                        ),
-                        label = {
-                            Text(
-                                text = "New note",
-                                color = AlertDialogDefaults.textContentColor,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 12.sp
-                            )
-                        },
+                    OutlinedTextField(label = {
+                        Text(
+                            text = "New note",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 12.sp
+                        )
+                    },
                         textStyle = MaterialTheme.typography.titleSmall,
-                        singleLine = true,
                         value = newNote.value,
                         onValueChange = {
                             newNote.value = it
                         })
-                    Text(
-                        text = "Leave above field empty, if you don't want to change the note.",
-                        color = AlertDialogDefaults.textContentColor,
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 20.dp, top = 10.dp, end = 20.dp),
-                        lineHeight = 16.sp
-                    )
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                end = 20.dp,
-                                top = 20.dp,
-                                start = 20.dp
-                            )
-                            .align(Alignment.End),
-                        onClick = {
-                            if (newFolderOrTitleName.value.isNotEmpty()) {
-                                if (newNote.value.isNotEmpty()) {
-                                    renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
-                                    renameDialogBoxParam.onNoteChangeClick(newNote.value)
-                                } else {
-                                    renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
-                                }
-                            } else {
-                                Toast.makeText(
-                                    localContext,
-                                    "Title can't be empty",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }) {
-                        Text(
-                            text = "Change both name and note",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
-                    }
-                    Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                        modifier = Modifier
-                            .padding(
-                                end = 20.dp,
-                                top = 10.dp,
-                                start = 20.dp
-                            )
-                            .fillMaxWidth()
-                            .align(Alignment.End),
-                        onClick = {
-                            renameDialogBoxParam.onNoteChangeClick(newNote.value)
-                        }) {
-                        Text(
-                            text = "Change note only",
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
-                    }
-                    OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
+                    Spacer(modifier = Modifier.height(10.dp))
+                    Card(
                         border = BorderStroke(
-                            width = 1.dp, color = MaterialTheme.colorScheme.secondary
+                            1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
                         ),
-                        modifier = Modifier
-                            .padding(
-                                end = 20.dp, start = 20.dp, top = 10.dp, bottom = 30.dp
+                        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .padding(
+                                    top = 10.dp, bottom = 10.dp
+                                ), verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Box(
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Info,
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(
+                                        start = 10.dp, end = 10.dp
+                                    )
+                                )
+                            }
+                            Text(
+                                text = "Leave above field empty, if you don't want to change the note.",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 14.sp,
+                                lineHeight = 18.sp,
+                                textAlign = TextAlign.Start
                             )
-                            .fillMaxWidth()
-                            .align(Alignment.End),
-                        onClick = {
-                            renameDialogBoxParam.shouldDialogBoxAppear.value = false
-                        }) {
-                        Text(
-                            text = "Cancel",
-                            color = MaterialTheme.colorScheme.secondary,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
+                        }
                     }
                 }
-            }
+            }, onDismissRequest = { renameDialogBoxParam.shouldDialogBoxAppear.value = false })
         }
     }
 }

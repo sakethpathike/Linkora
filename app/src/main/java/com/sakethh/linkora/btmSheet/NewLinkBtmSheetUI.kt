@@ -49,7 +49,6 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,16 +62,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
-import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 
@@ -112,43 +107,6 @@ fun NewLinkBtmSheet(
     }
     val selectedFolderID = rememberSaveable {
         mutableLongStateOf(0)
-    }
-    LaunchedEffect(key1 = Unit) {
-        this.launch {
-            awaitAll(async {
-                if (inIntentActivity.value) {
-                    newLinkBtmSheetUIParam.btmSheetState.show()
-                }
-                newLinkBtmSheetUIParam.btmSheetState.expand()
-            }, async {
-                if (inIntentActivity.value) {
-                    newLinkBtmSheetUIParam.shouldUIBeVisible.value = true
-                }
-            }, async {
-                if (inIntentActivity.value) {
-                    coroutineScope.launch {
-                        SettingsScreenVM.Settings.readAllPreferencesValues(context)
-                    }.invokeOnCompletion {
-                        if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
-                            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-                            firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
-                        }
-                    }
-                }
-            }, async {
-                coroutineScope.launch {
-                    if (inIntentActivity.value) {
-                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
-                    }
-                }.invokeOnCompletion {
-                    coroutineScope.launch {
-                        LocalDataBase.localDB.readDao().getAllRootFolders().collect {
-                            IntentActivityData.foldersData.value = it
-                        }
-                    }
-                }
-            })
-        }
     }
     val isAutoDetectTitleEnabled = rememberSaveable {
         mutableStateOf(SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value)

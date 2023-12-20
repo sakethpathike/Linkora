@@ -1,5 +1,7 @@
 package com.sakethh.linkora.customComposables
 
+import android.app.Activity
+import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -12,6 +14,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -39,7 +42,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
@@ -47,6 +49,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
@@ -56,17 +59,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.btmSheet.SelectableFolderUIComponent
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,10 +85,6 @@ fun AddNewLinkDialogBox(
     parentFolderID: Long?,
     isDataExtractingForTheLink: Boolean
 ) {
-    val foldersTableData =
-        LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
-            initial = emptyList()
-        ).value
     val isDropDownMenuIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
@@ -97,9 +100,39 @@ fun AddNewLinkDialogBox(
     }
     val scrollState = rememberScrollState()
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val activity = context as Activity
+    val intent = activity.intent
+    val intentData = rememberSaveable(inputs = arrayOf(intent)) {
+        mutableStateOf(intent)
+    }
+    val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+    LaunchedEffect(key1 = Unit) {
+        awaitAll(async {
+            if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
+                this.launch {
+                    SettingsScreenVM.Settings.readAllPreferencesValues(context)
+                }.invokeOnCompletion {
+                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
+                }
+            }
+        })
+    }
     if (shouldDialogBoxAppear.value) {
-        val linkTextFieldValue = rememberSaveable {
-            mutableStateOf("")
+        val linkTextFieldValue = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
+            rememberSaveable(
+                inputs = arrayOf(
+                    intentData.value?.getStringExtra(
+                        Intent.EXTRA_TEXT
+                    ).toString()
+                )
+            ) {
+                mutableStateOf(intentData.value?.getStringExtra(Intent.EXTRA_TEXT).toString())
+            }
+        } else {
+            rememberSaveable {
+                mutableStateOf("")
+            }
         }
         val titleTextFieldValue = rememberSaveable {
             mutableStateOf("")
@@ -251,7 +284,7 @@ fun AddNewLinkDialogBox(
                                 }
                             }
                         }
-                        if (screenType == SpecificScreenType.ROOT_SCREEN) {
+                        if (screenType == SpecificScreenType.ROOT_SCREEN || screenType == SpecificScreenType.INTENT_ACTIVITY) {
                             Row(
                                 Modifier.padding(
                                     start = 20.dp, end = 20.dp, top = 20.dp
@@ -259,7 +292,7 @@ fun AddNewLinkDialogBox(
                             ) {
                                 Text(
                                     text = "Add in",
-                                    color = LocalContentColor.current,
+                                    color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 18.sp,
                                     modifier = Modifier.padding(top = 15.dp)
@@ -270,6 +303,9 @@ fun AddNewLinkDialogBox(
                                 ), onClick = {
                                     if (!isDataExtractingForTheLink) {
                                         isDropDownMenuIconClicked.value = true
+                                        coroutineScope.launch {
+                                            btmModalSheetState.expand()
+                                        }
                                     }
                                 }) {
                                     Text(
@@ -316,38 +352,13 @@ fun AddNewLinkDialogBox(
                                     })
                                 Text(
                                     text = "Force Auto-detect title",
+                                    color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 16.sp
                                 )
                             }
                         }
                         if (!isDataExtractingForTheLink) {
-                            Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-                                modifier = Modifier
-                                    .padding(
-                                        end = 20.dp,
-                                        top = 20.dp,
-                                        start = 20.dp
-                                    )
-                                    .fillMaxWidth()
-                                    .align(Alignment.End),
-                                onClick = {
-                                    onSaveClick(
-                                        isAutoDetectTitleEnabled.value,
-                                        linkTextFieldValue.value,
-                                        titleTextFieldValue.value,
-                                        noteTextFieldValue.value,
-                                        selectedFolderName.value,
-                                        selectedFolderID.longValue
-                                    )
-                                }) {
-                                Text(
-                                    text = "Save",
-                                    color = MaterialTheme.colorScheme.onPrimary,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
-                                )
-                            }
                             OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                                 border = BorderStroke(
                                     width = 1.dp, color = MaterialTheme.colorScheme.secondary
@@ -368,6 +379,31 @@ fun AddNewLinkDialogBox(
                                     fontSize = 16.sp
                                 )
                             }
+                            Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp,
+                                        top = 10.dp,
+                                        start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .align(Alignment.End),
+                                onClick = {
+                                    onSaveClick(
+                                        isAutoDetectTitleEnabled.value,
+                                        linkTextFieldValue.value,
+                                        titleTextFieldValue.value,
+                                        noteTextFieldValue.value,
+                                        selectedFolderName.value,
+                                        selectedFolderID.longValue
+                                    )
+                                }) {
+                                Text(
+                                    text = "Save",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 16.sp
+                                )
+                            }
                         } else {
                             Spacer(modifier = Modifier.height(30.dp))
                             LinearProgressIndicator(
@@ -384,6 +420,16 @@ fun AddNewLinkDialogBox(
                     }
                 }
                 if (isDropDownMenuIconClicked.value) {
+                    val foldersTableData = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
+                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
+                        LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
+                            initial = emptyList()
+                        ).value
+                    } else {
+                        LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
+                            initial = emptyList()
+                        ).value
+                    }
                     ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
                         coroutineScope.launch {
                             if (btmModalSheetState.isVisible) {
@@ -397,6 +443,7 @@ fun AddNewLinkDialogBox(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .wrapContentHeight()
+                                .navigationBarsPadding()
                         ) {
                             item {
                                 Row(

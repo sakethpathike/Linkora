@@ -816,7 +816,10 @@ fun SpecificScreen(navController: NavController) {
             )
         }
         DeleteDialogBox(
-            DeleteDialogBoxParam(totalIds = totalFoldersCount.longValue,
+            DeleteDialogBoxParam(
+                totalIds = mutableLongStateOf(
+                    CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
+                ),
                 shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
                     specificCollectionsScreenVM.onDeleteClick(

@@ -568,7 +568,8 @@ fun SearchScreen(navController: NavController) {
             )
         )
         DeleteDialogBox(
-            DeleteDialogBoxParam(shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+            DeleteDialogBoxParam(
+                shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.LINK,
                 onDeleteClick = {
                     searchScreenVM.onDeleteClick(

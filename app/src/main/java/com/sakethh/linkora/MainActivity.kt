@@ -43,11 +43,8 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
         }
-        if (SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) {
-            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-            firebaseCrashlytics.setCrashlyticsCollectionEnabled(true)
-            firebaseCrashlytics.log("logged in :- v${SettingsScreenVM.currentAppVersion}")
-        }
+        val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+        firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
         setContent {
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
