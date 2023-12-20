@@ -84,7 +84,7 @@ The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases]
 
 |                                                        Sharing links from other apps                                                         |
 |:--------------------------------------------------------------------------------------------------------------------------------------------:|
-| https://github-production-user-asset-6210df.s3.amazonaws.com/83284398/291981034-085c7d3f-e4f2-4466-9b13-639451846233.webm  |
+|<video src='https://github-production-user-asset-6210df.s3.amazonaws.com/83284398/291981034-085c7d3f-e4f2-4466-9b13-639451846233.webm'/> |
 
 ## Upcoming Updates
 - [x] Sorting
