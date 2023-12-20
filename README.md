@@ -7,7 +7,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### To name a few:
 
 - Save links individually with ease.
-- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01)) for better management.
+- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02)) for better management.
 - Mark important links for quick access.
 - Archive links or folders to keep things tidy.
 - Customize link names as you like.
@@ -32,7 +32,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 The latest release of Linkora (v0.3.1) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.3.1). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.3.1/Linkora-v0.3.1.apk)
 
 ### Alpha Release
-The latest alpha release of Linkora (v0.4.0-alpha01) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha01/Linkora-v0.4.0-alpha01.apk).
+The latest alpha release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha02/Linkora-v0.4.0-alpha02.apk).
 - With this update, you can organize links more easily using sub-folders. Dialog boxes, the settings screen, and link-specific menus now have a fresh, new UI. Adding links is now done through a full-screen dialog, and many major improvements have been made with this alpha release.
     
 ## Screenshots
@@ -96,7 +96,7 @@ The latest alpha release of Linkora (v0.4.0-alpha01) is available on [GitHub Rel
 - [x] Searching
 - [x] Importing and exporting links (in alpha)
 - Better title and image parsing of links
-- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01))
+- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02))
 - Pinned folders and a few other things that a link utility app should have.
 
 #### Note: This project is in active development and new features and improvements will be added over time.
