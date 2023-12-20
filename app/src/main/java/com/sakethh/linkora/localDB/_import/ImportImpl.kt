@@ -51,7 +51,7 @@ class ImportImpl {
             }
             exceptionType.value = null
             shouldErrorDialogBeVisible.value = false
-            if (jsonDeserialized.appVersion <= 9) {
+            if (jsonDeserialized.schemaVersion <= 9) {
                 coroutineScope {
                     awaitAll(async {
                         if (jsonDeserialized.foldersTable.isNotEmpty()) {
@@ -67,7 +67,7 @@ class ImportImpl {
             withContext(Dispatchers.Main) {
                 Toast.makeText(
                     context,
-                    if (jsonDeserialized.appVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.appVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.appVersion}",
+                    if (jsonDeserialized.schemaVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}",
                     Toast.LENGTH_SHORT
                 ).show()
             }

@@ -11,7 +11,8 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ExportDTO(
-    val appVersion: Int,
+    @SerialName("appVersion")
+    val schemaVersion: Int,
     @SerialName("savedLinks")
     val linksTable: List<LinksTable>,
     @SerialName("importantLinks")

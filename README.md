@@ -7,7 +7,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### To name a few:
 
 - Save links individually with ease.
-- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01)) for better management.
+- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02)) for better management.
 - Mark important links for quick access.
 - Archive links or folders to keep things tidy.
 - Customize link names as you like.
@@ -28,15 +28,15 @@ Linkora is an Android project that focuses on making link organization simpler. 
 - Coil is Used for loading images, and Architecture Components such as DataStore, Navigation, and ViewModel are also used to make this project alive!
 
 ## GitHub Releases
-The latest release of Linkora (v0.4.0-alpha01) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha01/Linkora-v0.4.0-alpha01.apk)
+The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha02/Linkora-v0.4.0-alpha02.apk)
 
 ## Screenshots
 
 ### Home Screen
 
-|                                                       Home Screen                                                       | Home Screen | Sorting History in Home Screen |
-|:-----------------------------------------------------------------------------------------------------------------------:|:-------------:|:-------------:|
-| ![HomeScreen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/2c2c09a4-78e0-409c-b2e5-45a3688c34ea) |![HomeScreen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/326ac954-3c7d-4dc8-990c-d76072d78bc8)|![Sorting in Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/fe33dcd3-c142-4f68-ac1d-757c5134833c)|
+|                                                       Home Screen                                                      | Sorting History in Home Screen |
+|:-----------------------------------------------------------------------------------------------------------------------:|:-------------:|
+| ![HomeScreen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/2c2c09a4-78e0-409c-b2e5-45a3688c34ea) |![Sorting in Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/fe33dcd3-c142-4f68-ac1d-757c5134833c)|
 
 ### Search Screen
 
@@ -82,16 +82,16 @@ The latest release of Linkora (v0.4.0-alpha01) is available on [GitHub Releases]
 
 ### Sharing from other apps
 
-| Sharing Screen | Sharing Screen |
-|:-------------:|:-------------:|
-|![Screenshot_2023_09_03_05_28_54_74_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/32e90170-7abf-445a-a7b9-6134b95e45b1)|![Screenshot_2023_09_03_05_30_03_73_9d74ce38016571544acf7a6bc28cc5f6](https://github.com/sakethpathike/Linkora/assets/83284398/09a795bd-9360-4d2f-a065-daf70dfdf33c)|
+|                                                        Sharing links from other apps                                                         |
+|:--------------------------------------------------------------------------------------------------------------------------------------------:|
+| https://github-production-user-asset-6210df.s3.amazonaws.com/83284398/291981034-085c7d3f-e4f2-4466-9b13-639451846233.webm  |
 
 ## Upcoming Updates
 - [x] Sorting
 - [x] Searching
 - [x] Importing and exporting links (in alpha)
 - Better title and image parsing of links
-- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha01))
+- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02))
 - Pinned folders and a few other things that a link utility app should have.
 
 #### Note: This project is in active development and new features and improvements will be added over time.

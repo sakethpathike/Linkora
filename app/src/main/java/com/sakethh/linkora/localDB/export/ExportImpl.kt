@@ -61,7 +61,7 @@ class ExportImpl {
         file.writeText(
             Json.encodeToString(
                 ExportDTO(
-                    appVersion = 10,
+                    schemaVersion = 10,
                     linksTable = exportAllLinks,
                     importantLinksTable = exportImpLinks,
                     foldersTable = exportAllFolders,

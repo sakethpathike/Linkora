@@ -126,6 +126,7 @@ fun RenameDialogBox(
                         onValueChange = {
                             newFolderOrTitleName.value = it
                         })
+                    Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(label = {
                         Text(
                             text = "New note",
