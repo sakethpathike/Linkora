@@ -57,9 +57,9 @@ fun SettingsNewVersionUpdateBtmContent(
         )
         VersionCardForBtmSheetContent(
             title = "version you're using",
-            value = "v${SettingsScreenVM.currentAppVersion}"
+            value = "v${SettingsScreenVM.appVersionName}"
         )
-        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+        if (SettingsScreenVM.appVersionName != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
             VersionCardForBtmSheetContent(
                 title = "latest stable version which you should be using",
                 value = "v${SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value}"
@@ -90,7 +90,7 @@ fun SettingsNewVersionUpdateBtmContent(
             lineHeight = 24.sp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
         )
-        if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+        if (SettingsScreenVM.appVersionName != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
             Button(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)

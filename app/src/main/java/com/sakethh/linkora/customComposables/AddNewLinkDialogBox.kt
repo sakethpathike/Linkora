@@ -389,6 +389,9 @@ fun AddNewLinkDialogBox(
                                     .fillMaxWidth()
                                     .align(Alignment.End),
                                 onClick = {
+                                    if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
+                                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
+                                    }
                                     onSaveClick(
                                         isAutoDetectTitleEnabled.value,
                                         linkTextFieldValue.value,

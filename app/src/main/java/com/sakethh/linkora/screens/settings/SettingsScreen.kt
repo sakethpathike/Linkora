@@ -169,7 +169,7 @@ fun SettingsScreen(navController: NavController) {
                                     .alignByBaseline()
                             )
                             Text(
-                                text = "v${SettingsScreenVM.currentAppVersion}",
+                                text = "v${SettingsScreenVM.appVersionName}",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alignByBaseline()

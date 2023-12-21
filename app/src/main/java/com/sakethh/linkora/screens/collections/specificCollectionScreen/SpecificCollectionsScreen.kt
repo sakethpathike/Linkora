@@ -10,15 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.outlined.Sort
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -28,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
@@ -177,6 +178,7 @@ fun SpecificScreen(navController: NavController) {
     val shouldDialogForNewFolderAppear = rememberSaveable {
         mutableStateOf(false)
     }
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
@@ -211,84 +213,103 @@ fun SpecificScreen(navController: NavController) {
             }
         }, modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             Column {
-                TopAppBar(title = {
-                    Text(
-                        text = topBarText,
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 24.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.fillMaxWidth(0.75f)
-                    )
-                }, actions = {
-                    when (SpecificCollectionsScreenVM.screenType.value) {
-                        SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                            if (impLinksData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Sort,
-                                        contentDescription = null
-                                    )
-                                }
+                TopAppBar(navigationIcon = {
+                    IconButton(onClick = {
+                        if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
+                            && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                    || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
+                        ) {
+                            if (SpecificCollectionsScreenVM.inARegularFolder.value) {
+                                SpecificCollectionsScreenVM.screenType.value =
+                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                            } else {
+                                SpecificCollectionsScreenVM.screenType.value =
+                                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                             }
+                            specificCollectionsScreenVM.updateFolderData(CollectionsScreenVM.currentClickedFolderData.value.parentFolderID!!)
                         }
-
-                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                            if (archivedFoldersLinksData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Sort,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-
-                        SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                            if (savedLinksData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Sort,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-
-                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                            if (specificFolderLinksData.isNotEmpty()) {
-                                IconButton(onClick = {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Sort,
-                                        contentDescription = null
-                                    )
-                                }
-                            }
-                        }
-
-                        SpecificScreenType.INTENT_ACTIVITY -> {
-
-                        }
-
-                        SpecificScreenType.ROOT_SCREEN -> {
-
-                        }
+                        navController.popBackStack()
+                    }) {
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
                     }
-                })
-                Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                }, scrollBehavior = scrollBehavior,
+                    title = {
+                        Text(
+                            text = topBarText,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 22.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    },
+                    actions = {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                if (impLinksData.isNotEmpty()) {
+                                    IconButton(onClick = {
+                                        shouldSortingBottomSheetAppear.value = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Sort,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                                if (archivedFoldersLinksData.isNotEmpty()) {
+                                    IconButton(onClick = {
+                                        shouldSortingBottomSheetAppear.value = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Sort,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                if (savedLinksData.isNotEmpty()) {
+                                    IconButton(onClick = {
+                                        shouldSortingBottomSheetAppear.value = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Sort,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                if (specificFolderLinksData.isNotEmpty()) {
+                                    IconButton(onClick = {
+                                        shouldSortingBottomSheetAppear.value = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Sort,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.INTENT_ACTIVITY -> {
+
+                            }
+
+                            SpecificScreenType.ROOT_SCREEN -> {
+
+                            }
+                        }
+                    })
             }
         }) {
             LazyColumn(
                 modifier = Modifier
+                    .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .padding(it)
                     .fillMaxSize()
             ) {

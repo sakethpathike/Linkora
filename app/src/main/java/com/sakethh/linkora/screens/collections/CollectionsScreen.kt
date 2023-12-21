@@ -173,14 +173,17 @@ fun CollectionsScreen(navController: NavController) {
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
-                TopAppBar(title = {
-                    Text(
-                        text = "Collections",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 24.sp
-                    )
-                })
+                Column {
+                    TopAppBar(title = {
+                        Text(
+                            text = "Collections",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontSize = 24.sp
+                        )
+                    })
+                    Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                }
             }) {
             LazyColumn(
                 modifier = Modifier
