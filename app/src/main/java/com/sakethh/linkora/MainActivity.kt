@@ -42,9 +42,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
+        }.invokeOnCompletion {
+            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
         }
-        val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-        firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
         setContent {
             val context = LocalContext.current
             val coroutineScope = rememberCoroutineScope()
@@ -127,8 +128,7 @@ class MainActivity : ComponentActivity() {
                         } finally {
                             if (LocalDataBase.localDB.readDao().getAllRootFoldersList()
                                     .isNotEmpty() || LocalDataBase.localDB.readDao()
-                                    .getAllArchiveFoldersV9List()
-                                    .isNotEmpty()
+                                    .getAllArchiveFoldersV9List().isNotEmpty()
                             ) {
                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
@@ -143,9 +143,7 @@ class MainActivity : ComponentActivity() {
                                     ) ?: true
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
-                                        context,
-                                        "Data Migrated Successfully",
-                                        Toast.LENGTH_SHORT
+                                        context, "Data Migrated Successfully", Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }

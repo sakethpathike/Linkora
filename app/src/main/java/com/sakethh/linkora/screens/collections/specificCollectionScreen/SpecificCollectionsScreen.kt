@@ -237,7 +237,7 @@ fun SpecificScreen(navController: NavController) {
                         Text(
                             text = topBarText,
                             style = MaterialTheme.typography.titleMedium,
-                            fontSize = 22.sp,
+                            fontSize = 18.sp,
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )

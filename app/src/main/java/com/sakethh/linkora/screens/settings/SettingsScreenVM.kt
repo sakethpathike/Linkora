@@ -21,6 +21,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB._import.ImportImpl
 import com.sakethh.linkora.localDB.export.ExportImpl
@@ -84,6 +85,9 @@ class SettingsScreenVM(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
                         dataStore = it.dataStore
                     ) == true
+                }.invokeOnCompletion {
+                    val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(isSendCrashReportsEnabled.value)
                 }
             })
     }
