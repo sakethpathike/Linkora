@@ -95,8 +95,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                     )
                 }
                 Unit
@@ -117,8 +116,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                     )
                 }
                 Unit
@@ -186,8 +184,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                     )
                 }
                 Unit
@@ -212,8 +209,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                     )
                 }
                 Unit
@@ -285,8 +281,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                     )
                 }
                 Unit
@@ -332,8 +327,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
                         folderID = 0,
-                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                        folderName = selectedFolderData.value.folderName
+                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                     )
                 }
                 Unit

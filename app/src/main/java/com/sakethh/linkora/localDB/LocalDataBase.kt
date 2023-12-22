@@ -13,14 +13,15 @@ import com.sakethh.linkora.localDB.dao.crud.DeleteDao
 import com.sakethh.linkora.localDB.dao.crud.ReadDao
 import com.sakethh.linkora.localDB.dao.crud.UpdateDao
 import com.sakethh.linkora.localDB.dao.searching.LinksSearching
-import com.sakethh.linkora.localDB.dao.sorting.ArchivedFoldersSorting
-import com.sakethh.linkora.localDB.dao.sorting.ArchivedLinksSorting
-import com.sakethh.linkora.localDB.dao.sorting.HistoryLinksSorting
-import com.sakethh.linkora.localDB.dao.sorting.ImportantLinksSorting
-import com.sakethh.linkora.localDB.dao.sorting.RegularFolderLinksSorting
-import com.sakethh.linkora.localDB.dao.sorting.RegularFoldersSorting
-import com.sakethh.linkora.localDB.dao.sorting.SavedLinksSorting
-import com.sakethh.linkora.localDB.dao.sorting.SpecificArchivedFolderDataSorting
+import com.sakethh.linkora.localDB.dao.sorting.folders.ParentArchivedFoldersSorting
+import com.sakethh.linkora.localDB.dao.sorting.folders.ParentRegularFoldersSorting
+import com.sakethh.linkora.localDB.dao.sorting.folders.SubFoldersSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.ArchivedFolderLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.ArchivedLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.HistoryLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.ImportantLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.RegularFolderLinksSorting
+import com.sakethh.linkora.localDB.dao.sorting.links.SavedLinksSorting
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
@@ -41,16 +42,17 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun readDao(): ReadDao
     abstract fun updateDao(): UpdateDao
     abstract fun deleteDao(): DeleteDao
-    abstract fun archivedFolderSorting(): ArchivedFoldersSorting
+    abstract fun archivedFolderSorting(): ParentArchivedFoldersSorting
     abstract fun archivedLinksSorting(): ArchivedLinksSorting
-    abstract fun archivedFolderLinksSorting(): SpecificArchivedFolderDataSorting
+    abstract fun archivedFolderLinksSorting(): ArchivedFolderLinksSorting
     abstract fun importantLinksSorting(): ImportantLinksSorting
     abstract fun regularFolderLinksSorting(): RegularFolderLinksSorting
-    abstract fun regularFolderSorting(): RegularFoldersSorting
+    abstract fun regularFolderSorting(): ParentRegularFoldersSorting
     abstract fun savedLinksSorting(): SavedLinksSorting
     abstract fun historyLinksSorting(): HistoryLinksSorting
     abstract fun linksSearching(): LinksSearching
     abstract fun importDao(): ImportDao
+    abstract fun subFoldersSortingDao(): SubFoldersSorting
     enum class LocalDataType {
         FOLDER_BASED_LINKS, IMP_FOLDERS_LINKS, ARCHIVE_FOLDER_LINKS, SAVED_LINKS
     }

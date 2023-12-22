@@ -126,27 +126,17 @@ class MainActivity : ComponentActivity() {
                                 }
                             }
                         } finally {
-                            if (LocalDataBase.localDB.readDao().getAllRootFoldersList()
-                                    .isNotEmpty() || LocalDataBase.localDB.readDao()
-                                    .getAllArchiveFoldersV9List().isNotEmpty()
-                            ) {
-                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(
+                                    SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                ), dataStore = context.dataStore, newValue = true
+                            )
+                            SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value =
+                                SettingsScreenVM.Settings.readSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
                                         SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
-                                    ), dataStore = context.dataStore, newValue = true
-                                )
-                                SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value =
-                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
-                                        preferenceKey = booleanPreferencesKey(
-                                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
-                                        ), dataStore = context.dataStore
-                                    ) ?: true
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(
-                                        context, "Data Migrated Successfully", Toast.LENGTH_SHORT
-                                    ).show()
-                                }
-                            }
+                                    ), dataStore = context.dataStore
+                                ) ?: true
                         }
                     }
                 }

@@ -43,13 +43,13 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -189,19 +189,18 @@ fun ParentHomeScreen(navController: NavController) {
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ),
                     folderID = 0,
-                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                    folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                 )
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                         SettingsScreenVM.Settings.selectedSortingType.value
                     ),
                     folderID = 0,
-                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                    folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                 )
             },
-            bottomModalSheetState = sortingBtmSheetState
+            bottomModalSheetState = sortingBtmSheetState,
+            sortingBtmSheetType = SortingBtmSheetType.PARENT_HOME_SCREEN
         )
         val isDataExtractingForTheLink = rememberSaveable {
             mutableStateOf(false)

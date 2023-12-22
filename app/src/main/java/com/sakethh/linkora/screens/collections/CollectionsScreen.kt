@@ -34,6 +34,7 @@ import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -70,6 +71,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
@@ -610,7 +612,8 @@ fun CollectionsScreen(navController: NavController) {
             onSelectedAComponent = { sortingPreferences ->
                 collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
             },
-            bottomModalSheetState = sortingBtmSheetState
+            bottomModalSheetState = sortingBtmSheetState,
+            sortingBtmSheetType = SortingBtmSheetType.COLLECTIONS_SCREEN
         )
     }
     BackHandler {
@@ -654,12 +657,23 @@ fun FolderIndividualComponent(
     maxLines: Int = 1,
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
+    showCheckBox: Boolean = false,
+    checkBoxState: (Boolean) -> Unit = {}
 ) {
-    Column {
+    val isCheckBoxChecked = rememberSaveable {
+        mutableStateOf(true)
+    }
+    Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .combinedClickable(
-                    onClick = { onFolderClick() },
+                    onClick = {
+                        onFolderClick()
+                        if (showCheckBox) {
+                            isCheckBoxChecked.value = !isCheckBoxChecked.value
+                            checkBoxState(isCheckBoxChecked.value)
+                        }
+                    },
                     onLongClick = { onMoreIconClick() })
                 .fillMaxWidth()
                 .requiredHeight(75.dp)
@@ -679,7 +693,7 @@ fun FolderIndividualComponent(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(if (showMoreIcon) 0.80f else 1f),
+                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox) 0.78f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -724,6 +738,15 @@ fun FolderIndividualComponent(
                             .align(Alignment.CenterEnd)
                     )
                 }
+            }
+            if (showCheckBox) {
+                Checkbox(modifier = Modifier
+                    .fillMaxHeight(),
+                    checked = isCheckBoxChecked.value,
+                    onCheckedChange = {
+                        isCheckBoxChecked.value = it
+                        checkBoxState(it)
+                    })
             }
         }
         Divider(

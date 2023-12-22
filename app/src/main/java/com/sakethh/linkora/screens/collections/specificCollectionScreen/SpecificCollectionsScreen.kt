@@ -53,6 +53,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
@@ -90,8 +91,7 @@ fun SpecificScreen(navController: NavController) {
         awaitAll(async {
             specificCollectionsScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                folderID = CollectionsScreenVM.currentClickedFolderData.value.id
             )
         }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
     }
@@ -258,9 +258,12 @@ fun SpecificScreen(navController: NavController) {
                             }
 
                             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                                if (archivedFoldersLinksData.isNotEmpty()) {
+                                if (archivedFoldersLinksData.isNotEmpty() || archivedSubFoldersData.isNotEmpty()) {
                                     IconButton(onClick = {
                                         shouldSortingBottomSheetAppear.value = true
+                                        coroutineScope.launch {
+                                            sortingBtmSheetState.expand()
+                                        }
                                     }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Sort,
@@ -284,9 +287,12 @@ fun SpecificScreen(navController: NavController) {
                             }
 
                             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                if (specificFolderLinksData.isNotEmpty()) {
+                                if (specificFolderLinksData.isNotEmpty() || childFoldersData.isNotEmpty()) {
                                     IconButton(onClick = {
                                         shouldSortingBottomSheetAppear.value = true
+                                        coroutineScope.launch {
+                                            sortingBtmSheetState.expand()
+                                        }
                                     }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Sort,
@@ -779,8 +785,7 @@ fun SpecificScreen(navController: NavController) {
                                 folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
-                                ),
-                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                                )
                             )
                         }, ImportantLinks(
                             title = tempImpLinkData.title.value,
@@ -811,8 +816,7 @@ fun SpecificScreen(navController: NavController) {
                                 folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
-                                ),
-                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                                )
                             )
                         },
                     )
@@ -852,8 +856,7 @@ fun SpecificScreen(navController: NavController) {
                                 folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                                     SettingsScreenVM.Settings.selectedSortingType.value
-                                ),
-                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                                )
                             )
                         },
                         folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
@@ -866,8 +869,7 @@ fun SpecificScreen(navController: NavController) {
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         ),
-                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                        folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id
                     )
                 })
         )
@@ -1020,10 +1022,10 @@ fun SpecificScreen(navController: NavController) {
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = it,
-                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                    folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id
                 )
-            }, bottomModalSheetState = sortingBtmSheetState
+            }, bottomModalSheetState = sortingBtmSheetState,
+            sortingBtmSheetType = if (SpecificCollectionsScreenVM.inARegularFolder.value) SortingBtmSheetType.REGULAR_FOLDER_SCREEN else SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN
         )
     }
     BackHandler {

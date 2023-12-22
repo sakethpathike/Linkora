@@ -93,7 +93,6 @@ open class SpecificCollectionsScreenVM(
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
         folderID: Long,
-        folderName: String,
         screenType: SpecificScreenType = Companion.screenType.value,
     ) {
         when (screenType) {
@@ -187,7 +186,7 @@ open class SpecificCollectionsScreenVM(
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
-                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                LocalDataBase.localDB.subFoldersSortingDao()
                                     .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
                                     .collectLatest {
                                         _archiveSubFolderData.emit(it)
@@ -204,7 +203,7 @@ open class SpecificCollectionsScreenVM(
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
-                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                LocalDataBase.localDB.subFoldersSortingDao()
                                     .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
                                     .collectLatest {
                                         _archiveSubFolderData.emit(it)
@@ -223,7 +222,7 @@ open class SpecificCollectionsScreenVM(
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
-                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                LocalDataBase.localDB.subFoldersSortingDao()
                                     .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
                                     .collectLatest {
                                         _archiveSubFolderData.emit(it)
@@ -241,7 +240,7 @@ open class SpecificCollectionsScreenVM(
                                         _archiveFolderData.emit(it)
                                     }
                             }, async {
-                                LocalDataBase.localDB.archivedFolderLinksSorting()
+                                LocalDataBase.localDB.subFoldersSortingDao()
                                     .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
                                     .collectLatest {
                                         _archiveSubFolderData.emit(it)

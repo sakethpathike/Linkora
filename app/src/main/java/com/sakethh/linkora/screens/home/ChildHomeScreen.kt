@@ -38,7 +38,6 @@ import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.DataEmptyScreen
-import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -62,8 +61,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
                     SettingsScreenVM.Settings.selectedSortingType.value
                 ),
                 folderID = 0,
-                screenType = SpecificScreenType.SAVED_LINKS_SCREEN,
-                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                screenType = SpecificScreenType.SAVED_LINKS_SCREEN
             )
         }, async {
             specificCollectionsScreenVM.changeRetrievedData(
@@ -71,8 +69,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
                     SettingsScreenVM.Settings.selectedSortingType.value
                 ),
                 folderID = 0,
-                screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN,
-                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
             )
         })
     }

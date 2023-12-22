@@ -46,6 +46,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
@@ -508,7 +509,8 @@ fun SearchScreen(navController: NavController) {
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
                 searchScreenVM.changeHistoryRetrievedData(sortingPreferences = it)
-            }, bottomModalSheetState = sortingBtmSheetState
+            }, bottomModalSheetState = sortingBtmSheetState,
+            sortingBtmSheetType = SortingBtmSheetType.HISTORY_SCREEN
         )
         OptionsBtmSheetUI(
             OptionsBtmSheetUIParam(
