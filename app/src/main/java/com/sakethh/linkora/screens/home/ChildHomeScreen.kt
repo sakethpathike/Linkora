@@ -78,7 +78,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val btmModalSheetState = rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }

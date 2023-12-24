@@ -116,7 +116,7 @@ fun CollectionsScreen(navController: NavController) {
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
-    val btmModalSheetState = rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
     val btmModalSheetStateForSavingLinks =
@@ -151,7 +151,7 @@ fun CollectionsScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
@@ -311,6 +311,9 @@ fun CollectionsScreen(navController: NavController) {
                             .clickable {
                                 if (foldersData.isNotEmpty()) {
                                     shouldSortingBottomSheetAppear.value = true
+                                    coroutineScope.launch {
+                                        sortingBtmSheetState.expand()
+                                    }
                                 }
                             }
                             .fillMaxWidth()
@@ -326,7 +329,12 @@ fun CollectionsScreen(navController: NavController) {
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         if (foldersData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                            IconButton(onClick = {
+                                shouldSortingBottomSheetAppear.value = true
+                                coroutineScope.launch {
+                                    sortingBtmSheetState.expand()
+                                }
+                            }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                             }
                         }
@@ -609,7 +617,7 @@ fun CollectionsScreen(navController: NavController) {
         )
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences ->
+            onSelectedAComponent = { sortingPreferences, _, _ ->
                 collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
             },
             bottomModalSheetState = sortingBtmSheetState,

@@ -72,10 +72,10 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val activity = LocalContext.current as? Activity
     val btmModalSheetStateForSavingLinks =
-        rememberModalBottomSheetState()
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -183,17 +183,17 @@ fun ParentHomeScreen(navController: NavController) {
         }
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = {
+            onSelectedAComponent = { sortingPreferences, _, _ ->
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences.name
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.SAVED_LINKS_SCREEN
                 )
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences.name
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN

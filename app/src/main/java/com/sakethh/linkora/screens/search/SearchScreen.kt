@@ -94,8 +94,8 @@ fun SearchScreen(navController: NavController) {
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM = viewModel<OptionsBtmSheetVM>()
     val searchTextField = searchScreenVM.searchQuery.collectAsState().value
-    val sortingBtmSheetState = rememberModalBottomSheetState()
-    val optionsBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val optionsBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldRenameDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -507,9 +507,11 @@ fun SearchScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
-                searchScreenVM.changeHistoryRetrievedData(sortingPreferences = it)
-            }, bottomModalSheetState = sortingBtmSheetState,
+            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+            onSelectedAComponent = { sortingPreferences, _, _ ->
+                searchScreenVM.changeHistoryRetrievedData(sortingPreferences = sortingPreferences)
+            },
+            bottomModalSheetState = sortingBtmSheetState,
             sortingBtmSheetType = SortingBtmSheetType.HISTORY_SCREEN
         )
         OptionsBtmSheetUI(

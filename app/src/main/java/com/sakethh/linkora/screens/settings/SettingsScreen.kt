@@ -78,7 +78,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
-    val importModalBottomSheetState = rememberModalBottomSheetState()
+    val importModalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
@@ -127,7 +127,8 @@ fun SettingsScreen(navController: NavController) {
     val shouldBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState =
+        androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val privacySectionData = settingsScreenVM.privacySection(context)
     LinkoraTheme {
         Scaffold(topBar = {

@@ -47,7 +47,7 @@ fun ParentArchiveScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -97,8 +97,8 @@ fun ParentArchiveScreen(navController: NavController) {
         }
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = {
-                archiveScreenVM.changeRetrievedData(sortingPreferences = it)
+            onSelectedAComponent = { sortingPreferences, _, _ ->
+                archiveScreenVM.changeRetrievedData(sortingPreferences = sortingPreferences)
             },
             bottomModalSheetState = sortingBtmSheetState,
             sortingBtmSheetType = SortingBtmSheetType.PARENT_ARCHIVE_SCREEN

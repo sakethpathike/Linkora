@@ -91,7 +91,9 @@ fun SpecificScreen(navController: NavController) {
         awaitAll(async {
             specificCollectionsScreenVM.changeRetrievedData(
                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-                folderID = CollectionsScreenVM.currentClickedFolderData.value.id
+                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                isFoldersSortingSelected = true,
+                isLinksSortingSelected = true
             )
         }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
     }
@@ -111,8 +113,9 @@ fun SpecificScreen(navController: NavController) {
     val archivedSubFoldersData =
         specificCollectionsScreenVM.archiveSubFolderData.collectAsState().value
     val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet
-    val btmModalSheetState = rememberModalBottomSheetState()
-    val btmModalSheetStateForSavingLink = rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val btmModalSheetStateForSavingLink =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -125,7 +128,7 @@ fun SpecificScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
@@ -163,7 +166,8 @@ fun SpecificScreen(navController: NavController) {
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
-    val btmModalSheetStateForSavingLinks = rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLinks =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val isMainFabRotated = rememberSaveable {
         mutableStateOf(false)
     }
@@ -1019,13 +1023,24 @@ fun SpecificScreen(navController: NavController) {
             isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear, onSelectedAComponent = {
+            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+            onSelectedAComponent = { sortingPreferences, isLinksSortingSelected, isFoldersSortingSelected ->
                 specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = it,
-                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id
+                    sortingPreferences = sortingPreferences,
+                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                    isLinksSortingSelected = isLinksSortingSelected,
+                    isFoldersSortingSelected = isFoldersSortingSelected
                 )
-            }, bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = if (SpecificCollectionsScreenVM.inARegularFolder.value) SortingBtmSheetType.REGULAR_FOLDER_SCREEN else SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN
+            },
+            bottomModalSheetState = sortingBtmSheetState,
+            sortingBtmSheetType = when (SpecificCollectionsScreenVM.screenType.value) {
+                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingBtmSheetType.IMPORTANT_LINKS_SCREEN
+                SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN
+                SpecificScreenType.SAVED_LINKS_SCREEN -> SortingBtmSheetType.SAVED_LINKS_SCREEN
+                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+                SpecificScreenType.INTENT_ACTIVITY -> SortingBtmSheetType.COLLECTIONS_SCREEN
+                SpecificScreenType.ROOT_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+            }
         )
     }
     BackHandler {

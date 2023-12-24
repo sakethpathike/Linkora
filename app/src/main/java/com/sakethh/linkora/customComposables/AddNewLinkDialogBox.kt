@@ -94,7 +94,8 @@ fun AddNewLinkDialogBox(
     val isCreateANewFolderIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState =
+        androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
     if (isDataExtractingForTheLink) {
         isDropDownMenuIconClicked.value = false
     }

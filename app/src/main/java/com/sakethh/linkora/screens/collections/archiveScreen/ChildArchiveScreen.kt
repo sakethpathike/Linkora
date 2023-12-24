@@ -54,7 +54,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState =
+        androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
