@@ -7,12 +7,12 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### To name a few:
 
 - Save links individually with ease.
-- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02)) for better management.
+- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha03)) for better management.
 - Mark important links for quick access.
 - Archive links or folders to keep things tidy.
 - Customize link names as you like.
 - Share links from other apps effortlessly.
-- Search and sort links effortlessly.
+- Search and sort links/folders effortlessly.
 - Importing and exporting links (in alpha version).
 - Linkora recognizes images and titles whenever possible.
 
@@ -28,7 +28,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 - Coil is Used for loading images, and Architecture Components such as DataStore, Navigation, and ViewModel are also used to make this project alive!
 
 ## GitHub Releases
-The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha02/Linkora-v0.4.0-alpha02.apk)
+The latest release of Linkora (v0.4.0-alpha03) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha03). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha03/Linkora-v0.4.0-alpha03.apk)
 
 ## Screenshots
 
@@ -54,13 +54,13 @@ The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases]
 
 |                                                       Saved Links Screen                                                        | Saved Links Screen (Light Theme) |                                                       Sorting Links in Saved Links Screen                                                        |
 |:-------------------------------------------------------------------------------------------------------------------------------:|:-------------:|:------------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/e3a8057f-7fef-4ece-8277-bdba97be38c4) |![Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/93a208d4-ea3b-44ad-9ed8-53a37e261a05)| ![Sorting Links in Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/66774ea0-48df-4e82-ac6a-64ee710a093d) |
+| ![Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/8045296c-0187-4586-9c6c-818c36e54034) |![Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/f3d8dd80-ae8d-4cc4-8b0d-eed454f57b78)| ![Sorting Links in Saved Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/22639fa7-ff50-4c0e-8eed-b964a06c7b21) |
 
 ### Important Links Screen
 
 |                                                       Important Links Screen                                                        |                                                       Sorting Links in Important Links Screen                                                        |
 |:-----------------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![Important Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a123efa5-7cac-45d4-bc0d-337a0dd794d9) | ![Sorting Links in Important Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/6deef9b9-2a8e-4441-a4ae-01b1f03342b9) |
+| ![Important Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a2cc009e-25f2-4e7f-850c-94b2fe3f923e) | ![Sorting Links in Important Links Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/f873fe3f-435b-4bb9-ad03-98a1a6e7aaca) |
 
 ### Archive Screen
 
@@ -72,13 +72,13 @@ The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases]
 
 |                                                       Links in a Custom Folder                                                        |                                                       Sorting Links in a Custom Folder                                                        |
 |:-------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![Links in a Custom Folder in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/ab05a26c-4629-4dcf-9173-bcd662d0aa9e) | ![Sorting Links in a Custom Folder in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/472d01d2-e15e-4771-b2c2-453ccd7f15ba) |
+| ![Links in a Custom Folder in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/c11c54b1-eb0d-4308-8bd1-3f52751a5b02) | ![Sorting Links in a Custom Folder in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/be0d5501-1b90-4288-89eb-e691630f1c2f) |
 
 ### Settings Screen
 
 |                                                       Settings Screen                                                        | Settings Screen |
 |:----------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/9c4b60ea-a507-4f6f-bfbf-e9d5f7925cf9) |![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/bbcfd363-f527-4bb3-b493-c18a1644c0d2)|
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/3dac49dd-c798-4a49-8701-7b8330f412ee) |![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/cbf9b68c-2f53-45ef-bbe0-96fb4c68eab1)|
 
 ### Sharing from other apps
 
@@ -91,7 +91,7 @@ The latest release of Linkora (v0.4.0-alpha02) is available on [GitHub Releases]
 - [x] Searching
 - [x] Importing and exporting links (in alpha)
 - Better title and image parsing of links
-- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha02))
+- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha03))
 - Pinned folders and a few other things that a link utility app should have.
 
 #### Note: This project is in active development and new features and improvements will be added over time.

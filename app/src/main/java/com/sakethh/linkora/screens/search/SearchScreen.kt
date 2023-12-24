@@ -506,6 +506,12 @@ fun SearchScreen(navController: NavController) {
                 }
             }
         }
+        val foldersSortingSelectedState = rememberSaveable {
+            mutableStateOf(true)
+        }
+        val linksSortingSelectedState = rememberSaveable {
+            mutableStateOf(true)
+        }
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = { sortingPreferences, _, _ ->

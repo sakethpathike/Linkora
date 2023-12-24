@@ -40,10 +40,6 @@ enum class SortingBtmSheetType {
     PARENT_HOME_SCREEN, COLLECTIONS_SCREEN, HISTORY_SCREEN, REGULAR_FOLDER_SCREEN, ARCHIVE_FOLDER_SCREEN, PARENT_ARCHIVE_SCREEN, SAVED_LINKS_SCREEN, IMPORTANT_LINKS_SCREEN
 }
 
-enum class SelectedSortingTypes {
-    LINKS, FOLDERS
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SortingBottomSheetUI(
@@ -60,13 +56,16 @@ fun SortingBottomSheetUI(
             bottomModalSheetState.expand()
         }
     }
+    val linksSortingSelectedState = rememberSaveable {
+        mutableStateOf(true)
+    }
+    val foldersSortingSelectedState = rememberSaveable {
+        mutableStateOf(true)
+    }
     LinkoraTheme {
         if (shouldBottomSheetVisible.value) {
-            val isFoldersSortingSelected = rememberSaveable {
-                mutableStateOf(true)
-            }
-            val isLinksSortingSelected = rememberSaveable {
-                mutableStateOf(true)
+            val didAnyCheckBoxStateChanged = rememberSaveable {
+                mutableStateOf(false)
             }
             ModalBottomSheet(
                 sheetState = bottomModalSheetState,
@@ -100,24 +99,32 @@ fun SortingBottomSheetUI(
                             folderName = "Folders",
                             folderNote = "",
                             onMoreIconClick = { },
-                            onFolderClick = {},
+                            onFolderClick = {
+                                didAnyCheckBoxStateChanged.value = true
+                            },
                             showMoreIcon = false,
                             showCheckBox = true,
                             checkBoxState = {
-                                isFoldersSortingSelected.value = it
-                            }
+                                didAnyCheckBoxStateChanged.value = true
+                                foldersSortingSelectedState.value = it
+                            },
+                            isCheckBoxChecked = foldersSortingSelectedState
                         )
                         FolderIndividualComponent(
                             folderName = "Links",
                             folderNote = "",
                             folderIcon = Icons.Default.Link,
                             onMoreIconClick = { },
-                            onFolderClick = { },
+                            onFolderClick = {
+                                didAnyCheckBoxStateChanged.value = true
+                            },
                             showMoreIcon = false,
                             showCheckBox = true,
                             checkBoxState = {
-                                isLinksSortingSelected.value = it
-                            }
+                                linksSortingSelectedState.value = it
+                                didAnyCheckBoxStateChanged.value = true
+                            },
+                            isCheckBoxChecked = linksSortingSelectedState
                         )
                     }
                     @Composable
@@ -127,8 +134,8 @@ fun SortingBottomSheetUI(
                                 modifier = Modifier
                                     .clickable {
                                         onSelectedAComponent(
-                                            it.sortingType, isLinksSortingSelected.value,
-                                            isFoldersSortingSelected.value
+                                            it.sortingType, linksSortingSelectedState.value,
+                                            foldersSortingSelectedState.value
                                         )
                                         it.onClick()
                                         coroutineScope.launch {
@@ -153,15 +160,15 @@ fun SortingBottomSheetUI(
                                         style = MaterialTheme.typography.titleSmall,
                                         color = if (it.sortingType == SettingsScreenVM.SortingPreferences.valueOf(
                                                 SettingsScreenVM.Settings.selectedSortingType.value
-                                            )
+                                            ) && !didAnyCheckBoxStateChanged.value
                                         ) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color
                                     )
                                     RadioButton(
-                                        selected = it.sortingType.name == SettingsScreenVM.Settings.selectedSortingType.value,
+                                        selected = it.sortingType.name == SettingsScreenVM.Settings.selectedSortingType.value && !didAnyCheckBoxStateChanged.value,
                                         onClick = {
                                             onSelectedAComponent(
-                                                it.sortingType, isLinksSortingSelected.value,
-                                                isFoldersSortingSelected.value
+                                                it.sortingType, linksSortingSelectedState.value,
+                                                foldersSortingSelectedState.value
                                             )
                                             it.onClick()
                                             coroutineScope.launch {
@@ -174,7 +181,7 @@ fun SortingBottomSheetUI(
                             }
                         }
                     }
-                    if (((sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && isFoldersSortingSelected.value) || (sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && isLinksSortingSelected.value)) || ((sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && isFoldersSortingSelected.value) || sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && isLinksSortingSelected.value)) {
+                    if (((sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && foldersSortingSelectedState.value) || (sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && linksSortingSelectedState.value)) || ((sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && foldersSortingSelectedState.value) || sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && linksSortingSelectedState.value)) {
                         androidx.compose.material3.Text(
                             text = "Sort by",
                             style = MaterialTheme.typography.titleMedium,
@@ -185,7 +192,6 @@ fun SortingBottomSheetUI(
                         SortByUI()
                     }
                     if (sortingBtmSheetType != SortingBtmSheetType.REGULAR_FOLDER_SCREEN && sortingBtmSheetType != SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN) {
-
                         SortByUI()
                     }
                     Spacer(

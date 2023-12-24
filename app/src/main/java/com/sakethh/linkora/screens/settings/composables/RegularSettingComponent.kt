@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.settings.composables
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,7 +35,8 @@ fun RegularSettingComponent(
         .clickable {
             settingsUIElement.onSwitchStateChange()
         }
-        .fillMaxWidth()) {
+        .fillMaxWidth()
+        .animateContentSize()) {
         Row(modifier = Modifier.fillMaxWidth(if (settingsUIElement.isSwitchNeeded) 0.70f else 1f)) {
             Column(modifier = Modifier.onGloballyPositioned {
                 cardHeight.value = with(localDensity) {

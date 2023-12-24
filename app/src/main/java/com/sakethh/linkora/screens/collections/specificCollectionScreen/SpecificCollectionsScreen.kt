@@ -1022,6 +1022,12 @@ fun SpecificScreen(navController: NavController) {
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
+        val foldersSortingSelectedState = rememberSaveable {
+            mutableStateOf(true)
+        }
+        val linksSortingSelectedState = rememberSaveable {
+            mutableStateOf(true)
+        }
         SortingBottomSheetUI(
             shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
             onSelectedAComponent = { sortingPreferences, isLinksSortingSelected, isFoldersSortingSelected ->

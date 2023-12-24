@@ -46,6 +46,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -666,11 +667,9 @@ fun FolderIndividualComponent(
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
     showCheckBox: Boolean = false,
-    checkBoxState: (Boolean) -> Unit = {}
+    checkBoxState: (Boolean) -> Unit = {},
+    isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false)
 ) {
-    val isCheckBoxChecked = rememberSaveable {
-        mutableStateOf(true)
-    }
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier

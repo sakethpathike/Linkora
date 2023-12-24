@@ -78,8 +78,7 @@ fun SettingsAppInfoComponent(
                     Icon(
                         modifier = Modifier.padding(20.dp),
                         imageVector = icon,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary
+                        contentDescription = null
                     )
                 }
             }

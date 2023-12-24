@@ -22,6 +22,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB._import.ImportImpl
 import com.sakethh.linkora.localDB.export.ExportImpl
@@ -94,7 +95,7 @@ class SettingsScreenVM(
     val generalSection: (context: Context) -> List<SettingsUIElement> = {
         listOf(
             SettingsUIElement(title = "Use in-app browser",
-                doesDescriptionExists = false,
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will open every time you click on a link when using this app.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isInAppWebTabEnabled,
@@ -114,7 +115,7 @@ class SettingsScreenVM(
                     }
                 }),
             SettingsUIElement(title = "Enable Home Screen",
-                doesDescriptionExists = false,
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isHomeScreenEnabled,
@@ -134,8 +135,8 @@ class SettingsScreenVM(
                     }
                 }),
             SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
-                doesDescriptionExists = false,
-                description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a dialog box will be shown instead of bottom sheet.",
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
                 onSwitchStateChange = {
@@ -174,7 +175,49 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
+                })/*,
+            SettingsUIElement(title = "Auto-Check for Updates",
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                description = "If this is enabled, Linkora automatically checks for updates. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
+                isSwitchNeeded = true,
+                isSwitchEnabled = Settings.isAutoCheckUpdatesEnabled,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        Settings.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.AUTO_CHECK_UPDATES.name
+                            ),
+                            dataStore = it.dataStore,
+                            newValue = !Settings.isAutoCheckUpdatesEnabled.value
+                        )
+                        Settings.isAutoCheckUpdatesEnabled.value =
+                            Settings.readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
+                                dataStore = it.dataStore
+                            ) == true
+                    }
+                })*/,
+            SettingsUIElement(title = "Show description for Settings",
+                doesDescriptionExists = true,
+                description = "If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you're reading now. If it is disabled, only the titles will be shown.",
+                isSwitchNeeded = true,
+                isSwitchEnabled = Settings.showDescriptionForSettingsState,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        Settings.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
+                            ),
+                            dataStore = it.dataStore,
+                            newValue = !Settings.showDescriptionForSettingsState.value
+                        )
+                        Settings.showDescriptionForSettingsState.value =
+                            Settings.readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                                dataStore = it.dataStore
+                            ) == true
+                    }
+                })
         )
     }
 
@@ -297,7 +340,7 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
     }
 
     enum class SortingPreferences {
@@ -317,6 +360,8 @@ class SettingsScreenVM(
         val isHomeScreenEnabled = mutableStateOf(true)
         val isSendCrashReportsEnabled = mutableStateOf(true)
         val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
+        val isAutoCheckUpdatesEnabled = mutableStateOf(true)
+        val showDescriptionForSettingsState = mutableStateOf(true)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -371,6 +416,11 @@ class SettingsScreenVM(
                         dataStore = context.dataStore
                     ) ?: false
                 }, async {
+                    showDescriptionForSettingsState.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
                     isInAppWebTabEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
                         dataStore = context.dataStore
@@ -409,6 +459,11 @@ class SettingsScreenVM(
                         dataStore = context.dataStore
                     ) ?: true
                 }, async {
+                    isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
                     selectedSortingType.value = readSortingPreferenceValue(
                         preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
                         dataStore = context.dataStore
@@ -419,7 +474,7 @@ class SettingsScreenVM(
 
         suspend fun latestAppVersionRetriever() {
             val rawData = withContext(Dispatchers.Default) {
-                Jsoup.connect("appInfoURL").get().body().ownText()
+                Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
             }
             val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
             latestAppInfoFromServer.apply {
