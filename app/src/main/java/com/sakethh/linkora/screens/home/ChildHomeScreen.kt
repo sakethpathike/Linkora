@@ -109,7 +109,9 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
         ) {
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
                 if (savedLinksData.isNotEmpty()) {
-                    items(savedLinksData) {
+                    items(items = savedLinksData, key = { linksTable ->
+                        linksTable.id.toString() + linksTable.webURL
+                    }) {
                         LinkUIComponent(
                             LinkUIComponentParam(
                                 title = it.title,
@@ -179,7 +181,9 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
                 }
             } else {
                 if (impLinksData.isNotEmpty()) {
-                    items(impLinksData) {
+                    items(items = impLinksData, key = { importantLinks ->
+                        importantLinks.webURL + importantLinks.id.toString()
+                    }) {
                         LinkUIComponent(
                             LinkUIComponentParam(
                                 title = it.title,

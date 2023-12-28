@@ -96,6 +96,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -193,7 +194,7 @@ fun CollectionsScreen(navController: NavController) {
                     .padding(it)
                     .fillMaxSize()
             ) {
-                item {
+                item(key = "Important Links") {
                     Card(modifier = Modifier
                         .padding(top = 20.dp, end = 20.dp, start = 20.dp)
                         .wrapContentHeight()
@@ -228,7 +229,7 @@ fun CollectionsScreen(navController: NavController) {
                         }
                     }
                 }
-                item {
+                item(key = "Archive") {
                     Card(modifier = Modifier
                         .padding(top = 20.dp, end = 20.dp, start = 20.dp)
                         .wrapContentHeight()
@@ -263,7 +264,7 @@ fun CollectionsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
                 }
-                item {
+                item(key = "Saved Links") {
                     Card(modifier = Modifier
                         .padding(end = 20.dp, start = 20.dp)
                         .wrapContentHeight()
@@ -345,7 +346,9 @@ fun CollectionsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
                 if (foldersData.isNotEmpty()) {
-                    itemsIndexed(foldersData) { folderIndex, folderData ->
+                    itemsIndexed(items = foldersData, key = { _, foldersData ->
+                        foldersData.id.toString() + foldersData.folderName
+                    }) { folderIndex, folderData ->
                         FolderIndividualComponent(
                             showMoreIcon = true,
                             folderName = folderData.folderName,

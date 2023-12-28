@@ -172,7 +172,9 @@ fun SearchScreen(navController: NavController) {
                             }
 
                             else -> {
-                                items(impLinksData) {
+                                items(items = impLinksData, key = { importantLinks ->
+                                    importantLinks.webURL + importantLinks.id.toString()
+                                }) {
                                     LinkUIComponent(
                                         LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
@@ -237,7 +239,9 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                items(linksTableData) {
+                                items(items = linksTableData, key = { linksTable ->
+                                    linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL
+                                }) {
                                     LinkUIComponent(
                                         LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
@@ -320,7 +324,9 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                items(archiveLinksTableData) {
+                                items(items = archiveLinksTableData, key = { archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) {
                                     LinkUIComponent(
                                         LinkUIComponentParam(title = it.title,
                                             webBaseURL = it.webURL,
@@ -436,7 +442,9 @@ fun SearchScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(5.dp))
                 }
                 if (recentlyVisitedLinksData.isNotEmpty()) {
-                    items(recentlyVisitedLinksData) {
+                    items(items = recentlyVisitedLinksData, key = { recentlyVisited ->
+                        recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString()
+                    }) {
                         LinkUIComponent(
                             LinkUIComponentParam(title = it.title,
                                 webBaseURL = it.baseURL,

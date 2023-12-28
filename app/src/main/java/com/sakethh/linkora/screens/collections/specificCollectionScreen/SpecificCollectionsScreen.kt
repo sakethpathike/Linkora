@@ -326,7 +326,9 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         if (childFoldersData.isNotEmpty()) {
-                            items(childFoldersData) {
+                            items(items = childFoldersData, key = {foldersTable->
+                                foldersTable.id.toString() + foldersTable.folderName
+                            }) {
                                 FolderIndividualComponent(folderName = it.folderName,
                                     folderNote = it.infoForSaving,
                                     onMoreIconClick = {
@@ -351,7 +353,9 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                         if (specificFolderLinksData.isNotEmpty()) {
-                            items(specificFolderLinksData) {
+                            items(items = specificFolderLinksData, key = {linksTable->
+                                linksTable.id.toString() + linksTable.webURL+linksTable.baseURL
+                            }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
@@ -428,7 +432,9 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         if (savedLinksData.isNotEmpty()) {
-                            items(savedLinksData) {
+                            items(items = savedLinksData, key = {linksTable->
+                                linksTable.baseURL+linksTable.id.toString() + linksTable.webURL
+                            }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
@@ -502,7 +508,9 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         if (impLinksData.isNotEmpty()) {
-                            items(impLinksData) {
+                            items(items = impLinksData, key = {importantLinks->
+                                importantLinks.id.toString()+importantLinks.baseURL + importantLinks.webURL
+                            }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,
@@ -576,7 +584,9 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         if (archivedSubFoldersData.isNotEmpty()) {
-                            items(archivedSubFoldersData) {
+                            items(items = archivedSubFoldersData, key = {foldersTable->
+                                foldersTable.folderName+ foldersTable.id.toString()
+                            }) {
                                 FolderIndividualComponent(folderName = it.folderName,
                                     folderNote = it.infoForSaving,
                                     onMoreIconClick = {
@@ -601,7 +611,9 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                         if (archivedFoldersLinksData.isNotEmpty()) {
-                            items(archivedFoldersLinksData) {
+                            items(items = archivedFoldersLinksData, key = {linksTable->
+                                linksTable.id.toString() + linksTable.webURL +linksTable.id.toString()
+                            }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
                                         webBaseURL = it.baseURL,

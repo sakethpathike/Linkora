@@ -83,7 +83,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
         ) {
             if (archiveScreenType == ArchiveScreenType.LINKS) {
                 if (archiveLinksData.isNotEmpty()) {
-                    items(archiveLinksData) {
+                    items(items = archiveLinksData, key = { archivedLinks ->
+                        archivedLinks.id.toString() + archivedLinks.baseURL
+                    }) {
                         LinkUIComponent(
                             LinkUIComponentParam(title = it.title,
                                 webBaseURL = it.baseURL,
@@ -139,7 +141,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             } else {
                 if (archiveFoldersDataV9.isNotEmpty()) {
-                    items(archiveFoldersDataV9) {
+                    items(items = archiveFoldersDataV9, key = { archivedFolders ->
+                        archivedFolders.id.toString() + archivedFolders.archiveFolderName + archivedFolders.id.toString()
+                    }) {
                         FolderIndividualComponent(folderName = it.archiveFolderName,
                             showMoreIcon = true,
                             folderNote = it.infoForSaving,
@@ -167,7 +171,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }
                 }
                 if (archiveFoldersDataV10.isNotEmpty()) {
-                    items(archiveFoldersDataV10) {
+                    items(items = archiveFoldersDataV10, key = { foldersTable ->
+                        foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
+                    }) {
                         FolderIndividualComponent(folderName = it.folderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {

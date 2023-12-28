@@ -143,9 +143,9 @@ fun SettingsScreen(navController: NavController) {
                 })
                 Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
             }
-        }) {
+        }) { it ->
             LazyColumn(modifier = Modifier.padding(it)) {
-                item {
+                item(key = "settingsCard") {
                     Card(
                         border = BorderStroke(
                             1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
@@ -295,7 +295,7 @@ fun SettingsScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-                item {
+                item(key = "themeTitle") {
                     Text(
                         text = "Theme",
                         color = MaterialTheme.colorScheme.primary,
@@ -310,7 +310,7 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
-                    item {
+                    item(key = "Follow System Theme") {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Follow System Theme",
                                 doesDescriptionExists = false,
@@ -338,7 +338,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
-                    item {
+                    item(key = "Use Dark Mode")  {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
                                 doesDescriptionExists = false,
@@ -366,7 +366,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    item {
+                    item(key = "Use dynamic theming")  {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
                                 doesDescriptionExists = true,
@@ -400,7 +400,7 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }
-                item {
+                item(key = "General") {
                     Text(
                         text = "General",
                         color = MaterialTheme.colorScheme.primary,
@@ -414,7 +414,9 @@ fun SettingsScreen(navController: NavController) {
                         )
                     )
                 }
-                items(generalSectionData) { settingsUIElement ->
+                items(items = generalSectionData, key = {settingsUIElement->
+                    settingsUIElement.title
+                }) { settingsUIElement ->
                     RegularSettingComponent(
                         settingsUIElement = settingsUIElement
                     )
@@ -426,7 +428,7 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }
-                item {
+                item(key = "Data") {
                     Spacer(modifier = Modifier.padding(top = 20.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
@@ -460,7 +462,9 @@ fun SettingsScreen(navController: NavController) {
                         )
                     )
                 }
-                items(dataSectionData) { settingsUIElement ->
+                items(items = dataSectionData, key = {settingsUIElement->
+                    settingsUIElement.title
+                }) { settingsUIElement ->
                     settingsUIElement.description?.let { it1 ->
                         SettingsDataComposable(
                             onClick = {
@@ -471,7 +475,6 @@ fun SettingsScreen(navController: NavController) {
                             icon = settingsUIElement.icon!!
                         )
                     }
-
                 }
                 item {
                     Divider(
@@ -480,7 +483,7 @@ fun SettingsScreen(navController: NavController) {
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }
-                item {
+                item(key = "Privacy") {
                     Text(
                         text = "Privacy",
                         color = MaterialTheme.colorScheme.primary,
@@ -489,7 +492,7 @@ fun SettingsScreen(navController: NavController) {
                         modifier = Modifier.padding(start = 15.dp, top = 20.dp, bottom = 10.dp)
                     )
                 }
-                item {
+                item(key = "Privacy Element") {
                     Box(modifier = Modifier.clickable {
                         privacySectionData.onSwitchStateChange()
                     }) {
