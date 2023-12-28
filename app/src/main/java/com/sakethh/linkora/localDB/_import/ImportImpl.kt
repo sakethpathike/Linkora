@@ -16,7 +16,6 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 class ImportImpl {
-    @SuppressLint("LongLogTag")
     suspend fun importToLocalDB(
         context: Context,
         exceptionType: MutableState<String?>,
