@@ -326,7 +326,7 @@ fun SpecificScreen(navController: NavController) {
                 when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         if (childFoldersData.isNotEmpty()) {
-                            items(items = childFoldersData, key = {foldersTable->
+                            items(items = childFoldersData, key = { foldersTable ->
                                 foldersTable.id.toString() + foldersTable.folderName
                             }) {
                                 FolderIndividualComponent(folderName = it.folderName,
@@ -353,8 +353,8 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                         if (specificFolderLinksData.isNotEmpty()) {
-                            items(items = specificFolderLinksData, key = {linksTable->
-                                linksTable.id.toString() + linksTable.webURL+linksTable.baseURL
+                            items(items = specificFolderLinksData, key = { linksTable ->
+                                linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
                             }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
@@ -432,8 +432,8 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         if (savedLinksData.isNotEmpty()) {
-                            items(items = savedLinksData, key = {linksTable->
-                                linksTable.baseURL+linksTable.id.toString() + linksTable.webURL
+                            items(items = savedLinksData, key = { linksTable ->
+                                linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
                             }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
@@ -508,8 +508,8 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                         if (impLinksData.isNotEmpty()) {
-                            items(items = impLinksData, key = {importantLinks->
-                                importantLinks.id.toString()+importantLinks.baseURL + importantLinks.webURL
+                            items(items = impLinksData, key = { importantLinks ->
+                                importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
                             }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,
@@ -584,8 +584,8 @@ fun SpecificScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         if (archivedSubFoldersData.isNotEmpty()) {
-                            items(items = archivedSubFoldersData, key = {foldersTable->
-                                foldersTable.folderName+ foldersTable.id.toString()
+                            items(items = archivedSubFoldersData, key = { foldersTable ->
+                                foldersTable.folderName + foldersTable.id.toString()
                             }) {
                                 FolderIndividualComponent(folderName = it.folderName,
                                     folderNote = it.infoForSaving,
@@ -611,8 +611,8 @@ fun SpecificScreen(navController: NavController) {
                             }
                         }
                         if (archivedFoldersLinksData.isNotEmpty()) {
-                            items(items = archivedFoldersLinksData, key = {linksTable->
-                                linksTable.id.toString() + linksTable.webURL +linksTable.id.toString()
+                            items(items = archivedFoldersLinksData, key = { linksTable ->
+                                linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
                             }) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(title = it.title,

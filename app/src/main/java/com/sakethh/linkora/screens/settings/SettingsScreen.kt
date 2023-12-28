@@ -190,7 +190,9 @@ fun SettingsScreen(navController: NavController) {
                                             SettingsScreenVM.Settings.latestAppVersionRetriever()
                                         }.invokeOnCompletion {
                                             shouldVersionCheckerDialogAppear.value = false
-                                            shouldBtmModalSheetBeVisible.value = true
+                                            if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                                shouldBtmModalSheetBeVisible.value = true
+                                            }
                                         }
                                     } else {
                                         shouldVersionCheckerDialogAppear.value = false

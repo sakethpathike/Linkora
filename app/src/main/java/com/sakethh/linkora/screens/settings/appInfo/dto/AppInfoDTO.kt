@@ -28,8 +28,8 @@ data class AppInfoDTO(
 
 @Serializable
 data class ReleaseNotesDTO(
-    @SerialName("title")
-    val title: String,
+    @SerialName("versionValue")
+    val versionValue: String,
     @SerialName("description")
     val description: String
 )
