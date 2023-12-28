@@ -57,12 +57,12 @@ fun SettingsNewVersionUpdateBtmContent(
         )
         VersionCardForBtmSheetContent(
             title = "version you're using",
-            value = "v${SettingsScreenVM.appVersionName}"
+            value = "v${SettingsScreenVM.appVersionValue}"
         )
-        if (SettingsScreenVM.appVersionName != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+        if (true) {
             VersionCardForBtmSheetContent(
                 title = "latest stable version which you should be using",
-                value = "v${SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value}"
+                value = "v${SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value}"
             )
         }
 
@@ -74,7 +74,7 @@ fun SettingsNewVersionUpdateBtmContent(
 
         VersionCardForBtmSheetContent(
             title = "latest version which is available for usage",
-            value = "v${SettingsScreenVM.latestAppInfoFromServer.latestVersion.value}"
+            value = "v${SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value}"
         )
 
         Divider(
@@ -90,7 +90,7 @@ fun SettingsNewVersionUpdateBtmContent(
             lineHeight = 24.sp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
         )
-        if (SettingsScreenVM.appVersionName != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
+        if (true) {
             Button(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
@@ -107,7 +107,7 @@ fun SettingsNewVersionUpdateBtmContent(
                         openInWeb(
                             recentlyVisitedData = RecentlyVisited(
                                 title = "Linkora Stable Release on Github",
-                                webURL = SettingsScreenVM.latestAppInfoFromServer.latestStableVersionReleaseURL.value,
+                                webURL = SettingsScreenVM.latestAppInfoFromServer.stableVersionGithubReleaseNotesURL.value,
                                 baseURL = "github.com",
                                 imgURL = "it.imgURL",
                                 infoForSaving = "Linkora Stable Release on Github"
@@ -143,7 +143,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     openInWeb(
                         recentlyVisitedData = RecentlyVisited(
                             title = "Linkora Release on Github",
-                            webURL = SettingsScreenVM.latestAppInfoFromServer.latestVersionReleaseURL.value,
+                            webURL = SettingsScreenVM.latestAppInfoFromServer.nonStableVersionGithubReleaseNotesURL.value,
                             baseURL = "github.com",
                             imgURL = "it.imgURL",
                             infoForSaving = "Linkora Release on Github"

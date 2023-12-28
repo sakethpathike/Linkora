@@ -27,6 +27,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -62,6 +66,7 @@ import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.composables.ImportConflictBtmSheet
@@ -167,13 +172,13 @@ fun SettingsScreen(navController: NavController) {
                                     .alignByBaseline()
                             )
                             Text(
-                                text = "v${SettingsScreenVM.appVersionName}",
+                                text = "v${SettingsScreenVM.appVersionValue}",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        /*if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                             SettingsAppInfoComponent(hasDescription = false,
                                 description = "",
                                 icon = Icons.Outlined.Update,
@@ -185,6 +190,7 @@ fun SettingsScreen(navController: NavController) {
                                             SettingsScreenVM.Settings.latestAppVersionRetriever()
                                         }.invokeOnCompletion {
                                             shouldVersionCheckerDialogAppear.value = false
+                                            shouldBtmModalSheetBeVisible.value = true
                                         }
                                     } else {
                                         shouldVersionCheckerDialogAppear.value = false
@@ -237,7 +243,7 @@ fun SettingsScreen(navController: NavController) {
                                     )
                                 }
                             }
-                        }*/
+                        }
                         Divider(
                             color = MaterialTheme.colorScheme.outline,
                             thickness = 0.5.dp,
@@ -338,7 +344,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
-                    item(key = "Use Dark Mode")  {
+                    item(key = "Use Dark Mode") {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
                                 doesDescriptionExists = false,
@@ -366,7 +372,7 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    item(key = "Use dynamic theming")  {
+                    item(key = "Use dynamic theming") {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
                                 doesDescriptionExists = true,
@@ -414,7 +420,7 @@ fun SettingsScreen(navController: NavController) {
                         )
                     )
                 }
-                items(items = generalSectionData, key = {settingsUIElement->
+                items(items = generalSectionData, key = { settingsUIElement ->
                     settingsUIElement.title
                 }) { settingsUIElement ->
                     RegularSettingComponent(
@@ -462,7 +468,7 @@ fun SettingsScreen(navController: NavController) {
                         )
                     )
                 }
-                items(items = dataSectionData, key = {settingsUIElement->
+                items(items = dataSectionData, key = { settingsUIElement ->
                     settingsUIElement.title
                 }) { settingsUIElement ->
                     settingsUIElement.description?.let { it1 ->

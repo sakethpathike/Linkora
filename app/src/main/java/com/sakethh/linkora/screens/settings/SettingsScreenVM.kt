@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
@@ -29,7 +30,7 @@ import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
-import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
+import com.sakethh.linkora.screens.settings.appInfo.dto.MutableAppInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -57,15 +58,19 @@ class SettingsScreenVM(
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val appVersionName = "0.4.0-alpha03"
-        val latestAppInfoFromServer = MutableStateAppInfoDTO(
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf("")
+        const val appVersionValue = "0.4.0-alpha04"
+        const val appVersionCode = 13
+        val latestAppInfoFromServer = MutableAppInfoDTO(
+            isNonStableVersion = mutableStateOf(false),
+            isStableVersion = mutableStateOf(false),
+            nonStableVersionValue = mutableStateOf(""),
+            stableVersionValue = mutableStateOf(""),
+            stableVersionGithubReleaseNotesURL = mutableStateOf(""),
+            nonStableVersionGithubReleaseNotesURL = mutableStateOf(""),
+            nonStableVersionCode = mutableIntStateOf(0),
+            stableVersionCode = mutableIntStateOf(0),
+            stableVersionReleaseNotes = mutableStateOf(""),
+            nonStableVersionReleaseNotes = mutableStateOf(""),
         )
     }
 
@@ -175,7 +180,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                })/*,
+                }),
             SettingsUIElement(title = "Auto-Check for Updates",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Linkora automatically checks for updates. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
@@ -196,7 +201,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                })*/,
+                }),
             SettingsUIElement(title = "Show description for Settings",
                 doesDescriptionExists = true,
                 description = "If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you're reading now. If it is disabled, only the titles will be shown.",
@@ -478,15 +483,30 @@ class SettingsScreenVM(
             }
             val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
             latestAppInfoFromServer.apply {
-                this.latestVersion.value = retrievedData.latestVersion
-                this.latestStableVersion.value = retrievedData.latestStableVersion
-                this.latestStableVersionReleaseURL.value =
-                    retrievedData.latestStableVersionReleaseURL
-                this.latestVersionReleaseURL.value = retrievedData.latestVersionReleaseURL
-                this.changeLogForLatestVersion.value = retrievedData.changeLogForLatestVersion
-                this.changeLogForLatestStableVersion.value =
-                    retrievedData.changeLogForLatestStableVersion
-                this.httpStatusCodeFromServer.value = ""
+
+                this.isNonStableVersion.value = retrievedData.isNonStableVersion
+
+                this.isStableVersion.value = retrievedData.isStableVersion
+
+                this.nonStableVersionValue.value = retrievedData.nonStableVersionValue
+
+                this.stableVersionValue.value = retrievedData.stableVersionValue
+
+                this.nonStableVersionCode.value = retrievedData.nonStableVersionCode
+
+                this.stableVersionCode.value = retrievedData.stableVersionCode
+
+                this.stableVersionGithubReleaseNotesURL.value =
+                    retrievedData.stableVersionGithubReleaseNotesURL
+
+                this.nonStableVersionGithubReleaseNotesURL.value =
+                    retrievedData.nonStableVersionGithubReleaseNotesURL
+
+                this.stableVersionReleaseNotes.value =
+                    retrievedData.stableVersionReleaseNotes
+
+                this.nonStableVersionReleaseNotes.value =
+                    retrievedData.nonStableVersionReleaseNotes
             }
         }
     }
