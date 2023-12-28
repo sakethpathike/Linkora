@@ -182,7 +182,7 @@ class SettingsScreenVM(
                 }),
             SettingsUIElement(title = "Auto-Check for Updates",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
-                description = "If this is enabled, Linkora automatically checks for updates. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
+                description = "If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isAutoCheckUpdatesEnabled,
                 onSwitchStateChange = {
@@ -366,6 +366,7 @@ class SettingsScreenVM(
         val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
         val isAutoCheckUpdatesEnabled = mutableStateOf(true)
         val showDescriptionForSettingsState = mutableStateOf(true)
+        val isOnLatestUpdate = mutableStateOf(false)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -476,11 +477,34 @@ class SettingsScreenVM(
             }
         }
 
-        suspend fun latestAppVersionRetriever() {
-            val rawData = withContext(Dispatchers.Default) {
-                Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
+        suspend fun latestAppVersionRetriever(context: Context) {
+            val rawData = try {
+                withContext(Dispatchers.Default) {
+                    this.launch(Dispatchers.Main) {
+                        Toast.makeText(context, "checking for new updates", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
+                }
+            } catch (_: Exception) {
+                Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
+                ""
             }
-            val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
+            val retrievedData = try {
+                Json.decodeFromString<AppInfoDTO>(rawData)
+            } catch (_: Exception) {
+                AppInfoDTO(
+                    isNonStableVersion = false,
+                    isStableVersion = false,
+                    nonStableVersionValue = "",
+                    stableVersionValue = "",
+                    nonStableVersionCode = 0,
+                    stableVersionCode = 0,
+                    stableVersionGithubReleaseNotesURL = "",
+                    nonStableVersionGithubReleaseNotesURL = "",
+                    releaseNotes = listOf()
+                )
+            }
             latestAppInfoFromServer.apply {
 
                 this.isNonStableVersion.value = retrievedData.isNonStableVersion

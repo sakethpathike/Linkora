@@ -89,7 +89,9 @@ fun SettingsAppInfoComponent(
                 Text(
                     text = title,
                     style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp,
+                    modifier = Modifier.padding(end = 15.dp)
                 )
             }
         }

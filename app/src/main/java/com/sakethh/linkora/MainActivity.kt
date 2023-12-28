@@ -23,6 +23,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
+import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -32,6 +33,7 @@ import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -94,6 +96,26 @@ class MainActivity : ComponentActivity() {
                 }
             }
             LocalDataBase.localDB = LocalDataBase.getLocalDB(context = context)
+            LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                async {
+                    if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                        SettingsScreenVM.Settings.latestAppVersionRetriever(context)
+                    }
+                }.await()
+                if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                    SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                        !(SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value)
+                    withContext(Dispatchers.Main) {
+                        if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                            Toast.makeText(
+                                context,
+                                "A new update is available; check out the latest update from settings screen",
+                                Toast.LENGTH_LONG
+                            ).show()
+                        }
+                    }
+                }
+            }
             LaunchedEffect(key1 = SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
                 if (!SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
                     CoroutineScope(Dispatchers.IO).launch {

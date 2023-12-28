@@ -208,7 +208,9 @@ fun SettingsNewVersionUpdateBtmContent(
                 )
             }
         }
-        items(SettingsScreenVM.latestAppInfoFromServer.releaseNotes.value.drop(1)) {
+        items(items = SettingsScreenVM.latestAppInfoFromServer.releaseNotes.value.drop(1), key = {
+            it.versionValue
+        }) {
             Divider(
                 color = MaterialTheme.colorScheme.outline.copy(0.25f),
                 thickness = 0.5.dp,

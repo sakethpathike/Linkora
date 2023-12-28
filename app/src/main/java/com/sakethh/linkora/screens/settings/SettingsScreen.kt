@@ -11,6 +11,7 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -29,6 +30,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -161,6 +163,7 @@ fun SettingsScreen(navController: NavController) {
                             .padding(15.dp)
                             .fillMaxWidth()
                             .wrapContentHeight()
+                            .animateContentSize()
                     ) {
                         Row {
                             Text(
@@ -178,7 +181,7 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value) {
                             SettingsAppInfoComponent(hasDescription = false,
                                 description = "",
                                 icon = Icons.Outlined.Update,
@@ -187,11 +190,50 @@ fun SettingsScreen(navController: NavController) {
                                     shouldVersionCheckerDialogAppear.value = true
                                     if (isNetworkAvailable(context)) {
                                         coroutineScope.launch {
-                                            SettingsScreenVM.Settings.latestAppVersionRetriever()
+                                            SettingsScreenVM.Settings.latestAppVersionRetriever(
+                                                context
+                                            )
                                         }.invokeOnCompletion {
                                             shouldVersionCheckerDialogAppear.value = false
                                             if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
                                                 shouldBtmModalSheetBeVisible.value = true
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    false
+                                            } else {
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    true
+                                            }
+                                        }
+                                    } else {
+                                        shouldVersionCheckerDialogAppear.value = false
+                                        Toast.makeText(
+                                            context,
+                                            "network error, check your network connection and try again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
+                        } else if (SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value) {
+                            SettingsAppInfoComponent(hasDescription = false,
+                                description = "",
+                                icon = Icons.Outlined.GetApp,
+                                title = "A new update is out now. View the latest update.",
+                                onClick = {
+                                    shouldVersionCheckerDialogAppear.value = true
+                                    if (isNetworkAvailable(context)) {
+                                        coroutineScope.launch {
+                                            SettingsScreenVM.Settings.latestAppVersionRetriever(
+                                                context
+                                            )
+                                        }.invokeOnCompletion {
+                                            shouldVersionCheckerDialogAppear.value = false
+                                            if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                                shouldBtmModalSheetBeVisible.value = true
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    false
+                                            } else {
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    true
                                             }
                                         }
                                     } else {
