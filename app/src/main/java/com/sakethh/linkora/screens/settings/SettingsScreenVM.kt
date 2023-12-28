@@ -26,6 +26,7 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB._import.ImportImpl
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
@@ -51,7 +52,8 @@ data class SettingsUIElement(
 )
 
 class SettingsScreenVM(
-    private val exportImpl: ExportImpl = ExportImpl()
+    private val exportImpl: ExportImpl = ExportImpl(),
+    private val updateVM: UpdateVM = UpdateVM()
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
@@ -236,7 +238,8 @@ class SettingsScreenVM(
                 exceptionType = exceptionType,
                 jsonString = json,
                 context = context,
-                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
+                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible,
+                updateVM = updateVM
             )
         }
     }

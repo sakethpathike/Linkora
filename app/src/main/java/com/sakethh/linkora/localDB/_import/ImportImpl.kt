@@ -1,5 +1,6 @@
 package com.sakethh.linkora.localDB._import
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -15,12 +16,13 @@ import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
 
 class ImportImpl {
+    @SuppressLint("LongLogTag")
     suspend fun importToLocalDB(
         context: Context,
         exceptionType: MutableState<String?>,
         jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>,
-    ) {
+        shouldErrorDialogBeVisible: MutableState<Boolean>, updateVM: UpdateVM
+    ) = coroutineScope {
         val localDataBase = LocalDataBase.localDB
         try {
             val json = Json {
@@ -28,41 +30,70 @@ class ImportImpl {
             }
             val jsonDeserialized = json.decodeFromString<ExportDTO>(jsonString)
 
-            withContext(Dispatchers.IO) {
-                awaitAll(async {
-                    localDataBase.importDao()
-                        .addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
-                }, async {
-                    localDataBase.importDao()
-                        .addAllRegularFolders(jsonDeserialized.foldersTable)
-                }, async {
-                    localDataBase.importDao()
-                        .addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
-                }, async {
-                    localDataBase.importDao()
-                        .addAllHistoryLinks(jsonDeserialized.historyLinksTable)
-                }, async {
-                    localDataBase.importDao()
-                        .addAllImportantLinks(jsonDeserialized.importantLinksTable)
-                }, async {
-                    localDataBase.importDao()
-                        .addAllLinks(jsonDeserialized.linksTable)
-                })
+            var getLatestLinksTableID = localDataBase.importDao().getLatestLinksTableID()
+            var getLatestFoldersTableID = localDataBase.importDao().getLatestFoldersTableID()
+            var getLatestArchivedLinksTableID =
+                localDataBase.importDao().getLatestArchivedLinksTableID()
+            var getLatestArchivedFoldersTableID =
+                localDataBase.importDao().getLatestArchivedFoldersTableID()
+            var getLatestImpLinksTableID = localDataBase.importDao().getLatestImpLinksTableID()
+            var getLatestRecentlyVisitedTableID =
+                localDataBase.importDao().getLatestRecentlyVisitedTableID()
+
+            jsonDeserialized.linksTable.forEach {
+                it.id = ++getLatestLinksTableID
             }
+
+            jsonDeserialized.importantLinksTable.forEach {
+                it.id = ++getLatestImpLinksTableID
+            }
+
+            jsonDeserialized.foldersTable.forEach {
+                it.id = ++getLatestFoldersTableID
+            }
+
+            jsonDeserialized.archivedFoldersTable.forEach {
+                it.id = ++getLatestArchivedFoldersTableID
+            }
+
+            jsonDeserialized.archivedLinksTable.forEach {
+                it.id = ++getLatestArchivedLinksTableID
+            }
+
+            jsonDeserialized.historyLinksTable.forEach {
+                it.id = ++getLatestRecentlyVisitedTableID
+            }
+
+            localDataBase.importDao()
+                .addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
+
+            localDataBase.importDao()
+                .addAllRegularFolders(jsonDeserialized.foldersTable)
+
+            localDataBase.importDao()
+                .addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
+
+            localDataBase.importDao()
+                .addAllHistoryLinks(jsonDeserialized.historyLinksTable)
+
+            localDataBase.importDao()
+                .addAllImportantLinks(jsonDeserialized.importantLinksTable)
+
+            localDataBase.importDao()
+                .addAllLinks(jsonDeserialized.linksTable)
+
             exceptionType.value = null
             shouldErrorDialogBeVisible.value = false
             if (jsonDeserialized.schemaVersion <= 9) {
-                coroutineScope {
-                    awaitAll(async {
-                        if (jsonDeserialized.foldersTable.isNotEmpty()) {
-                            UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
-                        }
-                    }, async {
-                        if (jsonDeserialized.archivedFoldersTable.isNotEmpty()) {
-                            UpdateVM().migrateArchiveFoldersV9toV10()
-                        }
-                    })
-                }
+                awaitAll(async {
+                    if (jsonDeserialized.foldersTable.isNotEmpty()) {
+                        updateVM.migrateRegularFoldersLinksDataFromV9toV10()
+                    }
+                }, async {
+                    if (jsonDeserialized.archivedFoldersTable.isNotEmpty()) {
+                        updateVM.migrateArchiveFoldersV9toV10()
+                    }
+                })
             }
             withContext(Dispatchers.Main) {
                 Toast.makeText(
@@ -79,6 +110,5 @@ class ImportImpl {
             exceptionType.value = SerializationException().toString()
             shouldErrorDialogBeVisible.value = true
         }
-
     }
 }

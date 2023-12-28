@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.dao._import
 
 import androidx.room.Dao
 import androidx.room.Insert
+import androidx.room.Query
 import androidx.room.Transaction
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
@@ -35,4 +36,22 @@ interface ImportDao {
     @Transaction
     @Insert
     suspend fun addAllArchivedFolders(foldersData: List<ArchivedFolders>)
+
+    @Query("SELECT id FROM links_table WHERE id = (SELECT MAX(id) FROM links_table)")
+    suspend fun getLatestLinksTableID(): Long
+
+    @Query("SELECT id FROM folders_table WHERE id = (SELECT MAX(id) FROM folders_table)")
+    suspend fun getLatestFoldersTableID(): Long
+
+    @Query("SELECT id FROM archived_links_table WHERE id = (SELECT MAX(id) FROM archived_links_table)")
+    suspend fun getLatestArchivedLinksTableID(): Long
+
+    @Query("SELECT id FROM archived_folders_table WHERE id = (SELECT MAX(id) FROM archived_folders_table)")
+    suspend fun getLatestArchivedFoldersTableID(): Long
+
+    @Query("SELECT id FROM important_links_table WHERE id = (SELECT MAX(id) FROM important_links_table)")
+    suspend fun getLatestImpLinksTableID(): Long
+
+    @Query("SELECT id FROM recently_visited_table WHERE id = (SELECT MAX(id) FROM recently_visited_table)")
+    suspend fun getLatestRecentlyVisitedTableID(): Long
 }
