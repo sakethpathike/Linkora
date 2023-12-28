@@ -57,12 +57,12 @@ fun SettingsNewVersionUpdateBtmContent(
         )
         VersionCardForBtmSheetContent(
             title = "version you're using",
-            value = "v${SettingsScreenVM.appVersionValue}"
+            value = SettingsScreenVM.appVersionValue
         )
         if (true) {
             VersionCardForBtmSheetContent(
                 title = "latest stable version which you should be using",
-                value = "v${SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value}"
+                value = SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value
             )
         }
 
@@ -74,7 +74,7 @@ fun SettingsNewVersionUpdateBtmContent(
 
         VersionCardForBtmSheetContent(
             title = "latest version which is available for usage",
-            value = "v${SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value}"
+            value = SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value
         )
 
         Divider(
@@ -83,13 +83,14 @@ fun SettingsNewVersionUpdateBtmContent(
             modifier = Modifier.padding(20.dp)
         )
         Text(
-            text = "You can find what's new in the latest release(s) and can download them from Github:)",
-            style = MaterialTheme.typography.titleSmall,
-            fontSize = 16.sp,
+            text = "Updates in this release:",
+            style = MaterialTheme.typography.titleLarge,
+            fontSize = 22.sp,
             textAlign = TextAlign.Start,
             lineHeight = 24.sp,
             modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
         )
+
         if (true) {
             Button(
                 modifier = Modifier

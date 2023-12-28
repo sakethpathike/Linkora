@@ -22,10 +22,16 @@ data class AppInfoDTO(
     val stableVersionGithubReleaseNotesURL: String,
     @SerialName("nonStableVersionGithubReleaseNotesURL")
     val nonStableVersionGithubReleaseNotesURL: String,
-    @SerialName("stableVersionReleaseNotes")
-    val stableVersionReleaseNotes: String,
-    @SerialName("nonStableVersionReleaseNotes")
-    val nonStableVersionReleaseNotes: String
+    @SerialName("releaseNotes")
+    val releaseNotes: List<ReleaseNotesDTO>
+)
+
+@Serializable
+data class ReleaseNotesDTO(
+    @SerialName("title")
+    val title: String,
+    @SerialName("description")
+    val description: String
 )
 
 @Serializable
@@ -36,8 +42,7 @@ data class MutableAppInfoDTO(
     val stableVersionValue: MutableState<String>,
     val stableVersionGithubReleaseNotesURL: MutableState<String>,
     val nonStableVersionGithubReleaseNotesURL: MutableState<String>,
-    val stableVersionReleaseNotes:  MutableState<String>,
-    val nonStableVersionReleaseNotes: MutableState<String>,
+    val releaseNotes: MutableState<List<ReleaseNotesDTO>>,
     val nonStableVersionCode: MutableState<Int>,
     val stableVersionCode: MutableState<Int>,
 )

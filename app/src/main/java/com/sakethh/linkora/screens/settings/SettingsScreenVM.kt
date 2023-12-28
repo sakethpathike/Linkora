@@ -69,8 +69,7 @@ class SettingsScreenVM(
             nonStableVersionGithubReleaseNotesURL = mutableStateOf(""),
             nonStableVersionCode = mutableIntStateOf(0),
             stableVersionCode = mutableIntStateOf(0),
-            stableVersionReleaseNotes = mutableStateOf(""),
-            nonStableVersionReleaseNotes = mutableStateOf(""),
+            releaseNotes = mutableStateOf(emptyList()),
         )
     }
 
@@ -502,11 +501,11 @@ class SettingsScreenVM(
                 this.nonStableVersionGithubReleaseNotesURL.value =
                     retrievedData.nonStableVersionGithubReleaseNotesURL
 
-                this.stableVersionReleaseNotes.value =
-                    retrievedData.stableVersionReleaseNotes
+                this.releaseNotes.value =
+                    retrievedData.releaseNotes
 
-                this.nonStableVersionReleaseNotes.value =
-                    retrievedData.nonStableVersionReleaseNotes
+                this.releaseNotes.value =
+                    retrievedData.releaseNotes
             }
         }
     }
