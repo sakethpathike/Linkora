@@ -38,7 +38,7 @@ fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boole
                         strokeWidth = 4.dp
                     )
                     Text(
-                        text = "Retrieving the latest data—this might take a moment",
+                        text = "Retrieving latest information, this may take sometime; drink water until then \uD83D\uDC4D",
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 20.sp,
