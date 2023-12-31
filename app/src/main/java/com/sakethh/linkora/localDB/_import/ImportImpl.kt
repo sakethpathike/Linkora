@@ -1,6 +1,5 @@
 package com.sakethh.linkora.localDB._import
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
@@ -20,7 +19,8 @@ class ImportImpl {
         context: Context,
         exceptionType: MutableState<String?>,
         jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>, updateVM: UpdateVM
+        shouldErrorDialogBeVisible: MutableState<Boolean>,
+        updateVM: UpdateVM
     ) = coroutineScope {
         val localDataBase = LocalDataBase.localDB
         try {
@@ -31,6 +31,8 @@ class ImportImpl {
 
             var getLatestLinksTableID = localDataBase.importDao().getLatestLinksTableID()
             var getLatestFoldersTableID = localDataBase.importDao().getLatestFoldersTableID()
+            val minFolderID = getLatestFoldersTableID
+            var maxFolderID: Long = 0
             var getLatestArchivedLinksTableID =
                 localDataBase.importDao().getLatestArchivedLinksTableID()
             var getLatestArchivedFoldersTableID =
@@ -39,16 +41,50 @@ class ImportImpl {
             var getLatestRecentlyVisitedTableID =
                 localDataBase.importDao().getLatestRecentlyVisitedTableID()
 
+            // Manipulating IDs for "Links Table":
             jsonDeserialized.linksTable.forEach {
                 it.id = ++getLatestLinksTableID
             }
 
+            // Manipulating IDs for "Important Links":
             jsonDeserialized.importantLinksTable.forEach {
                 it.id = ++getLatestImpLinksTableID
             }
 
-            jsonDeserialized.foldersTable.forEach {
-                it.id = ++getLatestFoldersTableID
+            jsonDeserialized.foldersTable.forEach { foldersTable ->
+                ++getLatestFoldersTableID
+
+                jsonDeserialized.linksTable.filter {
+                    it.keyOfLinkedFolderV10 == foldersTable.id
+                }.forEach {
+                    it.keyOfLinkedFolderV10 = getLatestFoldersTableID
+                }
+
+                jsonDeserialized.foldersTable.filter { childFolder ->
+                    childFolder.parentFolderID == foldersTable.id
+                }.forEach {
+                    it.parentFolderID = getLatestFoldersTableID
+                }
+
+                jsonDeserialized.foldersTable.filter {
+                    it.childFolderIDs?.contains(foldersTable.id) == true
+                }.forEach {
+                    val manipulatedIDs = it.childFolderIDs?.toMutableList() ?: mutableListOf()
+                    manipulatedIDs.add(getLatestFoldersTableID)
+                    it.childFolderIDs = manipulatedIDs
+                }
+                foldersTable.id = getLatestFoldersTableID
+                maxFolderID = getLatestFoldersTableID
+            }
+
+            jsonDeserialized.foldersTable.forEach { foldersTable ->
+                val manipulatedChildFolderIDs = foldersTable.childFolderIDs?.toMutableList()
+                foldersTable.childFolderIDs?.forEach {
+                    if (it > maxFolderID || it < minFolderID) {
+                        manipulatedChildFolderIDs?.remove(it)
+                    }
+                }
+                foldersTable.childFolderIDs = manipulatedChildFolderIDs
             }
 
             jsonDeserialized.archivedFoldersTable.forEach {
@@ -63,23 +99,17 @@ class ImportImpl {
                 it.id = ++getLatestRecentlyVisitedTableID
             }
 
-            localDataBase.importDao()
-                .addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
+            localDataBase.importDao().addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
 
-            localDataBase.importDao()
-                .addAllRegularFolders(jsonDeserialized.foldersTable)
+            localDataBase.importDao().addAllRegularFolders(jsonDeserialized.foldersTable)
 
-            localDataBase.importDao()
-                .addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
+            localDataBase.importDao().addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
 
-            localDataBase.importDao()
-                .addAllHistoryLinks(jsonDeserialized.historyLinksTable)
+            localDataBase.importDao().addAllHistoryLinks(jsonDeserialized.historyLinksTable)
 
-            localDataBase.importDao()
-                .addAllImportantLinks(jsonDeserialized.importantLinksTable)
+            localDataBase.importDao().addAllImportantLinks(jsonDeserialized.importantLinksTable)
 
-            localDataBase.importDao()
-                .addAllLinks(jsonDeserialized.linksTable)
+            localDataBase.importDao().addAllLinks(jsonDeserialized.linksTable)
 
             exceptionType.value = null
             shouldErrorDialogBeVisible.value = false
