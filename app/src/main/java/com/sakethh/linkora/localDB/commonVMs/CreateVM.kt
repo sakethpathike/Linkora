@@ -4,6 +4,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.localDB.LinkDataExtractor
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
@@ -21,16 +22,16 @@ class CreateVM : ViewModel() {
     fun addANewLinkInImpLinks(
         title: String,
         webURL: String,
-        noteForSaving: String, autoDetectTitle: Boolean,
+        noteForSaving: String,
+        autoDetectTitle: Boolean,
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
         viewModelScope.launch {
             val doesThisLinkExists = async {
-                LocalDataBase.localDB.readDao()
-                    .doesThisExistsInImpLinks(
-                        webURL
-                    )
+                LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
+                    webURL
+                )
             }.await()
             when (doesThisLinkExists) {
                 true -> {
@@ -44,21 +45,28 @@ class CreateVM : ViewModel() {
                 }
 
                 else -> {
-                    if (!isNetworkAvailable(context)) {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "network error, check your network connection and try again",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    } else if (!isAValidURL(webURL)) {
+                    if (!isAValidURL(webURL)) {
                         withContext(Dispatchers.Main) {
                             Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
                         }
                     } else {
                         val linkDataExtractor = async {
-                            linkDataExtractor(webURL)
+                            if (isNetworkAvailable(context)) {
+                                linkDataExtractor(webURL)
+                            } else {
+                                if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) {
+                                    viewModelScope.launch {
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                context,
+                                                "network error, check your network connection and try again",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    }
+                                }
+                                LinkDataExtractor(baseURL = webURL, imgURL = "", title = "", false)
+                            }
                         }.await()
                         LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
                             importantLinks = ImportantLinks(
@@ -80,30 +88,18 @@ class CreateVM : ViewModel() {
     fun addANewLinkInSavedLinks(
         title: String,
         webURL: String,
-        noteForSaving: String, autoDetectTitle: Boolean,
+        noteForSaving: String,
+        autoDetectTitle: Boolean,
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
         var doesThisLinkExists = false
         viewModelScope.launch {
-            doesThisLinkExists = LocalDataBase.localDB.readDao()
-                .doesThisExistsInSavedLinks(
-                    webURL
-                )
+            doesThisLinkExists = LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
+                webURL
+            )
         }.invokeOnCompletion {
-            if (!isNetworkAvailable(context)) {
-                viewModelScope.launch {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "network error, check your network connection and try again",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            } else if (!isAValidURL(webURL)) {
+            if (!isAValidURL(webURL)) {
                 viewModelScope.launch {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
@@ -125,7 +121,22 @@ class CreateVM : ViewModel() {
                 }
             } else {
                 viewModelScope.launch {
-                    val _linkDataExtractor = linkDataExtractor(webURL)
+                    val _linkDataExtractor = if (isNetworkAvailable(context)) {
+                        linkDataExtractor(webURL)
+                    } else {
+                        if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) {
+                            viewModelScope.launch {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "network error, check your network connection and try again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        LinkDataExtractor(baseURL = webURL, imgURL = "", title = "", false)
+                    }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
                         webURL = webURL,
@@ -140,8 +151,7 @@ class CreateVM : ViewModel() {
                         isLinkedWithArchivedFolder = false,
                         keyOfArchiveLinkedFolderV10 = 0
                     )
-                    LocalDataBase.localDB.createDao()
-                        .addANewLinkToSavedLinksOrInFolders(linkData)
+                    LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
                     }
@@ -164,24 +174,11 @@ class CreateVM : ViewModel() {
     ) {
         viewModelScope.launch {
             val doesThisLinkExists = async {
-                LocalDataBase.localDB.readDao()
-                    .doesThisLinkExistsInAFolderV10(
-                        webURL, parentFolderID
-                    )
+                LocalDataBase.localDB.readDao().doesThisLinkExistsInAFolderV10(
+                    webURL, parentFolderID
+                )
             }.await()
-            if (!isNetworkAvailable(context)) {
-                viewModelScope.launch {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "network error, check your network connection and try again",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            } else if (!isAValidURL(webURL)) {
+            if (!isAValidURL(webURL)) {
                 viewModelScope.launch {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
@@ -203,7 +200,22 @@ class CreateVM : ViewModel() {
                 }
             } else {
                 viewModelScope.launch {
-                    val linkDataExtractor = linkDataExtractor(webURL)
+                    val linkDataExtractor = if (isNetworkAvailable(context)) {
+                        linkDataExtractor(webURL)
+                    } else {
+                        if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) {
+                            viewModelScope.launch {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "network error, check your network connection and try again",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+                        }
+                        LinkDataExtractor(baseURL = webURL, imgURL = "", title = "", false)
+                    }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
                         webURL = webURL,
@@ -219,11 +231,9 @@ class CreateVM : ViewModel() {
                         keyOfArchiveLinkedFolderV10 = 0,
                         keyOfImpLinkedFolder = ""
                     )
-                    LocalDataBase.localDB.createDao()
-                        .addANewLinkToSavedLinksOrInFolders(linkData)
+                    LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "added the url", Toast.LENGTH_SHORT)
-                            .show()
+                        Toast.makeText(context, "added the url", Toast.LENGTH_SHORT).show()
                     }
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -233,7 +243,8 @@ class CreateVM : ViewModel() {
     }
 
     fun createANewFolder(
-        context: Context, infoForSaving: String,
+        context: Context,
+        infoForSaving: String,
         onTaskCompleted: () -> Unit,
         parentFolderID: Long?,
         folderName: String,
@@ -243,23 +254,18 @@ class CreateVM : ViewModel() {
         var doesThisFolderExists = false
         viewModelScope.launch {
             doesThisFolderExists = if (!inAChildFolderScreen) {
-                LocalDataBase.localDB.readDao()
-                    .doesThisRootFolderExists(folderName = folderName)
+                LocalDataBase.localDB.readDao().doesThisRootFolderExists(folderName = folderName)
             } else {
-                LocalDataBase.localDB.readDao()
-                    .doesThisChildFolderExists(
-                        folderName = folderName,
-                        parentFolderID = parentFolderID
-                    ) >= 1
+                LocalDataBase.localDB.readDao().doesThisChildFolderExists(
+                    folderName = folderName, parentFolderID = parentFolderID
+                ) >= 1
             }
         }.invokeOnCompletion {
             if (doesThisFolderExists) {
                 viewModelScope.launch {
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context,
-                            "\"${folderName}\" already exists",
-                            Toast.LENGTH_SHORT
+                            context, "\"${folderName}\" already exists", Toast.LENGTH_SHORT
                         ).show()
                     }
                 }.invokeOnCompletion {
@@ -274,15 +280,13 @@ class CreateVM : ViewModel() {
                         parentFolderID = parentFolderID,
                     )
                     foldersTable.childFolderIDs = emptyList()
-                    LocalDataBase.localDB.createDao()
-                        .addANewFolder(
-                            foldersTable
-                        )
+                    LocalDataBase.localDB.createDao().addANewFolder(
+                        foldersTable
+                    )
                     if (parentFolderID != null) {
                         LocalDataBase.localDB.createDao().addANewChildIdToARootAndParentFolders(
                             rootParentID = rootParentID,
-                            currentID = LocalDataBase.localDB.readDao()
-                                .getLatestAddedFolder().id,
+                            currentID = LocalDataBase.localDB.readDao().getLatestAddedFolder().id,
                             parentID = parentFolderID
                         )
                     }

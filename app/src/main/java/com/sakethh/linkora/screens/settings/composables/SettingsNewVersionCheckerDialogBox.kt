@@ -18,12 +18,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
-    if (shouldDialogBoxAppear.value) {
+    if (shouldDialogBoxAppear.value && !SettingsScreenVM.Settings.didServerTimeOutErrorOccurred.value) {
         LinkoraTheme {
             AlertDialog(modifier = Modifier
                 .clip(RoundedCornerShape(20.dp))
@@ -38,7 +39,7 @@ fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boole
                         strokeWidth = 4.dp
                     )
                     Text(
-                        text = "Retrieving latest information, this may take sometime; drink water until then \uD83D\uDC4D",
+                        text = "Retrieving latest information, this may take sometime.",
                         color = AlertDialogDefaults.textContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 20.sp,

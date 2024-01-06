@@ -52,16 +52,15 @@ data class SettingsUIElement(
 )
 
 class SettingsScreenVM(
-    private val exportImpl: ExportImpl = ExportImpl(),
-    private val updateVM: UpdateVM = UpdateVM()
+    private val exportImpl: ExportImpl = ExportImpl(), private val updateVM: UpdateVM = UpdateVM()
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val appVersionValue = "0.4.0-alpha04"
-        const val appVersionCode = 13
+        const val appVersionValue = "v0.4.0-beta01"
+        const val appVersionCode = 14
         val latestAppInfoFromServer = MutableAppInfoDTO(
             isNonStableVersion = mutableStateOf(false),
             isStableVersion = mutableStateOf(false),
@@ -119,8 +118,7 @@ class SettingsScreenVM(
                             dataStore = it.dataStore
                         ) == true
                     }
-                }),
-            SettingsUIElement(title = "Enable Home Screen",
+                }), SettingsUIElement(title = "Enable Home Screen",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
                 isSwitchNeeded = true,
@@ -139,8 +137,7 @@ class SettingsScreenVM(
                             dataStore = it.dataStore
                         ) == true
                     }
-                }),
-            SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
+                }), SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
                 isSwitchNeeded = true,
@@ -160,8 +157,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
-            SettingsUIElement(title = "Auto-Detect Title",
+                }), SettingsUIElement(title = "Auto-Detect Title",
                 doesDescriptionExists = true,
                 description = "Note: This may not detect every website.",
                 isSwitchNeeded = true,
@@ -181,8 +177,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
-            SettingsUIElement(title = "Auto-Check for Updates",
+                }), SettingsUIElement(title = "Auto-Check for Updates",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
                 isSwitchNeeded = true,
@@ -202,8 +197,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
-            SettingsUIElement(title = "Show description for Settings",
+                }), SettingsUIElement(title = "Show description for Settings",
                 doesDescriptionExists = true,
                 description = "If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you're reading now. If it is disabled, only the titles will be shown.",
                 isSwitchNeeded = true,
@@ -370,6 +364,7 @@ class SettingsScreenVM(
         val isAutoCheckUpdatesEnabled = mutableStateOf(true)
         val showDescriptionForSettingsState = mutableStateOf(true)
         val isOnLatestUpdate = mutableStateOf(false)
+        val didServerTimeOutErrorOccurred = mutableStateOf(false)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -482,6 +477,7 @@ class SettingsScreenVM(
 
         suspend fun latestAppVersionRetriever(context: Context) {
             val rawData = try {
+                didServerTimeOutErrorOccurred.value = false
                 withContext(Dispatchers.Default) {
                     this.launch(Dispatchers.Main) {
                         Toast.makeText(context, "checking for new updates", Toast.LENGTH_SHORT)
@@ -490,6 +486,7 @@ class SettingsScreenVM(
                     Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
                 }
             } catch (_: Exception) {
+                didServerTimeOutErrorOccurred.value = true
                 Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
                 ""
             }
@@ -528,11 +525,9 @@ class SettingsScreenVM(
                 this.nonStableVersionGithubReleaseNotesURL.value =
                     retrievedData.nonStableVersionGithubReleaseNotesURL
 
-                this.releaseNotes.value =
-                    retrievedData.releaseNotes
+                this.releaseNotes.value = retrievedData.releaseNotes
 
-                this.releaseNotes.value =
-                    retrievedData.releaseNotes
+                this.releaseNotes.value = retrievedData.releaseNotes
             }
         }
     }

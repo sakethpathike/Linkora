@@ -175,7 +175,7 @@ fun SettingsScreen(navController: NavController) {
                                     .alignByBaseline()
                             )
                             Text(
-                                text = "v${SettingsScreenVM.appVersionValue}",
+                                text = SettingsScreenVM.appVersionValue,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alignByBaseline()
@@ -491,7 +491,7 @@ fun SettingsScreen(navController: NavController) {
                             )
                         )
                         Text(
-                            text = "Alpha",
+                            text = "Beta",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 15.sp,
@@ -506,10 +506,13 @@ fun SettingsScreen(navController: NavController) {
                                 .padding(5.dp)
                         )
                     }
-                    Spacer(
-                        modifier = Modifier.padding(
-                            bottom = 10.dp
-                        )
+                    Text(
+                        text = "The Import feature is polished, not perfect. While it's much better, surprises might still pop up during import. However, exporting should be no problem.",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        lineHeight = 18.sp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)
                     )
                 }
                 items(items = dataSectionData, key = { settingsUIElement ->
@@ -581,7 +584,7 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.padding(
                                     top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
                                 ),
-                                lineHeight = 16.sp,
+                                lineHeight = 18.sp,
                                 textAlign = TextAlign.Start,
                                 overflow = TextOverflow.Ellipsis
                             )

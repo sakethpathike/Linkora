@@ -80,11 +80,11 @@ class ImportImpl {
             jsonDeserialized.foldersTable.forEach { foldersTable ->
                 val manipulatedChildFolderIDs = foldersTable.childFolderIDs?.toMutableList()
                 foldersTable.childFolderIDs?.forEach {
-                    if (it > maxFolderID || it < minFolderID) {
+                    if (it > maxFolderID || it <= minFolderID) {
                         manipulatedChildFolderIDs?.remove(it)
                     }
                 }
-                foldersTable.childFolderIDs = manipulatedChildFolderIDs
+                foldersTable.childFolderIDs = manipulatedChildFolderIDs?.distinct()
             }
 
             jsonDeserialized.archivedFoldersTable.forEach {
