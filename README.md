@@ -7,13 +7,13 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ##### To name a few:
 
 - Save links individually with ease.
-- Organize links into folders (sub-folders can be added from the [latest alpha release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha04)) for better management.
+- Organize links into folders (sub-folders can be added from the [latest beta release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta01)) for better management.
 - Mark important links for quick access.
 - Archive links or folders to keep things tidy.
 - Customize link names as you like.
 - Share links from other apps effortlessly.
 - Search and sort links/folders effortlessly.
-- Importing and exporting links (in alpha version).
+- Importing and exporting links (in beta version).
 - Linkora recognizes images and titles whenever possible.
 
 ## Tech Stack
@@ -28,7 +28,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 - Coil is Used for loading images, and Architecture Components such as DataStore, Navigation, and ViewModel are also used to make this project alive!
 
 ## GitHub Releases
-The latest release of Linkora (v0.4.0-alpha04) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha04). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-alpha04/Linkora-v0.4.0-alpha04.apk)
+The latest release of Linkora (v0.4.0-beta01) is available on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta01). You can download the APK file from there; or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta01/Linkora-v0.4.0-beta01.apk)
 
 ## Screenshots
 
@@ -78,7 +78,7 @@ The latest release of Linkora (v0.4.0-alpha04) is available on [GitHub Releases]
 
 |                                                       Settings Screen                                                        | Settings Screen |
 |:----------------------------------------------------------------------------------------------------------------------------:|:-------------:|
-| ![Settings Screen in Linkora](https://github-production-user-asset-6210df.s3.amazonaws.com/83284398/293515855-0c3c2599-c571-4ffc-ae2d-8a235f0f5c29.png) |![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/8c943ffc-2bcb-45d7-9be4-9762bc48e791)|
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/e7e7a604-0adc-4e7f-85a5-a206131af7a3) |![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/5b6dfc28-bef2-4060-8b2b-2282299ee400)|
 
 ### Sharing from other apps
 
@@ -89,9 +89,9 @@ The latest release of Linkora (v0.4.0-alpha04) is available on [GitHub Releases]
 ## Upcoming Updates
 - [x] Sorting
 - [x] Searching
-- [x] Importing and exporting links (in alpha)
+- [x] Importing and exporting links (in beta)
 - Better title and image parsing of links
-- [x] Sub-folders ([currently in alpha version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-alpha04))
+- [x] Sub-folders ([currently in beta version](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta01))
 - Pinned folders and a few other things that a link utility app should have.
 
 #### Note: This project is in active development and new features and improvements will be added over time.
