@@ -29,7 +29,8 @@ data class DeleteDialogBoxParam(
     val onDeleteClick: () -> Unit,
     val onDeleted: () -> Unit = {},
     val totalIds: MutableLongState = mutableLongStateOf(0),
-    val folderName: MutableState<String> = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName)
+    val folderName: MutableState<String> = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName),
+    val areFoldersSelectable:Boolean=false
 )
 
 @Composable
@@ -69,7 +70,7 @@ fun DeleteDialogBox(
                     }
                 }, title = {
                     Text(
-                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else "Are you sure you want to delete all folders and links?",
+                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected folders?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else "Are you sure you want to delete all folders and links?",
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 27.sp,

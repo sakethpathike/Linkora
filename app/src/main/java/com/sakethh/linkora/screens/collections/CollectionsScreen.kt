@@ -161,6 +161,9 @@ fun CollectionsScreen(navController: NavController) {
     }
     val updateVM: UpdateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
+    if (collectionsScreenVM.noOfFoldersSelected.intValue == 0) {
+        collectionsScreenVM.areAllFoldersChecked.value = false
+    }
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             FloatingActionBtn(
@@ -181,16 +184,22 @@ fun CollectionsScreen(navController: NavController) {
             topBar = {
                 Column {
                     TopAppBar(actions = {
-                        if (areFoldersSelectable.value && collectionsScreenVM.noOfFoldersSelected.intValue != 0) {
-                            IconButton(onClick = { }) {
+                        if (areFoldersSelectable.value && collectionsScreenVM.noOfFoldersSelected.intValue != 0 && foldersData.isNotEmpty()) {
+                            IconButton(onClick = {
+                                shouldDeleteDialogBoxBeVisible.value = true
+                            }) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                             }
-                            IconButton(onClick = { }) {
+                            IconButton(onClick = {
+                                collectionsScreenVM.selectedFoldersID.forEach {
+                                    updateVM.archiveAFolderV10(it)
+                                }
+                            }) {
                                 Icon(imageVector = Icons.Default.Archive, contentDescription = null)
                             }
                         }
                     }, navigationIcon = {
-                        if (areFoldersSelectable.value) {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             IconButton(onClick = {
                                 areFoldersSelectable.value = false
                                 collectionsScreenVM.areAllFoldersChecked.value = false
@@ -202,14 +211,7 @@ fun CollectionsScreen(navController: NavController) {
                             }
                         }
                     }, title = {
-                        if (!areFoldersSelectable.value) {
-                            Text(
-                                text = "Collections",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontSize = 24.sp
-                            )
-                        } else {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row {
                                 AnimatedContent(targetState = collectionsScreenVM.noOfFoldersSelected.intValue,
                                     label = "",
@@ -246,6 +248,13 @@ fun CollectionsScreen(navController: NavController) {
                                         )
                                     })
                             }
+                        } else {
+                            Text(
+                                text = "Collections",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 24.sp
+                            )
                         }
                     })
                     Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
@@ -259,7 +268,7 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Box(modifier = Modifier.animateContentSize()) {
                         Column {
-                            if (!areFoldersSelectable.value) {
+                            if (!areFoldersSelectable.value || foldersData.isEmpty()) {
                                 Card(modifier = Modifier
                                     .padding(
                                         top = 20.dp, end = 20.dp, start = 20.dp
@@ -399,7 +408,7 @@ fun CollectionsScreen(navController: NavController) {
                             }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                             }
-                        } else if (areFoldersSelectable.value) {
+                        } else if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "Select all folders",
@@ -421,10 +430,10 @@ fun CollectionsScreen(navController: NavController) {
                     items(items = foldersData, key = { foldersData ->
                         foldersData.id.toString() + foldersData.folderName
                     }) { folderData ->
-                        val isCheckBoxSelected = rememberSaveable(areFoldersSelectable.value) {
-                            mutableStateOf(!areFoldersSelectable.value)
-                        }
-                        isCheckBoxSelected.value = collectionsScreenVM.areAllFoldersChecked.value
+                        val isCheckBoxSelected =
+                            rememberSaveable(collectionsScreenVM.areAllFoldersChecked.value) {
+                                mutableStateOf(collectionsScreenVM.areAllFoldersChecked.value)
+                            }
                         FolderIndividualComponent(
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
@@ -546,19 +555,31 @@ fun CollectionsScreen(navController: NavController) {
                     shouldRenameDialogBoxBeVisible.value = false
                 })
         )
-        DeleteDialogBox(DeleteDialogBoxParam(totalIds = mutableLongStateOf(
-            CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
-        ), shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible, onDeleteClick = {
-            deleteVM.onRegularFolderDeleteClick(
-                CollectionsScreenVM.selectedFolderData.value.id
-            )
-        }, deleteDialogBoxType = DataDialogBoxType.FOLDER, onDeleted = {
-            collectionsScreenVM.changeRetrievedFoldersData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                    SettingsScreenVM.Settings.selectedSortingType.value
-                )
-            )
-        })
+        DeleteDialogBox(
+            DeleteDialogBoxParam(areFoldersSelectable = true,
+                totalIds = mutableLongStateOf(
+                    CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
+                ),
+                shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
+                onDeleteClick = {
+                    if (areFoldersSelectable.value) {
+                        collectionsScreenVM.selectedFoldersID.forEach {
+                            deleteVM.onRegularFolderDeleteClick(it)
+                        }
+                    } else {
+                        deleteVM.onRegularFolderDeleteClick(
+                            CollectionsScreenVM.selectedFolderData.value.id
+                        )
+                    }
+                },
+                deleteDialogBoxType = DataDialogBoxType.FOLDER,
+                onDeleted = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
+                })
         )
         val isDataExtractingForTheLink = rememberSaveable {
             mutableStateOf(false)
