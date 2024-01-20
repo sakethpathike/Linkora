@@ -46,6 +46,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -115,11 +116,11 @@ fun SettingsScreen(navController: NavController) {
             )
             file.delete()
         }
-    val runtimePermission =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(),
-            onResult = {
-                isPermissionDialogBoxVisible.value = !it
-            })
+    val runtimePermission = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = {
+            isPermissionDialogBoxVisible.value = !it
+        })
     val dataSectionData = settingsScreenVM.dataSection(
         runtimePermission,
         context,
@@ -156,10 +157,12 @@ fun SettingsScreen(navController: NavController) {
                     Card(
                         border = BorderStroke(
                             1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
-                        ), colors = CardDefaults.cardColors(
+                        ),
+                        colors = CardDefaults.cardColors(
                             containerColor = MaterialTheme.colorScheme.surface,
                             contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
-                        ), modifier = Modifier
+                        ),
+                        modifier = Modifier
                             .padding(15.dp)
                             .fillMaxWidth()
                             .wrapContentHeight()
@@ -181,7 +184,10 @@ fun SettingsScreen(navController: NavController) {
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value) {
+                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                                context
+                            )
+                        ) {
                             SettingsAppInfoComponent(hasDescription = false,
                                 description = "",
                                 icon = Icons.Outlined.Update,
@@ -213,18 +219,32 @@ fun SettingsScreen(navController: NavController) {
                                         ).show()
                                     }
                                 })
-                        } else if (SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value) {
+                        } else if (SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                                context
+                            )
+                        ) {
+                            if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) LaunchedEffect(
+                                key1 = Unit
+                            ) {
+                                SettingsScreenVM.Settings.latestAppVersionRetriever(context)
+                            }
                             SettingsAppInfoComponent(hasDescription = false,
                                 description = "",
                                 icon = Icons.Outlined.GetApp,
-                                title = "A new update is out now. View the latest update.",
+                                title = if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                    "Linkora ${SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value} is now available. Check it out and download it."
+                                } else {
+                                    "Linkora ${SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value} is now available. Check it out and download it."
+                                },
                                 onClick = {
                                     shouldVersionCheckerDialogAppear.value = true
                                     if (isNetworkAvailable(context)) {
                                         coroutineScope.launch {
-                                            SettingsScreenVM.Settings.latestAppVersionRetriever(
-                                                context
-                                            )
+                                            if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) {
+                                                SettingsScreenVM.Settings.latestAppVersionRetriever(
+                                                    context
+                                                )
+                                            }
                                         }.invokeOnCompletion {
                                             shouldVersionCheckerDialogAppear.value = false
                                             if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
@@ -246,45 +266,44 @@ fun SettingsScreen(navController: NavController) {
                                     }
                                 })
                         } else {
-                            Card(
-                                border = BorderStroke(
-                                    1.dp,
-                                    contentColorFor(MaterialTheme.colorScheme.surface)
-                                ),
-                                colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(start = 15.dp, end = 15.dp, top = 15.dp)
-                            ) {
-                                Row(
+                            if (isNetworkAvailable(context)) {
+                                Card(
+                                    border = BorderStroke(
+                                        1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
+                                    ),
+                                    colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .wrapContentHeight()
-                                        .padding(
-                                            top = 10.dp, bottom = 10.dp
-                                        ),
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
                                 ) {
-                                    Box(
-                                        contentAlignment = Alignment.CenterStart
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(
+                                                top = 10.dp, bottom = 10.dp
+                                            ), verticalAlignment = Alignment.CenterVertically
                                     ) {
-                                        androidx.compose.material3.Icon(
-                                            imageVector = Icons.Outlined.CheckCircle,
-                                            contentDescription = null,
-                                            modifier = Modifier
-                                                .padding(
+                                        Box(
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            androidx.compose.material3.Icon(
+                                                imageVector = Icons.Outlined.CheckCircle,
+                                                contentDescription = null,
+                                                modifier = Modifier.padding(
                                                     start = 10.dp, end = 10.dp
                                                 )
+                                            )
+                                        }
+                                        Text(
+                                            text = "You are using latest version of Linkora.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 14.sp,
+                                            lineHeight = 18.sp,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier.padding(end = 15.dp)
                                         )
                                     }
-                                    Text(
-                                        text = "You are using latest version of Linkora.",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontSize = 14.sp,
-                                        lineHeight = 18.sp,
-                                        textAlign = TextAlign.Start,
-                                        modifier = Modifier.padding(end = 15.dp)
-                                    )
                                 }
                             }
                         }

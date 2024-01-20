@@ -3,8 +3,15 @@ package com.sakethh.linkora.screens.collections
 import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -25,8 +32,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
@@ -48,6 +54,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,6 +79,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
@@ -134,14 +142,11 @@ fun CollectionsScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val currentIconForMainFAB = remember(isMainFabRotated.value) {
-        mutableStateOf(
-            if (isMainFabRotated.value) {
-                Icons.Default.AddLink
-            } else {
-                Icons.Default.Add
-            }
-        )
+    val areFoldersSelectable = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val noOfFoldersSelected = rememberSaveable {
+        mutableIntStateOf(0)
     }
     val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
@@ -177,13 +182,61 @@ fun CollectionsScreen(navController: NavController) {
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
                 Column {
-                    TopAppBar(title = {
-                        Text(
-                            text = "Collections",
-                            color = MaterialTheme.colorScheme.onSurface,
-                            style = MaterialTheme.typography.titleLarge,
-                            fontSize = 24.sp
-                        )
+                    TopAppBar(navigationIcon = {
+                        if (areFoldersSelectable.value) {
+                            IconButton(onClick = {
+                                areFoldersSelectable.value = false
+                                noOfFoldersSelected.intValue = 0
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    }, title = {
+                        if (!areFoldersSelectable.value) {
+                            Text(
+                                text = "Collections",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 24.sp
+                            )
+                        } else {
+                            Row {
+                                AnimatedContent(targetState = noOfFoldersSelected.intValue,
+                                    label = "", transitionSpec = {
+                                        ContentTransform(
+                                            initialContentExit = slideOutVertically(
+                                                animationSpec = tween(
+                                                    150
+                                                )
+                                            ) + fadeOut(
+                                                tween(150)
+                                            ),
+                                            targetContentEnter = slideInVertically(
+                                                animationSpec = tween(durationMillis = 150)
+                                            ) + fadeIn(
+                                                tween(150)
+                                            )
+                                        )
+                                    }
+                                ) {
+                                    Text(
+                                        text = it.toString(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                                Text(
+                                    text = " folders selected",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp
+                                )
+                            }
+                        }
                     })
                     Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
                 }
@@ -193,128 +246,130 @@ fun CollectionsScreen(navController: NavController) {
                     .padding(it)
                     .fillMaxSize()
             ) {
-                item(key = "Important Links") {
-                    Card(modifier = Modifier
-                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .onGloballyPositioned {
-                            heightOfCard.value = with(localDensity) {
-                                it.size.height.toDp()
-                            }
-                        }
-                        .clickable {
-                            SpecificCollectionsScreenVM.screenType.value =
-                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                        }
-                    ) {
-                        Row(horizontalArrangement = Arrangement.Center) {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.StarOutline,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Important Links",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
+                item {
+                    Box(modifier = Modifier.animateContentSize()) {
+                        Column {
+                            if (!areFoldersSelectable.value) {
+                                Card(modifier = Modifier
+                                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .onGloballyPositioned {
+                                        heightOfCard.value = with(localDensity) {
+                                            it.size.height.toDp()
+                                        }
+                                    }
+                                    .clickable {
+                                        SpecificCollectionsScreenVM.screenType.value =
+                                            SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    }
+                                ) {
+                                    Row(horizontalArrangement = Arrangement.Center) {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.StarOutline,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Important Links",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                Card(modifier = Modifier
+                                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                                    }
+                                ) {
+                                    Row {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.Archive,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Archive",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(25.dp),
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
-                            }
-                        }
-                    }
-                }
-                item(key = "Archive") {
-                    Card(modifier = Modifier
-                        .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .clickable {
-                            navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                        }
-                    ) {
-                        Row {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.Archive,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Archive",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
+                                Card(modifier = Modifier
+                                    .padding(end = 20.dp, start = 20.dp)
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        SpecificCollectionsScreenVM.screenType.value =
+                                            SpecificScreenType.SAVED_LINKS_SCREEN
+                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    }
+                                ) {
+                                    Row {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.Link,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Saved Links",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(
+                                        top = 20.dp,
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
+                                    ),
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
                         }
                     }
                 }
                 item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(25.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                    )
-                }
-                item(key = "Saved Links") {
-                    Card(modifier = Modifier
-                        .padding(end = 20.dp, start = 20.dp)
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .clickable {
-                            SpecificCollectionsScreenVM.screenType.value =
-                                SpecificScreenType.SAVED_LINKS_SCREEN
-                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                        }
-                    ) {
-                        Row {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.Link,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Saved Links",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
+                    val areAllFoldersChecked = rememberSaveable {
+                        mutableStateOf(false)
                     }
-                }
-                item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(
-                            top = 20.dp,
-                            start = 20.dp,
-                            end = 20.dp,
-                            bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
-                        ),
-                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                    )
-                }
-
-                item {
                     Row(
                         modifier = Modifier
                             .clickable {
-                                if (foldersData.isNotEmpty()) {
+                                if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
                                     shouldSortingBottomSheetAppear.value = true
                                     coroutineScope.launch {
                                         sortingBtmSheetState.expand()
                                     }
+                                } else {
+                                    areAllFoldersChecked.value = !areAllFoldersChecked.value
                                 }
                             }
                             .fillMaxWidth()
@@ -329,7 +384,7 @@ fun CollectionsScreen(navController: NavController) {
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        if (foldersData.isNotEmpty()) {
+                        if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
                             IconButton(onClick = {
                                 shouldSortingBottomSheetAppear.value = true
                                 coroutineScope.launch {
@@ -338,6 +393,10 @@ fun CollectionsScreen(navController: NavController) {
                             }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                             }
+                        } else if (areFoldersSelectable.value) {
+                            Checkbox(checked = areAllFoldersChecked.value, onCheckedChange = {
+                                areAllFoldersChecked.value = it
+                            })
                         }
                     }
                 }
@@ -349,7 +408,7 @@ fun CollectionsScreen(navController: NavController) {
                         foldersData.id.toString() + foldersData.folderName
                     }) { folderIndex, folderData ->
                         FolderIndividualComponent(
-                            showMoreIcon = true,
+                            showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
                             folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
@@ -362,14 +421,26 @@ fun CollectionsScreen(navController: NavController) {
                                 clickedFolderName.value = folderData.folderName
                                 CollectionsScreenVM.selectedFolderData.value = folderData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
-                            }, onFolderClick = {
-                                SpecificCollectionsScreenVM.inARegularFolder.value = true
-                                SpecificCollectionsScreenVM.screenType.value =
-                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                CollectionsScreenVM.currentClickedFolderData.value =
-                                    folderData
-                                CollectionsScreenVM.rootFolderID = folderData.id
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            },
+                            onFolderClick = {
+                                if (!areFoldersSelectable.value) {
+                                    SpecificCollectionsScreenVM.inARegularFolder.value = true
+                                    SpecificCollectionsScreenVM.screenType.value =
+                                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                    CollectionsScreenVM.currentClickedFolderData.value =
+                                        folderData
+                                    CollectionsScreenVM.rootFolderID = folderData.id
+                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                }
+                            },
+                            onLongClick = {
+                                if (!areFoldersSelectable.value) {
+                                    areFoldersSelectable.value = true
+                                }
+                            },
+                            showCheckBox = areFoldersSelectable,
+                            checkBoxState = { checkBoxState ->
+                                if (checkBoxState) noOfFoldersSelected.intValue += 1 else noOfFoldersSelected.intValue -= 1
                             })
                     }
                 } else {
@@ -619,12 +690,16 @@ fun CollectionsScreen(navController: NavController) {
             )
         )
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences, _, _ ->
-                collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
-            },
-            bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = SortingBtmSheetType.COLLECTIONS_SCREEN
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, _, _ ->
+                    collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = SortingBtmSheetType.COLLECTIONS_SCREEN,
+                shouldFoldersSelectionBeVisible = mutableStateOf(false),
+                shouldLinksSelectionBeVisible = mutableStateOf(false)
+            )
         )
     }
     BackHandler {
@@ -668,9 +743,10 @@ fun FolderIndividualComponent(
     maxLines: Int = 1,
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
-    showCheckBox: Boolean = false,
+    showCheckBox: MutableState<Boolean> = mutableStateOf(false),
     checkBoxState: (Boolean) -> Unit = {},
-    isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false)
+    isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false),
+    onLongClick: () -> Unit = {}
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -678,12 +754,12 @@ fun FolderIndividualComponent(
                 .combinedClickable(
                     onClick = {
                         onFolderClick()
-                        if (showCheckBox) {
+                        if (showCheckBox.value) {
                             isCheckBoxChecked.value = !isCheckBoxChecked.value
                             checkBoxState(isCheckBoxChecked.value)
                         }
                     },
-                    onLongClick = { onMoreIconClick() })
+                    onLongClick = { onLongClick() })
                 .fillMaxWidth()
                 .requiredHeight(75.dp)
         ) {
@@ -702,7 +778,7 @@ fun FolderIndividualComponent(
             Column(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox) 0.78f else 1f),
+                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox.value) 0.78f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -748,7 +824,7 @@ fun FolderIndividualComponent(
                     )
                 }
             }
-            if (showCheckBox) {
+            if (showCheckBox.value) {
                 Checkbox(modifier = Modifier
                     .fillMaxHeight(),
                     checked = isCheckBoxChecked.value,

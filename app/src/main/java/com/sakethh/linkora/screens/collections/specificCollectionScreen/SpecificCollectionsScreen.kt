@@ -53,6 +53,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
@@ -1034,31 +1035,49 @@ fun SpecificScreen(navController: NavController) {
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
-        val foldersSortingSelectedState = rememberSaveable {
-            mutableStateOf(true)
-        }
-        val linksSortingSelectedState = rememberSaveable {
-            mutableStateOf(true)
-        }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences, isLinksSortingSelected, isFoldersSortingSelected ->
-                specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = sortingPreferences,
-                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                    isLinksSortingSelected = isLinksSortingSelected,
-                    isFoldersSortingSelected = isFoldersSortingSelected
-                )
-            },
-            bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = when (SpecificCollectionsScreenVM.screenType.value) {
-                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingBtmSheetType.IMPORTANT_LINKS_SCREEN
-                SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN
-                SpecificScreenType.SAVED_LINKS_SCREEN -> SortingBtmSheetType.SAVED_LINKS_SCREEN
-                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
-                SpecificScreenType.INTENT_ACTIVITY -> SortingBtmSheetType.COLLECTIONS_SCREEN
-                SpecificScreenType.ROOT_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
-            }
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, isLinksSortingSelected, isFoldersSortingSelected ->
+                    specificCollectionsScreenVM.changeRetrievedData(
+                        sortingPreferences = sortingPreferences,
+                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                        isLinksSortingSelected = isLinksSortingSelected,
+                        isFoldersSortingSelected = isFoldersSortingSelected
+                    )
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = when (SpecificCollectionsScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingBtmSheetType.IMPORTANT_LINKS_SCREEN
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN
+                    SpecificScreenType.SAVED_LINKS_SCREEN -> SortingBtmSheetType.SAVED_LINKS_SCREEN
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+                    SpecificScreenType.INTENT_ACTIVITY -> SortingBtmSheetType.COLLECTIONS_SCREEN
+                    SpecificScreenType.ROOT_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+                },
+                shouldFoldersSelectionBeVisible = when (SpecificCollectionsScreenVM.screenType.value) {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> mutableStateOf(
+                        archivedSubFoldersData.isNotEmpty()
+                    )
+
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> mutableStateOf(
+                        childFoldersData.isNotEmpty()
+                    )
+
+                    else -> mutableStateOf(false)
+                },
+                shouldLinksSelectionBeVisible = when (SpecificCollectionsScreenVM.screenType.value) {
+                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> mutableStateOf(
+                        archivedFoldersLinksData.isNotEmpty()
+                    )
+
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> mutableStateOf(
+                        specificFolderLinksData.isNotEmpty()
+                    )
+
+                    else -> mutableStateOf(false)
+                },
+            )
         )
     }
     BackHandler {

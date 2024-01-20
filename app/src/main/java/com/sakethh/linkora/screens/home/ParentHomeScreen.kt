@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sort
+import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -43,12 +44,14 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
+import com.sakethh.linkora.customComposables.ListBtmSheet
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
@@ -70,6 +73,9 @@ fun ParentHomeScreen(navController: NavController) {
     val createVM: CreateVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldListsBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -120,6 +126,9 @@ fun ParentHomeScreen(navController: NavController) {
                         fontSize = 24.sp
                     )
                 }, actions = {
+                    IconButton(onClick = { shouldListsBottomSheetAppear.value = true }) {
+                        Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
+                    }
                     IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
                         Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                     }
@@ -182,25 +191,29 @@ fun ParentHomeScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences, _, _ ->
-                specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        sortingPreferences.name
-                    ),
-                    folderID = 0,
-                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN
-                )
-                specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        sortingPreferences.name
-                    ),
-                    folderID = 0,
-                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                )
-            },
-            bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = SortingBtmSheetType.PARENT_HOME_SCREEN
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, _, _ ->
+                    specificCollectionsScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            sortingPreferences.name
+                        ),
+                        folderID = 0,
+                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                    )
+                    specificCollectionsScreenVM.changeRetrievedData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            sortingPreferences.name
+                        ),
+                        folderID = 0,
+                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    )
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = SortingBtmSheetType.PARENT_HOME_SCREEN,
+                shouldFoldersSelectionBeVisible = mutableStateOf(false),
+                shouldLinksSelectionBeVisible = mutableStateOf(false)
+            )
         )
         val isDataExtractingForTheLink = rememberSaveable {
             mutableStateOf(false)
@@ -266,6 +279,9 @@ fun ParentHomeScreen(navController: NavController) {
                 parentFolderID = null, inAChildFolderScreen = false
             )
         )
+
+        ListBtmSheet(isBtmSheetVisible = shouldListsBottomSheetAppear)
+
         NewLinkBtmSheet(
             NewLinkBtmSheetUIParam(
                 btmSheetState = btmModalSheetStateForSavingLinks,

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -32,10 +33,12 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState")
 @OptIn(
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
@@ -96,12 +99,16 @@ fun ParentArchiveScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences, _, _ ->
-                archiveScreenVM.changeRetrievedData(sortingPreferences = sortingPreferences)
-            },
-            bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = SortingBtmSheetType.PARENT_ARCHIVE_SCREEN
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, _, _ ->
+                    archiveScreenVM.changeRetrievedData(sortingPreferences = sortingPreferences)
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = SortingBtmSheetType.PARENT_ARCHIVE_SCREEN,
+                shouldFoldersSelectionBeVisible = mutableStateOf(false),
+                shouldLinksSelectionBeVisible = mutableStateOf(false),
+            )
         )
     }
 }

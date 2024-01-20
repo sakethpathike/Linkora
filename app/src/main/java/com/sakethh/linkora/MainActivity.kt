@@ -168,7 +168,7 @@ class MainActivity : ComponentActivity() {
                 )
                 val specificCollectionScreenBtmNavColor = colorScheme.surface
                 systemUIController.setNavigationBarColor(
-                    color = if (currentRoute == NavigationRoutes.SPECIFIC_SCREEN.name) specificCollectionScreenBtmNavColor else nonSpecificCollectionScreenBtmNavColor
+                    color = if (currentRoute == NavigationRoutes.SPECIFIC_SCREEN.name || currentRoute == NavigationRoutes.ARCHIVE_SCREEN.name) specificCollectionScreenBtmNavColor else nonSpecificCollectionScreenBtmNavColor
                 )
             }
         }

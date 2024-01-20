@@ -46,6 +46,7 @@ import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
@@ -514,19 +515,17 @@ fun SearchScreen(navController: NavController) {
                 }
             }
         }
-        val foldersSortingSelectedState = rememberSaveable {
-            mutableStateOf(true)
-        }
-        val linksSortingSelectedState = rememberSaveable {
-            mutableStateOf(true)
-        }
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences, _, _ ->
-                searchScreenVM.changeHistoryRetrievedData(sortingPreferences = sortingPreferences)
-            },
-            bottomModalSheetState = sortingBtmSheetState,
-            sortingBtmSheetType = SortingBtmSheetType.HISTORY_SCREEN
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, _, _ ->
+                    searchScreenVM.changeHistoryRetrievedData(sortingPreferences = sortingPreferences)
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = SortingBtmSheetType.HISTORY_SCREEN,
+                shouldFoldersSelectionBeVisible = mutableStateOf(false),
+                shouldLinksSelectionBeVisible = mutableStateOf(false)
+            )
         )
         OptionsBtmSheetUI(
             OptionsBtmSheetUIParam(
