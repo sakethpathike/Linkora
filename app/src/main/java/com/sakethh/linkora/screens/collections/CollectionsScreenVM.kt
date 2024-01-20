@@ -4,12 +4,10 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
-import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,11 +22,11 @@ open class CollectionsScreenVM : ViewModel() {
     val noOfFoldersSelected = mutableIntStateOf(0)
     val areAllFoldersChecked = mutableStateOf(false)
 
-    fun changeAllFoldersSelectedData(){
-        if(areAllFoldersChecked.value){
+    fun changeAllFoldersSelectedData() {
+        if (areAllFoldersChecked.value) {
             selectedFoldersID.addAll(foldersData.value.map { it.id })
             noOfFoldersSelected.intValue = foldersData.value.size
-        }else{
+        } else {
             selectedFoldersID.removeAll(foldersData.value.map { it.id })
             noOfFoldersSelected.intValue = 0
         }

@@ -130,8 +130,7 @@ fun CollectionsScreen(navController: NavController) {
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
-    val btmModalSheetStateForSavingLinks =
-        rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLinks = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -198,8 +197,7 @@ fun CollectionsScreen(navController: NavController) {
                                 collectionsScreenVM.changeAllFoldersSelectedData()
                             }) {
                                 Icon(
-                                    imageVector = Icons.Default.Cancel,
-                                    contentDescription = null
+                                    imageVector = Icons.Default.Cancel, contentDescription = null
                                 )
                             }
                         }
@@ -214,7 +212,8 @@ fun CollectionsScreen(navController: NavController) {
                         } else {
                             Row {
                                 AnimatedContent(targetState = collectionsScreenVM.noOfFoldersSelected.intValue,
-                                    label = "", transitionSpec = {
+                                    label = "",
+                                    transitionSpec = {
                                         ContentTransform(
                                             initialContentExit = slideOutVertically(
                                                 animationSpec = tween(
@@ -222,15 +221,13 @@ fun CollectionsScreen(navController: NavController) {
                                                 )
                                             ) + fadeOut(
                                                 tween(150)
-                                            ),
-                                            targetContentEnter = slideInVertically(
+                                            ), targetContentEnter = slideInVertically(
                                                 animationSpec = tween(durationMillis = 150)
                                             ) + fadeIn(
                                                 tween(150)
                                             )
                                         )
-                                    }
-                                ) {
+                                    }) {
                                     Text(
                                         text = it.toString(),
                                         color = MaterialTheme.colorScheme.onSurface,
@@ -238,17 +235,16 @@ fun CollectionsScreen(navController: NavController) {
                                         fontSize = 18.sp
                                     )
                                 }
-                                Text(
-                                    text = " folders selected",
+                                Text(text = " folders selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontSize = 18.sp, modifier = Modifier.clickable {
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.clickable {
                                         Log.d(
                                             "selected folders LINKORA",
                                             collectionsScreenVM.selectedFoldersID.toString()
                                         )
-                                    }
-                                )
+                                    })
                             }
                         }
                     })
@@ -265,7 +261,9 @@ fun CollectionsScreen(navController: NavController) {
                         Column {
                             if (!areFoldersSelectable.value) {
                                 Card(modifier = Modifier
-                                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                                    .padding(
+                                        top = 20.dp, end = 20.dp, start = 20.dp
+                                    )
                                     .wrapContentHeight()
                                     .fillMaxWidth()
                                     .onGloballyPositioned {
@@ -277,8 +275,7 @@ fun CollectionsScreen(navController: NavController) {
                                         SpecificCollectionsScreenVM.screenType.value =
                                             SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                                    }
-                                ) {
+                                    }) {
                                     Row(horizontalArrangement = Arrangement.Center) {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -298,13 +295,14 @@ fun CollectionsScreen(navController: NavController) {
                                     }
                                 }
                                 Card(modifier = Modifier
-                                    .padding(top = 20.dp, end = 20.dp, start = 20.dp)
+                                    .padding(
+                                        top = 20.dp, end = 20.dp, start = 20.dp
+                                    )
                                     .wrapContentHeight()
                                     .fillMaxWidth()
                                     .clickable {
                                         navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                                    }
-                                ) {
+                                    }) {
                                     Row {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -336,8 +334,7 @@ fun CollectionsScreen(navController: NavController) {
                                         SpecificCollectionsScreenVM.screenType.value =
                                             SpecificScreenType.SAVED_LINKS_SCREEN
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                                    }
-                                ) {
+                                    }) {
                                     Row {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -357,39 +354,35 @@ fun CollectionsScreen(navController: NavController) {
                                     }
                                 }
                                 Divider(
-                                    thickness = 0.5.dp,
-                                    modifier = Modifier.padding(
+                                    thickness = 0.5.dp, modifier = Modifier.padding(
                                         top = 20.dp,
                                         start = 20.dp,
                                         end = 20.dp,
                                         bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
-                                    ),
-                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                    ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
                         }
                     }
                 }
                 item {
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
-                                    shouldSortingBottomSheetAppear.value = true
-                                    coroutineScope.launch {
-                                        sortingBtmSheetState.expand()
-                                    }
-                                } else {
-                                    collectionsScreenVM.areAllFoldersChecked.value =
-                                        !collectionsScreenVM.areAllFoldersChecked.value
-                                    collectionsScreenVM.changeAllFoldersSelectedData()
+                    Row(modifier = Modifier
+                        .clickable {
+                            if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
+                                shouldSortingBottomSheetAppear.value = true
+                                coroutineScope.launch {
+                                    sortingBtmSheetState.expand()
                                 }
+                            } else {
+                                collectionsScreenVM.areAllFoldersChecked.value =
+                                    !collectionsScreenVM.areAllFoldersChecked.value
+                                collectionsScreenVM.changeAllFoldersSelectedData()
                             }
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                        }
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                        verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Folders",
                             color = MaterialTheme.colorScheme.primary,
@@ -412,8 +405,7 @@ fun CollectionsScreen(navController: NavController) {
                                     text = "Select all folders",
                                     style = MaterialTheme.typography.titleSmall
                                 )
-                                Checkbox(
-                                    checked = collectionsScreenVM.areAllFoldersChecked.value,
+                                Checkbox(checked = collectionsScreenVM.areAllFoldersChecked.value,
                                     onCheckedChange = {
                                         collectionsScreenVM.areAllFoldersChecked.value = it
                                         collectionsScreenVM.changeAllFoldersSelectedData()
@@ -433,14 +425,12 @@ fun CollectionsScreen(navController: NavController) {
                             mutableStateOf(!areFoldersSelectable.value)
                         }
                         isCheckBoxSelected.value = collectionsScreenVM.areAllFoldersChecked.value
-
                         FolderIndividualComponent(
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
                             folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
-                                CollectionsScreenVM.selectedFolderData.value =
-                                    folderData
+                                CollectionsScreenVM.selectedFolderData.value = folderData
                                 clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
@@ -454,8 +444,7 @@ fun CollectionsScreen(navController: NavController) {
                                     SpecificCollectionsScreenVM.inARegularFolder.value = true
                                     SpecificCollectionsScreenVM.screenType.value =
                                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                    CollectionsScreenVM.currentClickedFolderData.value =
-                                        folderData
+                                    CollectionsScreenVM.currentClickedFolderData.value = folderData
                                     CollectionsScreenVM.rootFolderID = folderData.id
                                     navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                                 }
@@ -528,8 +517,7 @@ fun CollectionsScreen(navController: NavController) {
                 noteForSaving = clickedFolderNote.value,
                 onNoteDeleteCardClick = {
                     collectionsScreenVM.onNoteDeleteClick(
-                        context,
-                        CollectionsScreenVM.selectedFolderData.value.id
+                        context, CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 linkTitle = "",
@@ -537,14 +525,12 @@ fun CollectionsScreen(navController: NavController) {
             )
         )
         RenameDialogBox(
-            RenameDialogBoxParam(
-                onNoteChangeClick = {
-                    updateVM.updateFolderNote(
-                        CollectionsScreenVM.selectedFolderData.value.id,
-                        newFolderNote = it
-                    )
-                    shouldRenameDialogBoxBeVisible.value = false
-                },
+            RenameDialogBoxParam(onNoteChangeClick = {
+                updateVM.updateFolderNote(
+                    CollectionsScreenVM.selectedFolderData.value.id, newFolderNote = it
+                )
+                shouldRenameDialogBoxBeVisible.value = false
+            },
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedFolderName.value,
                 onTitleChangeClick = {
@@ -558,28 +544,21 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                     shouldRenameDialogBoxBeVisible.value = false
-                }
-            )
-        )
-        DeleteDialogBox(
-            DeleteDialogBoxParam(
-                totalIds = mutableLongStateOf(
-                    CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
-                ),
-                shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
-                onDeleteClick = {
-                    deleteVM.onRegularFolderDeleteClick(
-                        CollectionsScreenVM.selectedFolderData.value.id
-                    )
-                },
-                deleteDialogBoxType = DataDialogBoxType.FOLDER,
-                onDeleted = {
-                    collectionsScreenVM.changeRetrievedFoldersData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        )
-                    )
                 })
+        )
+        DeleteDialogBox(DeleteDialogBoxParam(totalIds = mutableLongStateOf(
+            CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
+        ), shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible, onDeleteClick = {
+            deleteVM.onRegularFolderDeleteClick(
+                CollectionsScreenVM.selectedFolderData.value.id
+            )
+        }, deleteDialogBoxType = DataDialogBoxType.FOLDER, onDeleted = {
+            collectionsScreenVM.changeRetrievedFoldersData(
+                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                    SettingsScreenVM.Settings.selectedSortingType.value
+                )
+            )
+        })
         )
         val isDataExtractingForTheLink = rememberSaveable {
             mutableStateOf(false)
@@ -620,8 +599,7 @@ fun CollectionsScreen(navController: NavController) {
                 when {
                     selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
                         if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
-                            createVM.addANewLinkInAFolderV10(
-                                title = title,
+                            createVM.addANewLinkInAFolderV10(title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
                                 parentFolderID = selectedNonDefaultFolderID,
@@ -640,16 +618,13 @@ fun CollectionsScreen(navController: NavController) {
         )
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
-                shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-                onCreated = {
+                shouldDialogBoxAppear = shouldDialogForNewFolderAppear, onCreated = {
                     collectionsScreenVM.changeRetrievedFoldersData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
                             SettingsScreenVM.Settings.selectedSortingType.value
                         )
                     )
-                },
-                parentFolderID = null,
-                inAChildFolderScreen = false
+                }, parentFolderID = null, inAChildFolderScreen = false
             )
         )
         NewLinkBtmSheet(
@@ -702,8 +677,7 @@ fun CollectionsScreen(navController: NavController) {
                     when {
                         selectedDefaultFolder != "Important Links" && selectedDefaultFolder != "Saved Links" -> {
                             if (selectedNonDefaultFolderID != null && selectedDefaultFolder != null) {
-                                createVM.addANewLinkInAFolderV10(
-                                    title = title,
+                                createVM.addANewLinkInAFolderV10(title = title,
                                     webURL = webURL,
                                     noteForSaving = note,
                                     parentFolderID = selectedNonDefaultFolderID,
@@ -788,19 +762,16 @@ fun FolderIndividualComponent(
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
-                .combinedClickable(
-                    onClick = {
-                        onFolderClick(isCheckBoxChecked.value)
-                        isCheckBoxChecked.value = !isCheckBoxChecked.value
-                        checkBoxState(isCheckBoxChecked.value)
-                    },
-                    onLongClick = { onLongClick() })
+                .combinedClickable(onClick = {
+                    onFolderClick(isCheckBoxChecked.value)
+                    isCheckBoxChecked.value = !isCheckBoxChecked.value
+                    checkBoxState(isCheckBoxChecked.value)
+                }, onLongClick = { onLongClick() })
                 .fillMaxWidth()
                 .requiredHeight(75.dp)
         ) {
             Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.CenterStart
+                modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart
             ) {
                 Icon(
                     imageVector = folderIcon,
@@ -842,14 +813,12 @@ fun FolderIndividualComponent(
                 }
             }
             if (showMoreIcon) {
-                Box(
-                    modifier = Modifier
-                        .clickable {
-                            onMoreIconClick()
-                        }
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                ) {
+                Box(modifier = Modifier
+                    .clickable {
+                        onMoreIconClick()
+                    }
+                    .fillMaxWidth()
+                    .fillMaxHeight()) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
                         contentDescription = null,
@@ -860,15 +829,14 @@ fun FolderIndividualComponent(
                 }
             }
             if (showCheckBox.value && inSelectionMode) {
-                Checkbox(modifier = Modifier
-                    .fillMaxHeight(),
-                    checked = isCheckBoxChecked.value, onCheckedChange = {
+                Checkbox(modifier = Modifier.fillMaxHeight(),
+                    checked = isCheckBoxChecked.value,
+                    onCheckedChange = {
                         checkBoxState(it)
                         isCheckBoxChecked.value = it
                     })
             } else if (showCheckBox.value && !inSelectionMode) {
-                Checkbox(modifier = Modifier
-                    .fillMaxHeight(),
+                Checkbox(modifier = Modifier.fillMaxHeight(),
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
                         checkBoxState(it)
