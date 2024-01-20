@@ -162,7 +162,6 @@ fun CollectionsScreen(navController: NavController) {
     }
     val updateVM: UpdateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
-
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             FloatingActionBtn(
@@ -433,6 +432,8 @@ fun CollectionsScreen(navController: NavController) {
                         val isCheckBoxSelected = rememberSaveable(areFoldersSelectable.value) {
                             mutableStateOf(!areFoldersSelectable.value)
                         }
+                        isCheckBoxSelected.value = collectionsScreenVM.areAllFoldersChecked.value
+
                         FolderIndividualComponent(
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
@@ -465,7 +466,7 @@ fun CollectionsScreen(navController: NavController) {
                                 }
                             },
                             showCheckBox = areFoldersSelectable,
-                            isCheckBoxChecked = if (collectionsScreenVM.areAllFoldersChecked.value) collectionsScreenVM.areAllFoldersChecked else isCheckBoxSelected,
+                            isCheckBoxChecked = isCheckBoxSelected,
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
                                     collectionsScreenVM.selectedFoldersID.add(folderData.id)
@@ -789,8 +790,8 @@ fun FolderIndividualComponent(
             modifier = Modifier
                 .combinedClickable(
                     onClick = {
-                        isCheckBoxChecked.value = !isCheckBoxChecked.value
                         onFolderClick(isCheckBoxChecked.value)
+                        isCheckBoxChecked.value = !isCheckBoxChecked.value
                         checkBoxState(isCheckBoxChecked.value)
                     },
                     onLongClick = { onLongClick() })
@@ -863,12 +864,14 @@ fun FolderIndividualComponent(
                     .fillMaxHeight(),
                     checked = isCheckBoxChecked.value, onCheckedChange = {
                         checkBoxState(it)
+                        isCheckBoxChecked.value = it
                     })
             } else if (showCheckBox.value && !inSelectionMode) {
                 Checkbox(modifier = Modifier
                     .fillMaxHeight(),
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
+                        checkBoxState(it)
                         isCheckBoxChecked.value = it
                     })
             }
