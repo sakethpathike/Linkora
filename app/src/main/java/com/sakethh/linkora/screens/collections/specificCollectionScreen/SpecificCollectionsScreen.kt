@@ -346,7 +346,7 @@ fun SpecificScreen(navController: NavController) {
                                             OptionsBtmSheetType.FOLDER
                                     },
                                     showMoreIcon = true,
-                                    onFolderClick = {
+                                    onFolderClick = {_->
                                         CollectionsScreenVM.currentClickedFolderData.value =
                                             it
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
@@ -604,7 +604,7 @@ fun SpecificScreen(navController: NavController) {
                                             OptionsBtmSheetType.FOLDER
                                     },
                                     showMoreIcon = true,
-                                    onFolderClick = {
+                                    onFolderClick = {_->
                                         CollectionsScreenVM.currentClickedFolderData.value =
                                             it
                                         navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)

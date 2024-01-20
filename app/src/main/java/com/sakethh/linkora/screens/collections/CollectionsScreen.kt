@@ -2,6 +2,7 @@ package com.sakethh.linkora.screens.collections
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -30,9 +31,11 @@ import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
@@ -54,7 +57,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -105,7 +107,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "LongLogTag")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsScreen(navController: NavController) {
@@ -145,9 +147,6 @@ fun CollectionsScreen(navController: NavController) {
     val areFoldersSelectable = rememberSaveable {
         mutableStateOf(false)
     }
-    val noOfFoldersSelected = rememberSaveable {
-        mutableIntStateOf(0)
-    }
     val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -163,6 +162,7 @@ fun CollectionsScreen(navController: NavController) {
     }
     val updateVM: UpdateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
+
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             FloatingActionBtn(
@@ -182,11 +182,21 @@ fun CollectionsScreen(navController: NavController) {
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
                 Column {
-                    TopAppBar(navigationIcon = {
+                    TopAppBar(actions = {
+                        if (areFoldersSelectable.value && collectionsScreenVM.noOfFoldersSelected.intValue != 0) {
+                            IconButton(onClick = { }) {
+                                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                            }
+                            IconButton(onClick = { }) {
+                                Icon(imageVector = Icons.Default.Archive, contentDescription = null)
+                            }
+                        }
+                    }, navigationIcon = {
                         if (areFoldersSelectable.value) {
                             IconButton(onClick = {
                                 areFoldersSelectable.value = false
-                                noOfFoldersSelected.intValue = 0
+                                collectionsScreenVM.areAllFoldersChecked.value = false
+                                collectionsScreenVM.changeAllFoldersSelectedData()
                             }) {
                                 Icon(
                                     imageVector = Icons.Default.Cancel,
@@ -204,7 +214,7 @@ fun CollectionsScreen(navController: NavController) {
                             )
                         } else {
                             Row {
-                                AnimatedContent(targetState = noOfFoldersSelected.intValue,
+                                AnimatedContent(targetState = collectionsScreenVM.noOfFoldersSelected.intValue,
                                     label = "", transitionSpec = {
                                         ContentTransform(
                                             initialContentExit = slideOutVertically(
@@ -233,7 +243,12 @@ fun CollectionsScreen(navController: NavController) {
                                     text = " folders selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontSize = 18.sp
+                                    fontSize = 18.sp, modifier = Modifier.clickable {
+                                        Log.d(
+                                            "selected folders LINKORA",
+                                            collectionsScreenVM.selectedFoldersID.toString()
+                                        )
+                                    }
                                 )
                             }
                         }
@@ -357,9 +372,6 @@ fun CollectionsScreen(navController: NavController) {
                     }
                 }
                 item {
-                    val areAllFoldersChecked = rememberSaveable {
-                        mutableStateOf(false)
-                    }
                     Row(
                         modifier = Modifier
                             .clickable {
@@ -369,7 +381,9 @@ fun CollectionsScreen(navController: NavController) {
                                         sortingBtmSheetState.expand()
                                     }
                                 } else {
-                                    areAllFoldersChecked.value = !areAllFoldersChecked.value
+                                    collectionsScreenVM.areAllFoldersChecked.value =
+                                        !collectionsScreenVM.areAllFoldersChecked.value
+                                    collectionsScreenVM.changeAllFoldersSelectedData()
                                 }
                             }
                             .fillMaxWidth()
@@ -394,9 +408,18 @@ fun CollectionsScreen(navController: NavController) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                             }
                         } else if (areFoldersSelectable.value) {
-                            Checkbox(checked = areAllFoldersChecked.value, onCheckedChange = {
-                                areAllFoldersChecked.value = it
-                            })
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Select all folders",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Checkbox(
+                                    checked = collectionsScreenVM.areAllFoldersChecked.value,
+                                    onCheckedChange = {
+                                        collectionsScreenVM.areAllFoldersChecked.value = it
+                                        collectionsScreenVM.changeAllFoldersSelectedData()
+                                    })
+                            }
                         }
                     }
                 }
@@ -404,9 +427,12 @@ fun CollectionsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
                 if (foldersData.isNotEmpty()) {
-                    itemsIndexed(items = foldersData, key = { _, foldersData ->
+                    items(items = foldersData, key = { foldersData ->
                         foldersData.id.toString() + foldersData.folderName
-                    }) { folderIndex, folderData ->
+                    }) { folderData ->
+                        val isCheckBoxSelected = rememberSaveable(areFoldersSelectable.value) {
+                            mutableStateOf(!areFoldersSelectable.value)
+                        }
                         FolderIndividualComponent(
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
@@ -439,8 +465,17 @@ fun CollectionsScreen(navController: NavController) {
                                 }
                             },
                             showCheckBox = areFoldersSelectable,
+                            isCheckBoxChecked = if (collectionsScreenVM.areAllFoldersChecked.value) collectionsScreenVM.areAllFoldersChecked else isCheckBoxSelected,
                             checkBoxState = { checkBoxState ->
-                                if (checkBoxState) noOfFoldersSelected.intValue += 1 else noOfFoldersSelected.intValue -= 1
+                                if (checkBoxState) {
+                                    collectionsScreenVM.selectedFoldersID.add(folderData.id)
+                                    collectionsScreenVM.noOfFoldersSelected.intValue += 1
+                                } else {
+                                    collectionsScreenVM.selectedFoldersID.removeAll {
+                                        it == folderData.id
+                                    }
+                                    collectionsScreenVM.noOfFoldersSelected.intValue -= 1
+                                }
                             })
                     }
                 } else {
@@ -739,25 +774,24 @@ fun FolderIndividualComponent(
     folderName: String,
     folderNote: String,
     onMoreIconClick: () -> Unit,
-    onFolderClick: () -> Unit,
+    onFolderClick: (checkBoxState: Boolean) -> Unit,
     maxLines: Int = 1,
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
     showCheckBox: MutableState<Boolean> = mutableStateOf(false),
     checkBoxState: (Boolean) -> Unit = {},
     isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false),
-    onLongClick: () -> Unit = {}
+    onLongClick: () -> Unit = {},
+    inSelectionMode: Boolean = false,
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier
                 .combinedClickable(
                     onClick = {
-                        onFolderClick()
-                        if (showCheckBox.value) {
-                            isCheckBoxChecked.value = !isCheckBoxChecked.value
-                            checkBoxState(isCheckBoxChecked.value)
-                        }
+                        isCheckBoxChecked.value = !isCheckBoxChecked.value
+                        onFolderClick(isCheckBoxChecked.value)
+                        checkBoxState(isCheckBoxChecked.value)
                     },
                     onLongClick = { onLongClick() })
                 .fillMaxWidth()
@@ -824,13 +858,18 @@ fun FolderIndividualComponent(
                     )
                 }
             }
-            if (showCheckBox.value) {
+            if (showCheckBox.value && inSelectionMode) {
+                Checkbox(modifier = Modifier
+                    .fillMaxHeight(),
+                    checked = isCheckBoxChecked.value, onCheckedChange = {
+                        checkBoxState(it)
+                    })
+            } else if (showCheckBox.value && !inSelectionMode) {
                 Checkbox(modifier = Modifier
                     .fillMaxHeight(),
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
                         isCheckBoxChecked.value = it
-                        checkBoxState(it)
                     })
             }
         }

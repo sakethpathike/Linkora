@@ -156,7 +156,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
                                 }
                             },
-                            onFolderClick = {
+                            onFolderClick = {_->
                                 CollectionsScreenVM.currentClickedFolderData.value.id = it.id
                                 CollectionsScreenVM.currentClickedFolderData.value.folderName =
                                     it.archiveFolderName
@@ -186,7 +186,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 }
                             },
                             showMoreIcon = true,
-                            onFolderClick = {
+                            onFolderClick = {_->
                                 CollectionsScreenVM.currentClickedFolderData.value = it
                                 CollectionsScreenVM.selectedFolderData.value = it
                                 SpecificCollectionsScreenVM.inARegularFolder.value = false

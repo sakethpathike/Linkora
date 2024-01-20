@@ -2,7 +2,9 @@ package com.sakethh.linkora.screens.collections
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
@@ -18,6 +20,19 @@ import kotlinx.coroutines.withContext
 open class CollectionsScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
     val foldersData = _foldersData.asStateFlow()
+    val selectedFoldersID = mutableListOf<Long>()
+    val noOfFoldersSelected = mutableIntStateOf(0)
+    val areAllFoldersChecked = mutableStateOf(false)
+
+    fun changeAllFoldersSelectedData(){
+        if(areAllFoldersChecked.value){
+            selectedFoldersID.addAll(foldersData.value.map { it.id })
+            noOfFoldersSelected.intValue = foldersData.value.size
+        }else{
+            selectedFoldersID.removeAll(foldersData.value.map { it.id })
+            noOfFoldersSelected.intValue = 0
+        }
+    }
 
     companion object {
         var rootFolderID: Long = 0
@@ -34,24 +49,6 @@ open class CollectionsScreenVM : ViewModel() {
                 infoForSaving = "",
                 parentFolderID = 0
             )
-        )
-        var selectedLinkData = LinksTable(
-            id = 0L,
-            title = "",
-            webURL = "",
-            baseURL = "",
-            imgURL = "",
-            infoForSaving = "",
-            isLinkedWithSavedLinks = true,
-            isLinkedWithFolders = true,
-            keyOfLinkedFolderV10 = null,
-            keyOfLinkedFolder = null,
-            isLinkedWithImpFolder = false,
-            keyOfImpLinkedFolder = "",
-            keyOfImpLinkedFolderV10 = null,
-            isLinkedWithArchivedFolder = false,
-            keyOfArchiveLinkedFolderV10 = null,
-            keyOfArchiveLinkedFolder = null
         )
     }
 
