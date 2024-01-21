@@ -183,7 +183,8 @@ fun ParentHomeScreen(navController: NavController) {
                     ) {
                         ChildHomeScreen(
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
-                            folderID = homeScreenList[it].id
+                            folderID = homeScreenList[it].id,
+                            navController = navController
                         )
                     }
                 }

@@ -3,6 +3,7 @@ package com.sakethh.linkora.localDB.dao.homeLists
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
+import androidx.room.Update
 import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import kotlinx.coroutines.flow.Flow
 
@@ -16,4 +17,7 @@ interface HomeListsCRUD {
 
     @Insert
     suspend fun addAHomeScreenListFolder(homeScreenListTable: HomeScreenListTable)
+
+    @Update
+    suspend fun updateList(list: List<HomeScreenListTable>)
 }

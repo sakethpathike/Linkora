@@ -9,6 +9,7 @@ import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
@@ -326,6 +327,12 @@ class UpdateVM : ViewModel() {
                         }
                 }
             }
+        }
+    }
+
+    fun updateHomeList(homeScreenListTable: List<HomeScreenListTable>) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.homeListsCrud().updateList(homeScreenListTable)
         }
     }
 }

@@ -24,6 +24,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
@@ -38,7 +39,10 @@ import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -51,7 +55,11 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, folderID: Long) {
+fun ChildHomeScreen(
+    homeScreenType: HomeScreenVM.HomeScreenType,
+    folderID: Long,
+    navController: NavController
+) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
@@ -119,6 +127,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, folderID: Long)
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val folderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
+    val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
     Log.d("HOME SCREEN DATA", folderID.toString())
     LinkoraTheme {
         LazyColumn(
@@ -268,6 +277,24 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, folderID: Long)
                     }
                 }
             } else {
+                if (childFoldersData.isNotEmpty()) {
+                    items(childFoldersData) { folderElement ->
+                        FolderIndividualComponent(
+                            folderName = folderElement.folderName,
+                            folderNote = folderElement.infoForSaving,
+                            onMoreIconClick = {},
+                            onFolderClick = {
+                                SpecificCollectionsScreenVM.inARegularFolder.value = true
+                                SpecificCollectionsScreenVM.screenType.value =
+                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                CollectionsScreenVM.currentClickedFolderData.value = folderElement
+                                CollectionsScreenVM.rootFolderID = folderElement.id
+                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            },
+                            showMoreIcon = true
+                        )
+                    }
+                }
                 if (folderLinksData.isNotEmpty()) {
                     items(folderLinksData) {
                         LinkUIComponent(

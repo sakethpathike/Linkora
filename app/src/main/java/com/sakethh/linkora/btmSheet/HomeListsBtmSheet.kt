@@ -50,6 +50,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.ReadVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 
@@ -63,6 +64,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val readVM: ReadVM = viewModel()
     val createVM: CreateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
+    val updateVM: UpdateVM = viewModel()
     LaunchedEffect(key1 = Unit) {
         readVM.readHomeScreenListTable()
     }
@@ -135,18 +137,25 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                itemsIndexed(homeScreenList) { listIndex, listElement ->
+                itemsIndexed(homeScreenList) { currentIndex, listElement ->
                     ListFolderUIComponent(
                         folderName = listElement.folderName,
                         onMoveUpClick = {
-
+                            if (currentIndex != 0) {
+                                val mutableList = homeScreenList.toMutableList()
+                                mutableList.add(currentIndex, mutableList[currentIndex - 1])
+                                mutableList.add(currentIndex - 1, listElement)
+                                updateVM.updateHomeList(mutableList.toList())
+                            }
                         },
                         onMoveDownClick = {
 
                         },
                         onRemoveClick = {
                             deleteVM.deleteAnElementFromHomeScreenList(listElement.id)
-                        }, onAddClick = {}, shouldAddIconBeVisible = false
+                        }, onAddClick = {}, shouldAddIconBeVisible = false,
+                        shouldMoveUpIconVisible = currentIndex != 0,
+                        shouldMoveDownIconVisible = currentIndex != homeScreenList.size - 1
                     )
                 }
                 if (homeScreenList.size == 5) {
@@ -229,7 +238,9 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                         )
                                     )
                                 },
-                                shouldAddIconBeVisible = true
+                                shouldAddIconBeVisible = true,
+                                shouldMoveUpIconVisible = false,
+                                shouldMoveDownIconVisible = false,
                             )
                         }
                     }
@@ -246,7 +257,9 @@ private fun ListFolderUIComponent(
     onMoveDownClick: () -> Unit,
     onRemoveClick: () -> Unit,
     onAddClick: () -> Unit,
-    shouldAddIconBeVisible: Boolean
+    shouldAddIconBeVisible: Boolean,
+    shouldMoveUpIconVisible: Boolean,
+    shouldMoveDownIconVisible: Boolean,
 ) {
     Column(modifier = Modifier
         .fillMaxWidth()
@@ -288,22 +301,25 @@ private fun ListFolderUIComponent(
             ) {
                 Row {
                     if (!shouldAddIconBeVisible) {
-
-                        IconButton(onClick = {
-                            onMoveUpClick()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowUpward,
-                                contentDescription = null
-                            )
+                        if (shouldMoveUpIconVisible) {
+                            IconButton(onClick = {
+                                onMoveUpClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowUpward,
+                                    contentDescription = null
+                                )
+                            }
                         }
-                        IconButton(onClick = {
-                            onMoveDownClick()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowDownward,
-                                contentDescription = null
-                            )
+                        if (shouldMoveDownIconVisible) {
+                            IconButton(onClick = {
+                                onMoveDownClick()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.ArrowDownward,
+                                    contentDescription = null
+                                )
+                            }
                         }
                         IconButton(onClick = {
                             onRemoveClick()
