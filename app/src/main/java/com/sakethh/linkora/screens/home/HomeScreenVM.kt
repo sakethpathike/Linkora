@@ -10,7 +10,6 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
-import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -25,14 +24,8 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     enum class HomeScreenType {
-        SAVED_LINKS, IMP_LINKS
+        SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
     }
-
-    val parentHomeScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
-        ChildHomeScreen(homeScreenType = HomeScreenType.SAVED_LINKS)
-    }), ArchiveScreenModal(name = "Important Links", screen = {
-        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS)
-    }))
 
     companion object {
         var currentHomeScreenType = HomeScreenType.SAVED_LINKS

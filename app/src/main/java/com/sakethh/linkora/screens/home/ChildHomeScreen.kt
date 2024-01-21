@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.home
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -50,27 +51,43 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
+fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType, folderID: Long) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
     LaunchedEffect(key1 = Unit) {
         awaitAll(async {
-            specificCollectionsScreenVM.changeRetrievedData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                    SettingsScreenVM.Settings.selectedSortingType.value
-                ),
-                folderID = 0,
-                screenType = SpecificScreenType.SAVED_LINKS_SCREEN
-            )
+            if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
+                specificCollectionsScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ),
+                    folderID = 0,
+                    screenType = SpecificScreenType.SAVED_LINKS_SCREEN
+                )
+            }
         }, async {
-            specificCollectionsScreenVM.changeRetrievedData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                    SettingsScreenVM.Settings.selectedSortingType.value
-                ),
-                folderID = 0,
-                screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-            )
+            if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
+                specificCollectionsScreenVM.changeRetrievedData(
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ),
+                    folderID = 0,
+                    screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                )
+            }
+        }, async {
+            if (homeScreenType == HomeScreenVM.HomeScreenType.CUSTOM_LIST) {
+                specificCollectionsScreenVM.changeRetrievedData(
+                    screenType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                        SettingsScreenVM.Settings.selectedSortingType.value
+                    ),
+                    folderID = folderID,
+                    isFoldersSortingSelected = true,
+                    isLinksSortingSelected = true
+                )
+            }
         })
     }
     val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
@@ -101,6 +118,8 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
         mutableStateOf("")
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val folderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
+    Log.d("HOME SCREEN DATA", folderID.toString())
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier
@@ -179,7 +198,7 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
                         Spacer(modifier = Modifier.height(165.dp))
                     }
                 }
-            } else {
+            } else if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
                 if (impLinksData.isNotEmpty()) {
                     items(items = impLinksData, key = { importantLinks ->
                         importantLinks.webURL + importantLinks.id.toString()
@@ -246,6 +265,73 @@ fun ChildHomeScreen(homeScreenType: HomeScreenVM.HomeScreenType) {
                 } else {
                     item {
                         DataEmptyScreen(text = "No important links were found. To continue, please add links.")
+                    }
+                }
+            } else {
+                if (folderLinksData.isNotEmpty()) {
+                    items(folderLinksData) {
+                        LinkUIComponent(
+                            linkUIComponentParam = LinkUIComponentParam(
+                                title = it.title,
+                                webBaseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                onMoreIconCLick = {
+                                    selectedLinkID.longValue = it.id
+                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                    HomeScreenVM.tempImpLinkData.title = it.title
+                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                    selectedWebURL.value = it.webURL
+                                    selectedNote.value = it.infoForSaving
+                                    selectedURLTitle.value = it.title
+                                    coroutineScope.launch {
+                                        awaitAll(async {
+                                            optionsBtmSheetVM.updateImportantCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }, async {
+                                            optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                url = selectedWebURL.value
+                                            )
+                                        }
+                                        )
+                                    }
+                                },
+                                onLinkClick = {
+                                    coroutineScope.launch {
+                                        openInWeb(
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
+                                    }
+                                },
+                                webURL = it.webURL,
+                                onForceOpenInExternalBrowserClicked = {
+                                    homeScreenVM.onLinkClick(
+                                        RecentlyVisited(
+                                            title = it.title,
+                                            webURL = it.webURL,
+                                            baseURL = it.baseURL,
+                                            imgURL = it.imgURL,
+                                            infoForSaving = it.infoForSaving
+                                        ), context = context, uriHandler = uriHandler,
+                                        onTaskCompleted = {},
+                                        forceOpenInExternalBrowser = true
+                                    )
+                                })
+                        )
+                    }
+                } else {
+                    item {
+                        DataEmptyScreen(text = "No links were found. To continue, please add links.")
                     }
                 }
             }

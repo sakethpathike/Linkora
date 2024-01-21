@@ -10,6 +10,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
@@ -28,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -53,6 +56,7 @@ import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.ReadVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -100,6 +104,11 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val readVM: ReadVM = viewModel()
+    LaunchedEffect(key1 = Unit) {
+        readVM.readHomeScreenListTable()
+    }
+    val homeScreenList = readVM.readHomeScreenListTable.collectAsState().value
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -141,31 +150,42 @@ fun ParentHomeScreen(navController: NavController) {
             ) {
                 LazyColumn(modifier = Modifier.padding(it)) {
                     stickyHeader {
-                        TabRow(selectedTabIndex = pagerState.currentPage) {
-                            homeScreenVM.parentHomeScreenData.forEachIndexed { index, archiveScreenModal ->
-                                Tab(selected = pagerState.currentPage == index, onClick = {
-                                    coroutineScope.launch {
-                                        pagerState.animateScrollToPage(index)
-                                    }.start()
-                                }) {
-                                    Text(
-                                        text = archiveScreenModal.name,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier.padding(15.dp),
-                                        color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                            0.70f
+                        if (homeScreenList.isNotEmpty()) {
+                            TabRow(
+                                modifier = Modifier
+                                    .fillMaxWidth(), selectedTabIndex = pagerState.currentPage
+                            ) {
+                                homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                    Tab(selected = pagerState.currentPage == index, onClick = {
+                                        coroutineScope.launch {
+                                            pagerState.animateScrollToPage(index)
+                                        }.start()
+                                    }) {
+                                        Text(
+                                            text = homeScreenListsElement.folderName,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontSize = 18.sp,
+                                            modifier = Modifier.padding(15.dp),
+                                            color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                0.70f
+                                            )
                                         )
-                                    )
+                                    }
                                 }
                             }
                         }
                     }
                 }
-                HorizontalPager(
-                    count = homeScreenVM.parentHomeScreenData.size, state = pagerState
-                ) {
-                    homeScreenVM.parentHomeScreenData[it].screen(navController = navController)
+                if (homeScreenList.isNotEmpty()) {
+                    HorizontalPager(
+                        modifier = Modifier.fillMaxWidth(),
+                        count = homeScreenList.size, state = pagerState
+                    ) {
+                        ChildHomeScreen(
+                            homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
+                            folderID = homeScreenList[it].id
+                        )
+                    }
                 }
             }
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
