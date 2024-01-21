@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sakethh.linkora.btmSheet.HomeListBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
@@ -51,7 +52,6 @@ import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
-import com.sakethh.linkora.customComposables.ListBtmSheet
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
@@ -280,7 +280,7 @@ fun ParentHomeScreen(navController: NavController) {
             )
         )
 
-        ListBtmSheet(isBtmSheetVisible = shouldListsBottomSheetAppear)
+        HomeListBtmSheet(isBtmSheetVisible = shouldListsBottomSheetAppear)
 
         NewLinkBtmSheet(
             NewLinkBtmSheetUIParam(

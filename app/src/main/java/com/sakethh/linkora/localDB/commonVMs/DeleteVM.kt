@@ -31,4 +31,10 @@ class DeleteVM : ViewModel() {
             onTaskCompleted()
         }
     }
+
+    fun deleteAnElementFromHomeScreenList(folderID: Long) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.homeListsCrud().deleteAHomeScreenListFolder(folderID)
+        }
+    }
 }

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LinkDataExtractor
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.isNetworkAvailable
@@ -301,6 +302,12 @@ class CreateVM : ViewModel() {
                     onTaskCompleted()
                 }
             }
+        }
+    }
+
+    fun insertANewElementInHomeScreenList(homeScreenListTable: HomeScreenListTable) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.homeListsCrud().addAHomeScreenListFolder(homeScreenListTable)
         }
     }
 }

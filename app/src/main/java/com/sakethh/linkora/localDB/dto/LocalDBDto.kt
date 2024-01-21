@@ -104,3 +104,10 @@ data class RecentlyVisited(
     var imgURL: String,
     var infoForSaving: String,
 )
+
+@Serializable
+@Entity(tableName = "home_screen_list_table")
+data class HomeScreenListTable(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    val folderName: String
+)

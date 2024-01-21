@@ -22,12 +22,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -36,9 +34,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
@@ -461,6 +459,8 @@ fun CollectionsScreen(navController: NavController) {
                             onLongClick = {
                                 if (!areFoldersSelectable.value) {
                                     areFoldersSelectable.value = true
+                                    collectionsScreenVM.areAllFoldersChecked.value = false
+                                    collectionsScreenVM.changeAllFoldersSelectedData()
                                 }
                             },
                             showCheckBox = areFoldersSelectable,
@@ -566,6 +566,9 @@ fun CollectionsScreen(navController: NavController) {
                         collectionsScreenVM.selectedFoldersID.forEach {
                             deleteVM.onRegularFolderDeleteClick(it)
                         }
+                        areFoldersSelectable.value = false
+                        collectionsScreenVM.areAllFoldersChecked.value = false
+                        collectionsScreenVM.changeAllFoldersSelectedData()
                     } else {
                         deleteVM.onRegularFolderDeleteClick(
                             CollectionsScreenVM.selectedFolderData.value.id
@@ -754,6 +757,10 @@ fun CollectionsScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
+        } else if (areFoldersSelectable.value) {
+            areFoldersSelectable.value = false
+            collectionsScreenVM.areAllFoldersChecked.value = false
+            collectionsScreenVM.changeAllFoldersSelectedData()
         } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
             activity?.finish()
         } else {
@@ -773,7 +780,7 @@ fun FolderIndividualComponent(
     onFolderClick: (checkBoxState: Boolean) -> Unit,
     maxLines: Int = 1,
     showMoreIcon: Boolean,
-    folderIcon: ImageVector = Icons.Outlined.Folder,
+    folderIcon: ImageVector = Icons.Default.Folder,
     showCheckBox: MutableState<Boolean> = mutableStateOf(false),
     checkBoxState: (Boolean) -> Unit = {},
     isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false),
@@ -788,23 +795,17 @@ fun FolderIndividualComponent(
                     isCheckBoxChecked.value = !isCheckBoxChecked.value
                     checkBoxState(isCheckBoxChecked.value)
                 }, onLongClick = { onLongClick() })
-                .fillMaxWidth()
-                .requiredHeight(75.dp)
+                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart
-            ) {
-                Icon(
-                    imageVector = folderIcon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .size(28.dp)
-                )
-            }
+            Icon(
+                imageVector = folderIcon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(28.dp)
+            )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
                     .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox.value) 0.78f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -834,30 +835,22 @@ fun FolderIndividualComponent(
                 }
             }
             if (showMoreIcon) {
-                Box(modifier = Modifier
-                    .clickable {
-                        onMoreIconClick()
-                    }
-                    .fillMaxWidth()
-                    .fillMaxHeight()) {
+                IconButton(onClick = { onMoreIconClick() }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 20.dp)
-                            .align(Alignment.CenterEnd)
+                        contentDescription = null
                     )
                 }
             }
             if (showCheckBox.value && inSelectionMode) {
-                Checkbox(modifier = Modifier.fillMaxHeight(),
+                Checkbox(
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
                         checkBoxState(it)
                         isCheckBoxChecked.value = it
                     })
             } else if (showCheckBox.value && !inSelectionMode) {
-                Checkbox(modifier = Modifier.fillMaxHeight(),
+                Checkbox(
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
                         checkBoxState(it)
