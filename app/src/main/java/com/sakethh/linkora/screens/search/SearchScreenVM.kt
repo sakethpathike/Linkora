@@ -236,7 +236,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
                     SelectedLinkType.SAVED_LINKS -> {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSavedLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            .deleteALinkFromSavedLinksBasedOnURL(webURL = HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.FOLDER_BASED_LINKS -> {
@@ -249,7 +249,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
                     SelectedLinkType.IMP_LINKS -> {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(webURL = HomeScreenVM.tempImpLinkData.webURL)
+                            .deleteALinkFromImpLinks(HomeScreenVM.tempImpLinkData.id)
                     }
 
                     SelectedLinkType.ARCHIVE_LINKS -> {
@@ -413,7 +413,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -445,7 +445,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false

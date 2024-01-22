@@ -162,7 +162,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinks(
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -195,7 +195,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromImpLinks(webURL = selectedWebURL)
+                        .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -266,7 +266,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                         ), context = context, onTaskCompleted = {})
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
+                            .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(
@@ -312,7 +312,7 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                         ), context = context, {})
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
+                            .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(

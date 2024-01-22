@@ -44,13 +44,16 @@ interface DeleteDao {
     suspend fun deleteALinkInfoOfFolders(linkID: Long)
 
     @Query("DELETE from links_table WHERE webURL = :webURL AND isLinkedWithSavedLinks = 1 AND isLinkedWithArchivedFolder=0 AND isLinkedWithArchivedFolder=0")
-    suspend fun deleteALinkFromSavedLinks(webURL: String)
+    suspend fun deleteALinkFromSavedLinksBasedOnURL(webURL: String)
 
     @Query("UPDATE folders_table SET infoForSaving = \"\" WHERE id = :folderID")
     suspend fun deleteAFolderNote(folderID: Long)
 
-    @Query("DELETE from important_links_table WHERE webURL = :webURL")
-    suspend fun deleteALinkFromImpLinks(webURL: String)
+    @Query("DELETE from important_links_table WHERE id = :linkID")
+    suspend fun deleteALinkFromImpLinks(linkID: Long)
+
+    @Query("DELETE from important_links_table WHERE webURL=:webURL")
+    suspend fun deleteALinkFromImpLinksBasedOnURL(webURL: String)
 
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromArchiveLinksV9(webURL: String)

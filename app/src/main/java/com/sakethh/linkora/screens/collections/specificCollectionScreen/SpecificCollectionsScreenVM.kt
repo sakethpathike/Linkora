@@ -678,7 +678,7 @@ open class SpecificCollectionsScreenVM(
                         })
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
+                            .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -717,7 +717,7 @@ open class SpecificCollectionsScreenVM(
                         })
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSavedLinks(webURL = tempImpLinkData.webURL)
+                            .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -761,7 +761,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromImpLinks(webURL = selectedWebURL)
+                        .deleteALinkFromImpLinks(linkID = linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -782,7 +782,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromSavedLinks(webURL = selectedWebURL)
+                        .deleteALinkFromLinksTable(linkID = linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -878,7 +878,7 @@ open class SpecificCollectionsScreenVM(
                     .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
             ) {
                 LocalDataBase.localDB.deleteDao()
-                    .deleteALinkFromImpLinks(webURL = tempImpLinkData.webURL)
+                    .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                 Toast.makeText(
                     context,
                     "removed link from the \"Important Links\" successfully",

@@ -5,6 +5,7 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -485,14 +486,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                     .nestedScroll(scrollBehavior.nestedScrollConnection)
                     .padding(it)
                     .fillMaxSize()
+                    .animateContentSize()
             ) {
                 when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        if (childFoldersData.foldersTableList.isNotEmpty()) {
+                        if (childFoldersData.foldersTableList.isNotEmpty() && !areLinksSelectable.value) {
                             items(items = childFoldersData.foldersTableList, key = { foldersTable ->
                                 foldersTable.id.toString() + foldersTable.folderName
                             }) {
-                                FolderIndividualComponent(folderName = it.folderName,
+                                FolderIndividualComponent(
+                                    folderName = it.folderName,
                                     folderNote = it.infoForSaving,
                                     onMoreIconClick = {
                                         selectedURLTitle.value = it.folderName
@@ -825,13 +828,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        if (archivedSubFoldersData.foldersTableList.isNotEmpty()) {
+                        if (archivedSubFoldersData.foldersTableList.isNotEmpty() && !areLinksSelectable.value) {
                             items(
                                 items = archivedSubFoldersData.foldersTableList,
                                 key = { foldersTable ->
                                     foldersTable.folderName + foldersTable.id.toString()
                                 }) {
-                                FolderIndividualComponent(folderName = it.folderName,
+                                FolderIndividualComponent(
+                                    folderName = it.folderName,
                                     folderNote = it.infoForSaving,
                                     onMoreIconClick = {
                                         CollectionsScreenVM.selectedFolderData.value = it
@@ -1135,14 +1139,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 folderID = CollectionsScreenVM.selectedFolderData.value.id,
                                 selectedWebURL = selectedWebURL.value,
                                 context = context,
-                                onTaskCompleted = {
-                                    specificCollectionsScreenVM.changeRetrievedData(
-                                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                            SettingsScreenVM.Settings.selectedSortingType.value
-                                        )
-                                    )
-                                },
+                                onTaskCompleted = {},
                                 folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                                 linkID = it,
                             )
@@ -1150,6 +1147,12 @@ fun SpecificCollectionScreen(navController: NavController) {
                         areLinksSelectable.value = false
                         specificCollectionsScreenVM.areAllItemsChecked.value = false
                         specificCollectionsScreenVM.removeAllSelections()
+                        specificCollectionsScreenVM.changeRetrievedData(
+                            folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                SettingsScreenVM.Settings.selectedSortingType.value
+                            )
+                        )
                     } else {
                         specificCollectionsScreenVM.onDeleteClick(
                             folderID = CollectionsScreenVM.selectedFolderData.value.id,

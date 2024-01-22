@@ -91,7 +91,7 @@ class UpdateVM : ViewModel() {
                 } else {
                     viewModelScope.launch {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(webURL = importantLinks.webURL)
+                            .deleteALinkFromImpLinks(linkID = importantLinks.id)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
