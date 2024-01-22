@@ -462,6 +462,8 @@ fun CollectionsScreen(navController: NavController) {
                                     areFoldersSelectable.value = true
                                     collectionsScreenVM.areAllItemsChecked.value = false
                                     collectionsScreenVM.changeAllFoldersSelectedData()
+                                    collectionsScreenVM.selectedItemsID.add(folderData.id)
+                                    foldersData.isCheckBoxSelected[folderIndex].value = true
                                 }
                             },
                             showCheckBox = areFoldersSelectable,

@@ -1,7 +1,6 @@
 package com.sakethh.linkora.screens.home
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
@@ -128,7 +127,6 @@ fun ChildHomeScreen(
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
     val folderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
     val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
-    Log.d("HOME SCREEN DATA", folderID.toString())
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier

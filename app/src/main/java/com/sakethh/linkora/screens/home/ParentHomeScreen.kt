@@ -178,12 +178,16 @@ fun ParentHomeScreen(navController: NavController) {
                 }
                 if (homeScreenList.isNotEmpty()) {
                     HorizontalPager(
+                        userScrollEnabled = false,
+                        key = {
+                            it
+                        },
                         modifier = Modifier.fillMaxWidth(),
                         count = homeScreenList.size, state = pagerState
                     ) {
                         ChildHomeScreen(
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
-                            folderID = homeScreenList[it].id,
+                            folderID = homeScreenList[pagerState.currentPage].id,
                             navController = navController
                         )
                     }

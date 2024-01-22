@@ -19,6 +19,7 @@ class DeleteVM : ViewModel() {
                 .deleteAFolder(
                     folderID = clickedFolderID
                 )
+            deleteAnElementFromHomeScreenList(clickedFolderID)
         }
     }
 

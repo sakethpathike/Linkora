@@ -527,7 +527,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            areLinksSelectable.value = true
+                                            if (!areLinksSelectable.value) {
+                                                areLinksSelectable.value = true
+                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                                    linkData.id
+                                                )
+                                                specificFolderLinksData.isCheckBoxSelected[linkIndex].value =
+                                                    true
+                                            }
                                         },
                                         isSelectionModeEnabled = areLinksSelectable,
                                         title = linkData.title,
@@ -632,7 +639,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            areLinksSelectable.value = true
+                                            if (!areLinksSelectable.value) {
+                                                areLinksSelectable.value = true
+                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                                    linkData.id
+                                                )
+                                                savedLinksData.isCheckBoxSelected[linkIndex].value =
+                                                    true
+                                            }
                                         },
                                         isSelectionModeEnabled = areLinksSelectable,
                                         title = linkData.title,
@@ -733,7 +747,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            areLinksSelectable.value = true
+                                            if (!areLinksSelectable.value) {
+                                                areLinksSelectable.value = true
+                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                                    linkData.id
+                                                )
+                                                impLinksData.isCheckBoxSelected[linkIndex].value =
+                                                    true
+                                            }
                                         },
                                         isSelectionModeEnabled = areLinksSelectable,
                                         title = linkData.title,
@@ -867,7 +888,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            areLinksSelectable.value = true
+                                            if (!areLinksSelectable.value) {
+                                                areLinksSelectable.value = true
+                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                                    linkData.id
+                                                )
+                                                archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value =
+                                                    true
+                                            }
                                         },
                                         isSelectionModeEnabled = areLinksSelectable,
                                         title = linkData.title,
