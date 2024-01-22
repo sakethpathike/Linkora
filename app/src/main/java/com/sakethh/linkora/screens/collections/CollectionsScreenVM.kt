@@ -2,6 +2,7 @@ package com.sakethh.linkora.screens.collections
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -15,8 +16,18 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+data class FolderComponent(
+    val isCheckBoxSelected: List<MutableState<Boolean>>,
+    val folderList: List<FoldersTable>
+)
+
 open class CollectionsScreenVM : ViewModel() {
-    private val _foldersData = MutableStateFlow(emptyList<FoldersTable>())
+    private val _foldersData = MutableStateFlow(
+        FolderComponent(
+            emptyList(),
+            emptyList()
+        )
+    )
     val foldersData = _foldersData.asStateFlow()
     val selectedFoldersID = mutableListOf<Long>()
     val noOfFoldersSelected = mutableIntStateOf(0)
@@ -24,11 +35,13 @@ open class CollectionsScreenVM : ViewModel() {
 
     fun changeAllFoldersSelectedData() {
         if (areAllFoldersChecked.value) {
-            selectedFoldersID.addAll(foldersData.value.map { it.id })
-            noOfFoldersSelected.intValue = foldersData.value.size
+            selectedFoldersID.addAll(foldersData.value.folderList.map { it.id })
+            noOfFoldersSelected.intValue = foldersData.value.folderList.size
+            foldersData.value.isCheckBoxSelected.forEach { it.value = true }
         } else {
-            selectedFoldersID.removeAll(foldersData.value.map { it.id })
+            selectedFoldersID.removeAll(foldersData.value.folderList.map { it.id })
             noOfFoldersSelected.intValue = 0
+            foldersData.value.isCheckBoxSelected.forEach { it.value = false }
         }
     }
 
@@ -64,7 +77,16 @@ open class CollectionsScreenVM : ViewModel() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.regularFolderSorting().sortByAToZ()
                         .collect {
-                            _foldersData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _foldersData.emit(
+                                FolderComponent(
+                                    isCheckBoxSelected = mutableBooleanList,
+                                    it
+                                )
+                            )
                         }
                 }
             }
@@ -73,7 +95,16 @@ open class CollectionsScreenVM : ViewModel() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.regularFolderSorting().sortByZToA()
                         .collect {
-                            _foldersData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _foldersData.emit(
+                                FolderComponent(
+                                    isCheckBoxSelected = mutableBooleanList,
+                                    it
+                                )
+                            )
                         }
                 }
             }
@@ -83,7 +114,16 @@ open class CollectionsScreenVM : ViewModel() {
                     LocalDataBase.localDB.regularFolderSorting()
                         .sortByLatestToOldest()
                         .collect {
-                            _foldersData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _foldersData.emit(
+                                FolderComponent(
+                                    isCheckBoxSelected = mutableBooleanList,
+                                    it
+                                )
+                            )
                         }
                 }
             }
@@ -93,7 +133,16 @@ open class CollectionsScreenVM : ViewModel() {
                     LocalDataBase.localDB.regularFolderSorting()
                         .sortByOldestToLatest()
                         .collect {
-                            _foldersData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _foldersData.emit(
+                                FolderComponent(
+                                    isCheckBoxSelected = mutableBooleanList,
+                                    it
+                                )
+                            )
                         }
                 }
             }

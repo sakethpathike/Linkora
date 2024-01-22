@@ -146,6 +146,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 mutableList.add(currentIndex, mutableList[currentIndex - 1])
                                 mutableList.add(currentIndex - 1, listElement)
                                 updateVM.updateHomeList(mutableList.toList())
+
                             }
                         },
                         onMoveDownClick = {
@@ -207,7 +208,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                if (homeScreenList.size < 5 && homeScreenList.size != rootFolders.size) {
+                if (homeScreenList.size < 5 && homeScreenList.size != rootFolders.folderList.size) {
                     item {
                         Text(
                             text = if (homeScreenList.isEmpty()) "Select folders" else "Select other folders",
@@ -217,7 +218,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    items(rootFolders) { rootFolderElement ->
+                    items(rootFolders.folderList) { rootFolderElement ->
                         if (!homeScreenList.contains(
                                 HomeScreenListTable(
                                     rootFolderElement.id,
