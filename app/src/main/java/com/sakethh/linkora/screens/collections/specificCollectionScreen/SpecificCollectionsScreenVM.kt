@@ -86,24 +86,28 @@ open class SpecificCollectionsScreenVM(
                 List(savedLinksTable.value.linksTableList.size) {
                     savedLinksTable.value.isCheckBoxSelected[it].value = false
                 }
+                selectedItemsID.removeAll(savedLinksTable.value.linksTableList.map { it.id })
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 List(folderLinksData.value.linksTableList.size) {
                     folderLinksData.value.isCheckBoxSelected[it].value = false
                 }
+                selectedItemsID.removeAll(folderLinksData.value.linksTableList.map { it.id })
             }
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 List(impLinksTable.value.importantLinksList.size) {
                     impLinksTable.value.isCheckBoxSelected[it].value = false
                 }
+                selectedItemsID.removeAll(impLinksTable.value.importantLinksList.map { it.id })
             }
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 List(archiveFoldersLinksData.value.linksTableList.size) {
                     archiveFoldersLinksData.value.isCheckBoxSelected[it].value = false
                 }
+                selectedItemsID.removeAll(archiveFoldersLinksData.value.linksTableList.map { it.id })
             }
 
             else -> {}
@@ -750,7 +754,8 @@ open class SpecificCollectionsScreenVM(
         context: Context,
         onTaskCompleted: () -> Unit,
         folderName: String,
-        linkID: Long
+        linkID: Long,
+        shouldShowToastOnCompletion: Boolean = true
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -797,9 +802,11 @@ open class SpecificCollectionsScreenVM(
 
             else -> {}
         }
-        Toast.makeText(
-            context, "deleted the link successfully", Toast.LENGTH_SHORT
-        ).show()
+        if (shouldShowToastOnCompletion) {
+            Toast.makeText(
+                context, "deleted the link successfully", Toast.LENGTH_SHORT
+            ).show()
+        }
 
     }
 

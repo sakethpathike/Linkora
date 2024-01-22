@@ -3,7 +3,7 @@ package com.sakethh.linkora.screens.collections
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -29,18 +29,15 @@ open class CollectionsScreenVM : ViewModel() {
         )
     )
     val foldersData = _foldersData.asStateFlow()
-    val selectedItemsID = mutableListOf<Long>()
-    val noOfItemsSelected = mutableIntStateOf(0)
+    val selectedItemsID = mutableStateListOf<Long>()
     val areAllItemsChecked = mutableStateOf(false)
 
-    fun changeAllItemsSelectedData() {
+    fun changeAllFoldersSelectedData() {
         if (areAllItemsChecked.value) {
             selectedItemsID.addAll(foldersData.value.foldersTableList.map { it.id })
-            noOfItemsSelected.intValue = foldersData.value.foldersTableList.size
             foldersData.value.isCheckBoxSelected.forEach { it.value = true }
         } else {
             selectedItemsID.removeAll(foldersData.value.foldersTableList.map { it.id })
-            noOfItemsSelected.intValue = 0
             foldersData.value.isCheckBoxSelected.forEach { it.value = false }
         }
     }
