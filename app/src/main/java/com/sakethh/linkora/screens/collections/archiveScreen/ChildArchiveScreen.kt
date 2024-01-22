@@ -131,7 +131,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 },
                                 isSelectionModeEnabled = mutableStateOf(false),
                                 isItemSelected = mutableStateOf(false),
-                                onItemSelectionStateChanged = { -> },
+
                                 onLongClick = { -> }
                             )
                         )

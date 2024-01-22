@@ -80,6 +80,35 @@ open class SpecificCollectionsScreenVM(
     private val _archiveSubFolderData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
     val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
 
+    fun removeAllSelections() {
+        when (screenType.value) {
+            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                List(savedLinksTable.value.linksTableList.size) {
+                    savedLinksTable.value.isCheckBoxSelected[it].value = false
+                }
+            }
+
+            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                List(folderLinksData.value.linksTableList.size) {
+                    folderLinksData.value.isCheckBoxSelected[it].value = false
+                }
+            }
+
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                List(impLinksTable.value.importantLinksList.size) {
+                    impLinksTable.value.isCheckBoxSelected[it].value = false
+                }
+            }
+
+            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                List(archiveFoldersLinksData.value.linksTableList.size) {
+                    archiveFoldersLinksData.value.isCheckBoxSelected[it].value = false
+                }
+            }
+
+            else -> {}
+        }
+    }
 
     val impLinkDataForBtmSheet = MutableImportantLinks(
         title = mutableStateOf(""),

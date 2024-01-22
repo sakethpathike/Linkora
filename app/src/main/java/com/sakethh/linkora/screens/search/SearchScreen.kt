@@ -240,7 +240,7 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             isSelectionModeEnabled = mutableStateOf(false),
                                             isItemSelected = mutableStateOf(false),
-                                            onItemSelectionStateChanged = { -> },
+
                                             onLongClick = { -> })
                                     )
                                 }
@@ -329,7 +329,7 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             isSelectionModeEnabled = mutableStateOf(false),
                                             isItemSelected = mutableStateOf(false),
-                                            onItemSelectionStateChanged = { -> },
+
                                             onLongClick = { -> })
                                     )
                                 }
@@ -400,7 +400,7 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             isSelectionModeEnabled = mutableStateOf(false),
                                             isItemSelected = mutableStateOf(false),
-                                            onItemSelectionStateChanged = { -> },
+
                                             onLongClick = { -> })
                                     )
                                 }
@@ -517,7 +517,7 @@ fun SearchScreen(navController: NavController) {
                                 },
                                 isSelectionModeEnabled = mutableStateOf(false),
                                 isItemSelected = mutableStateOf(false),
-                                onItemSelectionStateChanged = { -> },
+
                                 onLongClick = { -> })
                         )
                     }

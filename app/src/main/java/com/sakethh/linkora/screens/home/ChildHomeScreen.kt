@@ -199,7 +199,7 @@ fun ChildHomeScreen(
                                 },
                                 isSelectionModeEnabled = mutableStateOf(false),
                                 isItemSelected = mutableStateOf(false),
-                                onItemSelectionStateChanged = { -> },
+
                                 onLongClick = { -> })
                         )
                     }
@@ -275,7 +275,7 @@ fun ChildHomeScreen(
                                 },
                                 isSelectionModeEnabled = mutableStateOf(false),
                                 isItemSelected = mutableStateOf(false),
-                                onItemSelectionStateChanged = { -> },
+
                                 onLongClick = { -> })
                         )
                     }
@@ -364,7 +364,7 @@ fun ChildHomeScreen(
                                 },
                                 isSelectionModeEnabled = mutableStateOf(false),
                                 isItemSelected = mutableStateOf(false),
-                                onItemSelectionStateChanged = { -> },
+
                                 onLongClick = { -> })
                         )
                     }

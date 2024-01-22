@@ -433,10 +433,6 @@ fun CollectionsScreen(navController: NavController) {
                         key = { folderIndex, foldersData ->
                             foldersData.id.toString() + foldersData.folderName
                         }) { folderIndex, folderData ->
-                        val isCheckBoxSelected =
-                            rememberSaveable(collectionsScreenVM.areAllItemsChecked.value) {
-                                mutableStateOf(collectionsScreenVM.areAllItemsChecked.value)
-                            }
                         FolderIndividualComponent(
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,

@@ -57,7 +57,6 @@ data class LinkUIComponentParam(
     val onForceOpenInExternalBrowserClicked: () -> Unit,
     val isSelectionModeEnabled: MutableState<Boolean>,
     val isItemSelected: MutableState<Boolean>,
-    val onItemSelectionStateChanged: () -> Unit,
     val onLongClick: () -> Unit
 )
 

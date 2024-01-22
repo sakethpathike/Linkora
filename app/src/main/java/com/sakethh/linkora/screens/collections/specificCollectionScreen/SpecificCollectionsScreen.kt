@@ -1,13 +1,21 @@
 package com.sakethh.linkora.screens.collections.specificCollectionScreen
 
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -85,7 +93,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "LongLogTag")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpecificCollectionScreen(navController: NavController) {
@@ -247,6 +255,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         IconButton(onClick = {
                             areLinksSelectable.value = false
                             specificCollectionsScreenVM.areAllItemsChecked.value = false
+                            specificCollectionsScreenVM.removeAllSelections()
                             specificCollectionsScreenVM.changeAllItemsSelectedData()
                         }) {
                             Icon(
@@ -256,80 +265,123 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
                 }, scrollBehavior = scrollBehavior,
                     title = {
-                        Text(
-                            text = topBarText,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+                        if (areLinksSelectable.value) {
+                            Row {
+                                AnimatedContent(targetState = specificCollectionsScreenVM.noOfItemsSelected.intValue,
+                                    label = "",
+                                    transitionSpec = {
+                                        ContentTransform(
+                                            initialContentExit = slideOutVertically(
+                                                animationSpec = tween(
+                                                    150
+                                                )
+                                            ) + fadeOut(
+                                                tween(150)
+                                            ), targetContentEnter = slideInVertically(
+                                                animationSpec = tween(durationMillis = 150)
+                                            ) + fadeIn(
+                                                tween(150)
+                                            )
+                                        )
+                                    }) {
+                                    Text(
+                                        text = it.toString(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                                Text(text = " links selected",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier.clickable {
+                                        Log.d(
+                                            "selected folders LINKORA",
+                                            specificCollectionsScreenVM.selectedItemsID.toString()
+                                        )
+                                    })
+                            }
+                        } else {
+                            Text(
+                                text = topBarText,
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 18.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     },
                     actions = {
-                        when (SpecificCollectionsScreenVM.screenType.value) {
-                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                if (impLinksData.importantLinksList.isNotEmpty()) {
-                                    IconButton(onClick = {
-                                        shouldSortingBottomSheetAppear.value = true
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Sort,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            }
+                        if (areLinksSelectable.value) {
 
-                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                                if (archivedFoldersLinksData.linksTableList.isNotEmpty() || archivedSubFoldersData.foldersTableList.isNotEmpty()) {
-                                    IconButton(onClick = {
-                                        shouldSortingBottomSheetAppear.value = true
-                                        coroutineScope.launch {
-                                            sortingBtmSheetState.expand()
+                        } else {
+                            when (SpecificCollectionsScreenVM.screenType.value) {
+                                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                    if (impLinksData.importantLinksList.isNotEmpty()) {
+                                        IconButton(onClick = {
+                                            shouldSortingBottomSheetAppear.value = true
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Sort,
+                                                contentDescription = null
+                                            )
                                         }
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Sort,
-                                            contentDescription = null
-                                        )
                                     }
                                 }
-                            }
 
-                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                if (savedLinksData.linksTableList.isNotEmpty()) {
-                                    IconButton(onClick = {
-                                        shouldSortingBottomSheetAppear.value = true
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Sort,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            }
-
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                if (specificFolderLinksData.linksTableList.isNotEmpty() || childFoldersData.foldersTableList.isNotEmpty()) {
-                                    IconButton(onClick = {
-                                        shouldSortingBottomSheetAppear.value = true
-                                        coroutineScope.launch {
-                                            sortingBtmSheetState.expand()
+                                SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                                    if (archivedFoldersLinksData.linksTableList.isNotEmpty() || archivedSubFoldersData.foldersTableList.isNotEmpty()) {
+                                        IconButton(onClick = {
+                                            shouldSortingBottomSheetAppear.value = true
+                                            coroutineScope.launch {
+                                                sortingBtmSheetState.expand()
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Sort,
+                                                contentDescription = null
+                                            )
                                         }
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Sort,
-                                            contentDescription = null
-                                        )
                                     }
                                 }
-                            }
 
-                            SpecificScreenType.INTENT_ACTIVITY -> {
+                                SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                    if (savedLinksData.linksTableList.isNotEmpty()) {
+                                        IconButton(onClick = {
+                                            shouldSortingBottomSheetAppear.value = true
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Sort,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
+                                }
 
-                            }
+                                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                    if (specificFolderLinksData.linksTableList.isNotEmpty() || childFoldersData.foldersTableList.isNotEmpty()) {
+                                        IconButton(onClick = {
+                                            shouldSortingBottomSheetAppear.value = true
+                                            coroutineScope.launch {
+                                                sortingBtmSheetState.expand()
+                                            }
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Sort,
+                                                contentDescription = null
+                                            )
+                                        }
+                                    }
+                                }
 
-                            SpecificScreenType.ROOT_SCREEN -> {
+                                SpecificScreenType.INTENT_ACTIVITY -> {
 
+                                }
+
+                                SpecificScreenType.ROOT_SCREEN -> {
+
+                                }
                             }
                         }
                     })
@@ -419,6 +471,19 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             if (areLinksSelectable.value) {
                                                 specificFolderLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !specificFolderLinksData.isCheckBoxSelected[linkIndex].value
+
+                                                if (specificFolderLinksData.isCheckBoxSelected[linkIndex].value) {
+                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue += 1
+                                                } else {
+                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue -= 1
+                                                }
+
                                             } else {
                                                 coroutineScope.launch {
                                                     openInWeb(
@@ -452,8 +517,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 forceOpenInExternalBrowser = true
                                             )
                                         },
-                                        isItemSelected = specificFolderLinksData.isCheckBoxSelected[linkIndex],
-                                        onItemSelectionStateChanged = {})
+                                        isItemSelected = specificFolderLinksData.isCheckBoxSelected[linkIndex]
+                                    )
                                 )
                             }
                         } else {
@@ -510,6 +575,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             if (areLinksSelectable.value) {
                                                 savedLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !savedLinksData.isCheckBoxSelected[linkIndex].value
+
+                                                if (savedLinksData.isCheckBoxSelected[linkIndex].value) {
+                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue += 1
+                                                } else {
+                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue -= 1
+                                                }
                                             } else {
                                                 coroutineScope.launch {
                                                     openInWeb(
@@ -543,8 +620,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 forceOpenInExternalBrowser = true
                                             )
                                         },
-                                        isItemSelected = savedLinksData.isCheckBoxSelected[linkIndex],
-                                        onItemSelectionStateChanged = {})
+                                        isItemSelected = savedLinksData.isCheckBoxSelected[linkIndex]
+                                    )
                                 )
                             }
                         } else {
@@ -604,6 +681,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             if (areLinksSelectable.value) {
                                                 impLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !impLinksData.isCheckBoxSelected[linkIndex].value
+
+                                                if (impLinksData.isCheckBoxSelected[linkIndex].value) {
+                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue += 1
+                                                } else {
+                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue -= 1
+                                                }
                                             } else {
                                                 coroutineScope.launch {
                                                     openInWeb(
@@ -637,8 +726,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 forceOpenInExternalBrowser = true,
                                             )
                                         },
-                                        isItemSelected = impLinksData.isCheckBoxSelected[linkIndex],
-                                        onItemSelectionStateChanged = { -> },
+                                        isItemSelected = impLinksData.isCheckBoxSelected[linkIndex]
                                     )
                                 )
                             }
@@ -714,6 +802,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             if (areLinksSelectable.value) {
                                                 archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value
+
+                                                if (archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value) {
+                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue += 1
+                                                } else {
+                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                        linkData.id
+                                                    )
+                                                    specificCollectionsScreenVM.noOfItemsSelected.intValue -= 1
+                                                }
                                             } else {
                                                 coroutineScope.launch {
                                                     openInWeb(
@@ -748,7 +848,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         },
                                         isItemSelected = archivedFoldersLinksData.isCheckBoxSelected[linkIndex],
-                                        onItemSelectionStateChanged = {})
+                                    )
                                 )
                             }
                         } else {
@@ -1184,6 +1284,11 @@ fun SpecificCollectionScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
+        } else if (areLinksSelectable.value) {
+            areLinksSelectable.value = false
+            specificCollectionsScreenVM.areAllItemsChecked.value = false
+            specificCollectionsScreenVM.changeAllItemsSelectedData()
+            specificCollectionsScreenVM.removeAllSelections()
         } else {
             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
