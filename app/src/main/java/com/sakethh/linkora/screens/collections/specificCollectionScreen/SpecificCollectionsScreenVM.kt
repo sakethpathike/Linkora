@@ -13,11 +13,11 @@ import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -35,25 +35,49 @@ data class MutableImportantLinks(
     var id: Long = 0,
 )
 
+data class LinkTableComponent(
+    val isCheckBoxSelected: List<MutableState<Boolean>>, val linksTableList: List<LinksTable>
+)
+
+data class ImpLinkTableComponent(
+    val isCheckBoxSelected: List<MutableState<Boolean>>,
+    val importantLinksList: List<ImportantLinks>
+)
+
 open class SpecificCollectionsScreenVM(
     val updateVM: UpdateVM = UpdateVM(), private val deleteVM: DeleteVM = DeleteVM()
 ) : CollectionsScreenVM() {
-    private val _folderLinksData = MutableStateFlow(emptyList<LinksTable>())
+
+
+    private val _folderLinksData = MutableStateFlow(
+        LinkTableComponent(
+            emptyList(), emptyList()
+        )
+    )
     val folderLinksData = _folderLinksData.asStateFlow()
 
-    private val _childFoldersData = MutableStateFlow(emptyList<FoldersTable>())
+    private val _childFoldersData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
     val childFoldersData = _childFoldersData.asStateFlow()
 
-    private val _savedLinksData = MutableStateFlow(emptyList<LinksTable>())
+    private val _savedLinksData = MutableStateFlow(
+        LinkTableComponent(
+            emptyList(), emptyList()
+        )
+    )
     val savedLinksTable = _savedLinksData.asStateFlow()
 
-    private val _impLinksData = MutableStateFlow(emptyList<ImportantLinks>())
+    private val _impLinksData = MutableStateFlow(
+        ImpLinkTableComponent(
+            emptyList(), emptyList()
+        )
+    )
     val impLinksTable = _impLinksData.asStateFlow()
 
-    private val _archiveFolderData = MutableStateFlow(emptyList<LinksTable>())
-    val archiveFolderDataTable = _archiveFolderData.asStateFlow()
+    private val _archiveFolderLinksData =
+        MutableStateFlow(LinkTableComponent(emptyList(), emptyList()))
+    val archiveFoldersLinksData = _archiveFolderLinksData.asStateFlow()
 
-    private val _archiveSubFolderData = MutableStateFlow(emptyList<FoldersTable>())
+    private val _archiveSubFolderData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
     val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
 
 
@@ -75,8 +99,16 @@ open class SpecificCollectionsScreenVM(
         viewModelScope.launch {
             LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
                 currentClickedFolderData.value.id
-            ).collectLatest {
-                _childFoldersData.emit(it)
+            ).collectLatest { it ->
+                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                List(it.size) { index ->
+                    mutableBooleanList.add(index, mutableStateOf(false))
+                }
+                _childFoldersData.emit(
+                    FolderComponent(
+                        isCheckBoxSelected = mutableBooleanList, foldersTableList = it
+                    )
+                )
             }
         }
     }
@@ -101,7 +133,15 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByAToZ().collectLatest {
-                                _savedLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _savedLinksData.emit(
+                                    LinkTableComponent(
+                                        isCheckBoxSelected = mutableBooleanList, linksTableList = it
+                                    )
+                                )
                             }
                         }
                     }
@@ -109,7 +149,15 @@ open class SpecificCollectionsScreenVM(
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByZToA().collectLatest {
-                                _savedLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _savedLinksData.emit(
+                                    LinkTableComponent(
+                                        isCheckBoxSelected = mutableBooleanList, linksTableList = it
+                                    )
+                                )
                             }
                         }
                     }
@@ -118,7 +166,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByLatestToOldest()
                                 .collectLatest {
-                                    _savedLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _savedLinksData.emit(
+                                        LinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            linksTableList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -127,7 +184,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.savedLinksSorting().sortByOldestToLatest()
                                 .collectLatest {
-                                    _savedLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _savedLinksData.emit(
+                                        LinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            linksTableList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -140,7 +206,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting().sortByAToZ()
                                 .collectLatest {
-                                    _impLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _impLinksData.emit(
+                                        ImpLinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            importantLinksList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -149,7 +224,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting().sortByZToA()
                                 .collectLatest {
-                                    _impLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _impLinksData.emit(
+                                        ImpLinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            importantLinksList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -158,7 +242,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting().sortByLatestToOldest()
                                 .collectLatest {
-                                    _impLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _impLinksData.emit(
+                                        ImpLinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            importantLinksList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -167,7 +260,16 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             LocalDataBase.localDB.importantLinksSorting().sortByOldestToLatest()
                                 .collectLatest {
-                                    _impLinksData.emit(it)
+                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                    List(it.size) { index ->
+                                        mutableBooleanList.add(index, mutableStateOf(false))
+                                    }
+                                    _impLinksData.emit(
+                                        ImpLinkTableComponent(
+                                            isCheckBoxSelected = mutableBooleanList,
+                                            importantLinksList = it
+                                        )
+                                    )
                                 }
                         }
                     }
@@ -182,7 +284,17 @@ open class SpecificCollectionsScreenVM(
                                 if (isLinksSortingSelected) {
                                     LocalDataBase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByAToZV10(folderID = folderID).collectLatest {
-                                            _archiveFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveFolderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -190,7 +302,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
-                                            _archiveSubFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveSubFolderData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -203,7 +325,17 @@ open class SpecificCollectionsScreenVM(
                                 if (isLinksSortingSelected) {
                                     LocalDataBase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByZToAV10(folderID = folderID).collectLatest {
-                                            _archiveFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveFolderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -211,7 +343,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
-                                            _archiveSubFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveSubFolderData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -226,7 +368,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByLatestToOldestV10(folderID = folderID)
                                         .collectLatest {
-                                            _archiveFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveFolderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -234,7 +386,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
-                                            _archiveSubFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveSubFolderData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -248,7 +410,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
-                                            _archiveFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveFolderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -256,7 +428,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
-                                            _archiveSubFolderData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _archiveSubFolderData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -273,7 +455,17 @@ open class SpecificCollectionsScreenVM(
                                 if (isLinksSortingSelected) {
                                     LocalDataBase.localDB.regularFolderLinksSorting()
                                         .sortByAToZV10(folderID = folderID).collectLatest {
-                                            _folderLinksData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _folderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -281,7 +473,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByAToZ(parentFolderID = folderID)
                                         .collectLatest {
-                                            _childFoldersData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _childFoldersData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -294,7 +496,17 @@ open class SpecificCollectionsScreenVM(
                                 if (isLinksSortingSelected) {
                                     LocalDataBase.localDB.regularFolderLinksSorting()
                                         .sortByZToAV10(folderID = folderID).collectLatest {
-                                            _folderLinksData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _folderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -302,7 +514,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByZToA(parentFolderID = folderID)
                                         .collectLatest {
-                                            _childFoldersData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _childFoldersData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -316,7 +538,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.regularFolderLinksSorting()
                                         .sortByLatestToOldestV10(folderID = folderID)
                                         .collectLatest {
-                                            _folderLinksData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _folderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -324,7 +556,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByLatestToOldest(parentFolderID = folderID)
                                         .collectLatest {
-                                            _childFoldersData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _childFoldersData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })
@@ -338,7 +580,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.regularFolderLinksSorting()
                                         .sortByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
-                                            _folderLinksData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _folderLinksData.emit(
+                                                LinkTableComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    linksTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             }, async {
@@ -346,7 +598,17 @@ open class SpecificCollectionsScreenVM(
                                     LocalDataBase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByOldestToLatest(parentFolderID = folderID)
                                         .collectLatest {
-                                            _childFoldersData.emit(it)
+                                            val mutableBooleanList =
+                                                mutableListOf<MutableState<Boolean>>()
+                                            List(it.size) { index ->
+                                                mutableBooleanList.add(index, mutableStateOf(false))
+                                            }
+                                            _childFoldersData.emit(
+                                                FolderComponent(
+                                                    isCheckBoxSelected = mutableBooleanList,
+                                                    foldersTableList = it
+                                                )
+                                            )
                                         }
                                 }
                             })

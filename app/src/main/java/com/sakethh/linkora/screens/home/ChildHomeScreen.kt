@@ -136,8 +136,8 @@ fun ChildHomeScreen(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
-                if (savedLinksData.isNotEmpty()) {
-                    items(items = savedLinksData, key = { linksTable ->
+                if (savedLinksData.linksTableList.isNotEmpty()) {
+                    items(items = savedLinksData.linksTableList, key = { linksTable ->
                         linksTable.id.toString() + linksTable.webURL
                     }) {
                         LinkUIComponent(
@@ -196,7 +196,11 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                })
+                                },
+                                isSelectionModeEnabled = mutableStateOf(false),
+                                isItemSelected = mutableStateOf(false),
+                                onItemSelectionStateChanged = { -> },
+                                onLongClick = { -> })
                         )
                     }
                 } else {
@@ -208,8 +212,8 @@ fun ChildHomeScreen(
                     }
                 }
             } else if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
-                if (impLinksData.isNotEmpty()) {
-                    items(items = impLinksData, key = { importantLinks ->
+                if (impLinksData.importantLinksList.isNotEmpty()) {
+                    items(items = impLinksData.importantLinksList, key = { importantLinks ->
                         importantLinks.webURL + importantLinks.id.toString()
                     }) {
                         LinkUIComponent(
@@ -268,7 +272,11 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                })
+                                },
+                                isSelectionModeEnabled = mutableStateOf(false),
+                                isItemSelected = mutableStateOf(false),
+                                onItemSelectionStateChanged = { -> },
+                                onLongClick = { -> })
                         )
                     }
                 } else {
@@ -277,8 +285,8 @@ fun ChildHomeScreen(
                     }
                 }
             } else {
-                if (childFoldersData.isNotEmpty()) {
-                    items(childFoldersData) { folderElement ->
+                if (childFoldersData.foldersTableList.isNotEmpty()) {
+                    items(childFoldersData.foldersTableList) { folderElement ->
                         FolderIndividualComponent(
                             folderName = folderElement.folderName,
                             folderNote = folderElement.infoForSaving,
@@ -295,8 +303,8 @@ fun ChildHomeScreen(
                         )
                     }
                 }
-                if (folderLinksData.isNotEmpty()) {
-                    items(folderLinksData) {
+                if (folderLinksData.linksTableList.isNotEmpty()) {
+                    items(folderLinksData.linksTableList) {
                         LinkUIComponent(
                             linkUIComponentParam = LinkUIComponentParam(
                                 title = it.title,
@@ -353,7 +361,11 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                })
+                                },
+                                isSelectionModeEnabled = mutableStateOf(false),
+                                isItemSelected = mutableStateOf(false),
+                                onItemSelectionStateChanged = { -> },
+                                onLongClick = { -> })
                         )
                     }
                 } else {

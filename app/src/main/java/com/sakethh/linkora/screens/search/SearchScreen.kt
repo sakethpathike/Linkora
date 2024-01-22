@@ -237,7 +237,11 @@ fun SearchScreen(navController: NavController) {
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
-                                            })
+                                            },
+                                            isSelectionModeEnabled = mutableStateOf(false),
+                                            isItemSelected = mutableStateOf(false),
+                                            onItemSelectionStateChanged = { -> },
+                                            onLongClick = { -> })
                                     )
                                 }
                                 items(items = linksTableData, key = { linksTable ->
@@ -322,7 +326,11 @@ fun SearchScreen(navController: NavController) {
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
-                                            })
+                                            },
+                                            isSelectionModeEnabled = mutableStateOf(false),
+                                            isItemSelected = mutableStateOf(false),
+                                            onItemSelectionStateChanged = { -> },
+                                            onLongClick = { -> })
                                     )
                                 }
                                 items(items = archiveLinksTableData, key = { archivedLinks ->
@@ -389,7 +397,11 @@ fun SearchScreen(navController: NavController) {
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
-                                            })
+                                            },
+                                            isSelectionModeEnabled = mutableStateOf(false),
+                                            isItemSelected = mutableStateOf(false),
+                                            onItemSelectionStateChanged = { -> },
+                                            onLongClick = { -> })
                                     )
                                 }
                                 item {
@@ -502,7 +514,11 @@ fun SearchScreen(navController: NavController) {
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                })
+                                },
+                                isSelectionModeEnabled = mutableStateOf(false),
+                                isItemSelected = mutableStateOf(false),
+                                onItemSelectionStateChanged = { -> },
+                                onLongClick = { -> })
                         )
                     }
                 } else {

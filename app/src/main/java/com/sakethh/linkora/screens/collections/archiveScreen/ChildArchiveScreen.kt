@@ -128,7 +128,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                             forceOpenInExternalBrowser = false
                                         )
                                     }
-                                })
+                                },
+                                isSelectionModeEnabled = mutableStateOf(false),
+                                isItemSelected = mutableStateOf(false),
+                                onItemSelectionStateChanged = { -> },
+                                onLongClick = { -> }
+                            )
                         )
                     }
                 } else {

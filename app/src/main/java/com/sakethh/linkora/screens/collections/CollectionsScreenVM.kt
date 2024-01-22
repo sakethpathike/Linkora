@@ -18,7 +18,7 @@ import kotlinx.coroutines.withContext
 
 data class FolderComponent(
     val isCheckBoxSelected: List<MutableState<Boolean>>,
-    val folderList: List<FoldersTable>
+    val foldersTableList: List<FoldersTable>
 )
 
 open class CollectionsScreenVM : ViewModel() {
@@ -29,18 +29,18 @@ open class CollectionsScreenVM : ViewModel() {
         )
     )
     val foldersData = _foldersData.asStateFlow()
-    val selectedFoldersID = mutableListOf<Long>()
-    val noOfFoldersSelected = mutableIntStateOf(0)
-    val areAllFoldersChecked = mutableStateOf(false)
+    val selectedItemsID = mutableListOf<Long>()
+    val noOfItemsSelected = mutableIntStateOf(0)
+    val areAllItemsChecked = mutableStateOf(false)
 
-    fun changeAllFoldersSelectedData() {
-        if (areAllFoldersChecked.value) {
-            selectedFoldersID.addAll(foldersData.value.folderList.map { it.id })
-            noOfFoldersSelected.intValue = foldersData.value.folderList.size
+    fun changeAllItemsSelectedData() {
+        if (areAllItemsChecked.value) {
+            selectedItemsID.addAll(foldersData.value.foldersTableList.map { it.id })
+            noOfItemsSelected.intValue = foldersData.value.foldersTableList.size
             foldersData.value.isCheckBoxSelected.forEach { it.value = true }
         } else {
-            selectedFoldersID.removeAll(foldersData.value.folderList.map { it.id })
-            noOfFoldersSelected.intValue = 0
+            selectedItemsID.removeAll(foldersData.value.foldersTableList.map { it.id })
+            noOfItemsSelected.intValue = 0
             foldersData.value.isCheckBoxSelected.forEach { it.value = false }
         }
     }
