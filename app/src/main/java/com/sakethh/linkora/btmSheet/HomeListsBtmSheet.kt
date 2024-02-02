@@ -50,7 +50,6 @@ import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import kotlinx.coroutines.awaitAll
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -137,15 +136,15 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         folderName = listElement.folderName,
                         onMoveUpClick = {
                             val mutableList = homeScreenList.toMutableList()
-                            mutableList[currentIndex].position = mutableList[currentIndex - 1].position
-                            mutableList[currentIndex - 1].position = listElement.position
+                            --mutableList[currentIndex].position
+                            ++mutableList[currentIndex - 1].position
                             updateVM.updateHomeListElement(mutableList[currentIndex])
                             updateVM.updateHomeListElement(mutableList[currentIndex - 1])
                         },
                         onMoveDownClick = {
                             val mutableList = homeScreenList.toMutableList()
-                            mutableList[currentIndex].position = mutableList[currentIndex + 1].position
-                            mutableList[currentIndex + 1].position = listElement.position
+                            ++mutableList[currentIndex].position
+                            --mutableList[currentIndex + 1].position
                             updateVM.updateHomeListElement(mutableList[currentIndex])
                             updateVM.updateHomeListElement(mutableList[currentIndex + 1])
                         },

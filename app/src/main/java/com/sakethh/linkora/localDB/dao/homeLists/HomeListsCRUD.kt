@@ -21,6 +21,10 @@ interface HomeListsCRUD {
     @Update
     suspend fun updateElement(element: HomeScreenListTable)
 
-    @Query("SELECT MAX(id) FROM home_screen_list_table;\n")
-    suspend fun getLastInsertedID(): Long
+    @Query(
+        "SELECT * FROM home_screen_list_table\n" +
+                "ORDER BY id DESC\n" +
+                "LIMIT 1;"
+    )
+    suspend fun getLastInsertedElement(): HomeScreenListTable
 }

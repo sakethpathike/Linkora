@@ -309,7 +309,11 @@ class CreateVM : ViewModel() {
         viewModelScope.launch {
             val homeScreenListTable =
                 HomeScreenListTable(id = folderID, position = withContext(Dispatchers.IO) {
-                    LocalDataBase.localDB.homeListsCrud().getLastInsertedID() + 1
+                    try {
+                        ++LocalDataBase.localDB.homeListsCrud().getLastInsertedElement().position
+                    } catch (_: NullPointerException) {
+                        1
+                    }
                 }, folderName = folderName)
             LocalDataBase.localDB.homeListsCrud().addAHomeScreenListFolder(homeScreenListTable)
         }
