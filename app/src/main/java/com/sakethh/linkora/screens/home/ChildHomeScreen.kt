@@ -41,7 +41,9 @@ import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.LinkTableComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -56,8 +58,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChildHomeScreen(
     homeScreenType: HomeScreenVM.HomeScreenType,
-    folderID: Long,
-    navController: NavController
+    navController: NavController,
+    folderLinksData: LinkTableComponent,
+    childFoldersData: FolderComponent
 ) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
@@ -81,18 +84,6 @@ fun ChildHomeScreen(
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                )
-            }
-        }, async {
-            if (homeScreenType == HomeScreenVM.HomeScreenType.CUSTOM_LIST) {
-                specificCollectionsScreenVM.changeRetrievedData(
-                    screenType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
-                    ),
-                    folderID = folderID,
-                    isFoldersSortingSelected = true,
-                    isLinksSortingSelected = true
                 )
             }
         })
@@ -125,8 +116,6 @@ fun ChildHomeScreen(
         mutableStateOf("")
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val folderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
-    val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier

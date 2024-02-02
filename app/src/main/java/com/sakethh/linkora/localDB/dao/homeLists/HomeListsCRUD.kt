@@ -20,4 +20,7 @@ interface HomeListsCRUD {
 
     @Update
     suspend fun updateList(list: List<HomeScreenListTable>)
+
+    @Query("SELECT MAX(id) FROM home_screen_list_table;\n")
+    suspend fun getLastInsertedID(): Long
 }

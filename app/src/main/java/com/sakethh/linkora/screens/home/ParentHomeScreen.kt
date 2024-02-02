@@ -29,7 +29,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +44,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.HomeListBtmSheet
+import com.sakethh.linkora.btmSheet.HomeListsBtmSheetVM
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
@@ -55,8 +55,10 @@ import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.localDB.commonVMs.ReadVM
+import com.sakethh.linkora.screens.collections.FolderComponent
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.LinkTableComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -104,11 +106,8 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val readVM: ReadVM = viewModel()
-    LaunchedEffect(key1 = Unit) {
-        readVM.readHomeScreenListTable()
-    }
-    val homeScreenList = readVM.readHomeScreenListTable.collectAsState().value
+    val homeListsBtmSheetVM: HomeListsBtmSheetVM = viewModel()
+    val homeScreenList = homeListsBtmSheetVM.readHomeScreenListTable.collectAsState().value
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -178,7 +177,6 @@ fun ParentHomeScreen(navController: NavController) {
                 }
                 if (homeScreenList.isNotEmpty()) {
                     HorizontalPager(
-                        userScrollEnabled = false,
                         key = {
                             it
                         },
@@ -187,8 +185,22 @@ fun ParentHomeScreen(navController: NavController) {
                     ) {
                         ChildHomeScreen(
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
-                            folderID = homeScreenList[pagerState.currentPage].id,
-                            navController = navController
+                            navController = navController,
+                            folderLinksData = LinkTableComponent(
+                                isCheckBoxSelected = listOf(),
+                                linksTableList = LocalDataBase.localDB.readDao()
+                                    .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
+                                    initial = emptyList()
+                                ).value
+                            ),
+                            childFoldersData = FolderComponent(
+                                isCheckBoxSelected = listOf(),
+                                foldersTableList = LocalDataBase.localDB.readDao()
+                                    .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                    .collectAsState(
+                                        initial = emptyList()
+                                    ).value
+                            ),
                         )
                     }
                 }

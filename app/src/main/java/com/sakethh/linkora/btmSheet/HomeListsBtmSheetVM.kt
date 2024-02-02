@@ -1,4 +1,4 @@
-package com.sakethh.linkora.localDB.commonVMs
+package com.sakethh.linkora.btmSheet
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,11 +9,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class ReadVM : ViewModel() {
+class HomeListsBtmSheetVM : ViewModel() {
     private val _readHomeScreenListTable = MutableStateFlow(emptyList<HomeScreenListTable>())
     val readHomeScreenListTable = _readHomeScreenListTable.asStateFlow()
 
-    fun readHomeScreenListTable() {
+    init {
         viewModelScope.launch {
             LocalDataBase.localDB.homeListsCrud().getAllHomeScreenListFolders().collectLatest {
                 _readHomeScreenListTable.emit(it)

@@ -109,5 +109,6 @@ data class RecentlyVisited(
 @Entity(tableName = "home_screen_list_table")
 data class HomeScreenListTable(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var position: Long,
     val folderName: String
 )

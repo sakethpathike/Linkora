@@ -37,7 +37,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
@@ -49,7 +48,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
-import com.sakethh.linkora.localDB.commonVMs.ReadVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
@@ -61,14 +59,11 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lazyListState = rememberLazyListState()
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
-    val readVM: ReadVM = viewModel()
+    val homeListsBtmSheetVM: HomeListsBtmSheetVM = viewModel()
     val createVM: CreateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
     val updateVM: UpdateVM = viewModel()
-    LaunchedEffect(key1 = Unit) {
-        readVM.readHomeScreenListTable()
-    }
-    val homeScreenList = readVM.readHomeScreenListTable.collectAsState().value
+    val homeScreenList = homeListsBtmSheetVM.readHomeScreenListTable.collectAsState().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
@@ -137,20 +132,22 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                itemsIndexed(homeScreenList) { currentIndex, listElement ->
+                itemsIndexed(key = { currentIndex, listElement ->
+                    currentIndex + listElement.id
+                }, items = homeScreenList) { currentIndex, listElement ->
                     ListFolderUIComponent(
                         folderName = listElement.folderName,
                         onMoveUpClick = {
-                            if (currentIndex != 0) {
-                                val mutableList = homeScreenList.toMutableList()
-                                mutableList.add(currentIndex, mutableList[currentIndex - 1])
-                                mutableList.add(currentIndex - 1, listElement)
-                                updateVM.updateHomeList(mutableList.toList())
-
-                            }
+                            val mutableList = homeScreenList.toMutableList()
+                            mutableList[currentIndex] = mutableList[currentIndex - 1]
+                            mutableList[currentIndex - 1] = listElement
+                            updateVM.updateHomeList(mutableList)
                         },
                         onMoveDownClick = {
-
+                            val mutableList = homeScreenList.toMutableList()
+                            mutableList[currentIndex] = mutableList[currentIndex + 1]
+                            mutableList[currentIndex + 1] = listElement
+                            updateVM.updateHomeList(mutableList)
                         },
                         onRemoveClick = {
                             deleteVM.deleteAnElementFromHomeScreenList(listElement.id)
@@ -218,11 +215,14 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    items(rootFolders.foldersTableList) { rootFolderElement ->
+                    items(key = { listElement ->
+                        listElement.id + listElement.id
+                    }, items = rootFolders.foldersTableList) { rootFolderElement ->
                         if (!homeScreenList.contains(
                                 HomeScreenListTable(
                                     rootFolderElement.id,
-                                    rootFolderElement.folderName
+                                    0,
+                                    rootFolderElement.folderName,
                                 )
                             )
                         ) {
@@ -233,10 +233,8 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 {},
                                 onAddClick = {
                                     createVM.insertANewElementInHomeScreenList(
-                                        HomeScreenListTable(
-                                            id = rootFolderElement.id,
-                                            folderName = rootFolderElement.folderName
-                                        )
+                                        folderID = rootFolderElement.id,
+                                        folderName = rootFolderElement.folderName
                                     )
                                 },
                                 shouldAddIconBeVisible = true,

@@ -131,15 +131,17 @@ abstract class LocalDataBase : RoomDatabase() {
                 db.execSQL(
                     "CREATE TABLE IF NOT EXISTS home_screen_list_table_new " +
                             "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                            "folderName TEXT NOT NULL)"
+                            "folderName TEXT NOT NULL, position INTEGER NOT NULL)"
                 )
                 db.execSQL(
-                    "CREATE TABLE IF NOT EXISTS home_screen_list_table " +
-                            "(id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " +
-                            "folderName TEXT NOT NULL)"
+                    "CREATE TABLE IF NOT EXISTS home_screen_list_table (\n" +
+                            "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                            "    position INTEGER,\n" +
+                            "    folderName TEXT\n" +
+                            ");\n"
                 )
                 db.execSQL(
-                    "INSERT INTO home_screen_list_table_new (id, folderName) " +
+                    "INSERT INTO home_screen_list_table_new (id, folderName, position) " +
                             "SELECT id, folderName FROM home_screen_list_table"
                 )
                 db.execSQL("DROP TABLE IF EXISTS home_screen_list_table")
