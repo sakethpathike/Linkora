@@ -49,8 +49,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
-import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import kotlinx.coroutines.awaitAll
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -132,22 +132,22 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                itemsIndexed(key = { currentIndex, listElement ->
-                    currentIndex + listElement.id
-                }, items = homeScreenList) { currentIndex, listElement ->
+                itemsIndexed(items = homeScreenList) { currentIndex, listElement ->
                     ListFolderUIComponent(
                         folderName = listElement.folderName,
                         onMoveUpClick = {
                             val mutableList = homeScreenList.toMutableList()
-                            mutableList[currentIndex] = mutableList[currentIndex - 1]
-                            mutableList[currentIndex - 1] = listElement
-                            updateVM.updateHomeList(mutableList)
+                            mutableList[currentIndex].position = mutableList[currentIndex - 1].position
+                            mutableList[currentIndex - 1].position = listElement.position
+                            updateVM.updateHomeListElement(mutableList[currentIndex])
+                            updateVM.updateHomeListElement(mutableList[currentIndex - 1])
                         },
                         onMoveDownClick = {
                             val mutableList = homeScreenList.toMutableList()
-                            mutableList[currentIndex] = mutableList[currentIndex + 1]
-                            mutableList[currentIndex + 1] = listElement
-                            updateVM.updateHomeList(mutableList)
+                            mutableList[currentIndex].position = mutableList[currentIndex + 1].position
+                            mutableList[currentIndex + 1].position = listElement.position
+                            updateVM.updateHomeListElement(mutableList[currentIndex])
+                            updateVM.updateHomeListElement(mutableList[currentIndex + 1])
                         },
                         onRemoveClick = {
                             deleteVM.deleteAnElementFromHomeScreenList(listElement.id)
@@ -215,16 +215,10 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    items(key = { listElement ->
-                        listElement.id + listElement.id
-                    }, items = rootFolders.foldersTableList) { rootFolderElement ->
-                        if (!homeScreenList.contains(
-                                HomeScreenListTable(
-                                    rootFolderElement.id,
-                                    0,
-                                    rootFolderElement.folderName,
-                                )
-                            )
+                    items(items = rootFolders.foldersTableList) { rootFolderElement ->
+                        if (!homeScreenList.any {
+                                it.id == rootFolderElement.id
+                            }
                         ) {
                             ListFolderUIComponent(
                                 folderName = rootFolderElement.folderName,

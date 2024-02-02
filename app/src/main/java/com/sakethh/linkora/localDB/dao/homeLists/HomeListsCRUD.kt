@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface HomeListsCRUD {
-    @Query("SELECT * FROM home_screen_list_table")
+    @Query("SELECT * FROM home_screen_list_table ORDER BY position ASC")
     fun getAllHomeScreenListFolders(): Flow<List<HomeScreenListTable>>
 
     @Query("DELETE from home_screen_list_table WHERE id = :folderID")
@@ -19,7 +19,7 @@ interface HomeListsCRUD {
     suspend fun addAHomeScreenListFolder(homeScreenListTable: HomeScreenListTable)
 
     @Update
-    suspend fun updateList(list: List<HomeScreenListTable>)
+    suspend fun updateElement(element: HomeScreenListTable)
 
     @Query("SELECT MAX(id) FROM home_screen_list_table;\n")
     suspend fun getLastInsertedID(): Long

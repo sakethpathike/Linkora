@@ -330,9 +330,9 @@ class UpdateVM : ViewModel() {
         }
     }
 
-    fun updateHomeList(homeScreenListTable: List<HomeScreenListTable>) {
+    fun updateHomeListElement(homeScreenListTableElement: HomeScreenListTable) {
         viewModelScope.launch {
-            LocalDataBase.localDB.homeListsCrud().updateList(homeScreenListTable)
+            LocalDataBase.localDB.homeListsCrud().updateElement(homeScreenListTableElement)
         }
     }
 }
