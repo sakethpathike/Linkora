@@ -8,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
@@ -29,16 +30,24 @@ open class CollectionsScreenVM : ViewModel() {
         )
     )
     val foldersData = _foldersData.asStateFlow()
-    val selectedItemsID = mutableStateListOf<Long>()
-    val areAllItemsChecked = mutableStateOf(false)
+
+    val selectedFoldersID = mutableStateListOf<Long>()
+    val areAllFoldersChecked = mutableStateOf(false)
 
     fun changeAllFoldersSelectedData() {
-        if (areAllItemsChecked.value) {
-            selectedItemsID.addAll(foldersData.value.foldersTableList.map { it.id })
+        if (areAllFoldersChecked.value) {
+            selectedFoldersID.addAll(foldersData.value.foldersTableList.map { it.id })
             foldersData.value.isCheckBoxSelected.forEach { it.value = true }
         } else {
-            selectedItemsID.removeAll(foldersData.value.foldersTableList.map { it.id })
+            selectedFoldersID.removeAll(foldersData.value.foldersTableList.map { it.id })
             foldersData.value.isCheckBoxSelected.forEach { it.value = false }
+        }
+    }
+
+    fun onDeleteMultipleFolders() {
+        val deleteVM = DeleteVM()
+        selectedFoldersID.forEach {
+            deleteVM.onRegularFolderDeleteClick(it)
         }
     }
 

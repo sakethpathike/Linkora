@@ -34,9 +34,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
@@ -159,8 +159,8 @@ fun CollectionsScreen(navController: NavController) {
     }
     val updateVM: UpdateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
-    if (collectionsScreenVM.selectedItemsID.size == 0) {
-        collectionsScreenVM.areAllItemsChecked.value = false
+    if (collectionsScreenVM.selectedFoldersID.size == 0) {
+        collectionsScreenVM.areAllFoldersChecked.value = false
     }
     LinkoraTheme {
         Scaffold(
@@ -183,14 +183,14 @@ fun CollectionsScreen(navController: NavController) {
             topBar = {
                 Column {
                     TopAppBar(actions = {
-                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedItemsID.size != 0) && foldersData.foldersTableList.isNotEmpty()) {
+                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersID.size != 0) && foldersData.foldersTableList.isNotEmpty()) {
                             IconButton(onClick = {
                                 shouldDeleteDialogBoxBeVisible.value = true
                             }) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                             }
                             IconButton(onClick = {
-                                collectionsScreenVM.selectedItemsID.forEach {
+                                collectionsScreenVM.selectedFoldersID.forEach {
                                     updateVM.archiveAFolderV10(it)
                                 }
                             }) {
@@ -201,7 +201,7 @@ fun CollectionsScreen(navController: NavController) {
                         if (areFoldersSelectable.value && foldersData.foldersTableList.isNotEmpty()) {
                             IconButton(onClick = {
                                 areFoldersSelectable.value = false
-                                collectionsScreenVM.areAllItemsChecked.value = false
+                                collectionsScreenVM.areAllFoldersChecked.value = false
                                 collectionsScreenVM.changeAllFoldersSelectedData()
                             }) {
                                 Icon(
@@ -213,7 +213,7 @@ fun CollectionsScreen(navController: NavController) {
                         if (areFoldersSelectable.value && foldersData.foldersTableList.isNotEmpty()) {
                             Row {
                                 AnimatedContent(
-                                    targetState = collectionsScreenVM.selectedItemsID.size,
+                                    targetState = collectionsScreenVM.selectedFoldersID.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -244,7 +244,7 @@ fun CollectionsScreen(navController: NavController) {
                                     modifier = Modifier.clickable {
                                         Log.d(
                                             "selected folders LINKORA",
-                                            collectionsScreenVM.selectedItemsID.toString()
+                                            collectionsScreenVM.selectedFoldersID.toString()
                                         )
                                     })
                             }
@@ -384,8 +384,8 @@ fun CollectionsScreen(navController: NavController) {
                                     sortingBtmSheetState.expand()
                                 }
                             } else {
-                                collectionsScreenVM.areAllItemsChecked.value =
-                                    !collectionsScreenVM.areAllItemsChecked.value
+                                collectionsScreenVM.areAllFoldersChecked.value =
+                                    !collectionsScreenVM.areAllFoldersChecked.value
                                 collectionsScreenVM.changeAllFoldersSelectedData()
                             }
                         }
@@ -415,9 +415,9 @@ fun CollectionsScreen(navController: NavController) {
                                     text = "Select all folders",
                                     style = MaterialTheme.typography.titleSmall
                                 )
-                                Checkbox(checked = collectionsScreenVM.areAllItemsChecked.value,
+                                Checkbox(checked = collectionsScreenVM.areAllFoldersChecked.value,
                                     onCheckedChange = {
-                                        collectionsScreenVM.areAllItemsChecked.value = it
+                                        collectionsScreenVM.areAllFoldersChecked.value = it
                                         collectionsScreenVM.changeAllFoldersSelectedData()
                                     })
                             }
@@ -460,9 +460,9 @@ fun CollectionsScreen(navController: NavController) {
                             onLongClick = {
                                 if (!areFoldersSelectable.value) {
                                     areFoldersSelectable.value = true
-                                    collectionsScreenVM.areAllItemsChecked.value = false
+                                    collectionsScreenVM.areAllFoldersChecked.value = false
                                     collectionsScreenVM.changeAllFoldersSelectedData()
-                                    collectionsScreenVM.selectedItemsID.add(folderData.id)
+                                    collectionsScreenVM.selectedFoldersID.add(folderData.id)
                                     foldersData.isCheckBoxSelected[folderIndex].value = true
                                 }
                             },
@@ -470,9 +470,9 @@ fun CollectionsScreen(navController: NavController) {
                             isCheckBoxChecked = foldersData.isCheckBoxSelected[folderIndex],
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
-                                    collectionsScreenVM.selectedItemsID.add(folderData.id)
+                                    collectionsScreenVM.selectedFoldersID.add(folderData.id)
                                 } else {
-                                    collectionsScreenVM.selectedItemsID.removeAll {
+                                    collectionsScreenVM.selectedFoldersID.removeAll {
                                         it == folderData.id
                                     }
                                 }
@@ -564,11 +564,9 @@ fun CollectionsScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     if (areFoldersSelectable.value) {
-                        collectionsScreenVM.selectedItemsID.forEach {
-                            deleteVM.onRegularFolderDeleteClick(it)
-                        }
+                        collectionsScreenVM.onDeleteMultipleFolders()
                         areFoldersSelectable.value = false
-                        collectionsScreenVM.areAllItemsChecked.value = false
+                        collectionsScreenVM.areAllFoldersChecked.value = false
                         collectionsScreenVM.changeAllFoldersSelectedData()
                     } else {
                         deleteVM.onRegularFolderDeleteClick(
@@ -760,7 +758,7 @@ fun CollectionsScreen(navController: NavController) {
             }
         } else if (areFoldersSelectable.value) {
             areFoldersSelectable.value = false
-            collectionsScreenVM.areAllItemsChecked.value = false
+            collectionsScreenVM.areAllFoldersChecked.value = false
             collectionsScreenVM.changeAllFoldersSelectedData()
         } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
             activity?.finish()
@@ -782,7 +780,7 @@ fun FolderIndividualComponent(
     onFolderClick: (checkBoxState: Boolean) -> Unit,
     maxLines: Int = 1,
     showMoreIcon: Boolean,
-    folderIcon: ImageVector = Icons.Default.Folder,
+    folderIcon: ImageVector = Icons.Outlined.Folder,
     showCheckBox: MutableState<Boolean> = mutableStateOf(false),
     checkBoxState: (Boolean) -> Unit = {},
     isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false),

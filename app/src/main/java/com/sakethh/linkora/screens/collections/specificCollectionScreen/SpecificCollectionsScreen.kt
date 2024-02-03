@@ -198,7 +198,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    val areLinksSelectable = rememberSaveable {
+    val areElementsSelectable = rememberSaveable {
         mutableStateOf(false)
     }
     val updateVM: UpdateVM = viewModel()
@@ -238,7 +238,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         }, modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             Column {
                 TopAppBar(navigationIcon = {
-                    if (!areLinksSelectable.value) {
+                    if (!areElementsSelectable.value) {
                         IconButton(onClick = {
                             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
@@ -259,9 +259,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     } else {
                         IconButton(onClick = {
-                            areLinksSelectable.value = false
-                            specificCollectionsScreenVM.areAllItemsChecked.value = false
-                            specificCollectionsScreenVM.removeAllSelections()
+                            areElementsSelectable.value = false
+                            specificCollectionsScreenVM.areAllLinksChecked.value = false
+                            specificCollectionsScreenVM.removeAllLinkSelections()
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Cancel, contentDescription = null
@@ -270,10 +270,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
                 }, scrollBehavior = scrollBehavior,
                     title = {
-                        if (areLinksSelectable.value) {
+                        if (areElementsSelectable.value) {
                             Row {
                                 AnimatedContent(
-                                    targetState = specificCollectionsScreenVM.selectedItemsID.size,
+                                    targetState = specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -297,14 +297,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         fontSize = 18.sp
                                     )
                                 }
-                                Text(text = " links selected",
+                                Text(text = " items selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp,
                                     modifier = Modifier.clickable {
                                         Log.d(
                                             "selected folders LINKORA",
-                                            specificCollectionsScreenVM.selectedItemsID.toString()
+                                            specificCollectionsScreenVM.selectedLinksID.toString()
                                         )
                                     })
                             }
@@ -319,10 +319,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     },
                     actions = {
-                        if (areLinksSelectable.value) {
+                        if (areElementsSelectable.value) {
                             when (SpecificCollectionsScreenVM.screenType.value) {
                                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                    if (impLinksData.importantLinksList.isNotEmpty() && (specificCollectionsScreenVM.selectedItemsID.size != 0)) {
+                                    if (impLinksData.importantLinksList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -332,7 +332,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            specificCollectionsScreenVM.selectedItemsID.forEach { _ ->
+                                            specificCollectionsScreenVM.selectedLinksID.forEach { _ ->
 
                                             }
                                         }) {
@@ -345,7 +345,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                                    if (archivedFoldersLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedItemsID.size != 0)) {
+                                    if (archivedFoldersLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -366,7 +366,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                    if (savedLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedItemsID.size != 0)) {
+                                    if (savedLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -387,7 +387,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                    if (specificFolderLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedItemsID.size != 0)) {
+                                    if (specificFolderLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -490,31 +490,60 @@ fun SpecificCollectionScreen(navController: NavController) {
             ) {
                 when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        if (childFoldersData.foldersTableList.isNotEmpty() && !areLinksSelectable.value) {
-                            items(items = childFoldersData.foldersTableList, key = { foldersTable ->
-                                foldersTable.id.toString() + foldersTable.folderName
-                            }) {
+                        if (childFoldersData.foldersTableList.isNotEmpty()) {
+                            itemsIndexed(
+                                items = childFoldersData.foldersTableList,
+                                key = { _, foldersTable ->
+                                    foldersTable.id.toString() + foldersTable.folderName
+                                }) { folderIndex, folderData ->
                                 FolderIndividualComponent(
-                                    folderName = it.folderName,
-                                    folderNote = it.infoForSaving,
-                                    onMoreIconClick = {
-                                        selectedURLTitle.value = it.folderName
-                                        selectedURLOrFolderNote.value = it.infoForSaving
-                                        clickedFolderNote.value = it.infoForSaving
-                                        coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                    showCheckBox = areElementsSelectable,
+                                    isCheckBoxChecked = childFoldersData.isCheckBoxSelected[folderIndex],
+                                    checkBoxState = { checkBoxState ->
+                                        if (checkBoxState) {
+                                            specificCollectionsScreenVM.selectedFoldersID.add(
+                                                folderData.id
+                                            )
+                                        } else {
+                                            specificCollectionsScreenVM.selectedFoldersID.removeAll {
+                                                it == folderData.id
+                                            }
                                         }
-                                        clickedFolderName.value = it.folderName
-                                        CollectionsScreenVM.selectedFolderData.value = it
+                                    },
+                                    folderName = folderData.folderName,
+                                    folderNote = folderData.infoForSaving,
+                                    onMoreIconClick = {
+                                        selectedURLTitle.value = folderData.folderName
+                                        selectedURLOrFolderNote.value = folderData.infoForSaving
+                                        clickedFolderNote.value = folderData.infoForSaving
+                                        coroutineScope.launch {
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
+                                        }
+                                        clickedFolderName.value = folderData.folderName
+                                        CollectionsScreenVM.selectedFolderData.value = folderData
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
                                     },
-                                    showMoreIcon = true,
+                                    showMoreIcon = !areElementsSelectable.value,
                                     onFolderClick = { _ ->
-                                        CollectionsScreenVM.currentClickedFolderData.value =
-                                            it
-                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                        if (!areElementsSelectable.value) {
+                                            CollectionsScreenVM.currentClickedFolderData.value =
+                                                folderData
+                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                        }
+                                    }, onLongClick = {
+                                        if (!areElementsSelectable.value) {
+                                            areElementsSelectable.value = true
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
+                                            specificCollectionsScreenVM.selectedFoldersID.add(
+                                                folderData.id
+                                            )
+                                            childFoldersData.isCheckBoxSelected[folderIndex].value =
+                                                true
+                                        }
                                     })
                             }
                         }
@@ -527,16 +556,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            if (!areLinksSelectable.value) {
-                                                areLinksSelectable.value = true
-                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                            if (!areElementsSelectable.value) {
+                                                areElementsSelectable.value = true
+                                                specificCollectionsScreenVM.selectedLinksID.add(
                                                     linkData.id
                                                 )
                                                 specificFolderLinksData.isCheckBoxSelected[linkIndex].value =
                                                     true
                                             }
                                         },
-                                        isSelectionModeEnabled = areLinksSelectable,
+                                        isSelectionModeEnabled = areElementsSelectable,
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
@@ -571,16 +600,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             }
                                         },
                                         onLinkClick = {
-                                            if (areLinksSelectable.value) {
+                                            if (areElementsSelectable.value) {
                                                 specificFolderLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !specificFolderLinksData.isCheckBoxSelected[linkIndex].value
 
                                                 if (specificFolderLinksData.isCheckBoxSelected[linkIndex].value) {
-                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                    specificCollectionsScreenVM.selectedLinksID.add(
                                                         linkData.id
                                                     )
                                                 } else {
-                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                    specificCollectionsScreenVM.selectedLinksID.remove(
                                                         linkData.id
                                                     )
                                                 }
@@ -639,16 +668,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            if (!areLinksSelectable.value) {
-                                                areLinksSelectable.value = true
-                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                            if (!areElementsSelectable.value) {
+                                                areElementsSelectable.value = true
+                                                specificCollectionsScreenVM.selectedLinksID.add(
                                                     linkData.id
                                                 )
                                                 savedLinksData.isCheckBoxSelected[linkIndex].value =
                                                     true
                                             }
                                         },
-                                        isSelectionModeEnabled = areLinksSelectable,
+                                        isSelectionModeEnabled = areElementsSelectable,
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
@@ -680,16 +709,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             }
                                         },
                                         onLinkClick = {
-                                            if (areLinksSelectable.value) {
+                                            if (areElementsSelectable.value) {
                                                 savedLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !savedLinksData.isCheckBoxSelected[linkIndex].value
 
                                                 if (savedLinksData.isCheckBoxSelected[linkIndex].value) {
-                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                    specificCollectionsScreenVM.selectedLinksID.add(
                                                         linkData.id
                                                     )
                                                 } else {
-                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                    specificCollectionsScreenVM.selectedLinksID.remove(
                                                         linkData.id
                                                     )
                                                 }
@@ -747,16 +776,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            if (!areLinksSelectable.value) {
-                                                areLinksSelectable.value = true
-                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                            if (!areElementsSelectable.value) {
+                                                areElementsSelectable.value = true
+                                                specificCollectionsScreenVM.selectedLinksID.add(
                                                     linkData.id
                                                 )
                                                 impLinksData.isCheckBoxSelected[linkIndex].value =
                                                     true
                                             }
                                         },
-                                        isSelectionModeEnabled = areLinksSelectable,
+                                        isSelectionModeEnabled = areElementsSelectable,
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
@@ -791,16 +820,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             }
                                         },
                                         onLinkClick = {
-                                            if (areLinksSelectable.value) {
+                                            if (areElementsSelectable.value) {
                                                 impLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !impLinksData.isCheckBoxSelected[linkIndex].value
 
                                                 if (impLinksData.isCheckBoxSelected[linkIndex].value) {
-                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                    specificCollectionsScreenVM.selectedLinksID.add(
                                                         linkData.id
                                                     )
                                                 } else {
-                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                    specificCollectionsScreenVM.selectedLinksID.remove(
                                                         linkData.id
                                                     )
                                                 }
@@ -849,7 +878,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        if (archivedSubFoldersData.foldersTableList.isNotEmpty() && !areLinksSelectable.value) {
+                        if (archivedSubFoldersData.foldersTableList.isNotEmpty() && !areElementsSelectable.value) {
                             items(
                                 items = archivedSubFoldersData.foldersTableList,
                                 key = { foldersTable ->
@@ -888,16 +917,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 LinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
-                                            if (!areLinksSelectable.value) {
-                                                areLinksSelectable.value = true
-                                                specificCollectionsScreenVM.selectedItemsID.add(
+                                            if (!areElementsSelectable.value) {
+                                                areElementsSelectable.value = true
+                                                specificCollectionsScreenVM.selectedLinksID.add(
                                                     linkData.id
                                                 )
                                                 archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value =
                                                     true
                                             }
                                         },
-                                        isSelectionModeEnabled = areLinksSelectable,
+                                        isSelectionModeEnabled = areElementsSelectable,
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
@@ -918,16 +947,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             shouldOptionsBtmModalSheetBeVisible.value = true
                                         },
                                         onLinkClick = {
-                                            if (areLinksSelectable.value) {
+                                            if (areElementsSelectable.value) {
                                                 archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value =
                                                     !archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value
 
                                                 if (archivedFoldersLinksData.isCheckBoxSelected[linkIndex].value) {
-                                                    specificCollectionsScreenVM.selectedItemsID.add(
+                                                    specificCollectionsScreenVM.selectedLinksID.add(
                                                         linkData.id
                                                     )
                                                 } else {
-                                                    specificCollectionsScreenVM.selectedItemsID.remove(
+                                                    specificCollectionsScreenVM.selectedLinksID.remove(
                                                         linkData.id
                                                     )
                                                 }
@@ -1160,21 +1189,12 @@ fun SpecificCollectionScreen(navController: NavController) {
                 ),
                 shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
-                    if (areLinksSelectable.value) {
-                        specificCollectionsScreenVM.selectedItemsID.forEach {
-                            specificCollectionsScreenVM.onDeleteClick(
-                                shouldShowToastOnCompletion = false,
-                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                                selectedWebURL = selectedWebURL.value,
-                                context = context,
-                                onTaskCompleted = {},
-                                folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
-                                linkID = it,
-                            )
-                        }
-                        areLinksSelectable.value = false
-                        specificCollectionsScreenVM.areAllItemsChecked.value = false
-                        specificCollectionsScreenVM.removeAllSelections()
+                    if (areElementsSelectable.value) {
+                        specificCollectionsScreenVM.onDeleteMultipleFolders(context = context)
+                        specificCollectionsScreenVM.onDeleteMultipleLinks(context)
+                        areElementsSelectable.value = false
+                        specificCollectionsScreenVM.areAllLinksChecked.value = false
+                        specificCollectionsScreenVM.removeAllLinkSelections()
                         specificCollectionsScreenVM.changeRetrievedData(
                             folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                             sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -1419,10 +1439,10 @@ fun SpecificCollectionScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
-        } else if (areLinksSelectable.value) {
-            areLinksSelectable.value = false
-            specificCollectionsScreenVM.areAllItemsChecked.value = false
-            specificCollectionsScreenVM.removeAllSelections()
+        } else if (areElementsSelectable.value) {
+            areElementsSelectable.value = false
+            specificCollectionsScreenVM.areAllLinksChecked.value = false
+            specificCollectionsScreenVM.removeAllLinkSelections()
         } else {
             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN

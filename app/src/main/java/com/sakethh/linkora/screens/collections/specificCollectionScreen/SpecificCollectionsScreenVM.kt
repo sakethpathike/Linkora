@@ -3,6 +3,7 @@ package com.sakethh.linkora.screens.collections.specificCollectionScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
@@ -80,34 +81,37 @@ open class SpecificCollectionsScreenVM(
     private val _archiveSubFolderData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
     val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
 
-    fun removeAllSelections() {
+
+    val selectedLinksID = mutableStateListOf<Long>()
+    val areAllLinksChecked = mutableStateOf(false)
+    fun removeAllLinkSelections() {
         when (screenType.value) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 List(savedLinksTable.value.linksTableList.size) {
                     savedLinksTable.value.isCheckBoxSelected[it].value = false
                 }
-                selectedItemsID.removeAll(savedLinksTable.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(savedLinksTable.value.linksTableList.map { it.id })
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 List(folderLinksData.value.linksTableList.size) {
                     folderLinksData.value.isCheckBoxSelected[it].value = false
                 }
-                selectedItemsID.removeAll(folderLinksData.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(folderLinksData.value.linksTableList.map { it.id })
             }
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 List(impLinksTable.value.importantLinksList.size) {
                     impLinksTable.value.isCheckBoxSelected[it].value = false
                 }
-                selectedItemsID.removeAll(impLinksTable.value.importantLinksList.map { it.id })
+                selectedLinksID.removeAll(impLinksTable.value.importantLinksList.map { it.id })
             }
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 List(archiveFoldersLinksData.value.linksTableList.size) {
                     archiveFoldersLinksData.value.isCheckBoxSelected[it].value = false
                 }
-                selectedItemsID.removeAll(archiveFoldersLinksData.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(archiveFoldersLinksData.value.linksTableList.map { it.id })
             }
 
             else -> {}
@@ -745,6 +749,36 @@ open class SpecificCollectionsScreenVM(
             }
 
             else -> {}
+        }
+    }
+
+    fun onDeleteMultipleFolders(context: Context) {
+        selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
+        selectedFoldersID.forEach {
+            onDeleteClick(
+                shouldShowToastOnCompletion = false,
+                folderID = it,
+                selectedWebURL = "",
+                context = context,
+                onTaskCompleted = {},
+                folderName = selectedFolderData.value.folderName,
+                linkID = it,
+            )
+        }
+    }
+
+    fun onDeleteMultipleLinks(context: Context) {
+        selectedBtmSheetType.value = OptionsBtmSheetType.LINK
+        selectedLinksID.forEach {
+            onDeleteClick(
+                shouldShowToastOnCompletion = false,
+                folderID = it,
+                selectedWebURL = "",
+                context = context,
+                onTaskCompleted = {},
+                folderName = selectedFolderData.value.folderName,
+                linkID = it,
+            )
         }
     }
 

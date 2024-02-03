@@ -84,12 +84,16 @@ interface DeleteDao {
         val childFolders = LocalDataBase.localDB.readDao().getThisFolderData(folderID)
         val deletionAsync = mutableListOf<Deferred<Unit>>()
         coroutineScope {
-            childFolders.childFolderIDs?.forEach {
-                val deleteAFolder = async {
-                    deleteAFolder(it)
-                    deleteThisFolderLinksV10(it)
+            try {
+                childFolders.childFolderIDs?.forEach {
+                    val deleteAFolder = async {
+                        deleteAFolder(it)
+                        deleteThisFolderLinksV10(it)
+                    }
+                    deletionAsync.add(deleteAFolder)
                 }
-                deletionAsync.add(deleteAFolder)
+            } catch (_: java.lang.NullPointerException) {
+
             }
         }
         deletionAsync.awaitAll()

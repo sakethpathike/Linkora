@@ -30,7 +30,10 @@ data class DeleteDialogBoxParam(
     val onDeleted: () -> Unit = {},
     val totalIds: MutableLongState = mutableLongStateOf(0),
     val folderName: MutableState<String> = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName),
-    val areFoldersSelectable:Boolean=false
+    val areFoldersSelectable: Boolean = false,
+    /*
+        val title:String,
+        val description:String*/
 )
 
 @Composable
