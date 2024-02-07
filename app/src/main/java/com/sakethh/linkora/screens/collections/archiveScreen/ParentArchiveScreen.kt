@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.Sort
+import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -25,6 +27,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,6 +54,7 @@ fun ParentArchiveScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val context = LocalContext.current
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(title = {
@@ -58,8 +62,22 @@ fun ParentArchiveScreen(navController: NavController) {
                     text = "Archive", style = MaterialTheme.typography.titleLarge, fontSize = 24.sp
                 )
             }, actions = {
-                IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                    Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                if (!archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksID.size > 0) {
+                    IconButton(onClick = {
+                        archiveScreenVM.unArchiveMultipleFolders()
+                        archiveScreenVM.unArchiveMultipleLinks()
+                    }) {
+                        Icon(imageVector = Icons.Outlined.Unarchive, contentDescription = null)
+                    }
+                    IconButton(onClick = {
+
+                    }) {
+                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
+                    }
+                } else {
+                    IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                        Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                    }
                 }
             })
         }) {

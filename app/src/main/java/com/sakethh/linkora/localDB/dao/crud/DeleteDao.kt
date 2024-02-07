@@ -58,6 +58,9 @@ interface DeleteDao {
     @Query("DELETE from archived_links_table WHERE webURL = :webURL")
     suspend fun deleteALinkFromArchiveLinksV9(webURL: String)
 
+    @Query("DELETE from archived_links_table WHERE id = :id")
+    suspend fun deleteALinkFromArchiveLinks(id: Long)
+
     @Query("DELETE from links_table WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :archiveFolderID AND isLinkedWithArchivedFolder=1")
     suspend fun deleteALinkFromArchiveFolderBasedLinksV10(webURL: String, archiveFolderID: Long)
 

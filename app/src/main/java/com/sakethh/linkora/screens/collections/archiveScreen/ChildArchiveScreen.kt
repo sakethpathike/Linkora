@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -82,12 +83,13 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (archiveScreenType == ArchiveScreenType.LINKS) {
-                if (archiveLinksData.isNotEmpty()) {
-                    items(items = archiveLinksData, key = { archivedLinks ->
+                if (archiveLinksData.archiveLinksTable.isNotEmpty()) {
+                    items(items = archiveLinksData.archiveLinksTable, key = { archivedLinks ->
                         archivedLinks.id.toString() + archivedLinks.baseURL
                     }) {
                         LinkUIComponent(
-                            LinkUIComponentParam(title = it.title,
+                            LinkUIComponentParam(
+                                title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
@@ -146,10 +148,24 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             } else {
                 if (archiveFoldersDataV9.isNotEmpty()) {
-                    items(items = archiveFoldersDataV9, key = { archivedFolders ->
+                    itemsIndexed(items = archiveFoldersDataV9, key = { _, archivedFolders ->
                         archivedFolders.id.toString() + archivedFolders.archiveFolderName + archivedFolders.id.toString()
-                    }) {
-                        FolderIndividualComponent(folderName = it.archiveFolderName,
+                    }) { index, it ->
+                        FolderIndividualComponent(
+                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
+                            checkBoxState = { checkBoxState ->
+                                if (checkBoxState) {
+                                    archiveScreenVM.selectedFoldersID.add(
+                                        it.id
+                                    )
+                                } else {
+                                    archiveScreenVM.selectedFoldersID.removeAll { long ->
+                                        long == it.id
+                                    }
+                                }
+                            },
+                            folderName = it.archiveFolderName,
                             showMoreIcon = true,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
@@ -175,11 +191,27 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             })
                     }
                 }
-                if (archiveFoldersDataV10.isNotEmpty()) {
-                    items(items = archiveFoldersDataV10, key = { foldersTable ->
-                        foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
-                    }) {
-                        FolderIndividualComponent(folderName = it.folderName,
+                if (archiveFoldersDataV10.foldersTableList.isNotEmpty()) {
+                    itemsIndexed(
+                        items = archiveFoldersDataV10.foldersTableList,
+                        key = { _, foldersTable ->
+                            foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
+                        }) { index, it ->
+                        FolderIndividualComponent(
+                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
+                            checkBoxState = { checkBoxState ->
+                                if (checkBoxState) {
+                                    archiveScreenVM.selectedFoldersID.add(
+                                        it.id
+                                    )
+                                } else {
+                                    archiveScreenVM.selectedFoldersID.removeAll { long ->
+                                        long == it.id
+                                    }
+                                }
+                            },
+                            folderName = it.folderName,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
@@ -192,17 +224,31 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             },
                             showMoreIcon = true,
                             onFolderClick = { _ ->
-                                CollectionsScreenVM.currentClickedFolderData.value = it
-                                CollectionsScreenVM.selectedFolderData.value = it
-                                SpecificCollectionsScreenVM.inARegularFolder.value = false
-                                SpecificCollectionsScreenVM.screenType.value =
-                                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                if (!archiveScreenVM.isSelectionModeEnabled.value) {
+                                    CollectionsScreenVM.currentClickedFolderData.value = it
+                                    CollectionsScreenVM.selectedFolderData.value = it
+                                    SpecificCollectionsScreenVM.inARegularFolder.value = false
+                                    SpecificCollectionsScreenVM.screenType.value =
+                                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
+                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                }
+                            }, onLongClick = {
+                                if (!archiveScreenVM.isSelectionModeEnabled.value) {
+                                    archiveScreenVM.isSelectionModeEnabled.value = true
+                                    archiveScreenVM.areAllFoldersChecked.value =
+                                        false
+                                    archiveScreenVM.changeAllFoldersSelectedData()
+                                    archiveScreenVM.selectedFoldersID.add(
+                                        it.id
+                                    )
+                                    archiveFoldersDataV10.isCheckBoxSelected[index].value =
+                                        true
+                                }
                             })
                     }
                 }
 
-                if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.isEmpty()) {
+                if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.foldersTableList.isEmpty()) {
                     item {
                         DataEmptyScreen(text = "No folders were archived.")
                     }

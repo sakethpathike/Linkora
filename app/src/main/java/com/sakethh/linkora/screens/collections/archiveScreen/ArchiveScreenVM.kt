@@ -3,6 +3,8 @@ package com.sakethh.linkora.screens.collections.archiveScreen
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -15,6 +17,7 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -33,6 +36,10 @@ enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
 
+data class ArchiveLinkTableComponent(
+    val isCheckBoxSelected: List<MutableState<Boolean>>, val archiveLinksTable: List<ArchivedLinks>
+)
+
 class ArchiveScreenVM(
     private val deleteVM: DeleteVM = DeleteVM(),
     private val updateVM: UpdateVM = UpdateVM()
@@ -46,7 +53,6 @@ class ArchiveScreenVM(
             infoForSaving = ""
         )
     )
-
     val parentArchiveScreenData = listOf(
         ArchiveScreenModal(name = "Links", screen = { navController ->
             ChildArchiveScreen(
@@ -61,13 +67,18 @@ class ArchiveScreenVM(
                 )
             })
     )
-    private val _archiveLinksData = MutableStateFlow(emptyList<ArchivedLinks>())
+    private val _archiveLinksData = MutableStateFlow(
+        ArchiveLinkTableComponent(
+            emptyList(),
+            emptyList()
+        )
+    )
     val archiveLinksData = _archiveLinksData.asStateFlow()
 
     private val _archiveFoldersDataV9 = MutableStateFlow(emptyList<ArchivedFolders>())
     val archiveFoldersDataV9 = _archiveFoldersDataV9.asStateFlow()
 
-    private val _archiveFoldersDataV10 = MutableStateFlow(emptyList<FoldersTable>())
+    private val _archiveFoldersDataV10 = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
     val archiveFoldersDataV10 = _archiveFoldersDataV10.asStateFlow()
 
     init {
@@ -76,6 +87,46 @@ class ArchiveScreenVM(
                 SettingsScreenVM.Settings.selectedSortingType.value
             )
         )
+    }
+
+
+    val isSelectionModeEnabled = mutableStateOf(false)
+
+    val selectedLinksID = mutableStateListOf<Long>()
+    val areAllLinksChecked = mutableStateOf(false)
+
+    val selectedFoldersID = mutableStateListOf<Long>()
+    val areAllFoldersChecked = mutableStateOf(false)
+    fun changeAllFoldersSelectedData() {
+        selectedFoldersID.removeAll(
+            archiveFoldersDataV10.value.foldersTableList.map { it.id }
+        )
+        archiveFoldersDataV10.value.isCheckBoxSelected.forEach { it.value = false }
+    }
+
+    fun unArchiveMultipleFolders() {
+        selectedFoldersID.forEach {
+            onUnArchiveClickV10(it)
+        }
+        removeAllLinksSelection()
+        changeAllFoldersSelectedData()
+    }
+
+    fun unArchiveMultipleLinks() {
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.updateDao().copyLinkFromArchiveTableToLinksTable(it)
+                LocalDataBase.localDB.updateDao().assignLinkAsSavedLink(it)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it)
+            }
+        }
+        removeAllLinksSelection()
+        changeAllFoldersSelectedData()
+    }
+
+    private fun removeAllLinksSelection() {
+        selectedLinksID.removeAll(archiveLinksData.value.archiveLinksTable.map { it.id })
+        archiveLinksData.value.isCheckBoxSelected.forEach { it.value = false }
     }
 
     fun onNoteChangeClick(
@@ -129,12 +180,25 @@ class ArchiveScreenVM(
                     awaitAll(async {
                         LocalDataBase.localDB.archivedLinksSorting().sortByAToZ()
                             .collect {
-                                _archiveLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveLinksData.emit(
+                                    ArchiveLinkTableComponent(
+                                        mutableBooleanList,
+                                        it
+                                    )
+                                )
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting().sortByAToZV10()
                             .collect {
-                                _archiveFoldersDataV10.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
                             }
                     })
                 }
@@ -145,12 +209,25 @@ class ArchiveScreenVM(
                     awaitAll(async {
                         LocalDataBase.localDB.archivedLinksSorting().sortByZToA()
                             .collect {
-                                _archiveLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveLinksData.emit(
+                                    ArchiveLinkTableComponent(
+                                        mutableBooleanList,
+                                        it
+                                    )
+                                )
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting().sortByZToAV10()
                             .collect {
-                                _archiveFoldersDataV10.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
                             }
                     })
                 }
@@ -161,12 +238,25 @@ class ArchiveScreenVM(
                     awaitAll(async {
                         LocalDataBase.localDB.archivedLinksSorting()
                             .sortByLatestToOldest().collect {
-                                _archiveLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveLinksData.emit(
+                                    ArchiveLinkTableComponent(
+                                        mutableBooleanList,
+                                        it
+                                    )
+                                )
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting()
                             .sortByLatestToOldestV10().collect {
-                                _archiveFoldersDataV10.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
                             }
                     })
                 }
@@ -177,12 +267,25 @@ class ArchiveScreenVM(
                     awaitAll(async {
                         LocalDataBase.localDB.archivedLinksSorting()
                             .sortByOldestToLatest().collect {
-                                _archiveLinksData.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveLinksData.emit(
+                                    ArchiveLinkTableComponent(
+                                        mutableBooleanList,
+                                        it
+                                    )
+                                )
                             }
                     }, async {
                         LocalDataBase.localDB.archivedFolderSorting()
                             .sortByOldestToLatestV10().collect {
-                                _archiveFoldersDataV10.emit(it)
+                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                                List(it.size) { index ->
+                                    mutableBooleanList.add(index, mutableStateOf(false))
+                                }
+                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
                             }
                     })
                 }

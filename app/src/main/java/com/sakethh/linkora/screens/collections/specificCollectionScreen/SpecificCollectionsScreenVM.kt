@@ -132,7 +132,7 @@ open class SpecificCollectionsScreenVM(
         val inARegularFolder = mutableStateOf(true)
     }
 
-    fun retrieveChildFoldersData() {
+    private fun retrieveChildFoldersData() {
         viewModelScope.launch {
             LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
                 currentClickedFolderData.value.id
