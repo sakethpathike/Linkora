@@ -34,12 +34,24 @@ open class CollectionsScreenVM : ViewModel() {
     val selectedFoldersID = mutableStateListOf<Long>()
     val areAllFoldersChecked = mutableStateOf(false)
 
-    fun changeAllFoldersSelectedData() {
+    fun changeAllFoldersSelectedData(
+        folderComponent: FolderComponent = FolderComponent(
+            emptyList(),
+            emptyList()
+        )
+    ) {
         if (areAllFoldersChecked.value) {
             selectedFoldersID.addAll(foldersData.value.foldersTableList.map { it.id })
             foldersData.value.isCheckBoxSelected.forEach { it.value = true }
         } else {
-            selectedFoldersID.removeAll(foldersData.value.foldersTableList.map { it.id })
+            if (folderComponent.foldersTableList.isEmpty()) {
+                selectedFoldersID.removeAll(foldersData.value.foldersTableList.map { it.id })
+            } else {
+                selectedFoldersID.removeAll(
+                    folderComponent.foldersTableList.map { it.id }
+                )
+            }
+            folderComponent.isCheckBoxSelected.forEach { it.value = false }
             foldersData.value.isCheckBoxSelected.forEach { it.value = false }
         }
     }

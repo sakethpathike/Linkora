@@ -15,6 +15,14 @@ interface UpdateDao {
         folderName: String,
     )
 
+    @Query(
+        "INSERT INTO archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)\n" +
+                "SELECT title, webURL, baseURL, imgURL, infoForSaving\n" +
+                "FROM links_table\n" +
+                "WHERE id = :id;\n"
+    )
+    suspend fun moveLinkFromLinksTableToArchiveLinks(id: Long)
+
     @Update
     suspend fun updateAFolderData(foldersTable: FoldersTable)
 

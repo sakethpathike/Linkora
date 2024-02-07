@@ -781,9 +781,13 @@ fun FolderIndividualComponent(
     maxLines: Int = 1,
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
-    showCheckBox: MutableState<Boolean> = mutableStateOf(false),
+    showCheckBox: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(false)
+    },
     checkBoxState: (Boolean) -> Unit = {},
-    isCheckBoxChecked: MutableState<Boolean> = mutableStateOf(false),
+    isCheckBoxChecked: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(false)
+    },
     onLongClick: () -> Unit = {},
     inSelectionMode: Boolean = false,
 ) {

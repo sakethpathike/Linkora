@@ -157,6 +157,18 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
+    init {
+        viewModelScope.launch {
+            changeRetrievedData(
+                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+                folderID = currentClickedFolderData.value.id,
+                isFoldersSortingSelected = true,
+                isLinksSortingSelected = true
+            )
+            retrieveChildFoldersData()
+        }
+    }
+
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
         folderID: Long,

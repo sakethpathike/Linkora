@@ -7,18 +7,16 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
@@ -27,7 +25,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
-import androidx.compose.material3.TabRow
 import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -154,27 +151,31 @@ fun ParentHomeScreen(navController: NavController) {
                 LazyColumn(modifier = Modifier.padding(it)) {
                     stickyHeader {
                         if (homeScreenList.isNotEmpty()) {
-                            ScrollableTabRow(
-                                modifier = Modifier
-                                    .fillMaxWidth(), selectedTabIndex = pagerState.currentPage
-                            ) {
-                                homeScreenList.forEachIndexed { index, homeScreenListsElement ->
-                                    Tab(selected = pagerState.currentPage == index, onClick = {
-                                        coroutineScope.launch {
-                                            pagerState.animateScrollToPage(index)
-                                        }.start()
-                                    }) {
-                                        Text(
-                                            text = homeScreenListsElement.folderName,
-                                            style = MaterialTheme.typography.titleLarge,
-                                            fontSize = 18.sp,
-                                            modifier = Modifier.padding(15.dp),
-                                            color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                                0.70f
+                            Column {
+                                ScrollableTabRow(
+                                    divider = {},
+                                    modifier = Modifier
+                                        .fillMaxWidth(), selectedTabIndex = pagerState.currentPage
+                                ) {
+                                    homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                        Tab(selected = pagerState.currentPage == index, onClick = {
+                                            coroutineScope.launch {
+                                                pagerState.animateScrollToPage(index)
+                                            }.start()
+                                        }) {
+                                            Text(
+                                                text = homeScreenListsElement.folderName,
+                                                style = MaterialTheme.typography.titleLarge,
+                                                fontSize = 18.sp,
+                                                modifier = Modifier.padding(15.dp),
+                                                color = if (pagerState.currentPage == index) TabRowDefaults.contentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                    0.70f
+                                                )
                                             )
-                                        )
+                                        }
                                     }
                                 }
+                                Divider(thickness = 1.dp, modifier = Modifier.fillMaxWidth())
                             }
                         }
                     }

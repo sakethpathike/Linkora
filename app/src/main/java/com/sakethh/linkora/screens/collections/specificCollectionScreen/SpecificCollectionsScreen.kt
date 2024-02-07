@@ -43,7 +43,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -82,7 +81,6 @@ import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -102,16 +100,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpecificCollectionScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
-    LaunchedEffect(key1 = Unit) {
-        awaitAll(async {
-            specificCollectionsScreenVM.changeRetrievedData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                isFoldersSortingSelected = true,
-                isLinksSortingSelected = true
-            )
-        }, async { specificCollectionsScreenVM.retrieveChildFoldersData() })
-    }
     val createVM: CreateVM = viewModel()
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
@@ -202,10 +190,9 @@ fun SpecificCollectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val updateVM: UpdateVM = viewModel()
-    val deleteVM: DeleteVM = viewModel()
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
-            if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
+            if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
                 FloatingActionBtn(
                     FloatingActionBtnParam(
                         newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
@@ -218,7 +205,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         inASpecificScreen = true
                     )
                 )
-            } else if (SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
+            } else if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                 FloatingActionButton(onClick = {
                     if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
                         shouldNewLinkDialogBoxBeVisible.value = true
@@ -261,7 +248,11 @@ fun SpecificCollectionScreen(navController: NavController) {
                         IconButton(onClick = {
                             areElementsSelectable.value = false
                             specificCollectionsScreenVM.areAllLinksChecked.value = false
+                            specificCollectionsScreenVM.areAllFoldersChecked.value = false
                             specificCollectionsScreenVM.removeAllLinkSelections()
+                            specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                childFoldersData
+                            )
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Cancel, contentDescription = null
@@ -332,9 +323,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            specificCollectionsScreenVM.selectedLinksID.forEach { _ ->
 
-                                            }
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Archive,
@@ -396,13 +385,17 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 contentDescription = null
                                             )
                                         }
-                                        IconButton(onClick = {
-
-                                        }) {
-                                            Icon(
-                                                imageVector = Icons.Default.Archive,
-                                                contentDescription = null
-                                            )
+                                        if (specificCollectionsScreenVM.selectedFoldersID.isEmpty()) {
+                                            IconButton(onClick = {
+                                                specificCollectionsScreenVM.selectedLinksID.forEach {
+                                                    updateVM.moveLinkFromLinksTableToArchiveLinks(it)
+                                                }
+                                            }) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Archive,
+                                                    contentDescription = null
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -1442,7 +1435,9 @@ fun SpecificCollectionScreen(navController: NavController) {
         } else if (areElementsSelectable.value) {
             areElementsSelectable.value = false
             specificCollectionsScreenVM.areAllLinksChecked.value = false
+            specificCollectionsScreenVM.areAllFoldersChecked.value = false
             specificCollectionsScreenVM.removeAllLinkSelections()
+            specificCollectionsScreenVM.changeAllFoldersSelectedData(childFoldersData)
         } else {
             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN

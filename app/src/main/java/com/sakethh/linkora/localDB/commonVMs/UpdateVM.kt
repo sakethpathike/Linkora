@@ -27,6 +27,15 @@ class UpdateVM : ViewModel() {
         }
     }
 
+    fun moveLinkFromLinksTableToArchiveLinks(id: Long) {
+        viewModelScope.launch {
+            val localDataBase = LocalDataBase
+            localDataBase.localDB.updateDao()
+                .moveLinkFromLinksTableToArchiveLinks(id)
+            localDataBase.localDB.deleteDao().deleteALinkFromLinksTable(id)
+        }
+    }
+
     fun updateRegularLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
             async {
