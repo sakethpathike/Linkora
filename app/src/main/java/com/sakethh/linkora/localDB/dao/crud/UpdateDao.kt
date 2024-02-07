@@ -21,7 +21,15 @@ interface UpdateDao {
                 "FROM links_table\n" +
                 "WHERE id = :id;\n"
     )
-    suspend fun moveLinkFromLinksTableToArchiveLinks(id: Long)
+    suspend fun copyLinkFromLinksTableToArchiveLinks(id: Long)
+
+    @Query(
+        "INSERT INTO archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)\n" +
+                "SELECT title, webURL, baseURL, imgURL, infoForSaving\n" +
+                "FROM important_links_table\n" +
+                "WHERE id = :id;\n"
+    )
+    suspend fun copyLinkFromImpTableToArchiveLinks(id: Long)
 
     @Update
     suspend fun updateAFolderData(foldersTable: FoldersTable)

@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddLink
@@ -81,6 +80,7 @@ import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -190,6 +190,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val updateVM: UpdateVM = viewModel()
+    val deleteVM: DeleteVM = viewModel()
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
@@ -313,7 +314,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         if (areElementsSelectable.value) {
                             when (SpecificCollectionsScreenVM.screenType.value) {
                                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                    if (impLinksData.importantLinksList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
+                                    if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -323,7 +324,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-
+                                            specificCollectionsScreenVM.selectedLinksID.forEach {
+                                                updateVM.moveLinkFromImpTableToArchiveLinks(it)
+                                            }
+                                            areElementsSelectable.value = false
+                                            specificCollectionsScreenVM.areAllLinksChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.removeAllLinkSelections()
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                                childFoldersData
+                                            )
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Archive,
@@ -334,7 +346,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                                    if (archivedFoldersLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
+                                    if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -344,7 +356,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-
+                                            specificCollectionsScreenVM.selectedLinksID.forEach {
+                                                updateVM.moveLinkFromLinksTableToArchiveLinks(it)
+                                            }
+                                            areElementsSelectable.value = false
+                                            specificCollectionsScreenVM.areAllLinksChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.removeAllLinkSelections()
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                                childFoldersData
+                                            )
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Archive,
@@ -355,7 +378,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                                    if (savedLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
+                                    if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -365,7 +388,18 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-
+                                            specificCollectionsScreenVM.selectedLinksID.forEach {
+                                                updateVM.moveLinkFromLinksTableToArchiveLinks(it)
+                                            }
+                                            areElementsSelectable.value = false
+                                            specificCollectionsScreenVM.areAllLinksChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.removeAllLinkSelections()
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                                childFoldersData
+                                            )
                                         }) {
                                             Icon(
                                                 imageVector = Icons.Default.Archive,
@@ -376,7 +410,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 }
 
                                 SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                                    if (specificFolderLinksData.linksTableList.isNotEmpty() && (specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
+                                    if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersID.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -390,6 +424,15 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 specificCollectionsScreenVM.selectedLinksID.forEach {
                                                     updateVM.moveLinkFromLinksTableToArchiveLinks(it)
                                                 }
+                                                areElementsSelectable.value = false
+                                                specificCollectionsScreenVM.areAllLinksChecked.value =
+                                                    false
+                                                specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                    false
+                                                specificCollectionsScreenVM.removeAllLinkSelections()
+                                                specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                                    childFoldersData
+                                                )
                                             }) {
                                                 Icon(
                                                     imageVector = Icons.Default.Archive,
@@ -872,32 +915,60 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                         if (archivedSubFoldersData.foldersTableList.isNotEmpty() && !areElementsSelectable.value) {
-                            items(
+                            itemsIndexed(
                                 items = archivedSubFoldersData.foldersTableList,
-                                key = { foldersTable ->
+                                key = { folderIndex, foldersTable ->
                                     foldersTable.folderName + foldersTable.id.toString()
-                                }) {
+                                }) { folderIndex, folderData ->
                                 FolderIndividualComponent(
-                                    folderName = it.folderName,
-                                    folderNote = it.infoForSaving,
-                                    onMoreIconClick = {
-                                        CollectionsScreenVM.selectedFolderData.value = it
-                                        selectedURLTitle.value = it.folderName
-                                        selectedURLOrFolderNote.value = it.infoForSaving
-                                        clickedFolderNote.value = it.infoForSaving
-                                        coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                    showCheckBox = areElementsSelectable,
+                                    isCheckBoxChecked = childFoldersData.isCheckBoxSelected[folderIndex],
+                                    checkBoxState = { checkBoxState ->
+                                        if (checkBoxState) {
+                                            specificCollectionsScreenVM.selectedFoldersID.add(
+                                                folderData.id
+                                            )
+                                        } else {
+                                            specificCollectionsScreenVM.selectedFoldersID.removeAll {
+                                                it == folderData.id
+                                            }
                                         }
-                                        clickedFolderName.value = it.folderName
+                                    },
+                                    folderName = folderData.folderName,
+                                    folderNote = folderData.infoForSaving,
+                                    onMoreIconClick = {
+                                        CollectionsScreenVM.selectedFolderData.value = folderData
+                                        selectedURLTitle.value = folderData.folderName
+                                        selectedURLOrFolderNote.value = folderData.infoForSaving
+                                        clickedFolderNote.value = folderData.infoForSaving
+                                        coroutineScope.launch {
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
+                                        }
+                                        clickedFolderName.value = folderData.folderName
                                         shouldOptionsBtmModalSheetBeVisible.value = true
                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                             OptionsBtmSheetType.FOLDER
                                     },
-                                    showMoreIcon = true,
+                                    showMoreIcon = !areElementsSelectable.value,
+                                    onLongClick = {
+                                        if (!areElementsSelectable.value) {
+                                            areElementsSelectable.value = true
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
+                                            specificCollectionsScreenVM.selectedFoldersID.add(
+                                                folderData.id
+                                            )
+                                            childFoldersData.isCheckBoxSelected[folderIndex].value =
+                                                true
+                                        }
+                                    },
                                     onFolderClick = { _ ->
-                                        CollectionsScreenVM.currentClickedFolderData.value =
-                                            it
-                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                        if (!areElementsSelectable.value) {
+                                            CollectionsScreenVM.currentClickedFolderData.value =
+                                                folderData
+                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                        }
                                     })
                             }
                         }
