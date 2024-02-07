@@ -124,7 +124,7 @@ class ArchiveScreenVM(
         changeAllFoldersSelectedData()
     }
 
-    private fun removeAllLinksSelection() {
+    fun removeAllLinksSelection() {
         selectedLinksID.removeAll(archiveLinksData.value.archiveLinksTable.map { it.id })
         archiveLinksData.value.isCheckBoxSelected.forEach { it.value = false }
     }

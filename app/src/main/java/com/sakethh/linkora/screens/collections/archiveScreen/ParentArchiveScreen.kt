@@ -1,14 +1,24 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -57,12 +67,64 @@ fun ParentArchiveScreen(navController: NavController) {
     val context = LocalContext.current
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = "Archive", style = MaterialTheme.typography.titleLarge, fontSize = 24.sp
-                )
+            TopAppBar(navigationIcon = {
+                if (archiveScreenVM.isSelectionModeEnabled.value) {
+                    IconButton(onClick = {
+                        archiveScreenVM.isSelectionModeEnabled.value = false
+                        archiveScreenVM.areAllLinksChecked.value = false
+                        archiveScreenVM.areAllFoldersChecked.value = false
+                        archiveScreenVM.removeAllLinksSelection()
+                        archiveScreenVM.changeAllFoldersSelectedData()
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Cancel, contentDescription = null
+                        )
+                    }
+                }
+            }, title = {
+                if (archiveScreenVM.isSelectionModeEnabled.value) {
+                    Row {
+                        AnimatedContent(
+                            targetState = archiveScreenVM.selectedLinksID.size + archiveScreenVM.selectedFoldersID.size,
+                            label = "",
+                            transitionSpec = {
+                                ContentTransform(
+                                    initialContentExit = slideOutVertically(
+                                        animationSpec = tween(
+                                            150
+                                        )
+                                    ) + fadeOut(
+                                        tween(150)
+                                    ), targetContentEnter = slideInVertically(
+                                        animationSpec = tween(durationMillis = 150)
+                                    ) + fadeIn(
+                                        tween(150)
+                                    )
+                                )
+                            }) {
+                            Text(
+                                text = it.toString(),
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 18.sp
+                            )
+                        }
+                        Text(
+                            text = " items selected",
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleLarge,
+                            fontSize = 18.sp
+                        )
+                    }
+                } else {
+                    Text(
+                        text = "Archive",
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 24.sp
+                    )
+                }
             }, actions = {
-                if (!archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksID.size > 0) {
+                if (archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksID.size > 0) {
                     IconButton(onClick = {
                         archiveScreenVM.unArchiveMultipleFolders()
                         archiveScreenVM.unArchiveMultipleLinks()
@@ -72,7 +134,7 @@ fun ParentArchiveScreen(navController: NavController) {
                     IconButton(onClick = {
 
                     }) {
-                        Icon(imageVector = Icons.Outlined.Delete, contentDescription = null)
+                        Icon(imageVector = Icons.Outlined.DeleteForever, contentDescription = null)
                     }
                 } else {
                     IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
@@ -128,5 +190,16 @@ fun ParentArchiveScreen(navController: NavController) {
                 shouldLinksSelectionBeVisible = mutableStateOf(false),
             )
         )
+    }
+    BackHandler {
+        if (archiveScreenVM.isSelectionModeEnabled.value) {
+            archiveScreenVM.isSelectionModeEnabled.value = false
+            archiveScreenVM.areAllLinksChecked.value = false
+            archiveScreenVM.areAllFoldersChecked.value = false
+            archiveScreenVM.removeAllLinksSelection()
+            archiveScreenVM.changeAllFoldersSelectedData()
+        } else {
+            navController.popBackStack()
+        }
     }
 }

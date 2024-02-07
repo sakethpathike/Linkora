@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -84,11 +83,24 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
         ) {
             if (archiveScreenType == ArchiveScreenType.LINKS) {
                 if (archiveLinksData.archiveLinksTable.isNotEmpty()) {
-                    items(items = archiveLinksData.archiveLinksTable, key = { archivedLinks ->
-                        archivedLinks.id.toString() + archivedLinks.baseURL
-                    }) {
+                    itemsIndexed(
+                        items = archiveLinksData.archiveLinksTable,
+                        key = { _, archivedLinks ->
+                            archivedLinks.id.toString() + archivedLinks.baseURL
+                        }) { index, it ->
                         LinkUIComponent(
                             LinkUIComponentParam(
+                                onLongClick = {
+                                    if (!archiveScreenVM.isSelectionModeEnabled.value) {
+                                        archiveScreenVM.isSelectionModeEnabled.value = true
+                                        archiveScreenVM.selectedLinksID.add(
+                                            it.id
+                                        )
+                                        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
+                                            true
+                                    }
+                                },
+                                isSelectionModeEnabled = archiveScreenVM.isSelectionModeEnabled,
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -103,17 +115,33 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     }
                                 },
                                 onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ), context = context, uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                    if (archiveScreenVM.isSelectionModeEnabled.value) {
+                                        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
+                                            !archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value
+
+                                        if (archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value) {
+                                            archiveScreenVM.selectedLinksID.add(
+                                                it.id
+                                            )
+                                        } else {
+                                            archiveScreenVM.selectedLinksID.remove(
+                                                it.id
+                                            )
+                                        }
+
+                                    } else {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
+                                            )
+                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -131,10 +159,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                         )
                                     }
                                 },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-
-                                onLongClick = { -> }
+                                isItemSelected = archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index]
                             )
                         )
                     }
@@ -166,7 +191,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 }
                             },
                             folderName = it.archiveFolderName,
-                            showMoreIcon = true,
+                            showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
@@ -222,7 +247,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                 }
                             },
-                            showMoreIcon = true,
+                            showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
                             onFolderClick = { _ ->
                                 if (!archiveScreenVM.isSelectionModeEnabled.value) {
                                     CollectionsScreenVM.currentClickedFolderData.value = it
