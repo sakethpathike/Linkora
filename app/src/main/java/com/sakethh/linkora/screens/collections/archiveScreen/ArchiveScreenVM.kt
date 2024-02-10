@@ -1,7 +1,6 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -87,30 +86,41 @@ class ArchiveScreenVM(
         )
     }
 
+    object ItemsSelectionInfo : ViewModel() {
 
-    val isSelectionModeEnabled = mutableStateOf(false)
+        val isSelectionModeEnabled = mutableStateOf(false)
+        val selectedLinksData = mutableStateListOf<ArchivedLinks>()
+        val areAllLinksChecked = mutableStateOf(false)
+        val selectedFoldersID = mutableStateListOf<Long>()
+        val areAllFoldersChecked = mutableStateOf(false)
+        val archiveScreenVM = ArchiveScreenVM()
+    }
 
-    val selectedLinksData = mutableStateListOf<ArchivedLinks>()
-    val areAllLinksChecked = mutableStateOf(false)
+    fun removeAllLinksSelection() {
+        ItemsSelectionInfo.selectedLinksData.removeAll(ItemsSelectionInfo.archiveScreenVM.archiveLinksData.value.archiveLinksTable.map { it })
+        ItemsSelectionInfo.archiveScreenVM.archiveLinksData.value.isCheckBoxSelected.forEach {
+            it.value = false
+        }
+    }
 
-    val selectedFoldersID = mutableStateListOf<Long>()
-    val areAllFoldersChecked = mutableStateOf(false)
     fun changeAllFoldersSelectedData() {
-        selectedFoldersID.removeAll(
-            archiveFoldersDataV10.value.foldersTableList.map { it.id }
+        ItemsSelectionInfo.selectedFoldersID.removeAll(
+            ItemsSelectionInfo.archiveScreenVM.archiveFoldersDataV10.value.foldersTableList.map { it.id }
         )
-        archiveFoldersDataV10.value.isCheckBoxSelected.forEach { it.value = false }
+        ItemsSelectionInfo.archiveScreenVM.archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
+            it.value = false
+        }
     }
 
     fun unArchiveMultipleFolders() {
-        selectedFoldersID.forEach {
-            onUnArchiveClickV10(it)
+        ItemsSelectionInfo.selectedFoldersID.forEach {
+            ItemsSelectionInfo.archiveScreenVM.onUnArchiveClickV10(it)
         }
     }
 
     fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
-            selectedLinksData.forEach {
+            ItemsSelectionInfo.selectedLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
@@ -120,7 +130,7 @@ class ArchiveScreenVM(
 
     fun deleteMultipleSelectedFolders() {
         viewModelScope.launch {
-            selectedFoldersID.forEach {
+            ItemsSelectionInfo.selectedFoldersID.forEach {
                 LocalDataBase.localDB.deleteDao().deleteAFolder(it)
             }
         }.invokeOnCompletion {
@@ -128,11 +138,9 @@ class ArchiveScreenVM(
         }
     }
 
-    fun unArchiveMultipleLinks() {
-        selectedLinksData.forEach {
-            Log.d("LINKORA TAG", "UnArchive Links-" + it.id.toString())
-            onUnArchiveLinkClick(it)
-            Log.d("LINKORA TAG", "UnArchiving Links 1")
+    fun unArchiveMultipleSelectedLinks() {
+        ItemsSelectionInfo.selectedLinksData.forEach {
+            ItemsSelectionInfo.archiveScreenVM.onUnArchiveLinkClick(it)
         }
     }
 
@@ -158,10 +166,6 @@ class ArchiveScreenVM(
         }
     }
 
-    fun removeAllLinksSelection() {
-        selectedLinksData.removeAll(archiveLinksData.value.archiveLinksTable.map { it })
-        archiveLinksData.value.isCheckBoxSelected.forEach { it.value = false }
-    }
 
     fun onNoteChangeClick(
         archiveScreenType: ArchiveScreenType,

@@ -1,12 +1,22 @@
 package com.sakethh.linkora.screens.search
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,9 +25,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,6 +46,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
@@ -55,9 +70,11 @@ import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -65,7 +82,11 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
+@SuppressLint("UnrememberedMutableState")
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun SearchScreen(navController: NavController) {
     val searchScreenVM: SearchScreenVM = viewModel()
@@ -131,7 +152,8 @@ fun SearchScreen(navController: NavController) {
                     .padding(
                         top = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
                         start = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
-                        end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp
+                        end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
+                        bottom = 10.dp
                     )
                     .fillMaxWidth()
                     .focusRequester(SearchScreenVM.focusRequester),
@@ -416,50 +438,137 @@ fun SearchScreen(navController: NavController) {
                     .fillMaxWidth()
                     .background(MaterialTheme.colorScheme.background)
             ) {
-                item {
-                    Spacer(modifier = Modifier.height(5.dp))
-                }
-                item {
-                    androidx.compose.foundation.layout.Row(modifier = Modifier
-                        .clickable {
-                            if (recentlyVisitedLinksData.isNotEmpty()) {
-                                shouldSortingBottomSheetAppear.value = true
+                stickyHeader {
+                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                        Row(modifier = Modifier
+                            .clickable {
+                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }
                             }
-                        }
-                        .fillMaxWidth()
-                        .wrapContentHeight(),
-                        horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                        verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
-                        Text(
-                            text = "History",
-                            color = MaterialTheme.colorScheme.primary,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(
-                                start = 15.dp,
-                                top = if (recentlyVisitedLinksData.isNotEmpty()) 0.dp else 11.dp
-                            )
-                        )
-                        if (recentlyVisitedLinksData.isNotEmpty()) {
-                            IconButton(onClick = {
-                                shouldSortingBottomSheetAppear.value = true
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Outlined.Sort, contentDescription = null
+                            .fillMaxWidth()
+                            .wrapContentHeight(),
+                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically) {
+                            if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    IconButton(onClick = {
+                                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                            false
+                                        ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value =
+                                            false
+                                        ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value =
+                                            false
+                                        searchScreenVM.removeAllLinksSelection()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Cancel,
+                                            contentDescription = null
+                                        )
+                                    }
+                                    AnimatedContent(
+                                        targetState = ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.size + ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.size,
+                                        label = "",
+                                        transitionSpec = {
+                                            ContentTransform(
+                                                initialContentExit = slideOutVertically(
+                                                    animationSpec = tween(
+                                                        150
+                                                    )
+                                                ) + fadeOut(
+                                                    tween(150)
+                                                ), targetContentEnter = slideInVertically(
+                                                    animationSpec = tween(durationMillis = 150)
+                                                ) + fadeIn(
+                                                    tween(150)
+                                                )
+                                            )
+                                        }) {
+                                        Text(
+                                            text = it.toString(),
+                                            color = MaterialTheme.colorScheme.onSurface,
+                                            style = MaterialTheme.typography.titleLarge,
+                                            fontSize = 18.sp
+                                        )
+                                    }
+                                    Text(
+                                        text = " items selected",
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                            } else {
+                                Text(
+                                    text = "History",
+                                    color = MaterialTheme.colorScheme.primary,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 20.sp,
+                                    modifier = Modifier.padding(
+                                        start = 15.dp,
+                                        top = if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) 0.dp else 11.dp
+                                    )
                                 )
                             }
+                            if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                IconButton(onClick = {
+                                    shouldSortingBottomSheetAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Sort, contentDescription = null
+                                    )
+                                }
+                            } else if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                Row {
+                                    IconButton(onClick = {
+                                        searchScreenVM.archiveSelectedHistoryLinks()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Archive,
+                                            contentDescription = null
+                                        )
+                                    }
+                                    IconButton(onClick = {
+                                        shouldDeleteDialogBoxAppear.value = true
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.DeleteForever,
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
                         }
+                        Spacer(modifier = Modifier.height(5.dp))
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(5.dp))
-                }
-                if (recentlyVisitedLinksData.isNotEmpty()) {
-                    items(items = recentlyVisitedLinksData, key = { recentlyVisited ->
-                        recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString()
-                    }) {
+                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) {
+                    itemsIndexed(
+                        items = recentlyVisitedLinksData.historyLinksData,
+                        key = { _, recentlyVisited ->
+                            recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString()
+                        }) { index, it ->
                         LinkUIComponent(
-                            LinkUIComponentParam(title = it.title,
+                            LinkUIComponentParam(
+                                onLongClick = {
+                                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                            true
+                                        ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(
+                                            ArchivedLinks(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            )
+                                        )
+                                        recentlyVisitedLinksData.isLinkSelected[index].value =
+                                            true
+                                    }
+                                },
+                                isSelectionModeEnabled = ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled,
+                                title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
@@ -484,19 +593,46 @@ fun SearchScreen(navController: NavController) {
                                     }
                                 },
                                 onLinkClick = {
-                                    coroutineScope.launch {
-                                        com.sakethh.linkora.customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                        coroutineScope.launch {
+                                            com.sakethh.linkora.customWebTab.openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ),
+                                                context = context,
+                                                uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
+                                            )
+                                        }
+                                    } else {
+                                        recentlyVisitedLinksData.isLinkSelected[index].value =
+                                            !recentlyVisitedLinksData.isLinkSelected[index].value
+
+                                        if (recentlyVisitedLinksData.isLinkSelected[index].value) {
+                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(
+                                                ArchivedLinks(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                )
+                                            )
+                                        } else {
+                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.remove(
+                                                ArchivedLinks(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                )
+                                            )
+                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -515,10 +651,8 @@ fun SearchScreen(navController: NavController) {
                                         forceOpenInExternalBrowser = true
                                     )
                                 },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-
-                                onLongClick = { -> })
+                                isItemSelected = recentlyVisitedLinksData.isLinkSelected[index]
+                            )
                         )
                     }
                 } else {
@@ -605,13 +739,17 @@ fun SearchScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.LINK,
                 onDeleteClick = {
-                    searchScreenVM.onDeleteClick(
-                        context = context,
-                        selectedWebURL = selectedWebURL.value,
-                        shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
-                        selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID
-                    )
+                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                        searchScreenVM.onDeleteClick(
+                            context = context,
+                            selectedWebURL = selectedWebURL.value,
+                            shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
+                            selectedLinkType = SearchScreenVM.selectedLinkType,
+                            folderID = selectedFolderID
+                        )
+                    } else {
+                        searchScreenVM.deleteSelectedHistoryLinks()
+                    }
                 })
         )
     }
@@ -622,7 +760,12 @@ fun SearchScreen(navController: NavController) {
                 SearchScreenVM.isSearchEnabled.value = false
             }
 
-            else -> if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+            else -> if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value = false
+                ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value = false
+                ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value = false
+                searchScreenVM.removeAllLinksSelection()
+            } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                     popUpTo(0)
                 }

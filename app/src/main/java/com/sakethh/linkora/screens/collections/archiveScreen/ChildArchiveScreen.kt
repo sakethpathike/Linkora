@@ -91,14 +91,15 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         LinkUIComponent(
                             LinkUIComponentParam(
                                 onLongClick = {
-                                    if (!archiveScreenVM.isSelectionModeEnabled.value) {
-                                        archiveScreenVM.isSelectionModeEnabled.value = true
-                                        archiveScreenVM.selectedLinksData.add(it)
+                                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                            true
+                                        ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(it)
                                         archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
                                             true
                                     }
                                 },
-                                isSelectionModeEnabled = archiveScreenVM.isSelectionModeEnabled,
+                                isSelectionModeEnabled = ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled,
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -113,14 +114,16 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     }
                                 },
                                 onLinkClick = {
-                                    if (archiveScreenVM.isSelectionModeEnabled.value) {
+                                    if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
                                         archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
                                             !archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value
 
                                         if (archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value) {
-                                            archiveScreenVM.selectedLinksData.add(it)
+                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(
+                                                it
+                                            )
                                         } else {
-                                            archiveScreenVM.selectedLinksData.remove(
+                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.remove(
                                                 it
                                             )
                                         }
@@ -173,21 +176,21 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                         archivedFolders.id.toString() + archivedFolders.archiveFolderName + archivedFolders.id.toString()
                     }) { index, it ->
                         FolderIndividualComponent(
-                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            showCheckBox = ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled,
                             isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
-                                    archiveScreenVM.selectedFoldersID.add(
+                                    ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.add(
                                         it.id
                                     )
                                 } else {
-                                    archiveScreenVM.selectedFoldersID.removeAll { long ->
+                                    ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.removeAll { long ->
                                         long == it.id
                                     }
                                 }
                             },
                             folderName = it.archiveFolderName,
-                            showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
+                            showMoreIcon = !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
@@ -219,15 +222,15 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
                         }) { index, it ->
                         FolderIndividualComponent(
-                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            showCheckBox = ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled,
                             isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
-                                    archiveScreenVM.selectedFoldersID.add(
+                                    ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.add(
                                         it.id
                                     )
                                 } else {
-                                    archiveScreenVM.selectedFoldersID.removeAll { long ->
+                                    ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.removeAll { long ->
                                         long == it.id
                                     }
                                 }
@@ -243,9 +246,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
                                 }
                             },
-                            showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
+                            showMoreIcon = !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value,
                             onFolderClick = { _ ->
-                                if (!archiveScreenVM.isSelectionModeEnabled.value) {
+                                if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
                                     CollectionsScreenVM.currentClickedFolderData.value = it
                                     CollectionsScreenVM.selectedFolderData.value = it
                                     SpecificCollectionsScreenVM.inARegularFolder.value = false
@@ -254,12 +257,13 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
                                 }
                             }, onLongClick = {
-                                if (!archiveScreenVM.isSelectionModeEnabled.value) {
-                                    archiveScreenVM.isSelectionModeEnabled.value = true
-                                    archiveScreenVM.areAllFoldersChecked.value =
+                                if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                    ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                        true
+                                    ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value =
                                         false
                                     archiveScreenVM.changeAllFoldersSelectedData()
-                                    archiveScreenVM.selectedFoldersID.add(
+                                    ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.add(
                                         it.id
                                     )
                                     archiveFoldersDataV10.isCheckBoxSelected[index].value =

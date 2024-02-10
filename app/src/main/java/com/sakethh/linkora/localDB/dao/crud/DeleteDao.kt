@@ -80,6 +80,9 @@ interface DeleteDao {
     @Query("DELETE from recently_visited_table WHERE webURL = :webURL")
     suspend fun deleteARecentlyVisitedLink(webURL: String)
 
+    @Query("DELETE from recently_visited_table WHERE id = :linkID")
+    suspend fun deleteARecentlyVisitedLink(linkID: Long)
+
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
 

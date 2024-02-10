@@ -11,6 +11,7 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -22,6 +23,11 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+
+data class HistoryLinkComponent(
+    val historyLinksData: List<RecentlyVisited>, val isLinkSelected: List<MutableState<Boolean>>
+)
 
 class SearchScreenVM() : SpecificCollectionsScreenVM() {
     enum class SelectedLinkType {
@@ -36,7 +42,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
         var selectedLinkID: Long = 0
     }
 
-    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
+    private val _historyLinksData = MutableStateFlow(HistoryLinkComponent(emptyList(), emptyList()))
     val historyLinksData = _historyLinksData.asStateFlow()
 
     private val _linksTableQueriedData = MutableStateFlow(emptyList<LinksTable>())
@@ -55,6 +61,36 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
                 retrieveQueryData(query)
+            }
+        }
+    }
+
+    fun removeAllLinksSelection() {
+        ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.removeAll(historyLinksData.value.historyLinksData.map {
+            ArchivedLinks(
+                title = it.title,
+                webURL = it.webURL,
+                baseURL = it.baseURL,
+                imgURL = it.imgURL,
+                infoForSaving = it.infoForSaving
+            )
+        })
+        historyLinksData.value.isLinkSelected.forEach { it.value = false }
+    }
+
+    fun deleteSelectedHistoryLinks() {
+        viewModelScope.launch {
+            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
+            }
+        }
+    }
+
+    fun archiveSelectedHistoryLinks() {
+        viewModelScope.launch {
+            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.forEach {
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(it)
+                LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
     }
@@ -106,7 +142,11 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByAToZ().collect {
-                        _historyLinksData.emit(it)
+                        val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                        List(it.size) { index ->
+                            mutableBooleanList.add(index, mutableStateOf(false))
+                        }
+                        _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
                     }
                 }
             }
@@ -114,7 +154,11 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByZToA().collect {
-                        _historyLinksData.emit(it)
+                        val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                        List(it.size) { index ->
+                            mutableBooleanList.add(index, mutableStateOf(false))
+                        }
+                        _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
                     }
                 }
             }
@@ -123,7 +167,11 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByLatestToOldest()
                         .collect {
-                            _historyLinksData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
                         }
                 }
             }
@@ -132,7 +180,11 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByOldestToLatest()
                         .collect {
-                            _historyLinksData.emit(it)
+                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                            List(it.size) { index ->
+                                mutableBooleanList.add(index, mutableStateOf(false))
+                            }
+                            _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
                         }
                 }
             }

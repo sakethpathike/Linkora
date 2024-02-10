@@ -74,11 +74,11 @@ fun ParentArchiveScreen(navController: NavController) {
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(navigationIcon = {
-                if (archiveScreenVM.isSelectionModeEnabled.value) {
+                if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
                     IconButton(onClick = {
-                        archiveScreenVM.isSelectionModeEnabled.value = false
-                        archiveScreenVM.areAllLinksChecked.value = false
-                        archiveScreenVM.areAllFoldersChecked.value = false
+                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value = false
+                        ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value = false
+                        ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value = false
                         archiveScreenVM.removeAllLinksSelection()
                         archiveScreenVM.changeAllFoldersSelectedData()
                     }) {
@@ -88,10 +88,10 @@ fun ParentArchiveScreen(navController: NavController) {
                     }
                 }
             }, title = {
-                if (archiveScreenVM.isSelectionModeEnabled.value) {
+                if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
                     Row {
                         AnimatedContent(
-                            targetState = archiveScreenVM.selectedLinksData.size + archiveScreenVM.selectedFoldersID.size,
+                            targetState = ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.size + ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.size,
                             label = "",
                             transitionSpec = {
                                 ContentTransform(
@@ -130,10 +130,10 @@ fun ParentArchiveScreen(navController: NavController) {
                     )
                 }
             }, actions = {
-                if (archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksData.size > 0) {
+                if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value && ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.size + ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.size > 0) {
                     IconButton(onClick = {
                         archiveScreenVM.unArchiveMultipleFolders()
-                        archiveScreenVM.unArchiveMultipleLinks()
+                        archiveScreenVM.unArchiveMultipleSelectedLinks()
                     }) {
                         Icon(imageVector = Icons.Outlined.Unarchive, contentDescription = null)
                     }
@@ -210,10 +210,10 @@ fun ParentArchiveScreen(navController: NavController) {
         )
     }
     BackHandler {
-        if (archiveScreenVM.isSelectionModeEnabled.value) {
-            archiveScreenVM.isSelectionModeEnabled.value = false
-            archiveScreenVM.areAllLinksChecked.value = false
-            archiveScreenVM.areAllFoldersChecked.value = false
+        if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+            ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value = false
+            ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value = false
+            ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value = false
             archiveScreenVM.removeAllLinksSelection()
             archiveScreenVM.changeAllFoldersSelectedData()
         } else {
