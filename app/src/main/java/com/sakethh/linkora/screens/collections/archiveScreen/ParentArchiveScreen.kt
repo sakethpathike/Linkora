@@ -48,6 +48,9 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
+import com.sakethh.linkora.customComposables.DataDialogBoxType
+import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -65,6 +68,9 @@ fun ParentArchiveScreen(navController: NavController) {
     }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
+    val shouldDeleteDialogBoxAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
     LinkoraTheme {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(navigationIcon = {
@@ -85,7 +91,7 @@ fun ParentArchiveScreen(navController: NavController) {
                 if (archiveScreenVM.isSelectionModeEnabled.value) {
                     Row {
                         AnimatedContent(
-                            targetState = archiveScreenVM.selectedLinksID.size + archiveScreenVM.selectedFoldersID.size,
+                            targetState = archiveScreenVM.selectedLinksData.size + archiveScreenVM.selectedFoldersID.size,
                             label = "",
                             transitionSpec = {
                                 ContentTransform(
@@ -124,7 +130,7 @@ fun ParentArchiveScreen(navController: NavController) {
                     )
                 }
             }, actions = {
-                if (archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksID.size > 0) {
+                if (archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksData.size > 0) {
                     IconButton(onClick = {
                         archiveScreenVM.unArchiveMultipleFolders()
                         archiveScreenVM.unArchiveMultipleLinks()
@@ -132,7 +138,7 @@ fun ParentArchiveScreen(navController: NavController) {
                         Icon(imageVector = Icons.Outlined.Unarchive, contentDescription = null)
                     }
                     IconButton(onClick = {
-
+                        shouldDeleteDialogBoxAppear.value = true
                     }) {
                         Icon(imageVector = Icons.Outlined.DeleteForever, contentDescription = null)
                     }
@@ -188,6 +194,18 @@ fun ParentArchiveScreen(navController: NavController) {
                 sortingBtmSheetType = SortingBtmSheetType.PARENT_ARCHIVE_SCREEN,
                 shouldFoldersSelectionBeVisible = mutableStateOf(false),
                 shouldLinksSelectionBeVisible = mutableStateOf(false),
+            )
+        )
+
+        DeleteDialogBox(
+            deleteDialogBoxParam = DeleteDialogBoxParam(
+                areFoldersSelectable = true,
+                shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+                deleteDialogBoxType = DataDialogBoxType.FOLDER,
+                onDeleteClick = {
+                    archiveScreenVM.deleteMultipleSelectedFolders()
+                    archiveScreenVM.deleteMultipleSelectedLinks()
+                }
             )
         )
     }

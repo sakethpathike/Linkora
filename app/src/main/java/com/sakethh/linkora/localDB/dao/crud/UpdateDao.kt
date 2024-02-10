@@ -31,18 +31,6 @@ interface UpdateDao {
     )
     suspend fun copyLinkFromImpTableToArchiveLinks(id: Long)
 
-    @Query(
-        "INSERT INTO links_table (title, webURL, baseURL, imgURL, infoForSaving)\n" +
-                "SELECT title, webURL, baseURL, imgURL, infoForSaving\n" +
-                "FROM archived_links_table\n" +
-                "WHERE id = :id;\n"
-    )
-    suspend fun copyLinkFromArchiveTableToLinksTable(id: Long)
-
-
-    @Query("UPDATE links_table SET isLinkedWithSavedLinks=1 WHERE id=:id")
-    suspend fun assignLinkAsSavedLink(id: Long)
-
     @Update
     suspend fun updateAFolderData(foldersTable: FoldersTable)
 

@@ -93,8 +93,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 onLongClick = {
                                     if (!archiveScreenVM.isSelectionModeEnabled.value) {
                                         archiveScreenVM.isSelectionModeEnabled.value = true
-                                        archiveScreenVM.selectedLinksID.add(
-                                            it.id
+                                        archiveScreenVM.selectedLinksData.add(
+                                            it
                                         )
                                         archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
                                             true
@@ -120,12 +120,12 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                             !archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value
 
                                         if (archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value) {
-                                            archiveScreenVM.selectedLinksID.add(
-                                                it.id
+                                            archiveScreenVM.selectedLinksData.add(
+                                                it
                                             )
                                         } else {
-                                            archiveScreenVM.selectedLinksID.remove(
-                                                it.id
+                                            archiveScreenVM.selectedLinksData.remove(
+                                                it
                                             )
                                         }
 
@@ -287,7 +287,13 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = if (archiveScreenType == ArchiveScreenType.LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.FOLDER,
                 onUnarchiveClick = {
-                    archiveScreenVM.onUnArchiveClickV10(CollectionsScreenVM.selectedFolderData.value.id)
+                    if (archiveScreenType == ArchiveScreenType.FOLDERS) {
+                        archiveScreenVM.onUnArchiveClickV10(CollectionsScreenVM.selectedFolderData.value.id)
+                    } else {
+                        archiveScreenVM.onUnArchiveLinkClick(
+                            archiveScreenVM.selectedArchivedLinkData.value
+                        )
+                    }
                 },
                 onDeleteCardClick = {
                     shouldDeleteDialogBoxAppear.value = true

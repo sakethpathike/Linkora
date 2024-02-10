@@ -11,10 +11,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
-import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.screens.collections.FolderComponent
@@ -41,8 +39,7 @@ data class ArchiveLinkTableComponent(
 )
 
 class ArchiveScreenVM(
-    private val deleteVM: DeleteVM = DeleteVM(),
-    private val updateVM: UpdateVM = UpdateVM()
+    private val deleteVM: DeleteVM = DeleteVM()
 ) : ViewModel() {
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
@@ -92,7 +89,7 @@ class ArchiveScreenVM(
 
     val isSelectionModeEnabled = mutableStateOf(false)
 
-    val selectedLinksID = mutableStateListOf<Long>()
+    val selectedLinksData = mutableStateListOf<ArchivedLinks>()
     val areAllLinksChecked = mutableStateOf(false)
 
     val selectedFoldersID = mutableStateListOf<Long>()
@@ -112,20 +109,56 @@ class ArchiveScreenVM(
         changeAllFoldersSelectedData()
     }
 
-    fun unArchiveMultipleLinks() {
+    fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
-            selectedFoldersID.forEach {
-                LocalDataBase.localDB.updateDao().copyLinkFromArchiveTableToLinksTable(it)
-                LocalDataBase.localDB.updateDao().assignLinkAsSavedLink(it)
-                LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it)
+            selectedLinksData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }
         removeAllLinksSelection()
         changeAllFoldersSelectedData()
     }
 
+    fun deleteMultipleSelectedFolders() {
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.deleteDao().deleteAFolder(it)
+            }
+        }
+        removeAllLinksSelection()
+        changeAllFoldersSelectedData()
+    }
+
+    fun unArchiveMultipleLinks() {
+        selectedLinksData.forEach {
+            onUnArchiveLinkClick(it)
+        }
+        removeAllLinksSelection()
+        changeAllFoldersSelectedData()
+    }
+
+    fun onUnArchiveLinkClick(archivedLink: ArchivedLinks) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+                LinksTable(
+                    title = archivedLink.title,
+                    webURL = archivedLink.webURL,
+                    baseURL = archivedLink.baseURL,
+                    imgURL = archivedLink.imgURL,
+                    infoForSaving = archivedLink.infoForSaving,
+                    isLinkedWithSavedLinks = true,
+                    isLinkedWithFolders = false,
+                    isLinkedWithImpFolder = false,
+                    keyOfImpLinkedFolder = "",
+                    isLinkedWithArchivedFolder = false
+                )
+            )
+            LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
+        }
+    }
+
     fun removeAllLinksSelection() {
-        selectedLinksID.removeAll(archiveLinksData.value.archiveLinksTable.map { it.id })
+        selectedLinksData.removeAll(archiveLinksData.value.archiveLinksTable.map { it })
         archiveLinksData.value.isCheckBoxSelected.forEach { it.value = false }
     }
 
@@ -353,98 +386,6 @@ class ArchiveScreenVM(
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao()
                 .moveArchivedFolderToRegularFolderV10(folderID)
-        }
-    }
-
-    fun onUnArchiveClickV9(
-        context: Context,
-        archiveScreenType: ArchiveScreenType,
-        selectedURLOrFolderName: String,
-        selectedURLOrFolderNote: String,
-        onTaskCompleted: () -> Unit
-    ) {
-        if (archiveScreenType == ArchiveScreenType.FOLDERS) {
-            viewModelScope.launch {
-                if (LocalDataBase.localDB.readDao()
-                        .doesThisRootFolderExists(
-                            folderName = selectedURLOrFolderName
-                        )
-                ) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "folder name already exists, rename any one either to unarchive this folder",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    awaitAll(async {
-                        val foldersTable = FoldersTable(
-                            folderName = selectedURLOrFolderName,
-                            infoForSaving = selectedURLOrFolderNote,
-                            parentFolderID = null,
-                        )
-                        foldersTable.childFolderIDs = emptyList()
-                        LocalDataBase.localDB.createDao()
-                            .addANewFolder(
-                                foldersTable = foldersTable
-                            )
-                    }, async {
-                        LocalDataBase.localDB.updateDao()
-                            .moveArchiveFolderBackToRootFolderV9(selectedURLOrFolderName)
-                    })
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "Unarchived successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }.invokeOnCompletion {
-                onTaskCompleted()
-            }
-        } else {
-            viewModelScope.launch {
-                if (LocalDataBase.localDB.readDao()
-                        .doesThisExistsInSavedLinks(webURL = selectedArchivedLinkData.value.webURL)
-                ) {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "Link already exists in \"Saved Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                } else {
-                    LocalDataBase.localDB.createDao()
-                        .addANewLinkToSavedLinksOrInFolders(
-                            LinksTable(
-                                title = selectedArchivedLinkData.value.title,
-                                webURL = selectedArchivedLinkData.value.webURL,
-                                baseURL = selectedArchivedLinkData.value.baseURL,
-                                imgURL = selectedArchivedLinkData.value.imgURL,
-                                infoForSaving = selectedArchivedLinkData.value.infoForSaving,
-                                isLinkedWithSavedLinks = true,
-                                isLinkedWithFolders = false,
-                                keyOfLinkedFolderV10 = 0,
-                                isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolderV10 = 0
-                            )
-                        )
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromArchiveLinksV9(selectedArchivedLinkData.value.webURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "Unarchived and moved the link to \"Saved Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            }.invokeOnCompletion {
-                onTaskCompleted()
-            }
         }
     }
 }
