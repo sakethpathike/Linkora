@@ -93,9 +93,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 onLongClick = {
                                     if (!archiveScreenVM.isSelectionModeEnabled.value) {
                                         archiveScreenVM.isSelectionModeEnabled.value = true
-                                        archiveScreenVM.selectedLinksData.add(
-                                            it
-                                        )
+                                        archiveScreenVM.selectedLinksData.add(it)
                                         archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
                                             true
                                     }
@@ -120,9 +118,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                             !archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value
 
                                         if (archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value) {
-                                            archiveScreenVM.selectedLinksData.add(
-                                                it
-                                            )
+                                            archiveScreenVM.selectedLinksData.add(it)
                                         } else {
                                             archiveScreenVM.selectedLinksData.remove(
                                                 it
@@ -159,7 +155,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                         )
                                     }
                                 },
-                                isItemSelected = archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index]
+                                isItemSelected = archiveLinksData.isCheckBoxSelected[index]
                             )
                         )
                     }

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.screens.collections.archiveScreen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -105,8 +106,6 @@ class ArchiveScreenVM(
         selectedFoldersID.forEach {
             onUnArchiveClickV10(it)
         }
-        removeAllLinksSelection()
-        changeAllFoldersSelectedData()
     }
 
     fun deleteMultipleSelectedLinks() {
@@ -114,9 +113,9 @@ class ArchiveScreenVM(
             selectedLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
+        }.invokeOnCompletion {
+            removeAllLinksSelection()
         }
-        removeAllLinksSelection()
-        changeAllFoldersSelectedData()
     }
 
     fun deleteMultipleSelectedFolders() {
@@ -124,17 +123,17 @@ class ArchiveScreenVM(
             selectedFoldersID.forEach {
                 LocalDataBase.localDB.deleteDao().deleteAFolder(it)
             }
+        }.invokeOnCompletion {
+            changeAllFoldersSelectedData()
         }
-        removeAllLinksSelection()
-        changeAllFoldersSelectedData()
     }
 
     fun unArchiveMultipleLinks() {
         selectedLinksData.forEach {
+            Log.d("LINKORA TAG", "UnArchive Links-" + it.id.toString())
             onUnArchiveLinkClick(it)
+            Log.d("LINKORA TAG", "UnArchiving Links 1")
         }
-        removeAllLinksSelection()
-        changeAllFoldersSelectedData()
     }
 
     fun onUnArchiveLinkClick(archivedLink: ArchivedLinks) {
@@ -154,6 +153,8 @@ class ArchiveScreenVM(
                 )
             )
             LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
+        }.invokeOnCompletion {
+            removeAllLinksSelection()
         }
     }
 
@@ -386,6 +387,8 @@ class ArchiveScreenVM(
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao()
                 .moveArchivedFolderToRegularFolderV10(folderID)
+        }.invokeOnCompletion {
+            changeAllFoldersSelectedData()
         }
     }
 }
