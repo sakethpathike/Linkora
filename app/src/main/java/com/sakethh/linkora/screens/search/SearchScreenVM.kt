@@ -87,11 +87,10 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
     }
 
     fun archiveSelectedHistoryLinks() {
-        val localDataBase = LocalDataBase.localDB
         viewModelScope.launch {
             selectedLinksData.forEach {
-                localDataBase.createDao().addANewLinkToArchiveLink(it)
-                localDataBase.deleteDao().deleteARecentlyVisitedLink(it.id)
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(it)
+                LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
     }

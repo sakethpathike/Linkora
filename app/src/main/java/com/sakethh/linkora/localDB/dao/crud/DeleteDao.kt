@@ -2,6 +2,7 @@ package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
 import androidx.room.Query
+import androidx.room.Transaction
 import com.sakethh.linkora.localDB.LocalDataBase
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -80,6 +81,7 @@ interface DeleteDao {
     @Query("DELETE from recently_visited_table WHERE webURL = :webURL")
     suspend fun deleteARecentlyVisitedLink(webURL: String)
 
+    @Transaction
     @Query("DELETE from recently_visited_table WHERE id = :linkID")
     suspend fun deleteARecentlyVisitedLink(linkID: Long)
 

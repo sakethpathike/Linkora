@@ -561,7 +561,8 @@ fun SearchScreen(navController: NavController) {
                                                 webURL = it.webURL,
                                                 baseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
+                                                infoForSaving = it.infoForSaving,
+                                                id = it.id
                                             )
                                         )
                                         recentlyVisitedLinksData.isLinkSelected[index].value =
@@ -620,7 +621,8 @@ fun SearchScreen(navController: NavController) {
                                                     webURL = it.webURL,
                                                     baseURL = it.baseURL,
                                                     imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
+                                                    infoForSaving = it.infoForSaving,
+                                                    id = it.id
                                                 )
                                             )
                                         } else {

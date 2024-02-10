@@ -91,25 +91,24 @@ class ArchiveScreenVM(
     val areAllLinksChecked = mutableStateOf(false)
     val selectedFoldersID = mutableStateListOf<Long>()
     val areAllFoldersChecked = mutableStateOf(false)
-    val archiveScreenVM = ArchiveScreenVM()
 
     fun removeAllLinksSelection() {
-        selectedLinksData.removeAll(archiveScreenVM.archiveLinksData.value.archiveLinksTable.map { it })
-        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected.forEach {
+        selectedLinksData.removeAll(archiveLinksData.value.archiveLinksTable.map { it })
+        archiveLinksData.value.isCheckBoxSelected.forEach {
             it.value = false
         }
     }
 
     fun changeAllFoldersSelectedData() {
-        selectedFoldersID.removeAll(archiveScreenVM.archiveFoldersDataV10.value.foldersTableList.map { it.id })
-        archiveScreenVM.archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
+        selectedFoldersID.removeAll(archiveFoldersDataV10.value.foldersTableList.map { it.id })
+        archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
             it.value = false
         }
     }
 
     fun unArchiveMultipleFolders() {
         selectedFoldersID.forEach {
-            archiveScreenVM.onUnArchiveClickV10(it)
+            onUnArchiveClickV10(it)
         }
     }
 
@@ -135,7 +134,7 @@ class ArchiveScreenVM(
 
     fun unArchiveMultipleSelectedLinks() {
         selectedLinksData.forEach {
-            archiveScreenVM.onUnArchiveLinkClick(it)
+            onUnArchiveLinkClick(it)
         }
     }
 
