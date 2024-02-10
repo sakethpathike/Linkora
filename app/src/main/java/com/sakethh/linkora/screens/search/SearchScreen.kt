@@ -74,7 +74,6 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
-import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -90,7 +89,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun SearchScreen(navController: NavController) {
     val searchScreenVM: SearchScreenVM = viewModel()
-
+    val isSelectionModeEnabled = rememberSaveable {
+        mutableStateOf(false)
+    }
     val recentlyVisitedLinksData = searchScreenVM.historyLinksData.collectAsState().value
     val impLinksData = searchScreenVM.impLinksQueriedData.collectAsState().value
     val linksTableData = searchScreenVM.linksTableData.collectAsState().value
@@ -442,7 +443,7 @@ fun SearchScreen(navController: NavController) {
                     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                         Row(modifier = Modifier
                             .clickable {
-                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
                                     shouldSortingBottomSheetAppear.value = true
                                 }
                             }
@@ -450,14 +451,14 @@ fun SearchScreen(navController: NavController) {
                             .wrapContentHeight(),
                             horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically) {
-                            if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                            if (isSelectionModeEnabled.value) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     IconButton(onClick = {
-                                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                        isSelectionModeEnabled.value =
                                             false
-                                        ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value =
+                                        searchScreenVM.areAllLinksChecked.value =
                                             false
-                                        ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value =
+                                        searchScreenVM.areAllFoldersChecked.value =
                                             false
                                         searchScreenVM.removeAllLinksSelection()
                                     }) {
@@ -467,7 +468,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                     AnimatedContent(
-                                        targetState = ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.size + ArchiveScreenVM.ItemsSelectionInfo.selectedFoldersID.size,
+                                        targetState = searchScreenVM.selectedLinksData.size + searchScreenVM.selectedFoldersID.size,
                                         label = "",
                                         transitionSpec = {
                                             ContentTransform(
@@ -510,7 +511,7 @@ fun SearchScreen(navController: NavController) {
                                     )
                                 )
                             }
-                            if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                            if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
                                 IconButton(onClick = {
                                     shouldSortingBottomSheetAppear.value = true
                                 }) {
@@ -518,7 +519,7 @@ fun SearchScreen(navController: NavController) {
                                         imageVector = Icons.Outlined.Sort, contentDescription = null
                                     )
                                 }
-                            } else if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                            } else if (isSelectionModeEnabled.value) {
                                 Row {
                                     IconButton(onClick = {
                                         searchScreenVM.archiveSelectedHistoryLinks()
@@ -551,10 +552,10 @@ fun SearchScreen(navController: NavController) {
                         LinkUIComponent(
                             LinkUIComponentParam(
                                 onLongClick = {
-                                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
-                                        ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value =
+                                    if (!isSelectionModeEnabled.value) {
+                                        isSelectionModeEnabled.value =
                                             true
-                                        ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(
+                                        searchScreenVM.selectedLinksData.add(
                                             ArchivedLinks(
                                                 title = it.title,
                                                 webURL = it.webURL,
@@ -567,7 +568,7 @@ fun SearchScreen(navController: NavController) {
                                             true
                                     }
                                 },
-                                isSelectionModeEnabled = ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled,
+                                isSelectionModeEnabled = isSelectionModeEnabled,
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -593,7 +594,7 @@ fun SearchScreen(navController: NavController) {
                                     }
                                 },
                                 onLinkClick = {
-                                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                                    if (!isSelectionModeEnabled.value) {
                                         coroutineScope.launch {
                                             com.sakethh.linkora.customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
@@ -613,7 +614,7 @@ fun SearchScreen(navController: NavController) {
                                             !recentlyVisitedLinksData.isLinkSelected[index].value
 
                                         if (recentlyVisitedLinksData.isLinkSelected[index].value) {
-                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.add(
+                                            searchScreenVM.selectedLinksData.add(
                                                 ArchivedLinks(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -623,7 +624,7 @@ fun SearchScreen(navController: NavController) {
                                                 )
                                             )
                                         } else {
-                                            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.remove(
+                                            searchScreenVM.selectedLinksData.remove(
                                                 ArchivedLinks(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -739,7 +740,7 @@ fun SearchScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.LINK,
                 onDeleteClick = {
-                    if (!ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
+                    if (!isSelectionModeEnabled.value) {
                         searchScreenVM.onDeleteClick(
                             context = context,
                             selectedWebURL = selectedWebURL.value,
@@ -760,10 +761,10 @@ fun SearchScreen(navController: NavController) {
                 SearchScreenVM.isSearchEnabled.value = false
             }
 
-            else -> if (ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value) {
-                ArchiveScreenVM.ItemsSelectionInfo.isSelectionModeEnabled.value = false
-                ArchiveScreenVM.ItemsSelectionInfo.areAllLinksChecked.value = false
-                ArchiveScreenVM.ItemsSelectionInfo.areAllFoldersChecked.value = false
+            else -> if (isSelectionModeEnabled.value) {
+                isSelectionModeEnabled.value = false
+                searchScreenVM.areAllLinksChecked.value = false
+                searchScreenVM.areAllFoldersChecked.value = false
                 searchScreenVM.removeAllLinksSelection()
             } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {

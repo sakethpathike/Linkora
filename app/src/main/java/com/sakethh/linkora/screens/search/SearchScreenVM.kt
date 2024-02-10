@@ -3,6 +3,7 @@ package com.sakethh.linkora.screens.search
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
@@ -11,7 +12,6 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
-import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -56,7 +56,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
-
+    val selectedLinksData = mutableStateListOf<ArchivedLinks>()
     init {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
@@ -66,7 +66,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
     }
 
     fun removeAllLinksSelection() {
-        ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.removeAll(historyLinksData.value.historyLinksData.map {
+        selectedLinksData.removeAll(historyLinksData.value.historyLinksData.map {
             ArchivedLinks(
                 title = it.title,
                 webURL = it.webURL,
@@ -80,17 +80,18 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
     fun deleteSelectedHistoryLinks() {
         viewModelScope.launch {
-            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.forEach {
+            selectedLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
     }
 
     fun archiveSelectedHistoryLinks() {
+        val localDataBase = LocalDataBase.localDB
         viewModelScope.launch {
-            ArchiveScreenVM.ItemsSelectionInfo.selectedLinksData.forEach {
-                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(it)
-                LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
+            selectedLinksData.forEach {
+                localDataBase.createDao().addANewLinkToArchiveLink(it)
+                localDataBase.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
     }

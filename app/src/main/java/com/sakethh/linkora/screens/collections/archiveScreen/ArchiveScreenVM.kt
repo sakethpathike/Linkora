@@ -86,41 +86,36 @@ class ArchiveScreenVM(
         )
     }
 
-    object ItemsSelectionInfo : ViewModel() {
-
-        val isSelectionModeEnabled = mutableStateOf(false)
-        val selectedLinksData = mutableStateListOf<ArchivedLinks>()
-        val areAllLinksChecked = mutableStateOf(false)
-        val selectedFoldersID = mutableStateListOf<Long>()
-        val areAllFoldersChecked = mutableStateOf(false)
-        val archiveScreenVM = ArchiveScreenVM()
-    }
+    val isSelectionModeEnabled = mutableStateOf(false)
+    val selectedLinksData = mutableStateListOf<ArchivedLinks>()
+    val areAllLinksChecked = mutableStateOf(false)
+    val selectedFoldersID = mutableStateListOf<Long>()
+    val areAllFoldersChecked = mutableStateOf(false)
+    val archiveScreenVM = ArchiveScreenVM()
 
     fun removeAllLinksSelection() {
-        ItemsSelectionInfo.selectedLinksData.removeAll(ItemsSelectionInfo.archiveScreenVM.archiveLinksData.value.archiveLinksTable.map { it })
-        ItemsSelectionInfo.archiveScreenVM.archiveLinksData.value.isCheckBoxSelected.forEach {
+        selectedLinksData.removeAll(archiveScreenVM.archiveLinksData.value.archiveLinksTable.map { it })
+        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected.forEach {
             it.value = false
         }
     }
 
     fun changeAllFoldersSelectedData() {
-        ItemsSelectionInfo.selectedFoldersID.removeAll(
-            ItemsSelectionInfo.archiveScreenVM.archiveFoldersDataV10.value.foldersTableList.map { it.id }
-        )
-        ItemsSelectionInfo.archiveScreenVM.archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
+        selectedFoldersID.removeAll(archiveScreenVM.archiveFoldersDataV10.value.foldersTableList.map { it.id })
+        archiveScreenVM.archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
             it.value = false
         }
     }
 
     fun unArchiveMultipleFolders() {
-        ItemsSelectionInfo.selectedFoldersID.forEach {
-            ItemsSelectionInfo.archiveScreenVM.onUnArchiveClickV10(it)
+        selectedFoldersID.forEach {
+            archiveScreenVM.onUnArchiveClickV10(it)
         }
     }
 
     fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
-            ItemsSelectionInfo.selectedLinksData.forEach {
+            selectedLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
@@ -130,7 +125,7 @@ class ArchiveScreenVM(
 
     fun deleteMultipleSelectedFolders() {
         viewModelScope.launch {
-            ItemsSelectionInfo.selectedFoldersID.forEach {
+            selectedFoldersID.forEach {
                 LocalDataBase.localDB.deleteDao().deleteAFolder(it)
             }
         }.invokeOnCompletion {
@@ -139,8 +134,8 @@ class ArchiveScreenVM(
     }
 
     fun unArchiveMultipleSelectedLinks() {
-        ItemsSelectionInfo.selectedLinksData.forEach {
-            ItemsSelectionInfo.archiveScreenVM.onUnArchiveLinkClick(it)
+        selectedLinksData.forEach {
+            archiveScreenVM.onUnArchiveLinkClick(it)
         }
     }
 
