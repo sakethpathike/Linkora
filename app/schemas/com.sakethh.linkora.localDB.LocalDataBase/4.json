@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 4,
-    "identityHash": "c9ece91af57bb454d0f0c33c97269d8e",
+    "identityHash": "ac8e5db3ed176322be2eb75e31ddf678",
     "entities": [
       {
         "tableName": "home_screen_list_table",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `position` INTEGER NOT NULL, `folderName` TEXT NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `position` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `shouldSavedLinksTabVisible` INTEGER NOT NULL, `shouldImpLinksTabVisible` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -24,6 +24,18 @@
             "fieldPath": "folderName",
             "columnName": "folderName",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shouldSavedLinksTabVisible",
+            "columnName": "shouldSavedLinksTabVisible",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "shouldImpLinksTabVisible",
+            "columnName": "shouldImpLinksTabVisible",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -420,7 +432,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c9ece91af57bb454d0f0c33c97269d8e')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ac8e5db3ed176322be2eb75e31ddf678')"
     ]
   }
 }

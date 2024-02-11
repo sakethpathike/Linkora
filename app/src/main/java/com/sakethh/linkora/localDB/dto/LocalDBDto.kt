@@ -110,5 +110,7 @@ data class RecentlyVisited(
 data class HomeScreenListTable(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var position: Long,
-    val folderName: String
+    val folderName: String,
+    val shouldSavedLinksTabVisible: Boolean = true,
+    val shouldImpLinksTabVisible: Boolean = true
 )

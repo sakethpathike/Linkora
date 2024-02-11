@@ -128,9 +128,7 @@ abstract class LocalDataBase : RoomDatabase() {
 
         private val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                db.execSQL(
-                    "CREATE TABLE IF NOT EXISTS `home_screen_list_table` (" + "`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, " + "`position` INTEGER NOT NULL, " + "`folderName` TEXT NOT NULL)"
-                )
+                db.execSQL("CREATE TABLE IF NOT EXISTS `home_screen_list_table` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `position` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `shouldSavedLinksTabVisible` INTEGER NOT NULL, `shouldImpLinksTabVisible` INTEGER NOT NULL)")
             }
         }
 
