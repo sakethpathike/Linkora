@@ -153,9 +153,13 @@ fun SearchScreen(navController: NavController) {
                         top = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
                         start = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
                         end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
-                        bottom = 10.dp
                     )
                     .fillMaxWidth()
+                    .then(
+                        if (isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) Modifier.height(
+                            0.dp
+                        ) else Modifier.wrapContentHeight()
+                    )
                     .focusRequester(SearchScreenVM.focusRequester),
                 query = searchTextField,
                 onQueryChange = {
@@ -178,6 +182,85 @@ fun SearchScreen(navController: NavController) {
                     )
                 },
                 content = {
+                    if (isSelectionModeEnabled.value) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight(),
+                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                IconButton(onClick = {
+                                    isSelectionModeEnabled.value =
+                                        false
+                                    searchScreenVM.areAllLinksChecked.value =
+                                        false
+                                    searchScreenVM.areAllFoldersChecked.value =
+                                        false
+                                    searchScreenVM.removeAllLinksSelection()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Cancel,
+                                        contentDescription = null
+                                    )
+                                }
+                                AnimatedContent(
+                                    targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersID.size,
+                                    label = "",
+                                    transitionSpec = {
+                                        ContentTransform(
+                                            initialContentExit = slideOutVertically(
+                                                animationSpec = tween(
+                                                    150
+                                                )
+                                            ) + fadeOut(
+                                                tween(150)
+                                            ),
+                                            targetContentEnter = slideInVertically(
+                                                animationSpec = tween(
+                                                    durationMillis = 150
+                                                )
+                                            ) + fadeIn(
+                                                tween(150)
+                                            )
+                                        )
+                                    }) {
+                                    Text(
+                                        text = it.toString(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                                Text(
+                                    text = " items selected",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp
+                                )
+                            }
+                            Row {
+                                IconButton(onClick = {
+                                    searchScreenVM.archiveSelectedHistoryLinks()
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Archive,
+                                        contentDescription = null
+                                    )
+                                }
+                                IconButton(onClick = {
+                                    shouldDeleteDialogBoxAppear.value = true
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Outlined.DeleteForever,
+                                        contentDescription = null
+                                    )
+                                }
+                            }
+                        }
+                        Spacer(modifier = Modifier.height(5.dp))
+                    }
                     LazyColumn(
                         modifier = Modifier.fillMaxSize()
                     ) {
@@ -318,8 +401,9 @@ fun SearchScreen(navController: NavController) {
                                         linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL + +index
                                     }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(onLongClick = {
-                                            if (!isSelectionModeEnabled.value) {
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedLinksTableData.add(it)
@@ -442,8 +526,9 @@ fun SearchScreen(navController: NavController) {
                                         +index
                                     }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(onLongClick = {
-                                            if (!isSelectionModeEnabled.value) {
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedArchiveLinksTableData.add(

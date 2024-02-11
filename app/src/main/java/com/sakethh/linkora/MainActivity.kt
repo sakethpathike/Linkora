@@ -29,6 +29,7 @@ import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.BottomNavigationBar
 import com.sakethh.linkora.navigation.MainNavigation
 import com.sakethh.linkora.navigation.NavigationRoutes
+import com.sakethh.linkora.screens.search.SearchScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -64,21 +65,16 @@ class MainActivity : ComponentActivity() {
                 val bottomBarSheetState =
                     androidx.compose.material.rememberBottomSheetScaffoldState()
                 systemUIController.setStatusBarColor(colorScheme.surface)
-                LaunchedEffect(key1 = currentRoute) {
+                LaunchedEffect(key1 = currentRoute, key2 = SearchScreenVM.isSearchEnabled.value) {
                     if (NavigationRoutes.entries.any {
                             it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute && it.name != NavigationRoutes.ARCHIVE_SCREEN.name
-                        }) {
-
-                        if (bottomBarSheetState.bottomSheetState.isCollapsed) {
-                            coroutineScope.launch {
-                                bottomBarSheetState.bottomSheetState.expand()
-                            }
+                        } && !SearchScreenVM.isSearchEnabled.value) {
+                        coroutineScope.launch {
+                            bottomBarSheetState.bottomSheetState.expand()
                         }
                     } else {
-                        if (bottomBarSheetState.bottomSheetState.isExpanded) {
-                            coroutineScope.launch {
-                                bottomBarSheetState.bottomSheetState.collapse()
-                            }
+                        coroutineScope.launch {
+                            bottomBarSheetState.bottomSheetState.collapse()
                         }
                     }
                 }
