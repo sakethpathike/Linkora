@@ -1029,6 +1029,9 @@ fun SearchScreen(navController: NavController) {
                         )
                     } else {
                         searchScreenVM.deleteSelectedHistoryLinks()
+                        searchScreenVM.deleteSelectedArchivedLinks()
+                        searchScreenVM.deleteSelectedImpLinksData()
+                        searchScreenVM.deleteSelectedLinksTableData()
                     }
                 })
         )

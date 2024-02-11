@@ -99,6 +99,8 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             selectedHistoryLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -162,6 +164,36 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                     )
                 )
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
+            }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
+        }
+    }
+
+    fun deleteSelectedLinksTableData() {
+        viewModelScope.launch {
+            selectedLinksTableData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
+            }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
+        }
+    }
+
+    fun deleteSelectedArchivedLinks() {
+        viewModelScope.launch {
+            selectedArchiveLinksTableData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
+            }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
+        }
+    }
+
+    fun deleteSelectedImpLinksData() {
+        viewModelScope.launch {
+            selectedImportantLinksData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
             }
         }.invokeOnCompletion {
             retrieveQueryData(searchQuery.value)
