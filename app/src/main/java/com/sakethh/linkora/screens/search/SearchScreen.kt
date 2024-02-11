@@ -134,7 +134,7 @@ fun SearchScreen(navController: NavController) {
             SearchBar(
                 enabled = !isSelectionModeEnabled.value, interactionSource = interactionSource,
                 trailingIcon = {
-                    if (SearchScreenVM.isSearchEnabled.value) {
+                    if (SearchScreenVM.isSearchEnabled.value && !isSelectionModeEnabled.value) {
                         IconButton(onClick = {
                             if (searchTextField == "") {
                                 SearchScreenVM.focusRequester.freeFocus()
@@ -206,7 +206,10 @@ fun SearchScreen(navController: NavController) {
                                     )
                                 }
                                 AnimatedContent(
-                                    targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersID.size,
+                                    targetState = searchScreenVM.selectedLinksTableData.size +
+                                            searchScreenVM.selectedHistoryLinksData.size +
+                                            searchScreenVM.selectedArchiveLinksTableData.size +
+                                            searchScreenVM.selectedImportantLinksData.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -241,13 +244,17 @@ fun SearchScreen(navController: NavController) {
                                 )
                             }
                             Row {
-                                IconButton(onClick = {
-                                    searchScreenVM.archiveSelectedHistoryLinks()
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Archive,
-                                        contentDescription = null
-                                    )
+                                if (searchScreenVM.selectedArchiveLinksTableData.isEmpty()) {
+                                    IconButton(onClick = {
+                                        searchScreenVM.archiveSelectedImportantLinks()
+                                        searchScreenVM.archiveSelectedLinksTableLinks()
+                                        searchScreenVM.archiveSelectedHistoryLinks()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Outlined.Archive,
+                                            contentDescription = null
+                                        )
+                                    }
                                 }
                                 IconButton(onClick = {
                                     shouldDeleteDialogBoxAppear.value = true
@@ -618,14 +625,16 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                item {
-                                    Text(
-                                        text = "From History",
-                                        style = MaterialTheme.typography.titleMedium,
-                                        color = MaterialTheme.colorScheme.primary,
-                                        fontSize = 14.sp,
-                                        modifier = Modifier.padding(15.dp)
-                                    )
+                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) {
+                                    item {
+                                        Text(
+                                            text = "From History",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.padding(15.dp)
+                                        )
+                                    }
                                 }
                                 itemsIndexed(items = recentlyVisitedLinksData.historyLinksData,
                                     key = { index, archivedLinks ->
@@ -638,12 +647,12 @@ fun SearchScreen(navController: NavController) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedHistoryLinksData.add(it)
-                                                    linksTableData.isCheckBoxSelected[index].value =
+                                                    recentlyVisitedLinksData.isLinkSelected[index].value =
                                                         true
                                                 }
                                             },
                                             isSelectionModeEnabled = isSelectionModeEnabled,
-                                            isItemSelected = linksTableData.isCheckBoxSelected[index],
+                                            isItemSelected = recentlyVisitedLinksData.isLinkSelected[index],
                                             title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
@@ -678,7 +687,7 @@ fun SearchScreen(navController: NavController) {
                                                     recentlyVisitedLinksData.isLinkSelected[index].value =
                                                         !recentlyVisitedLinksData.isLinkSelected[index].value
 
-                                                    if (linksTableData.isCheckBoxSelected[index].value) {
+                                                    if (recentlyVisitedLinksData.isLinkSelected[index].value) {
                                                         searchScreenVM.selectedHistoryLinksData.add(
                                                             it
                                                         )

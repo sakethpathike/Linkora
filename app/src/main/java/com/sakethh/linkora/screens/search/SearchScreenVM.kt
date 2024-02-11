@@ -102,6 +102,53 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
         }
     }
 
+    fun archiveSelectedLinksTableLinks() {
+        viewModelScope.launch {
+            selectedLinksTableData.forEach {
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
+                    ArchivedLinks(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    )
+                )
+            }
+        }
+        viewModelScope.launch {
+            selectedLinksTableData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
+            }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
+        }
+    }
+
+    fun archiveSelectedImportantLinks() {
+        viewModelScope.launch {
+            selectedImportantLinksData.forEach {
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
+                    ArchivedLinks(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    )
+                )
+            }
+        }
+
+        viewModelScope.launch {
+            selectedImportantLinksData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
+            }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
+        }
+    }
+
     fun archiveSelectedHistoryLinks() {
         viewModelScope.launch {
             selectedHistoryLinksData.forEach {
@@ -116,6 +163,8 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 )
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
+        }.invokeOnCompletion {
+            retrieveQueryData(searchQuery.value)
         }
     }
 
