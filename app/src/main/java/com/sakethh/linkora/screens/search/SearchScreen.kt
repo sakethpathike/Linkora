@@ -24,7 +24,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
@@ -70,7 +69,6 @@ import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
-import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
@@ -133,7 +131,8 @@ fun SearchScreen(navController: NavController) {
     }
     LinkoraTheme {
         Column {
-            SearchBar(interactionSource = interactionSource,
+            SearchBar(
+                enabled = !isSelectionModeEnabled.value, interactionSource = interactionSource,
                 trailingIcon = {
                     if (SearchScreenVM.isSearchEnabled.value) {
                         IconButton(onClick = {
@@ -189,18 +188,31 @@ fun SearchScreen(navController: NavController) {
                                 }
                             }
 
-                            searchTextField.isNotEmpty() && (linksTableData.isEmpty() && impLinksData.isEmpty() && archiveLinksTableData.isEmpty()) -> {
+                            searchTextField.isNotEmpty() && (linksTableData.linksTableList.isEmpty() && impLinksData.importantLinksList.isEmpty() && archiveLinksTableData.archiveLinksTable.isEmpty()) -> {
                                 item {
                                     DataEmptyScreen(text = "No Matching Links Found. Try a Different Search.")
                                 }
                             }
 
                             else -> {
-                                items(items = impLinksData, key = { importantLinks ->
-                                    importantLinks.webURL + importantLinks.id.toString()
-                                }) {
+                                itemsIndexed(
+                                    items = impLinksData.importantLinksList,
+                                    key = { index, importantLinks ->
+                                        importantLinks.webURL + importantLinks.id.toString()
+                                    }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(title = it.title,
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
+                                                    isSelectionModeEnabled.value =
+                                                        true
+                                                    searchScreenVM.selectedImportantLinksData.add(it)
+                                                    searchScreenVM.impLinksQueriedData.value.isCheckBoxSelected[index].value =
+                                                        true
+                                                }
+                                            },
+                                            isSelectionModeEnabled = isSelectionModeEnabled,
+                                            title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
@@ -230,19 +242,34 @@ fun SearchScreen(navController: NavController) {
                                                 }
                                             },
                                             onLinkClick = {
-                                                coroutineScope.launch {
-                                                    com.sakethh.linkora.customWebTab.openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
-                                                    )
+                                                if (isSelectionModeEnabled.value) {
+                                                    impLinksData.isCheckBoxSelected[index].value =
+                                                        !impLinksData.isCheckBoxSelected[index].value
+
+                                                    if (impLinksData.isCheckBoxSelected[index].value) {
+                                                        searchScreenVM.selectedImportantLinksData.add(
+                                                            it
+                                                        )
+                                                    } else {
+                                                        searchScreenVM.selectedImportantLinksData.remove(
+                                                            it
+                                                        )
+                                                    }
+                                                } else {
+                                                    coroutineScope.launch {
+                                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
+                                                    }
                                                 }
                                             },
                                             webURL = it.webURL,
@@ -261,17 +288,29 @@ fun SearchScreen(navController: NavController) {
                                                     forceOpenInExternalBrowser = true
                                                 )
                                             },
-                                            isSelectionModeEnabled = mutableStateOf(false),
-                                            isItemSelected = mutableStateOf(false),
-
-                                            onLongClick = { -> })
+                                            isItemSelected = impLinksData.isCheckBoxSelected[index]
+                                        )
                                     )
                                 }
-                                items(items = linksTableData, key = { linksTable ->
-                                    linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL
-                                }) {
+                                itemsIndexed(
+                                    items = linksTableData.linksTableList,
+                                    key = { _, linksTable ->
+                                        linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL
+                                    }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(title = it.title,
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
+                                                    isSelectionModeEnabled.value =
+                                                        true
+                                                    searchScreenVM.selectedLinksTableData.add(it)
+                                                    linksTableData.isCheckBoxSelected[index].value =
+                                                        true
+                                                }
+                                            },
+                                            isSelectionModeEnabled = isSelectionModeEnabled,
+                                            isItemSelected = linksTableData.isCheckBoxSelected[index],
+                                            title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
@@ -319,19 +358,34 @@ fun SearchScreen(navController: NavController) {
                                                 }
                                             },
                                             onLinkClick = {
-                                                coroutineScope.launch {
-                                                    com.sakethh.linkora.customWebTab.openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
-                                                    )
+                                                if (isSelectionModeEnabled.value) {
+                                                    linksTableData.isCheckBoxSelected[index].value =
+                                                        !linksTableData.isCheckBoxSelected[index].value
+
+                                                    if (linksTableData.isCheckBoxSelected[index].value) {
+                                                        searchScreenVM.selectedLinksTableData.add(
+                                                            it
+                                                        )
+                                                    } else {
+                                                        searchScreenVM.selectedLinksTableData.remove(
+                                                            it
+                                                        )
+                                                    }
+                                                } else {
+                                                    coroutineScope.launch {
+                                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
+                                                    }
                                                 }
                                             },
                                             webURL = it.webURL,
@@ -349,18 +403,30 @@ fun SearchScreen(navController: NavController) {
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
-                                            },
-                                            isSelectionModeEnabled = mutableStateOf(false),
-                                            isItemSelected = mutableStateOf(false),
-
-                                            onLongClick = { -> })
+                                            })
                                     )
                                 }
-                                items(items = archiveLinksTableData, key = { archivedLinks ->
-                                    archivedLinks.id.toString() + archivedLinks.baseURL
-                                }) {
+                                itemsIndexed(
+                                    items = archiveLinksTableData.archiveLinksTable,
+                                    key = { _, archivedLinks ->
+                                        archivedLinks.id.toString() + archivedLinks.baseURL
+                                    }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(title = it.title,
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
+                                                    isSelectionModeEnabled.value =
+                                                        true
+                                                    searchScreenVM.selectedArchiveLinksTableData.add(
+                                                        it
+                                                    )
+                                                    archiveLinksTableData.isCheckBoxSelected[index].value =
+                                                        true
+                                                }
+                                            },
+                                            isSelectionModeEnabled = isSelectionModeEnabled,
+                                            isItemSelected = archiveLinksTableData.isCheckBoxSelected[index],
+                                            title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
                                             onMoreIconCLick = {
@@ -390,19 +456,34 @@ fun SearchScreen(navController: NavController) {
                                                 }
                                             },
                                             onLinkClick = {
-                                                coroutineScope.launch {
-                                                    com.sakethh.linkora.customWebTab.openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
-                                                    )
+                                                if (isSelectionModeEnabled.value) {
+                                                    archiveLinksTableData.isCheckBoxSelected[index].value =
+                                                        !archiveLinksTableData.isCheckBoxSelected[index].value
+
+                                                    if (archiveLinksTableData.isCheckBoxSelected[index].value) {
+                                                        searchScreenVM.selectedArchiveLinksTableData.add(
+                                                            it
+                                                        )
+                                                    } else {
+                                                        searchScreenVM.selectedArchiveLinksTableData.remove(
+                                                            it
+                                                        )
+                                                    }
+                                                } else {
+                                                    coroutineScope.launch {
+                                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
+                                                    }
                                                 }
                                             },
                                             webURL = it.webURL,
@@ -420,11 +501,103 @@ fun SearchScreen(navController: NavController) {
                                                     onTaskCompleted = {},
                                                     forceOpenInExternalBrowser = true
                                                 )
+                                            })
+                                    )
+                                }
+                                itemsIndexed(
+                                    items = recentlyVisitedLinksData.historyLinksData,
+                                    key = { index, archivedLinks ->
+                                        recentlyVisitedLinksData.historyLinksData[index].id.toString() + recentlyVisitedLinksData.historyLinksData[index].baseURL
+                                    }) { index, it ->
+                                    LinkUIComponent(
+                                        LinkUIComponentParam(
+                                            onLongClick = {
+                                                if (!isSelectionModeEnabled.value) {
+                                                    isSelectionModeEnabled.value =
+                                                        true
+                                                    searchScreenVM.selectedHistoryLinksData.add(it)
+                                                    linksTableData.isCheckBoxSelected[index].value =
+                                                        true
+                                                }
                                             },
-                                            isSelectionModeEnabled = mutableStateOf(false),
-                                            isItemSelected = mutableStateOf(false),
+                                            isSelectionModeEnabled = isSelectionModeEnabled,
+                                            isItemSelected = linksTableData.isCheckBoxSelected[index],
+                                            title = it.title,
+                                            webBaseURL = it.webURL,
+                                            imgURL = it.imgURL,
+                                            onMoreIconCLick = {
+                                                SearchScreenVM.selectedLinkID = it.id
+                                                selectedLinkTitle.value = it.title
+                                                SearchScreenVM.selectedLinkType =
+                                                    SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
+                                                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                                                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                                                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                                                HomeScreenVM.tempImpLinkData.title = it.title
+                                                HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                    it.infoForSaving
+                                                selectedURLNote.value = it.infoForSaving
+                                                selectedWebURL.value = it.webURL
+                                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                                coroutineScope.launch {
+                                                    kotlinx.coroutines.awaitAll(async {
+                                                        optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    }, async {
+                                                        optionsBtmSheetVM.updateImportantCardData(
+                                                            url = it.webURL
+                                                        )
+                                                    })
+                                                }
+                                            },
+                                            onLinkClick = {
+                                                if (isSelectionModeEnabled.value) {
+                                                    recentlyVisitedLinksData.isLinkSelected[index].value =
+                                                        !recentlyVisitedLinksData.isLinkSelected[index].value
 
-                                            onLongClick = { -> })
+                                                    if (linksTableData.isCheckBoxSelected[index].value) {
+                                                        searchScreenVM.selectedHistoryLinksData.add(
+                                                            it
+                                                        )
+                                                    } else {
+                                                        searchScreenVM.selectedHistoryLinksData.remove(
+                                                            it
+                                                        )
+                                                    }
+                                                } else {
+                                                    coroutineScope.launch {
+                                                        com.sakethh.linkora.customWebTab.openInWeb(
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
+                                                    }
+                                                }
+                                            },
+                                            webURL = it.webURL,
+                                            onForceOpenInExternalBrowserClicked = {
+                                                searchScreenVM.onLinkClick(
+                                                    RecentlyVisited(
+                                                        title = it.title,
+                                                        webURL = it.webURL,
+                                                        baseURL = it.baseURL,
+                                                        imgURL = it.imgURL,
+                                                        infoForSaving = it.infoForSaving
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
+                                                    onTaskCompleted = {},
+                                                    forceOpenInExternalBrowser = true
+                                                )
+                                            })
                                     )
                                 }
                                 item {
@@ -468,7 +641,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                     AnimatedContent(
-                                        targetState = searchScreenVM.selectedLinksData.size + searchScreenVM.selectedFoldersID.size,
+                                        targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersID.size,
                                         label = "",
                                         transitionSpec = {
                                             ContentTransform(
@@ -555,16 +728,7 @@ fun SearchScreen(navController: NavController) {
                                     if (!isSelectionModeEnabled.value) {
                                         isSelectionModeEnabled.value =
                                             true
-                                        searchScreenVM.selectedLinksData.add(
-                                            ArchivedLinks(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving,
-                                                id = it.id
-                                            )
-                                        )
+                                        searchScreenVM.selectedHistoryLinksData.add(it)
                                         recentlyVisitedLinksData.isLinkSelected[index].value =
                                             true
                                     }
@@ -615,26 +779,9 @@ fun SearchScreen(navController: NavController) {
                                             !recentlyVisitedLinksData.isLinkSelected[index].value
 
                                         if (recentlyVisitedLinksData.isLinkSelected[index].value) {
-                                            searchScreenVM.selectedLinksData.add(
-                                                ArchivedLinks(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving,
-                                                    id = it.id
-                                                )
-                                            )
+                                            searchScreenVM.selectedHistoryLinksData.add(it)
                                         } else {
-                                            searchScreenVM.selectedLinksData.remove(
-                                                ArchivedLinks(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                )
-                                            )
+                                            searchScreenVM.selectedHistoryLinksData.remove(it)
                                         }
                                     }
                                 },

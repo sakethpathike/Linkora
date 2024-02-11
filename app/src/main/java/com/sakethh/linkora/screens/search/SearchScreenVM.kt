@@ -12,6 +12,9 @@ import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveLinkTableComponent
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.ImpLinkTableComponent
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.LinkTableComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.home.HomeScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -45,18 +48,39 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
     private val _historyLinksData = MutableStateFlow(HistoryLinkComponent(emptyList(), emptyList()))
     val historyLinksData = _historyLinksData.asStateFlow()
 
-    private val _linksTableQueriedData = MutableStateFlow(emptyList<LinksTable>())
+    private val _linksTableQueriedData = MutableStateFlow(
+        LinkTableComponent(
+            emptyList(),
+            emptyList()
+        )
+    )
     val linksTableData = _linksTableQueriedData.asStateFlow()
 
-    private val _impLinksQueriedData = MutableStateFlow(emptyList<ImportantLinks>())
+    private val _impLinksQueriedData = MutableStateFlow(
+        ImpLinkTableComponent(
+            emptyList(),
+            emptyList()
+        )
+    )
     val impLinksQueriedData = _impLinksQueriedData.asStateFlow()
 
-    private val _archiveLinksQueriedData = MutableStateFlow(emptyList<ArchivedLinks>())
+    private val _archiveLinksQueriedData = MutableStateFlow(
+        ArchiveLinkTableComponent(
+            emptyList(),
+            emptyList()
+        )
+    )
     val archiveLinksQueriedData = _archiveLinksQueriedData.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
-    val selectedLinksData = mutableStateListOf<ArchivedLinks>()
+
+
+    val selectedHistoryLinksData = mutableStateListOf<RecentlyVisited>()
+    val selectedImportantLinksData = mutableStateListOf<ImportantLinks>()
+    val selectedLinksTableData = mutableStateListOf<LinksTable>()
+    val selectedArchiveLinksTableData = mutableStateListOf<ArchivedLinks>()
+
     init {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
@@ -66,21 +90,13 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
     }
 
     fun removeAllLinksSelection() {
-        selectedLinksData.removeAll(historyLinksData.value.historyLinksData.map {
-            ArchivedLinks(
-                title = it.title,
-                webURL = it.webURL,
-                baseURL = it.baseURL,
-                imgURL = it.imgURL,
-                infoForSaving = it.infoForSaving
-            )
-        })
+        selectedHistoryLinksData.removeAll(historyLinksData.value.historyLinksData)
         historyLinksData.value.isLinkSelected.forEach { it.value = false }
     }
 
     fun deleteSelectedHistoryLinks() {
         viewModelScope.launch {
-            selectedLinksData.forEach {
+            selectedHistoryLinksData.forEach {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
@@ -88,8 +104,16 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
 
     fun archiveSelectedHistoryLinks() {
         viewModelScope.launch {
-            selectedLinksData.forEach {
-                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(it)
+            selectedHistoryLinksData.forEach {
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
+                    ArchivedLinks(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.imgURL
+                    )
+                )
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }
@@ -105,23 +129,51 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 if (query.isNotEmpty()) {
+                    val data = LocalDataBase.localDB.linksSearching()
+                        .getFromImportantLinks(query = query)
+                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                    List(data.size) { index ->
+                        mutableBooleanList.add(index, mutableStateOf(false))
+                    }
                     _impLinksQueriedData.emit(
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromImportantLinks(query = query)
+                        ImpLinkTableComponent(mutableBooleanList, data)
                     )
                 }
             }, async {
                 if (query.isNotEmpty()) {
-                    _linksTableQueriedData.emit(
+                    val data =
                         LocalDataBase.localDB.linksSearching()
                             .getFromLinksTable(query = query)
+                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                    List(data.size) { index ->
+                        mutableBooleanList.add(index, mutableStateOf(false))
+                    }
+                    _linksTableQueriedData.emit(
+                        LinkTableComponent(mutableBooleanList, data)
                     )
                 }
             }, async {
                 if (query.isNotEmpty()) {
+                    val data = LocalDataBase.localDB.linksSearching()
+                        .getFromArchiveLinks(query = query)
+                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                    List(data.size) { index ->
+                        mutableBooleanList.add(index, mutableStateOf(false))
+                    }
                     _archiveLinksQueriedData.emit(
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromArchiveLinks(query = query)
+                        ArchiveLinkTableComponent(mutableBooleanList, data)
+                    )
+                }
+            }, async {
+                if (query.isNotEmpty()) {
+                    val data = LocalDataBase.localDB.linksSearching()
+                        .getFromHistoryLinks(query = query)
+                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
+                    List(data.size) { index ->
+                        mutableBooleanList.add(index, mutableStateOf(false))
+                    }
+                    _historyLinksData.emit(
+                        HistoryLinkComponent(data, mutableBooleanList)
                     )
                 }
             })
