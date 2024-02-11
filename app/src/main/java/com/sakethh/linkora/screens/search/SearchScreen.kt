@@ -195,10 +195,20 @@ fun SearchScreen(navController: NavController) {
                             }
 
                             else -> {
-                                itemsIndexed(
-                                    items = impLinksData.importantLinksList,
+                                if (impLinksData.importantLinksList.isNotEmpty()) {
+                                    item {
+                                        Text(
+                                            text = "From Important Links",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.padding(15.dp)
+                                        )
+                                    }
+                                }
+                                itemsIndexed(items = impLinksData.importantLinksList,
                                     key = { index, importantLinks ->
-                                        importantLinks.webURL + importantLinks.id.toString()
+                                        importantLinks.webURL + importantLinks.id.toString() + index
                                     }) { index, it ->
                                     LinkUIComponent(
                                         LinkUIComponentParam(
@@ -292,15 +302,24 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     )
                                 }
-                                itemsIndexed(
-                                    items = linksTableData.linksTableList,
-                                    key = { _, linksTable ->
-                                        linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL
+                                if (linksTableData.linksTableList.isNotEmpty()) {
+                                    item {
+                                        Text(
+                                            text = "From Folders and Saved Links",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.padding(15.dp)
+                                        )
+                                    }
+                                }
+                                itemsIndexed(items = linksTableData.linksTableList,
+                                    key = { index, linksTable ->
+                                        linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL + +index
                                     }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(
-                                            onLongClick = {
-                                                if (!isSelectionModeEnabled.value) {
+                                        LinkUIComponentParam(onLongClick = {
+                                            if (!isSelectionModeEnabled.value) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedLinksTableData.add(it)
@@ -406,15 +425,25 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                itemsIndexed(
-                                    items = archiveLinksTableData.archiveLinksTable,
-                                    key = { _, archivedLinks ->
+                                item {
+                                    if (archiveLinksTableData.archiveLinksTable.isNotEmpty()) {
+                                        Text(
+                                            text = "From Archived Links",
+                                            style = MaterialTheme.typography.titleMedium,
+                                            color = MaterialTheme.colorScheme.primary,
+                                            fontSize = 14.sp,
+                                            modifier = Modifier.padding(15.dp)
+                                        )
+                                    }
+                                }
+                                itemsIndexed(items = archiveLinksTableData.archiveLinksTable,
+                                    key = { index, archivedLinks ->
                                         archivedLinks.id.toString() + archivedLinks.baseURL
+                                        +index
                                     }) { index, it ->
                                     LinkUIComponent(
-                                        LinkUIComponentParam(
-                                            onLongClick = {
-                                                if (!isSelectionModeEnabled.value) {
+                                        LinkUIComponentParam(onLongClick = {
+                                            if (!isSelectionModeEnabled.value) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedArchiveLinksTableData.add(
@@ -504,10 +533,18 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                itemsIndexed(
-                                    items = recentlyVisitedLinksData.historyLinksData,
+                                item {
+                                    Text(
+                                        text = "From History",
+                                        style = MaterialTheme.typography.titleMedium,
+                                        color = MaterialTheme.colorScheme.primary,
+                                        fontSize = 14.sp,
+                                        modifier = Modifier.padding(15.dp)
+                                    )
+                                }
+                                itemsIndexed(items = recentlyVisitedLinksData.historyLinksData,
                                     key = { index, archivedLinks ->
-                                        recentlyVisitedLinksData.historyLinksData[index].id.toString() + recentlyVisitedLinksData.historyLinksData[index].baseURL
+                                        archivedLinks.baseURL + archivedLinks.id.toString() + index
                                     }) { index, it ->
                                     LinkUIComponent(
                                         LinkUIComponentParam(
@@ -717,10 +754,9 @@ fun SearchScreen(navController: NavController) {
                     }
                 }
                 if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) {
-                    itemsIndexed(
-                        items = recentlyVisitedLinksData.historyLinksData,
-                        key = { _, recentlyVisited ->
-                            recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString()
+                    itemsIndexed(items = recentlyVisitedLinksData.historyLinksData,
+                        key = { index, recentlyVisited ->
+                            recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
                         }) { index, it ->
                         LinkUIComponent(
                             LinkUIComponentParam(
