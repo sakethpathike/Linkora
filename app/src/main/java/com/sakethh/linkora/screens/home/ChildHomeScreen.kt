@@ -37,14 +37,14 @@ import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.LinkTableComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -60,9 +60,8 @@ import kotlinx.coroutines.launch
 fun ChildHomeScreen(
     homeScreenType: HomeScreenVM.HomeScreenType,
     navController: NavController,
-    folderLinksData: LinkTableComponent,
-    childFoldersData: FolderComponent,
-    currentTabID: Long = 0
+    folderLinksData: List<LinksTable>,
+    childFoldersData: List<FoldersTable>
 ) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
@@ -274,8 +273,8 @@ fun ChildHomeScreen(
                     }
                 }
             } else {
-                if (childFoldersData.foldersTableList.isNotEmpty()) {
-                    itemsIndexed(childFoldersData.foldersTableList) { index, folderElement ->
+                if (childFoldersData.isNotEmpty()) {
+                    itemsIndexed(childFoldersData) { index, folderElement ->
                         FolderIndividualComponent(
                             showCheckBox = homeScreenVM.isSelectionModeEnabled,
                             isCheckBoxChecked = mutableStateOf(
@@ -322,8 +321,8 @@ fun ChildHomeScreen(
                         )
                     }
                 }
-                if (folderLinksData.linksTableList.isNotEmpty()) {
-                    itemsIndexed(items = folderLinksData.linksTableList) { index, it ->
+                if (folderLinksData.isNotEmpty()) {
+                    itemsIndexed(items = folderLinksData) { index, it ->
                         LinkUIComponent(
                             linkUIComponentParam = LinkUIComponentParam(
                                 onLongClick = {

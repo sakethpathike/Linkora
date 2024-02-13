@@ -39,19 +39,49 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     }
 
     fun archiveSelectedLinks() {
-
+        viewModelScope.launch {
+            selectedLinksData.forEach {
+                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
+                    ArchivedLinks(
+                        title = it.title,
+                        webURL = it.title,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    )
+                )
+            }
+        }.invokeOnCompletion {
+            viewModelScope.launch {
+                selectedLinksData.forEach {
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
+                }
+            }
+        }
     }
 
     fun archiveSelectedFolders() {
-
+        viewModelScope.launch {
+            selectedFoldersData.forEach {
+                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it.id)
+            }
+        }
     }
 
     fun deleteSelectedLinks() {
-
+        viewModelScope.launch {
+            selectedLinksData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
+            }
+        }
     }
 
     fun deleteSelectedFolders() {
-
+        viewModelScope.launch {
+            selectedFoldersData.forEach {
+                LocalDataBase.localDB.deleteDao().deleteAFolder(it.id)
+            }
+        }
     }
 
     enum class HomeScreenType {

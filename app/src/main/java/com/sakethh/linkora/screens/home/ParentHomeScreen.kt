@@ -72,8 +72,6 @@ import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.screens.collections.FolderComponent
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.LinkTableComponent
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -163,7 +161,7 @@ fun ParentHomeScreen(navController: NavController) {
                     if (homeScreenVM.isSelectionModeEnabled.value) {
                         Row {
                             AnimatedContent(
-                                targetState = homeScreenVM.selectedLinksData.size + homeScreenVM.selectedFoldersID.size,
+                                targetState = homeScreenVM.selectedLinksData.size + homeScreenVM.selectedFoldersData.size,
                                 label = "",
                                 transitionSpec = {
                                     ContentTransform(
@@ -202,7 +200,7 @@ fun ParentHomeScreen(navController: NavController) {
                         )
                     }
                 }, actions = {
-                    if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersID.size + homeScreenVM.selectedLinksData.size > 0) {
+                    if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedLinksData.size > 0) {
                         IconButton(onClick = {
                             homeScreenVM.archiveSelectedFolders()
                             homeScreenVM.archiveSelectedLinks()
@@ -276,24 +274,17 @@ fun ParentHomeScreen(navController: NavController) {
                         count = homeScreenList.size, state = pagerState
                     ) {
                         ChildHomeScreen(
-                            currentTabID = homeScreenList[it].id,
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                             navController = navController,
-                            folderLinksData = LinkTableComponent(
-                                isCheckBoxSelected = emptyList(),
-                                linksTableList = LocalDataBase.localDB.readDao()
-                                    .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
-                                        initial = emptyList()
-                                    ).value,
-                            ),
-                            childFoldersData = FolderComponent(
-                                isCheckBoxSelected = emptyList(),
-                                foldersTableList = LocalDataBase.localDB.readDao()
-                                    .getChildFoldersOfThisParentID(homeScreenList[it].id)
-                                    .collectAsState(
-                                        initial = emptyList()
-                                    ).value
-                            ),
+                            folderLinksData = LocalDataBase.localDB.readDao()
+                                .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
+                                    initial = emptyList()
+                                ).value,
+                            childFoldersData = LocalDataBase.localDB.readDao()
+                                .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                .collectAsState(
+                                    initial = emptyList()
+                                ).value,
                         )
                     }
                 }

@@ -139,7 +139,7 @@ interface ReadDao {
     @Query("SELECT (SELECT COUNT(*) FROM recently_visited_table) == 0")
     suspend fun isHistoryLinksTableEmpty(): Boolean
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
 
     @Query("SELECT COUNT(*) FROM folders_table WHERE parentFolderID = :parentFolderID")
