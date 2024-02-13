@@ -61,7 +61,8 @@ fun ChildHomeScreen(
     homeScreenType: HomeScreenVM.HomeScreenType,
     navController: NavController,
     folderLinksData: LinkTableComponent,
-    childFoldersData: FolderComponent
+    childFoldersData: FolderComponent,
+    currentTabID: Long = 0
 ) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
@@ -277,20 +278,19 @@ fun ChildHomeScreen(
                     itemsIndexed(childFoldersData.foldersTableList) { index, folderElement ->
                         FolderIndividualComponent(
                             showCheckBox = homeScreenVM.isSelectionModeEnabled,
-                            isCheckBoxChecked =
-                            try {
-                                childFoldersData.isCheckBoxSelected[index]
-                            } catch (e: Exception) {
-                                mutableStateOf(false)
-                            },
+                            isCheckBoxChecked = mutableStateOf(
+                                homeScreenVM.selectedFoldersData.contains(
+                                    folderElement
+                                )
+                            ),
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
-                                    homeScreenVM.selectedFoldersID.add(
-                                        folderElement.id
+                                    homeScreenVM.selectedFoldersData.add(
+                                        folderElement
                                     )
                                 } else {
-                                    homeScreenVM.selectedFoldersID.removeAll {
-                                        it == folderElement.id
+                                    homeScreenVM.selectedFoldersData.removeAll {
+                                        it == folderElement
                                     }
                                 }
                             },
@@ -314,11 +314,9 @@ fun ChildHomeScreen(
                                     homeScreenVM.isSelectionModeEnabled.value = true
                                     specificCollectionsScreenVM.areAllFoldersChecked.value =
                                         false
-                                    specificCollectionsScreenVM.selectedFoldersID.add(
-                                        folderElement.id
+                                    homeScreenVM.selectedFoldersData.add(
+                                        folderElement
                                     )
-                                    childFoldersData.isCheckBoxSelected[index].value =
-                                        true
                                 }
                             }
                         )
@@ -333,16 +331,14 @@ fun ChildHomeScreen(
                                         homeScreenVM.isSelectionModeEnabled.value =
                                             true
                                         homeScreenVM.selectedLinksData.add(it)
-                                        folderLinksData.isCheckBoxSelected[index].value =
-                                            true
                                     }
                                 },
                                 isSelectionModeEnabled = homeScreenVM.isSelectionModeEnabled,
-                                isItemSelected = try {
-                                    folderLinksData.isCheckBoxSelected[index]
-                                } catch (e: Exception) {
-                                    mutableStateOf(false)
-                                },
+                                isItemSelected = mutableStateOf(
+                                    homeScreenVM.selectedLinksData.contains(
+                                        it
+                                    )
+                                ),
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -372,10 +368,8 @@ fun ChildHomeScreen(
                                 },
                                 onLinkClick = {
                                     if (homeScreenVM.isSelectionModeEnabled.value) {
-                                        folderLinksData.isCheckBoxSelected[index].value =
-                                            !folderLinksData.isCheckBoxSelected[index].value
 
-                                        if (folderLinksData.isCheckBoxSelected[index].value) {
+                                        if (!homeScreenVM.selectedLinksData.contains(it)) {
                                             homeScreenVM.selectedLinksData.add(
                                                 it
                                             )

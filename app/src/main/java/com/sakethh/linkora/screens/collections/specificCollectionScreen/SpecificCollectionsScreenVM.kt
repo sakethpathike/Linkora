@@ -37,7 +37,8 @@ data class MutableImportantLinks(
 )
 
 data class LinkTableComponent(
-    val isCheckBoxSelected: List<MutableState<Boolean>>, val linksTableList: List<LinksTable>
+    val isCheckBoxSelected: List<MutableState<Boolean>>,
+    val linksTableList: List<LinksTable>
 )
 
 data class ImpLinkTableComponent(

@@ -4,6 +4,7 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
@@ -40,7 +41,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -238,7 +238,7 @@ fun ParentHomeScreen(navController: NavController) {
                 LazyColumn(modifier = Modifier.padding(it)) {
                     stickyHeader {
                         if (homeScreenList.isNotEmpty()) {
-                            Column {
+                            Column(modifier = Modifier.animateContentSize()) {
                                 ScrollableTabRow(
                                     divider = {},
                                     modifier = Modifier
@@ -275,35 +275,24 @@ fun ParentHomeScreen(navController: NavController) {
                         modifier = Modifier.fillMaxWidth(),
                         count = homeScreenList.size, state = pagerState
                     ) {
-                        val linksTableList = LocalDataBase.localDB.readDao()
-                            .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
-                                initial = emptyList()
-                            ).value
-                        val mutableBooleanLinksList = mutableListOf<MutableState<Boolean>>()
-                        List(linksTableList.size) { index ->
-                            mutableBooleanLinksList.add(index, mutableStateOf(false))
-                        }
-
-                        val childFolderList = LocalDataBase.localDB.readDao()
-                            .getChildFoldersOfThisParentID(homeScreenList[it].id)
-                            .collectAsState(
-                                initial = emptyList()
-                            ).value
-
-                        val mutableBooleanFoldersList = mutableListOf<MutableState<Boolean>>()
-                        List(childFolderList.size) { index ->
-                            mutableBooleanLinksList.add(index, mutableStateOf(false))
-                        }
                         ChildHomeScreen(
+                            currentTabID = homeScreenList[it].id,
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                             navController = navController,
                             folderLinksData = LinkTableComponent(
-                                isCheckBoxSelected = mutableBooleanLinksList,
-                                linksTableList = linksTableList
+                                isCheckBoxSelected = emptyList(),
+                                linksTableList = LocalDataBase.localDB.readDao()
+                                    .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
+                                        initial = emptyList()
+                                    ).value,
                             ),
                             childFoldersData = FolderComponent(
-                                isCheckBoxSelected = mutableBooleanFoldersList,
-                                foldersTableList = childFolderList
+                                isCheckBoxSelected = emptyList(),
+                                foldersTableList = LocalDataBase.localDB.readDao()
+                                    .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                    .collectAsState(
+                                        initial = emptyList()
+                                    ).value
                             ),
                         )
                     }

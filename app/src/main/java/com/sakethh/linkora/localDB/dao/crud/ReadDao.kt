@@ -52,6 +52,9 @@ interface ReadDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
     fun getLinksOfThisFolderV10(folderID: Long): Flow<List<LinksTable>>
 
+    @Query("SELECT COUNT(*) FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
+    suspend fun getSizeOfLinksOfThisFolderV10(folderID: Long): Int
+
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")
     fun getLinksOfThisFolderV9(folderName: String): Flow<List<LinksTable>>
 
@@ -138,4 +141,7 @@ interface ReadDao {
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID")
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
+
+    @Query("SELECT COUNT(*) FROM folders_table WHERE parentFolderID = :parentFolderID")
+    suspend fun getSizeOfChildFoldersOfThisParentID(parentFolderID: Long?): Int
 }
