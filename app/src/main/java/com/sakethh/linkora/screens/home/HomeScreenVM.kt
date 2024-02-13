@@ -3,11 +3,13 @@ package com.sakethh.linkora.screens.home
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -22,6 +24,33 @@ import java.util.Calendar
 
 class HomeScreenVM : SpecificCollectionsScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
+
+    val isSelectionModeEnabled = mutableStateOf(false)
+    val selectedLinksData = mutableStateListOf<LinksTable>()
+
+    fun removeAllLinksSelection() {
+
+    }
+
+    fun removeAllFoldersSelection() {
+
+    }
+
+    fun archiveSelectedLinks() {
+
+    }
+
+    fun archiveSelectedFolders() {
+
+    }
+
+    fun deleteSelectedLinks() {
+
+    }
+
+    fun deleteSelectedFolders() {
+
+    }
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST

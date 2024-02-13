@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -273,27 +274,75 @@ fun ChildHomeScreen(
                 }
             } else {
                 if (childFoldersData.foldersTableList.isNotEmpty()) {
-                    items(childFoldersData.foldersTableList) { folderElement ->
+                    itemsIndexed(childFoldersData.foldersTableList) { index, folderElement ->
                         FolderIndividualComponent(
+                            showCheckBox = homeScreenVM.isSelectionModeEnabled,
+                            isCheckBoxChecked =
+                            try {
+                                childFoldersData.isCheckBoxSelected[index]
+                            } catch (e: Exception) {
+                                mutableStateOf(false)
+                            },
+                            checkBoxState = { checkBoxState ->
+                                if (checkBoxState) {
+                                    homeScreenVM.selectedFoldersID.add(
+                                        folderElement.id
+                                    )
+                                } else {
+                                    homeScreenVM.selectedFoldersID.removeAll {
+                                        it == folderElement.id
+                                    }
+                                }
+                            },
                             folderName = folderElement.folderName,
                             folderNote = folderElement.infoForSaving,
                             onMoreIconClick = {},
                             onFolderClick = {
-                                SpecificCollectionsScreenVM.inARegularFolder.value = true
-                                SpecificCollectionsScreenVM.screenType.value =
-                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                CollectionsScreenVM.currentClickedFolderData.value = folderElement
-                                CollectionsScreenVM.rootFolderID = folderElement.id
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                if (!homeScreenVM.isSelectionModeEnabled.value) {
+                                    SpecificCollectionsScreenVM.inARegularFolder.value = true
+                                    SpecificCollectionsScreenVM.screenType.value =
+                                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                    CollectionsScreenVM.currentClickedFolderData.value =
+                                        folderElement
+                                    CollectionsScreenVM.rootFolderID = folderElement.id
+                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                }
                             },
-                            showMoreIcon = true
+                            showMoreIcon = !homeScreenVM.isSelectionModeEnabled.value,
+                            onLongClick = {
+                                if (!homeScreenVM.isSelectionModeEnabled.value) {
+                                    homeScreenVM.isSelectionModeEnabled.value = true
+                                    specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                        false
+                                    specificCollectionsScreenVM.selectedFoldersID.add(
+                                        folderElement.id
+                                    )
+                                    childFoldersData.isCheckBoxSelected[index].value =
+                                        true
+                                }
+                            }
                         )
                     }
                 }
                 if (folderLinksData.linksTableList.isNotEmpty()) {
-                    items(folderLinksData.linksTableList) {
+                    itemsIndexed(items = folderLinksData.linksTableList) { index, it ->
                         LinkUIComponent(
                             linkUIComponentParam = LinkUIComponentParam(
+                                onLongClick = {
+                                    if (!homeScreenVM.isSelectionModeEnabled.value) {
+                                        homeScreenVM.isSelectionModeEnabled.value =
+                                            true
+                                        homeScreenVM.selectedLinksData.add(it)
+                                        folderLinksData.isCheckBoxSelected[index].value =
+                                            true
+                                    }
+                                },
+                                isSelectionModeEnabled = homeScreenVM.isSelectionModeEnabled,
+                                isItemSelected = try {
+                                    folderLinksData.isCheckBoxSelected[index]
+                                } catch (e: Exception) {
+                                    mutableStateOf(false)
+                                },
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -322,17 +371,33 @@ fun ChildHomeScreen(
                                     }
                                 },
                                 onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ), context = context, uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                    if (homeScreenVM.isSelectionModeEnabled.value) {
+                                        folderLinksData.isCheckBoxSelected[index].value =
+                                            !folderLinksData.isCheckBoxSelected[index].value
+
+                                        if (folderLinksData.isCheckBoxSelected[index].value) {
+                                            homeScreenVM.selectedLinksData.add(
+                                                it
+                                            )
+                                        } else {
+                                            homeScreenVM.selectedLinksData.remove(
+                                                it
+                                            )
+                                        }
+
+                                    } else {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
+                                            )
+                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -348,11 +413,7 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-
-                                onLongClick = { -> })
+                                })
                         )
                     }
                 } else {
