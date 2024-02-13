@@ -12,8 +12,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -71,15 +71,15 @@ fun SettingsNewVersionUpdateBtmContent(
             }
         }
         item {
-            Divider(
-                color = MaterialTheme.colorScheme.outline,
-                thickness = 0.5.dp,
+            HorizontalDivider(
                 modifier = Modifier.padding(
                     start = 20.dp,
                     top = 20.dp,
                     end = 20.dp,
                     bottom = if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) 0.dp else 20.dp
-                )
+                ),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outline
             )
         }
         if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
@@ -90,10 +90,10 @@ fun SettingsNewVersionUpdateBtmContent(
                 )
             }
             item {
-                Divider(
-                    color = MaterialTheme.colorScheme.outline,
+                HorizontalDivider(
+                    modifier = Modifier.padding(20.dp),
                     thickness = 0.5.dp,
-                    modifier = Modifier.padding(20.dp)
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
         }
@@ -211,10 +211,10 @@ fun SettingsNewVersionUpdateBtmContent(
         items(items = SettingsScreenVM.latestAppInfoFromServer.releaseNotes.value.drop(1), key = {
             it.versionValue
         }) {
-            Divider(
-                color = MaterialTheme.colorScheme.outline.copy(0.25f),
+            HorizontalDivider(
+                modifier = Modifier.padding(20.dp),
                 thickness = 0.5.dp,
-                modifier = Modifier.padding(20.dp)
+                color = MaterialTheme.colorScheme.outline.copy(0.25f)
             )
             ReleaseNotesComponent(
                 versionValue = it.versionValue,
@@ -222,12 +222,12 @@ fun SettingsNewVersionUpdateBtmContent(
             )
         }
         item {
-            Divider(
-                color = MaterialTheme.colorScheme.outline.copy(0.25f),
-                thickness = 0.5.dp,
+            HorizontalDivider(
                 modifier = Modifier
                     .padding(20.dp)
-                    .navigationBarsPadding()
+                    .navigationBarsPadding(),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outline.copy(0.25f)
             )
         }
     }

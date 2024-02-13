@@ -4,8 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -26,10 +26,11 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun SettingsNewVersionCheckerDialogBox(shouldDialogBoxAppear: MutableState<Boolean>) {
     if (shouldDialogBoxAppear.value && !SettingsScreenVM.Settings.didServerTimeOutErrorOccurred.value) {
         LinkoraTheme {
-            AlertDialog(modifier = Modifier
-                .clip(RoundedCornerShape(20.dp))
-                .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { }) {
+            BasicAlertDialog(
+                onDismissRequest = { }, modifier = Modifier
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(AlertDialogDefaults.containerColor)
+            ) {
                 Row {
                     CircularProgressIndicator(
                         color = AlertDialogDefaults.textContentColor,

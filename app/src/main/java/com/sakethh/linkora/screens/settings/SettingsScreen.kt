@@ -35,8 +35,8 @@ import androidx.compose.material.icons.outlined.Update
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -136,7 +136,7 @@ fun SettingsScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val btmModalSheetState =
-        androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val privacySectionData = settingsScreenVM.privacySection(context)
     LinkoraTheme {
         Scaffold(topBar = {
@@ -149,7 +149,7 @@ fun SettingsScreen(navController: NavController) {
                         fontSize = 24.sp
                     )
                 })
-                Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
             }
         }) { it ->
             LazyColumn(modifier = Modifier.padding(it)) {
@@ -307,10 +307,10 @@ fun SettingsScreen(navController: NavController) {
                                 }
                             }
                         }
-                        Divider(
-                            color = MaterialTheme.colorScheme.outline,
+                        HorizontalDivider(
+                            modifier = Modifier.padding(20.dp),
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp)
+                            color = MaterialTheme.colorScheme.outline
                         )
                         SettingsAppInfoComponent(description = "The source code for Linkora is public and open-source; feel free to check out what Linkora does under the hood.",
                             icon = null,
@@ -334,10 +334,10 @@ fun SettingsScreen(navController: NavController) {
                                 }
                             })
 
-                        Divider(
-                            color = MaterialTheme.colorScheme.outline,
+                        HorizontalDivider(
+                            modifier = Modifier.padding(20.dp),
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp)
+                            color = MaterialTheme.colorScheme.outline
                         )
 
                         SettingsAppInfoComponent(description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about Linkora.",
@@ -463,9 +463,9 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Divider(
-                        thickness = 0.25.dp,
+                    HorizontalDivider(
                         modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }
@@ -491,9 +491,9 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 item {
-                    Divider(
-                        thickness = 0.25.dp,
+                    HorizontalDivider(
                         modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }
@@ -549,9 +549,9 @@ fun SettingsScreen(navController: NavController) {
                     }
                 }
                 item {
-                    Divider(
-                        thickness = 0.25.dp,
+                    HorizontalDivider(
                         modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
                         color = MaterialTheme.colorScheme.outline.copy(0.50f)
                     )
                 }

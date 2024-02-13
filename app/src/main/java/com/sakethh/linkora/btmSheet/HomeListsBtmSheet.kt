@@ -27,8 +27,8 @@ import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -334,9 +334,9 @@ private fun ListFolderUIComponent(
                 }
             }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }

@@ -24,12 +24,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.AddLink
 import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -243,7 +243,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                             navController.popBackStack()
                         }) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = null)
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = null
+                            )
                         }
                     } else {
                         IconButton(onClick = {
@@ -324,9 +327,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            specificCollectionsScreenVM.selectedLinksID.forEach {
-                                                updateVM.moveLinkFromImpTableToArchiveLinks(it)
-                                            }
+                                            specificCollectionsScreenVM.moveMultipleLinksFromImpLinksToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
                                                 false
@@ -356,9 +357,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            specificCollectionsScreenVM.selectedLinksID.forEach {
-                                                updateVM.moveLinkFromLinksTableToArchiveLinks(it)
-                                            }
+                                            specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
                                                 false
@@ -388,9 +387,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
                                         IconButton(onClick = {
-                                            specificCollectionsScreenVM.selectedLinksID.forEach {
-                                                updateVM.moveLinkFromLinksTableToArchiveLinks(it)
-                                            }
+                                            specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
                                                 false
@@ -421,9 +418,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }
                                         if (specificCollectionsScreenVM.selectedFoldersID.isEmpty()) {
                                             IconButton(onClick = {
-                                                specificCollectionsScreenVM.selectedLinksID.forEach {
-                                                    updateVM.moveLinkFromLinksTableToArchiveLinks(it)
-                                                }
+                                                specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                                 areElementsSelectable.value = false
                                                 specificCollectionsScreenVM.areAllLinksChecked.value =
                                                     false
@@ -453,7 +448,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             shouldSortingBottomSheetAppear.value = true
                                         }) {
                                             Icon(
-                                                imageVector = Icons.Outlined.Sort,
+                                                imageVector = Icons.AutoMirrored.Outlined.Sort,
                                                 contentDescription = null
                                             )
                                         }
@@ -469,7 +464,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             }
                                         }) {
                                             Icon(
-                                                imageVector = Icons.Outlined.Sort,
+                                                imageVector = Icons.AutoMirrored.Outlined.Sort,
                                                 contentDescription = null
                                             )
                                         }
@@ -482,7 +477,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             shouldSortingBottomSheetAppear.value = true
                                         }) {
                                             Icon(
-                                                imageVector = Icons.Outlined.Sort,
+                                                imageVector = Icons.AutoMirrored.Outlined.Sort,
                                                 contentDescription = null
                                             )
                                         }
@@ -498,7 +493,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             }
                                         }) {
                                             Icon(
-                                                imageVector = Icons.Outlined.Sort,
+                                                imageVector = Icons.AutoMirrored.Outlined.Sort,
                                                 contentDescription = null
                                             )
                                         }
@@ -1268,8 +1263,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBeVisible,
                 onDeleteClick = {
                     if (areElementsSelectable.value) {
-                        specificCollectionsScreenVM.onDeleteMultipleFolders(context = context)
-                        specificCollectionsScreenVM.onDeleteMultipleLinks(context)
+                        specificCollectionsScreenVM.onDeleteMultipleSelectedFolders()
+                        specificCollectionsScreenVM.onDeleteMultipleSelectedLinks()
                         areElementsSelectable.value = false
                         specificCollectionsScreenVM.areAllLinksChecked.value = false
                         specificCollectionsScreenVM.removeAllLinkSelections()

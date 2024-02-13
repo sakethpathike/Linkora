@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Archive
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
@@ -38,13 +39,12 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
 import androidx.compose.material3.Checkbox
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -172,12 +172,12 @@ fun CollectionsScreen(navController: NavController) {
                         shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
                         shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
                         shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
-                    isMainFabRotated = isMainFabRotated,
-                    rotationAnimation = rotationAnimation,
-                    inASpecificScreen = false
+                        isMainFabRotated = isMainFabRotated,
+                        rotationAnimation = rotationAnimation,
+                        inASpecificScreen = false
+                    )
                 )
-            )
-        },
+            },
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
@@ -190,9 +190,10 @@ fun CollectionsScreen(navController: NavController) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                             }
                             IconButton(onClick = {
-                                collectionsScreenVM.selectedFoldersID.forEach {
-                                    updateVM.archiveAFolderV10(it)
-                                }
+                                collectionsScreenVM.archiveMultipleFolders()
+                                areFoldersSelectable.value = false
+                                collectionsScreenVM.areAllFoldersChecked.value = false
+                                collectionsScreenVM.changeAllFoldersSelectedData()
                             }) {
                                 Icon(imageVector = Icons.Default.Archive, contentDescription = null)
                             }
@@ -257,7 +258,7 @@ fun CollectionsScreen(navController: NavController) {
                             )
                         }
                     })
-                    Divider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
                 }
             }) {
             LazyColumn(
@@ -331,9 +332,9 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
-                                Divider(
-                                    thickness = 0.5.dp,
+                                HorizontalDivider(
                                     modifier = Modifier.padding(25.dp),
+                                    thickness = 0.5.dp,
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                                 Card(modifier = Modifier
@@ -363,13 +364,15 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
-                                Divider(
-                                    thickness = 0.5.dp, modifier = Modifier.padding(
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(
                                         top = 20.dp,
                                         start = 20.dp,
                                         end = 20.dp,
                                         bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
-                                    ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                    ),
+                                    thickness = 0.5.dp,
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
                         }
@@ -407,7 +410,10 @@ fun CollectionsScreen(navController: NavController) {
                                     sortingBtmSheetState.expand()
                                 }
                             }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                    contentDescription = null
+                                )
                             }
                         } else if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -864,9 +870,9 @@ fun FolderIndividualComponent(
                     })
             }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }

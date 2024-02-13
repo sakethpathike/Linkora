@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
@@ -42,10 +41,19 @@ open class CollectionsScreenVM : ViewModel() {
         }
     }
 
-    fun onDeleteMultipleFolders() {
-        val deleteVM = DeleteVM()
-        selectedFoldersID.forEach {
-            deleteVM.onRegularFolderDeleteClick(it)
+    open fun onDeleteMultipleFolders() {
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.deleteDao().deleteAFolder(it)
+            }
+        }
+    }
+
+    fun archiveMultipleFolders() {
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it)
+            }
         }
     }
 

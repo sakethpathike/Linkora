@@ -26,12 +26,12 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -437,14 +437,14 @@ fun SearchScreen(navController: NavController) {
                                                     it.isLinkedWithArchivedFolder -> {
                                                         SearchScreenVM.selectedLinkType =
                                                             SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
-                                                        SearchScreenVM.selectedFolderID =
+                                                        selectedFolderID =
                                                             it.keyOfArchiveLinkedFolderV10 ?: 0
                                                     }
 
                                                     it.isLinkedWithFolders -> {
                                                         SearchScreenVM.selectedLinkType =
                                                             SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
-                                                        SearchScreenVM.selectedFolderID =
+                                                        selectedFolderID =
                                                             it.keyOfLinkedFolderV10 ?: 0
                                                     }
 
@@ -835,7 +835,8 @@ fun SearchScreen(navController: NavController) {
                                     shouldSortingBottomSheetAppear.value = true
                                 }) {
                                     Icon(
-                                        imageVector = Icons.Outlined.Sort, contentDescription = null
+                                        imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                        contentDescription = null
                                     )
                                 }
                             } else if (isSelectionModeEnabled.value) {

@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class SearchScreenVM() : SpecificCollectionsScreenVM() {
+class SearchScreenVM : SpecificCollectionsScreenVM() {
     enum class SelectedLinkType {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS
     }

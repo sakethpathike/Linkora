@@ -25,7 +25,7 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.ImageNotSupported
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -220,9 +220,9 @@ fun LinkUIComponent(
                 }
             }
         }
-        Divider(
-            thickness = 0.5.dp,
+        HorizontalDivider(
             modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+            thickness = 0.5.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }

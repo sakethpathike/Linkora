@@ -5,8 +5,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,10 +32,11 @@ fun PermissionDialog(
 ) {
     if (isVisible.value) {
         LinkoraTheme {
-            AlertDialog(modifier = Modifier
-                .clip(RoundedCornerShape(10.dp))
-                .background(AlertDialogDefaults.containerColor),
-                onDismissRequest = { isVisible.value = false }) {
+            BasicAlertDialog(
+                onDismissRequest = { isVisible.value = false }, modifier = Modifier
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(AlertDialogDefaults.containerColor)
+            ) {
                 Column {
                     Text(
                         text = "Permission Denied",

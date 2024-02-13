@@ -33,14 +33,14 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
@@ -148,16 +148,17 @@ fun AddNewLinkDialogBox(
             mutableLongStateOf(0)
         }
         LinkoraTheme {
-            AlertDialog(properties = DialogProperties(usePlatformDefaultWidth = false),
-                modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(AlertDialogDefaults.containerColor),
+            BasicAlertDialog(
                 onDismissRequest = {
                     if (!isDataExtractingForTheLink) {
                         shouldDialogBoxAppear.value = false
                     }
-                }) {
+                }, modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(AlertDialogDefaults.containerColor),
+                properties = DialogProperties(usePlatformDefaultWidth = false)
+            ) {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.surface
@@ -416,9 +417,9 @@ fun AddNewLinkDialogBox(
                                     .padding(start = 20.dp, end = 20.dp)
                             )
                         }
-                        Divider(
-                            thickness = 1.dp,
+                        HorizontalDivider(
                             modifier = Modifier.padding(20.dp),
+                            thickness = 1.dp,
                             color = MaterialTheme.colorScheme.outline.copy(0.25f)
                         )
                     }
@@ -474,7 +475,7 @@ fun AddNewLinkDialogBox(
                                 }
                             }
                             item {
-                                Divider(
+                                HorizontalDivider(
                                     modifier = Modifier.padding(
                                         start = 20.dp, end = 65.dp
                                     ), color = MaterialTheme.colorScheme.outline.copy(0.25f)

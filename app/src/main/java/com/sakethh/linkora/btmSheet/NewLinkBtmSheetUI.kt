@@ -36,8 +36,8 @@ import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -146,7 +146,7 @@ fun NewLinkBtmSheet(
                         }
                     }.invokeOnCompletion {
                         if (inIntentActivity.value) {
-                            activity?.finishAndRemoveTask()
+                            activity.finishAndRemoveTask()
                         }
                     }
                 }
@@ -188,9 +188,9 @@ fun NewLinkBtmSheet(
                                 lineHeight = 24.sp,
                                 overflow = TextOverflow.Ellipsis
                             )
-                            Divider(
-                                thickness = 0.5.dp,
+                            HorizontalDivider(
                                 modifier = Modifier.padding(15.dp),
+                                thickness = 0.5.dp,
                                 color = MaterialTheme.colorScheme.outline.copy(0.25f)
                             )
                             Row(
@@ -358,7 +358,7 @@ fun NewLinkBtmSheet(
                                         Box(
                                             contentAlignment = Alignment.CenterStart
                                         ) {
-                                            androidx.compose.material3.Icon(
+                                            Icon(
                                                 imageVector = Icons.Outlined.Info,
                                                 contentDescription = null,
                                                 modifier = Modifier
@@ -382,9 +382,9 @@ fun NewLinkBtmSheet(
                         }
                         if (newLinkBtmSheetUIParam.screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
                             item {
-                                Divider(
-                                    thickness = 1.dp,
+                                HorizontalDivider(
                                     modifier = Modifier.padding(20.dp),
+                                    thickness = 1.dp,
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                                 OutlinedButton(border = BorderStroke(
@@ -458,10 +458,11 @@ fun NewLinkBtmSheet(
                                 }
                             }
                             item {
-                                Divider(
-                                    thickness = 1.dp, modifier = Modifier.padding(
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(
                                         start = 25.dp, top = 20.dp, end = 25.dp
-                                    )
+                                    ),
+                                    thickness = 1.dp
                                 )
                             }
                             item {
@@ -522,7 +523,7 @@ fun NewLinkBtmSheet(
                     }
                 }.invokeOnCompletion {
                     if (inIntentActivity.value) {
-                        activity?.finishAndRemoveTask()
+                        activity.finishAndRemoveTask()
                     }
                 }
             }
@@ -603,9 +604,9 @@ fun SelectableFolderUIComponent(
                 }
             }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }

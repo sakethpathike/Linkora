@@ -121,6 +121,26 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
+    fun moveMultipleLinksFromImpLinksToArchive() {
+        viewModelScope.launch {
+            selectedLinksID.forEach {
+                LocalDataBase.localDB.updateDao()
+                    .copyLinkFromImpTableToArchiveLinks(it)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+            }
+        }
+    }
+
+    fun moveMultipleLinksFromLinksTableToArchive() {
+        viewModelScope.launch {
+            selectedLinksID.forEach {
+                LocalDataBase.localDB.updateDao()
+                    .copyLinkFromLinksTableToArchiveLinks(it)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+            }
+        }
+    }
+
     fun updateFolderData(folderID: Long) {
         viewModelScope.launch {
             currentClickedFolderData.value =
@@ -604,7 +624,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
@@ -622,7 +642,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
@@ -643,7 +663,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    kotlinx.coroutines.awaitAll(async {
+                    awaitAll(async {
                         updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
@@ -665,33 +685,33 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
-    fun onDeleteMultipleFolders(context: Context) {
+    fun onDeleteMultipleSelectedFolders() {
         selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
-        selectedFoldersID.forEach {
-            onDeleteClick(
-                shouldShowToastOnCompletion = false,
-                folderID = it,
-                selectedWebURL = "",
-                context = context,
-                onTaskCompleted = {},
-                folderName = selectedFolderData.value.folderName,
-                linkID = it,
-            )
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.deleteDao().deleteAFolder(it)
+            }
         }
     }
 
-    fun onDeleteMultipleLinks(context: Context) {
+    fun onDeleteMultipleSelectedLinks() {
         selectedBtmSheetType.value = OptionsBtmSheetType.LINK
-        selectedLinksID.forEach {
-            onDeleteClick(
-                shouldShowToastOnCompletion = false,
-                folderID = it,
-                selectedWebURL = "",
-                context = context,
-                onTaskCompleted = {},
-                folderName = selectedFolderData.value.folderName,
-                linkID = it,
-            )
+        when (screenType.value) {
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                viewModelScope.launch {
+                    selectedLinksID.forEach {
+                        LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                    }
+                }
+            }
+
+            else -> {
+                viewModelScope.launch {
+                    selectedLinksID.forEach {
+                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                    }
+                }
+            }
         }
     }
 

@@ -33,6 +33,7 @@ data class ArchiveScreenModal(
 enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
+
 class ArchiveScreenVM(
     private val deleteVM: DeleteVM = DeleteVM()
 ) : ViewModel() {
@@ -86,8 +87,10 @@ class ArchiveScreenVM(
 
 
     fun unArchiveMultipleFolders() {
-        selectedFoldersID.forEach {
-            onUnArchiveClickV10(it)
+        viewModelScope.launch {
+            selectedFoldersID.forEach {
+                LocalDataBase.localDB.updateDao().moveArchivedFolderToRegularFolderV10(it)
+            }
         }
     }
 
@@ -112,8 +115,26 @@ class ArchiveScreenVM(
     }
 
     fun unArchiveMultipleSelectedLinks() {
-        selectedLinksData.forEach {
-            onUnArchiveLinkClick(it)
+        viewModelScope.launch {
+            selectedLinksData.forEach { archivedLink ->
+                LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+                    LinksTable(
+                        title = archivedLink.title,
+                        webURL = archivedLink.webURL,
+                        baseURL = archivedLink.baseURL,
+                        imgURL = archivedLink.imgURL,
+                        infoForSaving = archivedLink.infoForSaving,
+                        isLinkedWithSavedLinks = true,
+                        isLinkedWithFolders = false,
+                        isLinkedWithImpFolder = false,
+                        keyOfImpLinkedFolder = "",
+                        isLinkedWithArchivedFolder = false
+                    )
+                )
+                LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
+            }
+        }.invokeOnCompletion {
+            selectedLinksData.clear()
         }
     }
 
