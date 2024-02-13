@@ -509,6 +509,12 @@ fun ChildHomeScreen(
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
+        } else if (homeScreenVM.isSelectionModeEnabled.value) {
+            homeScreenVM.isSelectionModeEnabled.value = false
+            homeScreenVM.areAllLinksChecked.value = false
+            homeScreenVM.areAllFoldersChecked.value = false
+            homeScreenVM.selectedLinksData.clear()
+            homeScreenVM.selectedFoldersData.clear()
         }
     }
 }

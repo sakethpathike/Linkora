@@ -24,11 +24,6 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-
-data class HistoryLinkComponent(
-    val historyLinksData: List<RecentlyVisited>, val isLinkSelected: List<MutableState<Boolean>>
-)
-
 class SearchScreenVM() : SpecificCollectionsScreenVM() {
     enum class SelectedLinkType {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS
@@ -42,7 +37,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
         var selectedLinkID: Long = 0
     }
 
-    private val _historyLinksData = MutableStateFlow(HistoryLinkComponent(emptyList(), emptyList()))
+    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
     val historyLinksData = _historyLinksData.asStateFlow()
 
     private val _linksTableQueriedData = MutableStateFlow(
@@ -220,12 +215,8 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 if (query.isNotEmpty()) {
                     val data = LocalDataBase.localDB.linksSearching()
                         .getFromHistoryLinks(query = query)
-                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                    List(data.size) { index ->
-                        mutableBooleanList.add(index, mutableStateOf(false))
-                    }
                     _historyLinksData.emit(
-                        HistoryLinkComponent(data, mutableBooleanList)
+                        data
                     )
                 }
             })
@@ -246,11 +237,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByAToZ().collect {
-                        val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                        List(it.size) { index ->
-                            mutableBooleanList.add(index, mutableStateOf(false))
-                        }
-                        _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
+                        _historyLinksData.emit(it)
                     }
                 }
             }
@@ -258,11 +245,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByZToA().collect {
-                        val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                        List(it.size) { index ->
-                            mutableBooleanList.add(index, mutableStateOf(false))
-                        }
-                        _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
+                        _historyLinksData.emit(it)
                     }
                 }
             }
@@ -271,11 +254,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByLatestToOldest()
                         .collect {
-                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                            List(it.size) { index ->
-                                mutableBooleanList.add(index, mutableStateOf(false))
-                            }
-                            _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
+                            _historyLinksData.emit(it)
                         }
                 }
             }
@@ -284,11 +263,7 @@ class SearchScreenVM() : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.historyLinksSorting().sortByOldestToLatest()
                         .collect {
-                            val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                            List(it.size) { index ->
-                                mutableBooleanList.add(index, mutableStateOf(false))
-                            }
-                            _historyLinksData.emit(HistoryLinkComponent(it, mutableBooleanList))
+                            _historyLinksData.emit(it)
                         }
                 }
             }

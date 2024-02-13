@@ -204,6 +204,9 @@ fun ParentHomeScreen(navController: NavController) {
                         IconButton(onClick = {
                             homeScreenVM.archiveSelectedFolders()
                             homeScreenVM.archiveSelectedLinks()
+                            homeScreenVM.selectedFoldersData.clear()
+                            homeScreenVM.selectedLinksData.clear()
+                            homeScreenVM.isSelectionModeEnabled.value = false
                         }) {
                             Icon(imageVector = Icons.Outlined.Archive, contentDescription = null)
                         }
@@ -479,6 +482,9 @@ fun ParentHomeScreen(navController: NavController) {
                 onDeleteClick = {
                     homeScreenVM.deleteSelectedFolders()
                     homeScreenVM.deleteSelectedLinks()
+                    homeScreenVM.isSelectionModeEnabled.value = false
+                    homeScreenVM.selectedFoldersData.clear()
+                    homeScreenVM.selectedLinksData.clear()
                 }
             )
         )
@@ -501,12 +507,6 @@ fun ParentHomeScreen(navController: NavController) {
                     rotationAnimation.snapTo(0f)
                 }
             }
-        } else if (homeScreenVM.isSelectionModeEnabled.value) {
-            homeScreenVM.isSelectionModeEnabled.value = false
-            homeScreenVM.areAllLinksChecked.value = false
-            homeScreenVM.areAllFoldersChecked.value = false
-            homeScreenVM.selectedLinksData.clear()
-            homeScreenVM.selectedFoldersData.clear()
         } else {
             activity?.finish()
         }

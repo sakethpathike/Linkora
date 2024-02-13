@@ -635,7 +635,7 @@ fun SearchScreen(navController: NavController) {
                                             })
                                     )
                                 }
-                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) {
+                                if (recentlyVisitedLinksData.isNotEmpty()) {
                                     item {
                                         Text(
                                             text = "From History",
@@ -646,7 +646,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                 }
-                                itemsIndexed(items = recentlyVisitedLinksData.historyLinksData,
+                                itemsIndexed(items = recentlyVisitedLinksData,
                                     key = { index, archivedLinks ->
                                         archivedLinks.baseURL + archivedLinks.id.toString() + index
                                     }) { index, it ->
@@ -657,12 +657,14 @@ fun SearchScreen(navController: NavController) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedHistoryLinksData.add(it)
-                                                    recentlyVisitedLinksData.isLinkSelected[index].value =
-                                                        true
                                                 }
                                             },
                                             isSelectionModeEnabled = isSelectionModeEnabled,
-                                            isItemSelected = recentlyVisitedLinksData.isLinkSelected[index],
+                                            isItemSelected = mutableStateOf(
+                                                searchScreenVM.selectedHistoryLinksData.contains(
+                                                    it
+                                                )
+                                            ),
                                             title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
@@ -694,10 +696,10 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             onLinkClick = {
                                                 if (isSelectionModeEnabled.value) {
-                                                    recentlyVisitedLinksData.isLinkSelected[index].value =
-                                                        !recentlyVisitedLinksData.isLinkSelected[index].value
-
-                                                    if (recentlyVisitedLinksData.isLinkSelected[index].value) {
+                                                    if (!searchScreenVM.selectedHistoryLinksData.contains(
+                                                            it
+                                                        )
+                                                    ) {
                                                         searchScreenVM.selectedHistoryLinksData.add(
                                                             it
                                                         )
@@ -757,7 +759,7 @@ fun SearchScreen(navController: NavController) {
                     Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
                         Row(modifier = Modifier
                             .clickable {
-                                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
+                                if (recentlyVisitedLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
                                     shouldSortingBottomSheetAppear.value = true
                                 }
                             }
@@ -824,11 +826,11 @@ fun SearchScreen(navController: NavController) {
                                     fontSize = 20.sp,
                                     modifier = Modifier.padding(
                                         start = 15.dp,
-                                        top = if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) 0.dp else 11.dp
+                                        top = if (recentlyVisitedLinksData.isNotEmpty()) 0.dp else 11.dp
                                     )
                                 )
                             }
-                            if (recentlyVisitedLinksData.historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
+                            if (recentlyVisitedLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
                                 IconButton(onClick = {
                                     shouldSortingBottomSheetAppear.value = true
                                 }) {
@@ -860,8 +862,8 @@ fun SearchScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(5.dp))
                     }
                 }
-                if (recentlyVisitedLinksData.historyLinksData.isNotEmpty()) {
-                    itemsIndexed(items = recentlyVisitedLinksData.historyLinksData,
+                if (recentlyVisitedLinksData.isNotEmpty()) {
+                    itemsIndexed(items = recentlyVisitedLinksData,
                         key = { index, recentlyVisited ->
                             recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
                         }) { index, it ->
@@ -872,8 +874,6 @@ fun SearchScreen(navController: NavController) {
                                         isSelectionModeEnabled.value =
                                             true
                                         searchScreenVM.selectedHistoryLinksData.add(it)
-                                        recentlyVisitedLinksData.isLinkSelected[index].value =
-                                            true
                                     }
                                 },
                                 isSelectionModeEnabled = isSelectionModeEnabled,
@@ -918,10 +918,7 @@ fun SearchScreen(navController: NavController) {
                                             )
                                         }
                                     } else {
-                                        recentlyVisitedLinksData.isLinkSelected[index].value =
-                                            !recentlyVisitedLinksData.isLinkSelected[index].value
-
-                                        if (recentlyVisitedLinksData.isLinkSelected[index].value) {
+                                        if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
                                             searchScreenVM.selectedHistoryLinksData.add(it)
                                         } else {
                                             searchScreenVM.selectedHistoryLinksData.remove(it)
@@ -944,7 +941,11 @@ fun SearchScreen(navController: NavController) {
                                         forceOpenInExternalBrowser = true
                                     )
                                 },
-                                isItemSelected = recentlyVisitedLinksData.isLinkSelected[index]
+                                isItemSelected = mutableStateOf(
+                                    searchScreenVM.selectedHistoryLinksData.contains(
+                                        it
+                                    )
+                                )
                             )
                         )
                     }
@@ -1049,6 +1050,7 @@ fun SearchScreen(navController: NavController) {
                         searchScreenVM.selectedLinksTableData.clear()
                         searchScreenVM.selectedArchiveLinksTableData.clear()
                         searchScreenVM.selectedHistoryLinksData.clear()
+                        isSelectionModeEnabled.value = false
                     }
                 })
         )
