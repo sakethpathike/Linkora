@@ -198,7 +198,10 @@ fun SearchScreen(navController: NavController) {
                                         false
                                     searchScreenVM.areAllFoldersChecked.value =
                                         false
-                                    searchScreenVM.removeAllLinksSelection()
+                                    searchScreenVM.selectedImportantLinksData.clear()
+                                    searchScreenVM.selectedLinksTableData.clear()
+                                    searchScreenVM.selectedArchiveLinksTableData.clear()
+                                    searchScreenVM.selectedHistoryLinksData.clear()
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.Cancel,
@@ -278,14 +281,14 @@ fun SearchScreen(navController: NavController) {
                                 }
                             }
 
-                            searchTextField.isNotEmpty() && (linksTableData.linksTableList.isEmpty() && impLinksData.importantLinksList.isEmpty() && archiveLinksTableData.archiveLinksTable.isEmpty()) -> {
+                            searchTextField.isNotEmpty() && (linksTableData.isEmpty() && impLinksData.isEmpty() && archiveLinksTableData.isEmpty()) -> {
                                 item {
                                     DataEmptyScreen(text = "No Matching Links Found. Try a Different Search.")
                                 }
                             }
 
                             else -> {
-                                if (impLinksData.importantLinksList.isNotEmpty()) {
+                                if (impLinksData.isNotEmpty()) {
                                     item {
                                         Text(
                                             text = "From Important Links",
@@ -296,7 +299,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                 }
-                                itemsIndexed(items = impLinksData.importantLinksList,
+                                itemsIndexed(items = impLinksData,
                                     key = { index, importantLinks ->
                                         importantLinks.webURL + importantLinks.id.toString() + index
                                     }) { index, it ->
@@ -307,8 +310,6 @@ fun SearchScreen(navController: NavController) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedImportantLinksData.add(it)
-                                                    searchScreenVM.impLinksQueriedData.value.isCheckBoxSelected[index].value =
-                                                        true
                                                 }
                                             },
                                             isSelectionModeEnabled = isSelectionModeEnabled,
@@ -343,10 +344,10 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             onLinkClick = {
                                                 if (isSelectionModeEnabled.value) {
-                                                    impLinksData.isCheckBoxSelected[index].value =
-                                                        !impLinksData.isCheckBoxSelected[index].value
-
-                                                    if (impLinksData.isCheckBoxSelected[index].value) {
+                                                    if (!searchScreenVM.selectedImportantLinksData.contains(
+                                                            it
+                                                        )
+                                                    ) {
                                                         searchScreenVM.selectedImportantLinksData.add(
                                                             it
                                                         )
@@ -388,11 +389,15 @@ fun SearchScreen(navController: NavController) {
                                                     forceOpenInExternalBrowser = true
                                                 )
                                             },
-                                            isItemSelected = impLinksData.isCheckBoxSelected[index]
+                                            isItemSelected = mutableStateOf(
+                                                searchScreenVM.selectedImportantLinksData.contains(
+                                                    it
+                                                )
+                                            )
                                         )
                                     )
                                 }
-                                if (linksTableData.linksTableList.isNotEmpty()) {
+                                if (linksTableData.isNotEmpty()) {
                                     item {
                                         Text(
                                             text = "From Folders and Saved Links",
@@ -403,7 +408,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                 }
-                                itemsIndexed(items = linksTableData.linksTableList,
+                                itemsIndexed(items = linksTableData,
                                     key = { index, linksTable ->
                                         linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL + +index
                                     }) { index, it ->
@@ -414,12 +419,14 @@ fun SearchScreen(navController: NavController) {
                                                     isSelectionModeEnabled.value =
                                                         true
                                                     searchScreenVM.selectedLinksTableData.add(it)
-                                                    linksTableData.isCheckBoxSelected[index].value =
-                                                        true
                                                 }
                                             },
                                             isSelectionModeEnabled = isSelectionModeEnabled,
-                                            isItemSelected = linksTableData.isCheckBoxSelected[index],
+                                            isItemSelected = mutableStateOf(
+                                                searchScreenVM.selectedLinksTableData.contains(
+                                                    it
+                                                )
+                                            ),
                                             title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
@@ -469,10 +476,10 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             onLinkClick = {
                                                 if (isSelectionModeEnabled.value) {
-                                                    linksTableData.isCheckBoxSelected[index].value =
-                                                        !linksTableData.isCheckBoxSelected[index].value
-
-                                                    if (linksTableData.isCheckBoxSelected[index].value) {
+                                                    if (!searchScreenVM.selectedLinksTableData.contains(
+                                                            it
+                                                        )
+                                                    ) {
                                                         searchScreenVM.selectedLinksTableData.add(
                                                             it
                                                         )
@@ -517,7 +524,7 @@ fun SearchScreen(navController: NavController) {
                                     )
                                 }
                                 item {
-                                    if (archiveLinksTableData.archiveLinksTable.isNotEmpty()) {
+                                    if (archiveLinksTableData.isNotEmpty()) {
                                         Text(
                                             text = "From Archived Links",
                                             style = MaterialTheme.typography.titleMedium,
@@ -527,7 +534,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                 }
-                                itemsIndexed(items = archiveLinksTableData.archiveLinksTable,
+                                itemsIndexed(items = archiveLinksTableData,
                                     key = { index, archivedLinks ->
                                         archivedLinks.id.toString() + archivedLinks.baseURL
                                         +index
@@ -541,12 +548,14 @@ fun SearchScreen(navController: NavController) {
                                                     searchScreenVM.selectedArchiveLinksTableData.add(
                                                         it
                                                     )
-                                                    archiveLinksTableData.isCheckBoxSelected[index].value =
-                                                        true
                                                 }
                                             },
                                             isSelectionModeEnabled = isSelectionModeEnabled,
-                                            isItemSelected = archiveLinksTableData.isCheckBoxSelected[index],
+                                            isItemSelected = mutableStateOf(
+                                                searchScreenVM.selectedArchiveLinksTableData.contains(
+                                                    it
+                                                )
+                                            ),
                                             title = it.title,
                                             webBaseURL = it.webURL,
                                             imgURL = it.imgURL,
@@ -578,10 +587,11 @@ fun SearchScreen(navController: NavController) {
                                             },
                                             onLinkClick = {
                                                 if (isSelectionModeEnabled.value) {
-                                                    archiveLinksTableData.isCheckBoxSelected[index].value =
-                                                        !archiveLinksTableData.isCheckBoxSelected[index].value
 
-                                                    if (archiveLinksTableData.isCheckBoxSelected[index].value) {
+                                                    if (!searchScreenVM.selectedArchiveLinksTableData.contains(
+                                                            it
+                                                        )
+                                                    ) {
                                                         searchScreenVM.selectedArchiveLinksTableData.add(
                                                             it
                                                         )
@@ -764,7 +774,10 @@ fun SearchScreen(navController: NavController) {
                                             false
                                         searchScreenVM.areAllFoldersChecked.value =
                                             false
-                                        searchScreenVM.removeAllLinksSelection()
+                                        searchScreenVM.selectedImportantLinksData.clear()
+                                        searchScreenVM.selectedLinksTableData.clear()
+                                        searchScreenVM.selectedArchiveLinksTableData.clear()
+                                        searchScreenVM.selectedHistoryLinksData.clear()
                                     }) {
                                         Icon(
                                             imageVector = Icons.Default.Cancel,
@@ -1032,6 +1045,10 @@ fun SearchScreen(navController: NavController) {
                         searchScreenVM.deleteSelectedArchivedLinks()
                         searchScreenVM.deleteSelectedImpLinksData()
                         searchScreenVM.deleteSelectedLinksTableData()
+                        searchScreenVM.selectedImportantLinksData.clear()
+                        searchScreenVM.selectedLinksTableData.clear()
+                        searchScreenVM.selectedArchiveLinksTableData.clear()
+                        searchScreenVM.selectedHistoryLinksData.clear()
                     }
                 })
         )
@@ -1047,7 +1064,10 @@ fun SearchScreen(navController: NavController) {
                 isSelectionModeEnabled.value = false
                 searchScreenVM.areAllLinksChecked.value = false
                 searchScreenVM.areAllFoldersChecked.value = false
-                searchScreenVM.removeAllLinksSelection()
+                searchScreenVM.selectedImportantLinksData.clear()
+                searchScreenVM.selectedLinksTableData.clear()
+                searchScreenVM.selectedArchiveLinksTableData.clear()
+                searchScreenVM.selectedHistoryLinksData.clear()
             } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                     popUpTo(0)

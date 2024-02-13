@@ -14,11 +14,11 @@ import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -36,50 +36,34 @@ data class MutableImportantLinks(
     var id: Long = 0,
 )
 
-data class LinkTableComponent(
-    val isCheckBoxSelected: List<MutableState<Boolean>>,
-    val linksTableList: List<LinksTable>
-)
-
-data class ImpLinkTableComponent(
-    val isCheckBoxSelected: List<MutableState<Boolean>>,
-    val importantLinksList: List<ImportantLinks>
-)
-
 open class SpecificCollectionsScreenVM(
     val updateVM: UpdateVM = UpdateVM(), private val deleteVM: DeleteVM = DeleteVM()
 ) : CollectionsScreenVM() {
 
 
     private val _folderLinksData = MutableStateFlow(
-        LinkTableComponent(
-            emptyList(), emptyList()
-        )
+        emptyList<LinksTable>()
     )
     val folderLinksData = _folderLinksData.asStateFlow()
 
-    private val _childFoldersData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
+    private val _childFoldersData = MutableStateFlow(emptyList<FoldersTable>())
     val childFoldersData = _childFoldersData.asStateFlow()
 
     private val _savedLinksData = MutableStateFlow(
-        LinkTableComponent(
-            emptyList(), emptyList()
-        )
+        emptyList<LinksTable>()
     )
     val savedLinksTable = _savedLinksData.asStateFlow()
 
     private val _impLinksData = MutableStateFlow(
-        ImpLinkTableComponent(
-            emptyList(), emptyList()
-        )
+        emptyList<ImportantLinks>()
     )
     val impLinksTable = _impLinksData.asStateFlow()
 
     private val _archiveFolderLinksData =
-        MutableStateFlow(LinkTableComponent(emptyList(), emptyList()))
+        MutableStateFlow(emptyList<LinksTable>())
     val archiveFoldersLinksData = _archiveFolderLinksData.asStateFlow()
 
-    private val _archiveSubFolderData = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
+    private val _archiveSubFolderData = MutableStateFlow(emptyList<FoldersTable>())
     val archiveSubFolderData = _archiveSubFolderData.asStateFlow()
 
 
@@ -88,31 +72,19 @@ open class SpecificCollectionsScreenVM(
     fun removeAllLinkSelections() {
         when (screenType.value) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                List(savedLinksTable.value.linksTableList.size) {
-                    savedLinksTable.value.isCheckBoxSelected[it].value = false
-                }
-                selectedLinksID.removeAll(savedLinksTable.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(savedLinksTable.value.map { it.id })
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                List(folderLinksData.value.linksTableList.size) {
-                    folderLinksData.value.isCheckBoxSelected[it].value = false
-                }
-                selectedLinksID.removeAll(folderLinksData.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(folderLinksData.value.map { it.id })
             }
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                List(impLinksTable.value.importantLinksList.size) {
-                    impLinksTable.value.isCheckBoxSelected[it].value = false
-                }
-                selectedLinksID.removeAll(impLinksTable.value.importantLinksList.map { it.id })
+                selectedLinksID.removeAll(impLinksTable.value.map { it.id })
             }
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                List(archiveFoldersLinksData.value.linksTableList.size) {
-                    archiveFoldersLinksData.value.isCheckBoxSelected[it].value = false
-                }
-                selectedLinksID.removeAll(archiveFoldersLinksData.value.linksTableList.map { it.id })
+                selectedLinksID.removeAll(archiveFoldersLinksData.value.map { it.id })
             }
 
             else -> {}
@@ -143,9 +115,7 @@ open class SpecificCollectionsScreenVM(
                     mutableBooleanList.add(index, mutableStateOf(false))
                 }
                 _childFoldersData.emit(
-                    FolderComponent(
-                        isCheckBoxSelected = mutableBooleanList, foldersTableList = it
-                    )
+                    it
                 )
             }
         }
@@ -188,9 +158,7 @@ open class SpecificCollectionsScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _savedLinksData.emit(
-                                    LinkTableComponent(
-                                        isCheckBoxSelected = mutableBooleanList, linksTableList = it
-                                    )
+                                    it
                                 )
                             }
                         }
@@ -204,9 +172,7 @@ open class SpecificCollectionsScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _savedLinksData.emit(
-                                    LinkTableComponent(
-                                        isCheckBoxSelected = mutableBooleanList, linksTableList = it
-                                    )
+                                    it
                                 )
                             }
                         }
@@ -221,10 +187,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _savedLinksData.emit(
-                                        LinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            linksTableList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -239,10 +202,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _savedLinksData.emit(
-                                        LinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            linksTableList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -261,10 +221,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _impLinksData.emit(
-                                        ImpLinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            importantLinksList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -279,10 +236,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _impLinksData.emit(
-                                        ImpLinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            importantLinksList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -297,10 +251,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _impLinksData.emit(
-                                        ImpLinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            importantLinksList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -315,10 +266,7 @@ open class SpecificCollectionsScreenVM(
                                         mutableBooleanList.add(index, mutableStateOf(false))
                                     }
                                     _impLinksData.emit(
-                                        ImpLinkTableComponent(
-                                            isCheckBoxSelected = mutableBooleanList,
-                                            importantLinksList = it
-                                        )
+                                        it
                                     )
                                 }
                         }
@@ -340,10 +288,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveFolderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -358,10 +303,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveSubFolderData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -381,10 +323,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveFolderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -399,10 +338,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveSubFolderData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -424,10 +360,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveFolderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -442,10 +375,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveSubFolderData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -466,10 +396,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveFolderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -484,10 +411,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _archiveSubFolderData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -511,10 +435,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _folderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -529,10 +450,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _childFoldersData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -552,10 +470,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _folderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -570,10 +485,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _childFoldersData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -594,10 +506,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _folderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -612,10 +521,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _childFoldersData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -636,10 +542,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _folderLinksData.emit(
-                                                LinkTableComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    linksTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }
@@ -654,10 +557,7 @@ open class SpecificCollectionsScreenVM(
                                                 mutableBooleanList.add(index, mutableStateOf(false))
                                             }
                                             _childFoldersData.emit(
-                                                FolderComponent(
-                                                    isCheckBoxSelected = mutableBooleanList,
-                                                    foldersTableList = it
-                                                )
+                                                it
                                             )
                                         }
                                 }

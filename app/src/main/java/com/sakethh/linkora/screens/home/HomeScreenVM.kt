@@ -30,14 +30,6 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     val selectedLinksData = mutableStateListOf<LinksTable>()
     val selectedFoldersData = mutableStateListOf<FoldersTable>()
 
-    fun removeAllLinksSelection() {
-
-    }
-
-    fun removeAllFoldersSelection() {
-
-    }
-
     fun archiveSelectedLinks() {
         viewModelScope.launch {
             selectedLinksData.forEach {

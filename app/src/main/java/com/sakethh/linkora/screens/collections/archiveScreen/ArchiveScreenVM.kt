@@ -13,9 +13,9 @@ import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.screens.collections.FolderComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -33,11 +33,6 @@ data class ArchiveScreenModal(
 enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
-
-data class ArchiveLinkTableComponent(
-    val isCheckBoxSelected: List<MutableState<Boolean>>, val archiveLinksTable: List<ArchivedLinks>
-)
-
 class ArchiveScreenVM(
     private val deleteVM: DeleteVM = DeleteVM()
 ) : ViewModel() {
@@ -65,17 +60,14 @@ class ArchiveScreenVM(
             })
     )
     private val _archiveLinksData = MutableStateFlow(
-        ArchiveLinkTableComponent(
-            emptyList(),
-            emptyList()
-        )
+        emptyList<ArchivedLinks>()
     )
     val archiveLinksData = _archiveLinksData.asStateFlow()
 
     private val _archiveFoldersDataV9 = MutableStateFlow(emptyList<ArchivedFolders>())
     val archiveFoldersDataV9 = _archiveFoldersDataV9.asStateFlow()
 
-    private val _archiveFoldersDataV10 = MutableStateFlow(FolderComponent(emptyList(), emptyList()))
+    private val _archiveFoldersDataV10 = MutableStateFlow(emptyList<FoldersTable>())
     val archiveFoldersDataV10 = _archiveFoldersDataV10.asStateFlow()
 
     init {
@@ -92,19 +84,6 @@ class ArchiveScreenVM(
     val selectedFoldersID = mutableStateListOf<Long>()
     val areAllFoldersChecked = mutableStateOf(false)
 
-    fun removeAllLinksSelection() {
-        selectedLinksData.removeAll(archiveLinksData.value.archiveLinksTable.map { it })
-        archiveLinksData.value.isCheckBoxSelected.forEach {
-            it.value = false
-        }
-    }
-
-    fun changeAllFoldersSelectedData() {
-        selectedFoldersID.removeAll(archiveFoldersDataV10.value.foldersTableList.map { it.id })
-        archiveFoldersDataV10.value.isCheckBoxSelected.forEach {
-            it.value = false
-        }
-    }
 
     fun unArchiveMultipleFolders() {
         selectedFoldersID.forEach {
@@ -118,7 +97,7 @@ class ArchiveScreenVM(
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
-            removeAllLinksSelection()
+            selectedLinksData.clear()
         }
     }
 
@@ -128,7 +107,7 @@ class ArchiveScreenVM(
                 LocalDataBase.localDB.deleteDao().deleteAFolder(it)
             }
         }.invokeOnCompletion {
-            changeAllFoldersSelectedData()
+            selectedFoldersID.clear()
         }
     }
 
@@ -156,7 +135,7 @@ class ArchiveScreenVM(
             )
             LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
         }.invokeOnCompletion {
-            removeAllLinksSelection()
+            selectedLinksData.clear()
         }
     }
 
@@ -217,10 +196,7 @@ class ArchiveScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _archiveLinksData.emit(
-                                    ArchiveLinkTableComponent(
-                                        mutableBooleanList,
-                                        it
-                                    )
+                                    it
                                 )
                             }
                     }, async {
@@ -230,7 +206,7 @@ class ArchiveScreenVM(
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
-                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -246,10 +222,7 @@ class ArchiveScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _archiveLinksData.emit(
-                                    ArchiveLinkTableComponent(
-                                        mutableBooleanList,
-                                        it
-                                    )
+                                    it
                                 )
                             }
                     }, async {
@@ -259,7 +232,7 @@ class ArchiveScreenVM(
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
-                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -275,10 +248,7 @@ class ArchiveScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _archiveLinksData.emit(
-                                    ArchiveLinkTableComponent(
-                                        mutableBooleanList,
-                                        it
-                                    )
+                                    it
                                 )
                             }
                     }, async {
@@ -288,7 +258,7 @@ class ArchiveScreenVM(
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
-                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -304,10 +274,7 @@ class ArchiveScreenVM(
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
                                 _archiveLinksData.emit(
-                                    ArchiveLinkTableComponent(
-                                        mutableBooleanList,
-                                        it
-                                    )
+                                    it
                                 )
                             }
                     }, async {
@@ -317,7 +284,7 @@ class ArchiveScreenVM(
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
                                 }
-                                _archiveFoldersDataV10.emit(FolderComponent(mutableBooleanList, it))
+                                _archiveFoldersDataV10.emit(it)
                             }
                     })
                 }
@@ -386,7 +353,7 @@ class ArchiveScreenVM(
             LocalDataBase.localDB.updateDao()
                 .moveArchivedFolderToRegularFolderV10(folderID)
         }.invokeOnCompletion {
-            changeAllFoldersSelectedData()
+            selectedFoldersID.clear()
         }
     }
 }

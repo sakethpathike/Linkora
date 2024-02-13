@@ -82,9 +82,9 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (archiveScreenType == ArchiveScreenType.LINKS) {
-                if (archiveLinksData.archiveLinksTable.isNotEmpty()) {
+                if (archiveLinksData.isNotEmpty()) {
                     itemsIndexed(
-                        items = archiveLinksData.archiveLinksTable,
+                        items = archiveLinksData,
                         key = { _, archivedLinks ->
                             archivedLinks.id.toString() + archivedLinks.baseURL
                         }) { index, it ->
@@ -95,8 +95,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                         archiveScreenVM.isSelectionModeEnabled.value =
                                             true
                                         archiveScreenVM.selectedLinksData.add(it)
-                                        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
-                                            true
                                     }
                                 },
                                 isSelectionModeEnabled = archiveScreenVM.isSelectionModeEnabled,
@@ -115,10 +113,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 },
                                 onLinkClick = {
                                     if (archiveScreenVM.isSelectionModeEnabled.value) {
-                                        archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value =
-                                            !archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value
-
-                                        if (archiveScreenVM.archiveLinksData.value.isCheckBoxSelected[index].value) {
+                                        if (!archiveScreenVM.selectedLinksData.contains(it)) {
                                             archiveScreenVM.selectedLinksData.add(
                                                 it
                                             )
@@ -158,7 +153,11 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                         )
                                     }
                                 },
-                                isItemSelected = archiveLinksData.isCheckBoxSelected[index]
+                                isItemSelected = mutableStateOf(
+                                    archiveScreenVM.selectedLinksData.contains(
+                                        it
+                                    )
+                                )
                             )
                         )
                     }
@@ -177,7 +176,11 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     }) { index, it ->
                         FolderIndividualComponent(
                             showCheckBox = archiveScreenVM.isSelectionModeEnabled,
-                            isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
+                            isCheckBoxChecked = mutableStateOf(
+                                archiveScreenVM.selectedFoldersID.contains(
+                                    it.id
+                                )
+                            ),
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
                                     archiveScreenVM.selectedFoldersID.add(
@@ -215,15 +218,19 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                             })
                     }
                 }
-                if (archiveFoldersDataV10.foldersTableList.isNotEmpty()) {
+                if (archiveFoldersDataV10.isNotEmpty()) {
                     itemsIndexed(
-                        items = archiveFoldersDataV10.foldersTableList,
+                        items = archiveFoldersDataV10,
                         key = { _, foldersTable ->
                             foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
                         }) { index, it ->
                         FolderIndividualComponent(
                             showCheckBox = archiveScreenVM.isSelectionModeEnabled,
-                            isCheckBoxChecked = archiveFoldersDataV10.isCheckBoxSelected[index],
+                            isCheckBoxChecked = mutableStateOf(
+                                archiveScreenVM.selectedFoldersID.contains(
+                                    it.id
+                                )
+                            ),
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
                                     archiveScreenVM.selectedFoldersID.add(
@@ -262,18 +269,16 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                         true
                                     archiveScreenVM.areAllFoldersChecked.value =
                                         false
-                                    archiveScreenVM.changeAllFoldersSelectedData()
+                                    archiveScreenVM.selectedFoldersID.clear()
                                     archiveScreenVM.selectedFoldersID.add(
                                         it.id
                                     )
-                                    archiveFoldersDataV10.isCheckBoxSelected[index].value =
-                                        true
                                 }
                             })
                     }
                 }
 
-                if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.foldersTableList.isEmpty()) {
+                if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.isEmpty()) {
                     item {
                         DataEmptyScreen(text = "No folders were archived.")
                     }

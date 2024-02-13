@@ -124,8 +124,8 @@ fun ChildHomeScreen(
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
-                if (savedLinksData.linksTableList.isNotEmpty()) {
-                    items(items = savedLinksData.linksTableList, key = { linksTable ->
+                if (savedLinksData.isNotEmpty()) {
+                    items(items = savedLinksData, key = { linksTable ->
                         linksTable.id.toString() + linksTable.webURL
                     }) {
                         LinkUIComponent(
@@ -200,8 +200,8 @@ fun ChildHomeScreen(
                     }
                 }
             } else if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
-                if (impLinksData.importantLinksList.isNotEmpty()) {
-                    items(items = impLinksData.importantLinksList, key = { importantLinks ->
+                if (impLinksData.isNotEmpty()) {
+                    items(items = impLinksData, key = { importantLinks ->
                         importantLinks.webURL + importantLinks.id.toString()
                     }) {
                         LinkUIComponent(

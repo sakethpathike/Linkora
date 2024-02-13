@@ -183,7 +183,7 @@ fun CollectionsScreen(navController: NavController) {
             topBar = {
                 Column {
                     TopAppBar(actions = {
-                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersID.size != 0) && foldersData.foldersTableList.isNotEmpty()) {
+                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersID.size != 0) && foldersData.isNotEmpty()) {
                             IconButton(onClick = {
                                 shouldDeleteDialogBoxBeVisible.value = true
                             }) {
@@ -198,7 +198,7 @@ fun CollectionsScreen(navController: NavController) {
                             }
                         }
                     }, navigationIcon = {
-                        if (areFoldersSelectable.value && foldersData.foldersTableList.isNotEmpty()) {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             IconButton(onClick = {
                                 areFoldersSelectable.value = false
                                 collectionsScreenVM.areAllFoldersChecked.value = false
@@ -210,7 +210,7 @@ fun CollectionsScreen(navController: NavController) {
                             }
                         }
                     }, title = {
-                        if (areFoldersSelectable.value && foldersData.foldersTableList.isNotEmpty()) {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row {
                                 AnimatedContent(
                                     targetState = collectionsScreenVM.selectedFoldersID.size,
@@ -268,7 +268,7 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Box(modifier = Modifier.animateContentSize()) {
                         Column {
-                            if (!areFoldersSelectable.value || foldersData.foldersTableList.isEmpty()) {
+                            if (!areFoldersSelectable.value || foldersData.isEmpty()) {
                                 Card(
                                     modifier = Modifier
                                         .padding(
@@ -368,7 +368,7 @@ fun CollectionsScreen(navController: NavController) {
                                         top = 20.dp,
                                         start = 20.dp,
                                         end = 20.dp,
-                                        bottom = if (foldersData.foldersTableList.isNotEmpty()) 11.dp else 25.dp
+                                        bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
                                     ), color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
@@ -378,7 +378,7 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Row(modifier = Modifier
                         .clickable {
-                            if (foldersData.foldersTableList.isNotEmpty() && !areFoldersSelectable.value) {
+                            if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
                                 shouldSortingBottomSheetAppear.value = true
                                 coroutineScope.launch {
                                     sortingBtmSheetState.expand()
@@ -400,7 +400,7 @@ fun CollectionsScreen(navController: NavController) {
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        if (foldersData.foldersTableList.isNotEmpty() && !areFoldersSelectable.value) {
+                        if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
                             IconButton(onClick = {
                                 shouldSortingBottomSheetAppear.value = true
                                 coroutineScope.launch {
@@ -409,7 +409,7 @@ fun CollectionsScreen(navController: NavController) {
                             }) {
                                 Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
                             }
-                        } else if (areFoldersSelectable.value && foldersData.foldersTableList.isNotEmpty()) {
+                        } else if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
                                     text = "Select all folders",
@@ -427,9 +427,9 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
-                if (foldersData.foldersTableList.isNotEmpty()) {
+                if (foldersData.isNotEmpty()) {
                     itemsIndexed(
-                        items = foldersData.foldersTableList,
+                        items = foldersData,
                         key = { folderIndex, foldersData ->
                             foldersData.id.toString() + foldersData.folderName
                         }) { folderIndex, folderData ->
@@ -463,11 +463,14 @@ fun CollectionsScreen(navController: NavController) {
                                     collectionsScreenVM.areAllFoldersChecked.value = false
                                     collectionsScreenVM.changeAllFoldersSelectedData()
                                     collectionsScreenVM.selectedFoldersID.add(folderData.id)
-                                    foldersData.isCheckBoxSelected[folderIndex].value = true
                                 }
                             },
                             showCheckBox = areFoldersSelectable,
-                            isCheckBoxChecked = foldersData.isCheckBoxSelected[folderIndex],
+                            isCheckBoxChecked = mutableStateOf(
+                                collectionsScreenVM.selectedFoldersID.contains(
+                                    folderData.id
+                                )
+                            ),
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
                                     collectionsScreenVM.selectedFoldersID.add(folderData.id)

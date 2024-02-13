@@ -149,8 +149,8 @@ fun ParentHomeScreen(navController: NavController) {
                             homeScreenVM.isSelectionModeEnabled.value = false
                             homeScreenVM.areAllLinksChecked.value = false
                             homeScreenVM.areAllFoldersChecked.value = false
-                            homeScreenVM.removeAllLinksSelection()
-                            homeScreenVM.removeAllFoldersSelection()
+                            homeScreenVM.selectedLinksData.clear()
+                            homeScreenVM.selectedFoldersData.clear()
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Cancel, contentDescription = null
@@ -505,8 +505,8 @@ fun ParentHomeScreen(navController: NavController) {
             homeScreenVM.isSelectionModeEnabled.value = false
             homeScreenVM.areAllLinksChecked.value = false
             homeScreenVM.areAllFoldersChecked.value = false
-            homeScreenVM.removeAllLinksSelection()
-            homeScreenVM.removeAllFoldersSelection()
+            homeScreenVM.selectedLinksData.clear()
+            homeScreenVM.selectedFoldersData.clear()
         } else {
             activity?.finish()
         }

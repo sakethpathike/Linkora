@@ -17,17 +17,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-data class FolderComponent(
-    val isCheckBoxSelected: List<MutableState<Boolean>>,
-    val foldersTableList: List<FoldersTable>
-)
-
 open class CollectionsScreenVM : ViewModel() {
     private val _foldersData = MutableStateFlow(
-        FolderComponent(
-            emptyList(),
-            emptyList()
-        )
+        emptyList<FoldersTable>()
     )
     val foldersData = _foldersData.asStateFlow()
 
@@ -35,24 +27,18 @@ open class CollectionsScreenVM : ViewModel() {
     val areAllFoldersChecked = mutableStateOf(false)
 
     fun changeAllFoldersSelectedData(
-        folderComponent: FolderComponent = FolderComponent(
-            emptyList(),
-            emptyList()
-        )
+        folderComponent: List<FoldersTable> = emptyList()
     ) {
         if (areAllFoldersChecked.value) {
-            selectedFoldersID.addAll(foldersData.value.foldersTableList.map { it.id })
-            foldersData.value.isCheckBoxSelected.forEach { it.value = true }
+            selectedFoldersID.addAll(foldersData.value.map { it.id })
         } else {
-            if (folderComponent.foldersTableList.isEmpty()) {
-                selectedFoldersID.removeAll(foldersData.value.foldersTableList.map { it.id })
+            if (folderComponent.isEmpty()) {
+                selectedFoldersID.removeAll(foldersData.value.map { it.id })
             } else {
                 selectedFoldersID.removeAll(
-                    folderComponent.foldersTableList.map { it.id }
+                    folderComponent.map { it.id }
                 )
             }
-            folderComponent.isCheckBoxSelected.forEach { it.value = false }
-            foldersData.value.isCheckBoxSelected.forEach { it.value = false }
         }
     }
 
@@ -100,10 +86,7 @@ open class CollectionsScreenVM : ViewModel() {
                                 mutableBooleanList.add(index, mutableStateOf(false))
                             }
                             _foldersData.emit(
-                                FolderComponent(
-                                    isCheckBoxSelected = mutableBooleanList,
-                                    it
-                                )
+                                it
                             )
                         }
                 }
@@ -118,10 +101,7 @@ open class CollectionsScreenVM : ViewModel() {
                                 mutableBooleanList.add(index, mutableStateOf(false))
                             }
                             _foldersData.emit(
-                                FolderComponent(
-                                    isCheckBoxSelected = mutableBooleanList,
-                                    it
-                                )
+                                it
                             )
                         }
                 }
@@ -137,10 +117,7 @@ open class CollectionsScreenVM : ViewModel() {
                                 mutableBooleanList.add(index, mutableStateOf(false))
                             }
                             _foldersData.emit(
-                                FolderComponent(
-                                    isCheckBoxSelected = mutableBooleanList,
-                                    it
-                                )
+                                it
                             )
                         }
                 }
@@ -156,10 +133,7 @@ open class CollectionsScreenVM : ViewModel() {
                                 mutableBooleanList.add(index, mutableStateOf(false))
                             }
                             _foldersData.emit(
-                                FolderComponent(
-                                    isCheckBoxSelected = mutableBooleanList,
-                                    it
-                                )
+                                it
                             )
                         }
                 }

@@ -79,8 +79,8 @@ fun ParentArchiveScreen(navController: NavController) {
                         archiveScreenVM.isSelectionModeEnabled.value = false
                         archiveScreenVM.areAllLinksChecked.value = false
                         archiveScreenVM.areAllFoldersChecked.value = false
-                        archiveScreenVM.removeAllLinksSelection()
-                        archiveScreenVM.changeAllFoldersSelectedData()
+                        archiveScreenVM.selectedLinksData.clear()
+                        archiveScreenVM.selectedFoldersID.clear()
                     }) {
                         Icon(
                             imageVector = Icons.Default.Cancel, contentDescription = null
@@ -205,6 +205,8 @@ fun ParentArchiveScreen(navController: NavController) {
                 onDeleteClick = {
                     archiveScreenVM.deleteMultipleSelectedFolders()
                     archiveScreenVM.deleteMultipleSelectedLinks()
+                    archiveScreenVM.selectedLinksData.clear()
+                    archiveScreenVM.selectedFoldersID.clear()
                 }
             )
         )
@@ -214,8 +216,8 @@ fun ParentArchiveScreen(navController: NavController) {
             archiveScreenVM.isSelectionModeEnabled.value = false
             archiveScreenVM.areAllLinksChecked.value = false
             archiveScreenVM.areAllFoldersChecked.value = false
-            archiveScreenVM.removeAllLinksSelection()
-            archiveScreenVM.changeAllFoldersSelectedData()
+            archiveScreenVM.selectedLinksData.clear()
+            archiveScreenVM.selectedFoldersID.clear()
         } else {
             navController.popBackStack()
         }

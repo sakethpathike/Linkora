@@ -204,7 +204,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                if (homeScreenList.size < 5 && homeScreenList.size != rootFolders.foldersTableList.size) {
+                if (homeScreenList.size < 5 && homeScreenList.size != rootFolders.size) {
                     item {
                         Text(
                             text = if (homeScreenList.isEmpty()) "Select folders" else "Select other folders",
@@ -214,7 +214,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    items(items = rootFolders.foldersTableList) { rootFolderElement ->
+                    items(items = rootFolders) { rootFolderElement ->
                         if (!homeScreenList.any {
                                 it.id == rootFolderElement.id
                             }
