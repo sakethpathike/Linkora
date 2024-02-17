@@ -122,7 +122,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
         viewModelScope.launch {
             selectedImportantLinksData.toList().forEach {
-                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it.webURL)
             }
         }.invokeOnCompletion {
             retrieveQueryData(searchQuery.value)
@@ -171,7 +171,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     fun deleteSelectedImpLinksData() {
         viewModelScope.launch {
             selectedImportantLinksData.toList().forEach {
-                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it.webURL)
             }
         }.invokeOnCompletion {
             retrieveQueryData(searchQuery.value)
@@ -380,7 +380,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
                     SelectedLinkType.IMP_LINKS -> {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(HomeScreenVM.tempImpLinkData.id)
+                            .deleteALinkFromImpLinksBasedOnURL(HomeScreenVM.tempImpLinkData.webURL)
                     }
 
                     SelectedLinkType.ARCHIVE_LINKS -> {

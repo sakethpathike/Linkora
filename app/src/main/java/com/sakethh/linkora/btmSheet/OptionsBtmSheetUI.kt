@@ -159,17 +159,16 @@ fun OptionsBtmSheetUI(
                     if ((optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.LINK || optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !optionsBtmSheetUIParam.inArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
-                                if (optionsBtmSheetUIParam.importantLinks != null && optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable == null) {
+                                optionsBtmSheetUIParam.importantLinks?.let {
                                     updateDBVM.importantLinkTableUpdater(
-                                        importantLinks = optionsBtmSheetUIParam.importantLinks,
+                                        importantLinks = it,
                                         context = context, onTaskCompleted = {
-                                            optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable?.invoke()
+
                                         }
                                     )
-                                } else {
-                                    if (optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable != null) {
-                                        optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable.invoke()
-                                    }
+                                }
+                                if (optionsBtmSheetUIParam.importantLinks != null) {
+                                    optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable?.let { it() }
                                 }
                                 coroutineScope.launch {
                                     if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {

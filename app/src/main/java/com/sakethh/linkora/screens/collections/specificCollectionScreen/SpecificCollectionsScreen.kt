@@ -1197,25 +1197,13 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onRenameClick = {
                     shouldRenameDialogBeVisible.value = true
                 },
-                onImportantLinkAdditionInTheTable = {
-                    specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
-                        context, onTaskCompleted = {
-                            specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
-                                )
-                            )
-                        }, ImportantLinks(
-                            title = tempImpLinkData.title.value,
-                            webURL = tempImpLinkData.webURL.value,
-                            baseURL = tempImpLinkData.baseURL.value,
-                            imgURL = tempImpLinkData.imgURL.value,
-                            infoForSaving = tempImpLinkData.infoForSaving.value
-                        )
-                    )
-                },
-                importantLinks = null,
+                importantLinks = ImportantLinks(
+                    title = tempImpLinkData.title.value,
+                    webURL = tempImpLinkData.webURL.value,
+                    baseURL = tempImpLinkData.baseURL.value,
+                    imgURL = tempImpLinkData.imgURL.value,
+                    infoForSaving = tempImpLinkData.infoForSaving.value
+                ),
                 forAChildFolder = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) mutableStateOf(
                     false
                 ) else mutableStateOf(true),

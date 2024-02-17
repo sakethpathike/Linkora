@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.HomeScreenListTable
@@ -24,24 +23,6 @@ class UpdateVM : ViewModel() {
     fun updateFolderName(folderID: Long, newFolderName: String) {
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newFolderName)
-        }
-    }
-
-    fun moveLinkFromLinksTableToArchiveLinks(id: Long) {
-        viewModelScope.launch {
-            val localDataBase = LocalDataBase
-            localDataBase.localDB.updateDao()
-                .copyLinkFromLinksTableToArchiveLinks(id)
-            localDataBase.localDB.deleteDao().deleteALinkFromLinksTable(id)
-        }
-    }
-
-    fun moveLinkFromImpTableToArchiveLinks(id: Long) {
-        viewModelScope.launch {
-            val localDataBase = LocalDataBase
-            localDataBase.localDB.updateDao()
-                .copyLinkFromImpTableToArchiveLinks(id)
-            localDataBase.localDB.deleteDao().deleteALinkFromImpLinks(id)
         }
     }
 
@@ -109,7 +90,7 @@ class UpdateVM : ViewModel() {
                 } else {
                     viewModelScope.launch {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(linkID = importantLinks.id)
+                            .deleteALinkFromImpLinksBasedOnURL(importantLinks.webURL)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
@@ -226,61 +207,6 @@ class UpdateVM : ViewModel() {
         }
     }
 
-    fun archiveFolderTableUpdaterV9(
-        archivedFolders: ArchivedFolders,
-        context: Context,
-        onTaskCompleted: () -> Unit,
-    ) {
-        var doesThisExistsInArchiveFolder = false
-        viewModelScope.launch {
-            doesThisExistsInArchiveFolder = LocalDataBase.localDB.readDao()
-                .doesThisArchiveFolderExistsV9(folderName = archivedFolders.archiveFolderName)
-        }.invokeOnCompletion {
-            if (doesThisExistsInArchiveFolder) {
-                viewModelScope.launch {
-
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-                viewModelScope.launch {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "deleted the archived folder and it's data permanently",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                }
-            } else {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.createDao()
-                        .addANewArchiveFolder(archivedFolders = archivedFolders)
-                }.invokeOnCompletion {
-                    viewModelScope.launch {
-                        LocalDataBase.localDB.updateDao()
-                            .moveFolderLinksDataToArchiveV9(folderName = archivedFolders.archiveFolderName)
-                    }.invokeOnCompletion {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.deleteDao()
-                                .deleteAFolder(folderID = archivedFolders.id)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    "moved the folder to archive(s)",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }.invokeOnCompletion {
-                            onTaskCompleted()
-                        }
-                    }
-                }
-                viewModelScope.launch {
-                    OptionsBtmSheetVM().updateArchiveFolderCardData(folderName = archivedFolders.archiveFolderName)
-                }
-            }
-        }
-    }
 
     fun migrateRegularFoldersLinksDataFromV9toV10() {
         val localDataBase = LocalDataBase.localDB

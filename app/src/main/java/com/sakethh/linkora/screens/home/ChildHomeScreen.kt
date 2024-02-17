@@ -37,6 +37,7 @@ import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
@@ -431,7 +432,7 @@ fun ChildHomeScreen(
                 ),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-                btmSheetFor = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) OptionsBtmSheetType.LINK else OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN,
+                btmSheetFor = OptionsBtmSheetType.LINK,
                 onRenameClick = {
                     coroutineScope.launch {
                         btmModalSheetState.hide()
@@ -441,26 +442,30 @@ fun ChildHomeScreen(
                 onDeleteCardClick = {
                     shouldDeleteDialogBoxAppear.value = true
                 },
-                onImportantLinkAdditionInTheTable = {
-                    specificCollectionsScreenVM.onImportantLinkAdditionInTheTable(
-                        context, {}, HomeScreenVM.tempImpLinkData
-                    )
-                },
                 onArchiveClick = {
+                    SpecificCollectionsScreenVM.screenType.value =
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                     homeScreenVM.onArchiveClick(
-                        selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                        context
-                    )
+                        HomeScreenVM.tempImpLinkData,
+                        context,
+                        selectedLinkID.longValue,
+                        {})
                 }, noteForSaving = selectedNote.value,
                 onNoteDeleteCardClick = {
+                    SpecificCollectionsScreenVM.screenType.value =
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                        OptionsBtmSheetType.LINK
                     homeScreenVM.onNoteDeleteCardClick(
-                        selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                        selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
-                        context = context
+                        HomeScreenVM.tempImpLinkData.webURL,
+                        context,
+                        folderID = 0,
+                        "",
+                        selectedLinkID.longValue
                     )
                 },
                 folderName = "",
-                linkTitle = selectedURLTitle.value
+                linkTitle = selectedURLTitle.value,
             )
         )
     }
@@ -469,35 +474,31 @@ fun ChildHomeScreen(
             shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = DataDialogBoxType.LINK,
             onDeleteClick = {
+                SpecificCollectionsScreenVM.screenType.value =
+                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
                 homeScreenVM.onDeleteClick(
-                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    selectedWebURL = HomeScreenVM.tempImpLinkData.webURL,
+                    folderID = 0,
+                    selectedWebURL = "",
                     context = context,
-                    shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear
+                    onTaskCompleted = {},
+                    folderName = "",
+                    linkID = selectedLinkID.longValue
                 )
             })
     )
+    val updateVM: UpdateVM = viewModel()
     RenameDialogBox(
         RenameDialogBoxParam(
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
             existingFolderName = "",
             renameDialogBoxFor = OptionsBtmSheetType.LINK,
             onNoteChangeClick = { newNote: String ->
-                homeScreenVM.onNoteChangeClickForLinks(
-                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    HomeScreenVM.tempImpLinkData.webURL,
-                    selectedLinkID.longValue,
-                    newNote
-                )
+                updateVM.updateRegularLinkNote(selectedLinkID.longValue, newNote)
                 shouldRenameDialogBoxAppear.value = false
             },
             onTitleChangeClick = { newTitle: String ->
-                homeScreenVM.onTitleChangeClickForLinks(
-                    selectedCardType = if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) HomeScreenBtmSheetType.RECENT_SAVES else HomeScreenBtmSheetType.RECENT_IMP_SAVES,
-                    HomeScreenVM.tempImpLinkData.webURL,
-                    selectedLinkID.longValue,
-                    newTitle
-                )
+                updateVM.updateRegularLinkTitle(selectedLinkID.longValue, newTitle)
                 shouldRenameDialogBoxAppear.value = false
             }
         )

@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
-import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
@@ -68,6 +67,7 @@ open class SpecificCollectionsScreenVM(
 
 
     val selectedLinksID = mutableStateListOf<Long>()
+    val selectedImpLinks = mutableStateListOf<String>()
     val areAllLinksChecked = mutableStateOf(false)
     fun removeAllLinkSelections() {
         when (screenType.value) {
@@ -123,10 +123,10 @@ open class SpecificCollectionsScreenVM(
 
     fun moveMultipleLinksFromImpLinksToArchive() {
         viewModelScope.launch {
-            selectedLinksID.toList().forEach {
+            selectedImpLinks.toList().forEach {
                 LocalDataBase.localDB.updateDao()
                     .copyLinkFromImpTableToArchiveLinks(it)
-                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
             }
         }
     }
@@ -615,7 +615,7 @@ open class SpecificCollectionsScreenVM(
                         })
                     }, async {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
+                            .deleteALinkFromImpLinksBasedOnURL(tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -690,8 +690,8 @@ open class SpecificCollectionsScreenVM(
             when (screenType.value) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                     viewModelScope.launch {
-                        selectedLinksID.toList().forEach {
-                            LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                        selectedImpLinks.toList().forEach {
+                            LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
                         }
                     }
                 }
@@ -825,41 +825,6 @@ open class SpecificCollectionsScreenVM(
             else -> {}
         }
 
-    }
-
-    fun onImportantLinkAdditionInTheTable(
-        context: Context,
-        onTaskCompleted: () -> Unit, tempImpLinkData: ImportantLinks,
-    ) {
-        viewModelScope.launch {
-            if (LocalDataBase.localDB.readDao()
-                    .doesThisExistsInImpLinks(webURL = tempImpLinkData.webURL)
-            ) {
-                LocalDataBase.localDB.deleteDao()
-                    .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
-                Toast.makeText(
-                    context,
-                    "removed link from the \"Important Links\" successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-            } else {
-                LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
-                    ImportantLinks(
-                        title = tempImpLinkData.title,
-                        webURL = tempImpLinkData.webURL,
-                        baseURL = tempImpLinkData.baseURL,
-                        imgURL = tempImpLinkData.imgURL,
-                        infoForSaving = tempImpLinkData.infoForSaving
-                    )
-                )
-                Toast.makeText(
-                    context, "added to the \"Important Links\" successfully", Toast.LENGTH_SHORT
-                ).show()
-            }
-            OptionsBtmSheetVM().updateImportantCardData(tempImpLinkData.webURL)
-        }.invokeOnCompletion {
-            onTaskCompleted()
-        }
     }
 
     fun onLinkClick(
