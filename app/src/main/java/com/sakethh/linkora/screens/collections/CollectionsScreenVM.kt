@@ -7,8 +7,10 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.FoldersTable
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,10 +43,19 @@ open class CollectionsScreenVM : ViewModel() {
         }
     }
 
-    open fun onDeleteMultipleFolders() {
-        viewModelScope.launch(Dispatchers.IO) {
-            LocalDataBase.localDB.deleteDao()
-                .deleteMultipleFolders(selectedFoldersData.toList().toTypedArray())
+    open fun onDeleteMultipleSelectedFolders() {
+        SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
+        viewModelScope.launch {
+            selectedFoldersData.toList().forEach {
+                it.childFolderIDs?.toTypedArray()
+                    ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
+                it.childFolderIDs?.toTypedArray()
+                    ?.let {
+                        LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
+                    }
+                LocalDataBase.localDB.deleteDao().deleteAFolder(it.id)
+                LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(it.id)
+            }
         }
     }
 

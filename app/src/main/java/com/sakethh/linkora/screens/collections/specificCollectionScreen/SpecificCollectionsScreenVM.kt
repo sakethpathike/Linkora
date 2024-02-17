@@ -685,26 +685,18 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
-    fun onDeleteMultipleSelectedFolders() {
-        selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
-        viewModelScope.launch {
-            LocalDataBase.localDB.deleteDao()
-                .deleteMultipleFolders(selectedFoldersData.toList().toTypedArray())
-        }
-    }
-
-    fun onDeleteMultipleSelectedLinks() {
-        selectedBtmSheetType.value = OptionsBtmSheetType.LINK
-        when (screenType.value) {
-            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    selectedLinksID.forEach {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+        fun onDeleteMultipleSelectedLinks() {
+            selectedBtmSheetType.value = OptionsBtmSheetType.LINK
+            when (screenType.value) {
+                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                    viewModelScope.launch {
+                        selectedLinksID.forEach {
+                            LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                        }
                     }
                 }
-            }
 
-            else -> {
+                else -> {
                 viewModelScope.launch {
                     selectedLinksID.forEach {
                         LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)

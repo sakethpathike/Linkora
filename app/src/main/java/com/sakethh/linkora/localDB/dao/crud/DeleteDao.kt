@@ -1,14 +1,9 @@
 package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import com.sakethh.linkora.localDB.LocalDataBase
-import com.sakethh.linkora.localDB.dto.FoldersTable
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
 @Dao
@@ -90,34 +85,28 @@ interface DeleteDao {
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
 
-    @Delete
-    suspend fun deleteMultipleFolders(folderList: Array<FoldersTable>) {
-        folderList.forEach {
-            deleteAllChildFoldersAndLinksOfASpecificFolder(it.id)
-        }
-    }
+    @Query("DELETE from folders_table WHERE id in (:folderIDs)")
+    suspend fun deleteMultipleFolders(folderIDs: Array<Long>)
 
     suspend fun deleteAllChildFoldersAndLinksOfASpecificFolder(folderID: Long) {
         val childFolders = LocalDataBase.localDB.readDao().getThisFolderData(folderID)
-        val deletionAsync = mutableListOf<Deferred<Unit>>()
         coroutineScope {
             try {
                 childFolders.childFolderIDs?.forEach {
-                    val deleteAFolder = async {
-                        deleteAFolder(it)
-                        deleteThisFolderLinksV10(it)
-                    }
-                    deletionAsync.add(deleteAFolder)
+                    deleteAFolder(it)
+                    deleteThisFolderLinksV10(it)
                 }
-            } catch (_: java.lang.NullPointerException) {
-
+            } catch (e: java.lang.NullPointerException) {
+                e.printStackTrace()
             }
         }
-        deletionAsync.awaitAll()
     }
 
     @Query("DELETE from links_table WHERE keyOfLinkedFolderV10 = :folderID")
     suspend fun deleteThisFolderLinksV10(folderID: Long)
+
+    @Query("DELETE from links_table WHERE keyOfLinkedFolderV10 in (:links)")
+    suspend fun deleteMultipleLinksFromLinksTable(links: Array<Long>)
 
     @Query("DELETE from links_table WHERE keyOfLinkedFolder = :folderName")
     suspend fun deleteThisFolderLinksV9(folderName: String)

@@ -568,7 +568,7 @@ fun CollectionsScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
                 onDeleteClick = {
                     if (areFoldersSelectable.value) {
-                        collectionsScreenVM.onDeleteMultipleFolders()
+                        collectionsScreenVM.onDeleteMultipleSelectedFolders()
                         areFoldersSelectable.value = false
                         collectionsScreenVM.areAllFoldersChecked.value = false
                         collectionsScreenVM.changeAllFoldersSelectedData()
