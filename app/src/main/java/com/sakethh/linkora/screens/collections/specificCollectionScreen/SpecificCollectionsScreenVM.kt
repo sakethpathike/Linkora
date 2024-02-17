@@ -688,9 +688,8 @@ open class SpecificCollectionsScreenVM(
     fun onDeleteMultipleSelectedFolders() {
         selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
         viewModelScope.launch {
-            selectedFoldersID.forEach {
-                LocalDataBase.localDB.deleteDao().deleteAFolder(it)
-            }
+            LocalDataBase.localDB.deleteDao()
+                .deleteMultipleFolders(selectedFoldersData.toList().toTypedArray())
         }
     }
 

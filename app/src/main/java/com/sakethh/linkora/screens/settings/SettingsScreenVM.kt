@@ -491,7 +491,7 @@ class SettingsScreenVM(
                 ""
             }
             val retrievedData = try {
-                Json.decodeFromString<AppInfoDTO>(rawData)
+                Json.decodeFromString(rawData)
             } catch (_: Exception) {
                 AppInfoDTO(
                     isNonStableVersion = false,

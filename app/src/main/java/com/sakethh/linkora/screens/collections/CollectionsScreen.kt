@@ -2,7 +2,6 @@ package com.sakethh.linkora.screens.collections
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -159,7 +158,7 @@ fun CollectionsScreen(navController: NavController) {
     }
     val updateVM: UpdateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
-    if (collectionsScreenVM.selectedFoldersID.size == 0) {
+    if (collectionsScreenVM.selectedFoldersData.size == 0) {
         collectionsScreenVM.areAllFoldersChecked.value = false
     }
     LinkoraTheme {
@@ -183,7 +182,7 @@ fun CollectionsScreen(navController: NavController) {
             topBar = {
                 Column {
                     TopAppBar(actions = {
-                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersID.size != 0) && foldersData.isNotEmpty()) {
+                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersData.size != 0) && foldersData.isNotEmpty()) {
                             IconButton(onClick = {
                                 shouldDeleteDialogBoxBeVisible.value = true
                             }) {
@@ -214,7 +213,7 @@ fun CollectionsScreen(navController: NavController) {
                         if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row {
                                 AnimatedContent(
-                                    targetState = collectionsScreenVM.selectedFoldersID.size,
+                                    targetState = collectionsScreenVM.selectedFoldersData.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -238,16 +237,12 @@ fun CollectionsScreen(navController: NavController) {
                                         fontSize = 18.sp
                                     )
                                 }
-                                Text(text = " folders selected",
+                                Text(
+                                    text = " folders selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
-                                    fontSize = 18.sp,
-                                    modifier = Modifier.clickable {
-                                        Log.d(
-                                            "selected folders LINKORA",
-                                            collectionsScreenVM.selectedFoldersID.toString()
-                                        )
-                                    })
+                                    fontSize = 18.sp
+                                )
                             }
                         } else {
                             Text(
@@ -468,21 +463,21 @@ fun CollectionsScreen(navController: NavController) {
                                     areFoldersSelectable.value = true
                                     collectionsScreenVM.areAllFoldersChecked.value = false
                                     collectionsScreenVM.changeAllFoldersSelectedData()
-                                    collectionsScreenVM.selectedFoldersID.add(folderData.id)
+                                    collectionsScreenVM.selectedFoldersData.add(folderData)
                                 }
                             },
                             showCheckBox = areFoldersSelectable,
                             isCheckBoxChecked = mutableStateOf(
-                                collectionsScreenVM.selectedFoldersID.contains(
-                                    folderData.id
+                                collectionsScreenVM.selectedFoldersData.contains(
+                                    folderData
                                 )
                             ),
                             checkBoxState = { checkBoxState ->
                                 if (checkBoxState) {
-                                    collectionsScreenVM.selectedFoldersID.add(folderData.id)
+                                    collectionsScreenVM.selectedFoldersData.add(folderData)
                                 } else {
-                                    collectionsScreenVM.selectedFoldersID.removeAll {
-                                        it == folderData.id
+                                    collectionsScreenVM.selectedFoldersData.removeAll {
+                                        it == folderData
                                     }
                                 }
                             })

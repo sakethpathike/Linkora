@@ -1,9 +1,11 @@
 package com.sakethh.linkora.localDB.dao.crud
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Transaction
 import com.sakethh.linkora.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.dto.FoldersTable
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -87,6 +89,13 @@ interface DeleteDao {
 
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
+
+    @Delete
+    suspend fun deleteMultipleFolders(folderList: Array<FoldersTable>) {
+        folderList.forEach {
+            deleteAllChildFoldersAndLinksOfASpecificFolder(it.id)
+        }
+    }
 
     suspend fun deleteAllChildFoldersAndLinksOfASpecificFolder(folderID: Long) {
         val childFolders = LocalDataBase.localDB.readDao().getThisFolderData(folderID)

@@ -22,37 +22,36 @@ open class CollectionsScreenVM : ViewModel() {
     )
     val foldersData = _foldersData.asStateFlow()
 
-    val selectedFoldersID = mutableStateListOf<Long>()
+    val selectedFoldersData = mutableStateListOf<FoldersTable>()
     val areAllFoldersChecked = mutableStateOf(false)
 
     fun changeAllFoldersSelectedData(
         folderComponent: List<FoldersTable> = emptyList()
     ) {
         if (areAllFoldersChecked.value) {
-            selectedFoldersID.addAll(foldersData.value.map { it.id })
+            selectedFoldersData.addAll(foldersData.value.map { it })
         } else {
             if (folderComponent.isEmpty()) {
-                selectedFoldersID.removeAll(foldersData.value.map { it.id })
+                selectedFoldersData.removeAll(foldersData.value.map { it })
             } else {
-                selectedFoldersID.removeAll(
-                    folderComponent.map { it.id }
+                selectedFoldersData.removeAll(
+                    folderComponent.map { it }
                 )
             }
         }
     }
 
     open fun onDeleteMultipleFolders() {
-        viewModelScope.launch {
-            selectedFoldersID.forEach {
-                LocalDataBase.localDB.deleteDao().deleteAFolder(it)
-            }
+        viewModelScope.launch(Dispatchers.IO) {
+            LocalDataBase.localDB.deleteDao()
+                .deleteMultipleFolders(selectedFoldersData.toList().toTypedArray())
         }
     }
 
     fun archiveMultipleFolders() {
         viewModelScope.launch {
-            selectedFoldersID.forEach {
-                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it)
+            selectedFoldersData.forEach {
+                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it.id)
             }
         }
     }

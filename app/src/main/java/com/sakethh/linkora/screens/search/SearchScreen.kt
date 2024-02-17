@@ -787,7 +787,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                     AnimatedContent(
-                                        targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersID.size,
+                                        targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersData.size,
                                         label = "",
                                         transitionSpec = {
                                             ContentTransform(

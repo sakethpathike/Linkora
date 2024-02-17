@@ -8,7 +8,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.navigation.NavigationRoutes
@@ -28,7 +27,6 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
 
     val isSelectionModeEnabled = mutableStateOf(false)
     val selectedLinksData = mutableStateListOf<LinksTable>()
-    val selectedFoldersData = mutableStateListOf<FoldersTable>()
 
     fun archiveSelectedLinks() {
         viewModelScope.launch {
