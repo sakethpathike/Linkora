@@ -134,6 +134,7 @@ fun ParentArchiveScreen(navController: NavController) {
                     IconButton(onClick = {
                         archiveScreenVM.unArchiveMultipleFolders()
                         archiveScreenVM.unArchiveMultipleSelectedLinks()
+                        archiveScreenVM.isSelectionModeEnabled.value = false
                     }) {
                         Icon(imageVector = Icons.Outlined.Unarchive, contentDescription = null)
                     }
@@ -210,6 +211,7 @@ fun ParentArchiveScreen(navController: NavController) {
                     archiveScreenVM.deleteMultipleSelectedLinks()
                     archiveScreenVM.selectedLinksData.clear()
                     archiveScreenVM.selectedFoldersID.clear()
+                    archiveScreenVM.isSelectionModeEnabled.value = false
                 }
             )
         )

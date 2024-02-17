@@ -61,6 +61,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -795,7 +796,15 @@ fun FolderIndividualComponent(
     onLongClick: () -> Unit = {},
     inSelectionMode: Boolean = false,
 ) {
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                if (showCheckBox.value && isCheckBoxChecked.value) MaterialTheme.colorScheme.primary.copy(
+                    0.25f
+                ) else Color.Transparent
+            )
+    ) {
         Row(
             modifier = Modifier
                 .combinedClickable(onClick = {

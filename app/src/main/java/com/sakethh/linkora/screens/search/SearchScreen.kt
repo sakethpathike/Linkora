@@ -252,6 +252,8 @@ fun SearchScreen(navController: NavController) {
                                         searchScreenVM.archiveSelectedImportantLinks()
                                         searchScreenVM.archiveSelectedLinksTableLinks()
                                         searchScreenVM.archiveSelectedHistoryLinks()
+                                        isSelectionModeEnabled.value =
+                                            false
                                     }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Archive,
@@ -842,6 +844,8 @@ fun SearchScreen(navController: NavController) {
                             } else if (isSelectionModeEnabled.value) {
                                 Row {
                                     IconButton(onClick = {
+                                        isSelectionModeEnabled.value =
+                                            false
                                         searchScreenVM.archiveSelectedHistoryLinks()
                                     }) {
                                         Icon(

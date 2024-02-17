@@ -416,25 +416,25 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 contentDescription = null
                                             )
                                         }
-                                        if (specificCollectionsScreenVM.selectedFoldersData.isEmpty()) {
-                                            IconButton(onClick = {
-                                                specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
-                                                areElementsSelectable.value = false
-                                                specificCollectionsScreenVM.areAllLinksChecked.value =
-                                                    false
-                                                specificCollectionsScreenVM.areAllFoldersChecked.value =
-                                                    false
-                                                specificCollectionsScreenVM.removeAllLinkSelections()
-                                                specificCollectionsScreenVM.changeAllFoldersSelectedData(
-                                                    childFoldersData
-                                                )
-                                            }) {
+
+                                        IconButton(onClick = {
+                                            specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
+                                            specificCollectionsScreenVM.archiveMultipleFolders()
+                                            areElementsSelectable.value = false
+                                            specificCollectionsScreenVM.areAllLinksChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                                false
+                                            specificCollectionsScreenVM.removeAllLinkSelections()
+                                            specificCollectionsScreenVM.changeAllFoldersSelectedData(
+                                                childFoldersData
+                                            )
+                                        }) {
                                                 Icon(
                                                     imageVector = Icons.Default.Archive,
                                                     contentDescription = null
                                                 )
                                             }
-                                        }
                                     }
                                 }
 
