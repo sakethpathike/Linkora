@@ -123,7 +123,7 @@ open class SpecificCollectionsScreenVM(
 
     fun moveMultipleLinksFromImpLinksToArchive() {
         viewModelScope.launch {
-            selectedLinksID.forEach {
+            selectedLinksID.toList().forEach {
                 LocalDataBase.localDB.updateDao()
                     .copyLinkFromImpTableToArchiveLinks(it)
                 LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
@@ -133,7 +133,7 @@ open class SpecificCollectionsScreenVM(
 
     fun moveMultipleLinksFromLinksTableToArchive() {
         viewModelScope.launch {
-            selectedLinksID.forEach {
+            selectedLinksID.toList().forEach {
                 LocalDataBase.localDB.updateDao()
                     .copyLinkFromLinksTableToArchiveLinks(it)
                 LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
@@ -690,7 +690,7 @@ open class SpecificCollectionsScreenVM(
             when (screenType.value) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                     viewModelScope.launch {
-                        selectedLinksID.forEach {
+                        selectedLinksID.toList().forEach {
                             LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
                         }
                     }
@@ -698,7 +698,7 @@ open class SpecificCollectionsScreenVM(
 
                 else -> {
                 viewModelScope.launch {
-                    selectedLinksID.forEach {
+                    selectedLinksID.toList().forEach {
                         LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
                     }
                 }

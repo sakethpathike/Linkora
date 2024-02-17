@@ -149,7 +149,7 @@ fun ParentHomeScreen(navController: NavController) {
                             homeScreenVM.isSelectionModeEnabled.value = false
                             homeScreenVM.areAllLinksChecked.value = false
                             homeScreenVM.areAllFoldersChecked.value = false
-                            homeScreenVM.selectedLinksData.clear()
+                            homeScreenVM.selectedLinksID.clear()
                             homeScreenVM.selectedFoldersData.clear()
                         }) {
                             Icon(
@@ -161,7 +161,7 @@ fun ParentHomeScreen(navController: NavController) {
                     if (homeScreenVM.isSelectionModeEnabled.value) {
                         Row {
                             AnimatedContent(
-                                targetState = homeScreenVM.selectedLinksData.size + homeScreenVM.selectedFoldersData.size,
+                                targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
                                 label = "",
                                 transitionSpec = {
                                     ContentTransform(
@@ -200,12 +200,12 @@ fun ParentHomeScreen(navController: NavController) {
                         )
                     }
                 }, actions = {
-                    if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedLinksData.size > 0) {
+                    if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedLinksID.size > 0) {
                         IconButton(onClick = {
-                            homeScreenVM.archiveSelectedFolders()
-                            homeScreenVM.archiveSelectedLinks()
+                            homeScreenVM.archiveMultipleFolders()
+                            homeScreenVM.moveMultipleLinksFromLinksTableToArchive()
                             homeScreenVM.selectedFoldersData.clear()
-                            homeScreenVM.selectedLinksData.clear()
+                            homeScreenVM.selectedLinksID.clear()
                             homeScreenVM.isSelectionModeEnabled.value = false
                         }) {
                             Icon(imageVector = Icons.Outlined.Archive, contentDescription = null)
@@ -483,11 +483,11 @@ fun ParentHomeScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,
                 onDeleteClick = {
-                    homeScreenVM.deleteSelectedFolders()
-                    homeScreenVM.deleteSelectedLinks()
+                    homeScreenVM.onDeleteMultipleSelectedFolders()
+                    homeScreenVM.onDeleteMultipleSelectedLinks()
                     homeScreenVM.isSelectionModeEnabled.value = false
                     homeScreenVM.selectedFoldersData.clear()
-                    homeScreenVM.selectedLinksData.clear()
+                    homeScreenVM.selectedLinksID.clear()
                 }
             )
         )

@@ -113,6 +113,9 @@ interface UpdateDao {
     @Query("UPDATE folders_table SET isFolderArchived = 1 WHERE id=:folderID")
     suspend fun moveAFolderToArchivesV10(folderID: Long)
 
+    @Query("UPDATE folders_table SET isFolderArchived = 1 WHERE id in (:folderIDs)")
+    suspend fun moveAMultipleFoldersToArchivesV10(folderIDs: Array<Long>)
+
     @Query("UPDATE folders_table SET isFolderArchived = 0 WHERE id=:folderID")
     suspend fun moveArchivedFolderToRegularFolderV10(folderID: Long)
 

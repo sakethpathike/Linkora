@@ -74,7 +74,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun deleteSelectedHistoryLinks() {
         viewModelScope.launch {
-            selectedHistoryLinksData.forEach {
+            selectedHistoryLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
         }.invokeOnCompletion {
@@ -84,7 +84,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun archiveSelectedLinksTableLinks() {
         viewModelScope.launch {
-            selectedLinksTableData.forEach {
+            selectedLinksTableData.toList().forEach {
                 LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
                     ArchivedLinks(
                         title = it.title,
@@ -97,7 +97,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             }
         }
         viewModelScope.launch {
-            selectedLinksTableData.forEach {
+            selectedLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
             }
         }.invokeOnCompletion {
@@ -107,7 +107,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun archiveSelectedImportantLinks() {
         viewModelScope.launch {
-            selectedImportantLinksData.forEach {
+            selectedImportantLinksData.toList().forEach {
                 LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
                     ArchivedLinks(
                         title = it.title,
@@ -121,7 +121,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         }
 
         viewModelScope.launch {
-            selectedImportantLinksData.forEach {
+            selectedImportantLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
             }
         }.invokeOnCompletion {
@@ -131,7 +131,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun archiveSelectedHistoryLinks() {
         viewModelScope.launch {
-            selectedHistoryLinksData.forEach {
+            selectedHistoryLinksData.toList().forEach {
                 LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
                     ArchivedLinks(
                         title = it.title,
@@ -150,7 +150,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun deleteSelectedLinksTableData() {
         viewModelScope.launch {
-            selectedLinksTableData.forEach {
+            selectedLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
             }
         }.invokeOnCompletion {
@@ -160,7 +160,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun deleteSelectedArchivedLinks() {
         viewModelScope.launch {
-            selectedArchiveLinksTableData.forEach {
+            selectedArchiveLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
@@ -170,7 +170,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     fun deleteSelectedImpLinksData() {
         viewModelScope.launch {
-            selectedImportantLinksData.forEach {
+            selectedImportantLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it.id)
             }
         }.invokeOnCompletion {

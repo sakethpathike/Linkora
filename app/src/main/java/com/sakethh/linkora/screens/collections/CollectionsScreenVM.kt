@@ -46,24 +46,24 @@ open class CollectionsScreenVM : ViewModel() {
     open fun onDeleteMultipleSelectedFolders() {
         SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
         viewModelScope.launch {
-            selectedFoldersData.toList().forEach {
-                it.childFolderIDs?.toTypedArray()
+            selectedFoldersData.toList().forEach { folder ->
+                folder.childFolderIDs?.toTypedArray()
                     ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
-                it.childFolderIDs?.toTypedArray()
+                folder.childFolderIDs?.toTypedArray()
                     ?.let {
                         LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
                     }
-                LocalDataBase.localDB.deleteDao().deleteAFolder(it.id)
-                LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(it.id)
+                LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
+                LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
             }
         }
     }
 
     fun archiveMultipleFolders() {
         viewModelScope.launch {
-            selectedFoldersData.forEach {
-                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it.id)
-            }
+            LocalDataBase.localDB.updateDao()
+                .moveAMultipleFoldersToArchivesV10(selectedFoldersData.toList().map { it.id }
+                    .toTypedArray())
         }
     }
 

@@ -88,7 +88,7 @@ class ArchiveScreenVM(
 
     fun unArchiveMultipleFolders() {
         viewModelScope.launch {
-            selectedFoldersID.forEach {
+            selectedFoldersID.toList().forEach {
                 LocalDataBase.localDB.updateDao().moveArchivedFolderToRegularFolderV10(it)
             }
         }
@@ -96,7 +96,7 @@ class ArchiveScreenVM(
 
     fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
-            selectedLinksData.forEach {
+            selectedLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
@@ -106,7 +106,7 @@ class ArchiveScreenVM(
 
     fun deleteMultipleSelectedFolders() {
         viewModelScope.launch {
-            selectedFoldersID.forEach {
+            selectedFoldersID.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteAFolder(it)
             }
         }.invokeOnCompletion {
@@ -116,7 +116,7 @@ class ArchiveScreenVM(
 
     fun unArchiveMultipleSelectedLinks() {
         viewModelScope.launch {
-            selectedLinksData.forEach { archivedLink ->
+            selectedLinksData.toList().forEach { archivedLink ->
                 LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
                     LinksTable(
                         title = archivedLink.title,

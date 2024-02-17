@@ -3,13 +3,11 @@ package com.sakethh.linkora.screens.home
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
-import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -26,53 +24,6 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     val isSelectionModeEnabled = mutableStateOf(false)
-    val selectedLinksData = mutableStateListOf<LinksTable>()
-
-    fun archiveSelectedLinks() {
-        viewModelScope.launch {
-            selectedLinksData.forEach {
-                LocalDataBase.localDB.createDao().addANewLinkToArchiveLink(
-                    ArchivedLinks(
-                        title = it.title,
-                        webURL = it.title,
-                        baseURL = it.baseURL,
-                        imgURL = it.imgURL,
-                        infoForSaving = it.infoForSaving
-                    )
-                )
-            }
-        }.invokeOnCompletion {
-            viewModelScope.launch {
-                selectedLinksData.forEach {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
-                }
-            }
-        }
-    }
-
-    fun archiveSelectedFolders() {
-        viewModelScope.launch {
-            selectedFoldersData.forEach {
-                LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(it.id)
-            }
-        }
-    }
-
-    fun deleteSelectedLinks() {
-        viewModelScope.launch {
-            selectedLinksData.forEach {
-                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
-            }
-        }
-    }
-
-    fun deleteSelectedFolders() {
-        viewModelScope.launch {
-            selectedFoldersData.forEach {
-                LocalDataBase.localDB.deleteDao().deleteAFolder(it.id)
-            }
-        }
-    }
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST

@@ -329,13 +329,13 @@ fun ChildHomeScreen(
                                     if (!homeScreenVM.isSelectionModeEnabled.value) {
                                         homeScreenVM.isSelectionModeEnabled.value =
                                             true
-                                        homeScreenVM.selectedLinksData.add(it)
+                                        homeScreenVM.selectedLinksID.add(it.id)
                                     }
                                 },
                                 isSelectionModeEnabled = homeScreenVM.isSelectionModeEnabled,
                                 isItemSelected = mutableStateOf(
-                                    homeScreenVM.selectedLinksData.contains(
-                                        it
+                                    homeScreenVM.selectedLinksID.contains(
+                                        it.id
                                     )
                                 ),
                                 title = it.title,
@@ -368,13 +368,13 @@ fun ChildHomeScreen(
                                 onLinkClick = {
                                     if (homeScreenVM.isSelectionModeEnabled.value) {
 
-                                        if (!homeScreenVM.selectedLinksData.contains(it)) {
-                                            homeScreenVM.selectedLinksData.add(
-                                                it
+                                        if (!homeScreenVM.selectedLinksID.contains(it.id)) {
+                                            homeScreenVM.selectedLinksID.add(
+                                                it.id
                                             )
                                         } else {
-                                            homeScreenVM.selectedLinksData.remove(
-                                                it
+                                            homeScreenVM.selectedLinksID.remove(
+                                                it.id
                                             )
                                         }
 
@@ -513,7 +513,7 @@ fun ChildHomeScreen(
             homeScreenVM.isSelectionModeEnabled.value = false
             homeScreenVM.areAllLinksChecked.value = false
             homeScreenVM.areAllFoldersChecked.value = false
-            homeScreenVM.selectedLinksData.clear()
+            homeScreenVM.selectedLinksID.clear()
             homeScreenVM.selectedFoldersData.clear()
         }
     }
