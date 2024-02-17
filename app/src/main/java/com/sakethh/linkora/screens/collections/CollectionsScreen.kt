@@ -442,7 +442,7 @@ fun CollectionsScreen(navController: NavController) {
                                 CollectionsScreenVM.selectedFolderData.value = folderData
                                 clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
                                 }
                                 clickedFolderName.value = folderData.folderName
                                 CollectionsScreenVM.selectedFolderData.value = folderData

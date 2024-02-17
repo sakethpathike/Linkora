@@ -1229,7 +1229,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             },
                         )
                     } else {
-                        updateVM.archiveAFolderV10(CollectionsScreenVM.currentClickedFolderData.value.id)
+                        updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
                     }
                 },
                 noteForSaving = selectedURLOrFolderNote.value,

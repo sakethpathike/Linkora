@@ -201,7 +201,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 selectedURLOrFolderName.value = it.archiveFolderName
                                 selectedFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.archiveFolderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(it.id)
                                 }
                             },
                             onFolderClick = { _ ->
@@ -250,7 +250,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 selectedURLOrFolderName.value = it.folderName
                                 selectedFolderNote.value = it.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = it.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(it.id)
                                 }
                             },
                             showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
