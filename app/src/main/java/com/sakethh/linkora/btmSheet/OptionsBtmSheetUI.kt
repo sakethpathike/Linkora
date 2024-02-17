@@ -182,7 +182,7 @@ fun OptionsBtmSheetUI(
                             elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                         )
                     }
-                    if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value && !optionsBtmSheetUIParam.forAChildFolder.value) {
+                    if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
                             onClick = {
                                 coroutineScope.launch {

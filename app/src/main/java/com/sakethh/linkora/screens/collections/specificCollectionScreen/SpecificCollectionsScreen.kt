@@ -552,7 +552,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         selectedURLOrFolderNote.value = folderData.infoForSaving
                                         clickedFolderNote.value = folderData.infoForSaving
                                         coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
                                         }
                                         clickedFolderName.value = folderData.folderName
                                         CollectionsScreenVM.selectedFolderData.value = folderData
@@ -951,7 +951,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         selectedURLOrFolderNote.value = folderData.infoForSaving
                                         clickedFolderNote.value = folderData.infoForSaving
                                         coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderName = folderData.folderName)
+                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
                                         }
                                         clickedFolderName.value = folderData.folderName
                                         shouldOptionsBtmModalSheetBeVisible.value = true
@@ -1208,25 +1208,29 @@ fun SpecificCollectionScreen(navController: NavController) {
                     false
                 ) else mutableStateOf(true),
                 onArchiveClick = {
-                    specificCollectionsScreenVM.onArchiveClick(
-                        ImportantLinks(
-                            title = tempImpLinkData.title.value,
-                            webURL = tempImpLinkData.webURL.value,
-                            baseURL = tempImpLinkData.baseURL.value,
-                            imgURL = tempImpLinkData.imgURL.value,
-                            infoForSaving = tempImpLinkData.infoForSaving.value
-                        ),
-                        context,
-                        linkID = tempImpLinkData.id,
-                        onTaskCompleted = {
-                            specificCollectionsScreenVM.changeRetrievedData(
-                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        specificCollectionsScreenVM.onArchiveClick(
+                            ImportantLinks(
+                                title = tempImpLinkData.title.value,
+                                webURL = tempImpLinkData.webURL.value,
+                                baseURL = tempImpLinkData.baseURL.value,
+                                imgURL = tempImpLinkData.imgURL.value,
+                                infoForSaving = tempImpLinkData.infoForSaving.value
+                            ),
+                            context,
+                            linkID = tempImpLinkData.id,
+                            onTaskCompleted = {
+                                specificCollectionsScreenVM.changeRetrievedData(
+                                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    )
                                 )
-                            )
-                        },
-                    )
+                            },
+                        )
+                    } else {
+                        updateVM.archiveAFolderV10(CollectionsScreenVM.currentClickedFolderData.value.id)
+                    }
                 },
                 noteForSaving = selectedURLOrFolderNote.value,
                 onNoteDeleteCardClick = {

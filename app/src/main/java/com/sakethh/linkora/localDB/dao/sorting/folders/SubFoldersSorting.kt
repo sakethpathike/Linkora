@@ -7,15 +7,15 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubFoldersSorting {
-    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID ORDER BY folderName COLLATE NOCASE ASC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0 ORDER BY folderName COLLATE NOCASE ASC")
     fun sortSubFoldersByAToZ(parentFolderID: Long): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID ORDER BY folderName COLLATE NOCASE DESC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0 ORDER BY folderName COLLATE NOCASE DESC")
     fun sortSubFoldersByZToA(parentFolderID: Long): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID ORDER BY id COLLATE NOCASE DESC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0 ORDER BY id COLLATE NOCASE DESC")
     fun sortSubFoldersByLatestToOldest(parentFolderID: Long): Flow<List<FoldersTable>>
 
-    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID ORDER BY id COLLATE NOCASE ASC")
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0 ORDER BY id COLLATE NOCASE ASC")
     fun sortSubFoldersByOldestToLatest(parentFolderID: Long): Flow<List<FoldersTable>>
 }

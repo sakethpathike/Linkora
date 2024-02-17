@@ -112,8 +112,8 @@ interface ReadDao {
     @Query("SELECT EXISTS(SELECT * FROM archived_folders_table WHERE archiveFolderName = :folderName)")
     suspend fun doesThisArchiveFolderExistsV9(folderName: String): Boolean
 
-    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE folderName = :folderName AND isFolderArchived = 1)")
-    suspend fun doesThisArchiveFolderExistsV10(folderName: String): Boolean
+    @Query("SELECT EXISTS(SELECT * FROM folders_table WHERE id = :folderID AND isFolderArchived = 1)")
+    suspend fun doesThisArchiveFolderExistsV10(folderID: Long): Boolean
 
     @Query("SELECT * FROM folders_table ORDER BY id DESC LIMIT 1")
     suspend fun getLatestAddedFolder(): FoldersTable

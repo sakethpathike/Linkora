@@ -37,6 +37,7 @@ import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
@@ -108,7 +109,7 @@ fun ChildHomeScreen(
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedLinkID = rememberSaveable {
+    val selectedElementID = rememberSaveable {
         mutableLongStateOf(0)
     }
     val selectedURLTitle = rememberSaveable {
@@ -135,7 +136,7 @@ fun ChildHomeScreen(
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
-                                    selectedLinkID.longValue = it.id
+                                    selectedElementID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
@@ -211,7 +212,7 @@ fun ChildHomeScreen(
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
-                                    selectedLinkID.longValue = it.id
+                                    selectedElementID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
@@ -296,7 +297,23 @@ fun ChildHomeScreen(
                             },
                             folderName = folderElement.folderName,
                             folderNote = folderElement.infoForSaving,
-                            onMoreIconClick = {},
+                            onMoreIconClick = {
+                                selectedNote.value = folderElement.infoForSaving
+                                selectedURLTitle.value = folderElement.folderName
+                                selectedElementID.longValue = folderElement.id
+                                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                    OptionsBtmSheetType.FOLDER
+                                shouldOptionsBtmModalSheetBeVisible.value = true
+                                coroutineScope.launch {
+                                    awaitAll(async {
+                                        optionsBtmSheetVM.updateArchiveFolderCardData(
+                                            selectedElementID.longValue
+                                        )
+                                    }, async {
+                                        btmModalSheetState.expand()
+                                    })
+                                }
+                            },
                             onFolderClick = {
                                 if (!homeScreenVM.isSelectionModeEnabled.value) {
                                     SpecificCollectionsScreenVM.inARegularFolder.value = true
@@ -343,7 +360,9 @@ fun ChildHomeScreen(
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
-                                    selectedLinkID.longValue = it.id
+                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                        OptionsBtmSheetType.LINK
+                                    selectedElementID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
@@ -420,7 +439,7 @@ fun ChildHomeScreen(
                 Spacer(modifier = Modifier.height(225.dp))
             }
         }
-
+        val updateVM: UpdateVM = viewModel()
         OptionsBtmSheetUI(
             OptionsBtmSheetUIParam(
                 importantLinks = ImportantLinks(
@@ -432,7 +451,7 @@ fun ChildHomeScreen(
                 ),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-                btmSheetFor = OptionsBtmSheetType.LINK,
+                btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onRenameClick = {
                     coroutineScope.launch {
                         btmModalSheetState.hide()
@@ -443,62 +462,88 @@ fun ChildHomeScreen(
                     shouldDeleteDialogBoxAppear.value = true
                 },
                 onArchiveClick = {
-                    SpecificCollectionsScreenVM.screenType.value =
-                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                    homeScreenVM.onArchiveClick(
-                        HomeScreenVM.tempImpLinkData,
-                        context,
-                        selectedLinkID.longValue,
-                        {})
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        SpecificCollectionsScreenVM.screenType.value =
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        homeScreenVM.onArchiveClick(
+                            HomeScreenVM.tempImpLinkData,
+                            context,
+                            selectedElementID.longValue,
+                            {})
+                    } else {
+                        updateVM.archiveAFolderV10(selectedElementID.longValue)
+                    }
                 }, noteForSaving = selectedNote.value,
                 onNoteDeleteCardClick = {
-                    SpecificCollectionsScreenVM.screenType.value =
-                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                        OptionsBtmSheetType.LINK
-                    homeScreenVM.onNoteDeleteCardClick(
-                        HomeScreenVM.tempImpLinkData.webURL,
-                        context,
-                        folderID = 0,
-                        "",
-                        selectedLinkID.longValue
-                    )
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        SpecificCollectionsScreenVM.screenType.value =
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.LINK
+                        homeScreenVM.onNoteDeleteCardClick(
+                            HomeScreenVM.tempImpLinkData.webURL,
+                            context,
+                            folderID = 0,
+                            "",
+                            selectedElementID.longValue
+                        )
+                    } else {
+                        specificCollectionsScreenVM.onNoteDeleteClick(
+                            context,
+                            selectedElementID.longValue
+                        )
+                    }
                 },
-                folderName = "",
+                folderName = selectedURLTitle.value,
                 linkTitle = selectedURLTitle.value,
             )
         )
     }
+    val deleteVM: DeleteVM = viewModel()
     DeleteDialogBox(
         DeleteDialogBoxParam(
+            folderName = selectedURLTitle,
             shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = DataDialogBoxType.LINK,
+            deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
             onDeleteClick = {
-                SpecificCollectionsScreenVM.screenType.value =
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
-                homeScreenVM.onDeleteClick(
-                    folderID = 0,
-                    selectedWebURL = "",
-                    context = context,
-                    onTaskCompleted = {},
-                    folderName = "",
-                    linkID = selectedLinkID.longValue
-                )
+                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                    SpecificCollectionsScreenVM.screenType.value =
+                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                        OptionsBtmSheetType.LINK
+                    homeScreenVM.onDeleteClick(
+                        folderID = 0,
+                        selectedWebURL = "",
+                        context = context,
+                        onTaskCompleted = {},
+                        folderName = "",
+                        linkID = selectedElementID.longValue
+                    )
+                } else {
+                    deleteVM.onRegularFolderDeleteClick(selectedElementID.longValue)
+                }
             })
     )
     val updateVM: UpdateVM = viewModel()
     RenameDialogBox(
         RenameDialogBoxParam(
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-            existingFolderName = "",
-            renameDialogBoxFor = OptionsBtmSheetType.LINK,
+            existingFolderName = selectedURLTitle.value,
+            renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
             onNoteChangeClick = { newNote: String ->
-                updateVM.updateRegularLinkNote(selectedLinkID.longValue, newNote)
+                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                    updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
+                } else {
+                    updateVM.updateFolderNote(selectedElementID.longValue, newNote)
+                }
                 shouldRenameDialogBoxAppear.value = false
             },
             onTitleChangeClick = { newTitle: String ->
-                updateVM.updateRegularLinkTitle(selectedLinkID.longValue, newTitle)
+                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                    updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
+                } else {
+                    updateVM.updateFolderName(selectedElementID.longValue, newTitle)
+                }
                 shouldRenameDialogBoxAppear.value = false
             }
         )
