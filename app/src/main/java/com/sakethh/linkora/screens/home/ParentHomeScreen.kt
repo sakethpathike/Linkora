@@ -11,15 +11,22 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
@@ -27,6 +34,9 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.HorizontalDivider
@@ -46,8 +56,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -80,6 +95,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -124,6 +140,12 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
+    val cardOffSetX = remember { mutableStateOf(0f) }
+    val cardOffSetY = remember { mutableStateOf(0f) }
+    val cardHeight = remember {
+        mutableStateOf(0.dp)
+    }
+    val interactionSource = remember { MutableInteractionSource() }
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -143,27 +165,28 @@ fun ParentHomeScreen(navController: NavController) {
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
-                TopAppBar(navigationIcon = {
-                    if (homeScreenVM.isSelectionModeEnabled.value) {
-                        IconButton(onClick = {
-                            homeScreenVM.isSelectionModeEnabled.value = false
-                            homeScreenVM.areAllLinksChecked.value = false
-                            homeScreenVM.areAllFoldersChecked.value = false
-                            homeScreenVM.selectedLinksID.clear()
-                            homeScreenVM.selectedFoldersData.clear()
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Cancel, contentDescription = null
-                            )
+                TopAppBar(
+                    navigationIcon = {
+                        if (homeScreenVM.isSelectionModeEnabled.value) {
+                            IconButton(onClick = {
+                                homeScreenVM.isSelectionModeEnabled.value = false
+                                homeScreenVM.areAllLinksChecked.value = false
+                                homeScreenVM.areAllFoldersChecked.value = false
+                                homeScreenVM.selectedLinksID.clear()
+                                homeScreenVM.selectedFoldersData.clear()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel, contentDescription = null
+                                )
+                            }
                         }
-                    }
-                }, title = {
-                    if (homeScreenVM.isSelectionModeEnabled.value) {
-                        Row {
-                            AnimatedContent(
-                                targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
-                                label = "",
-                                transitionSpec = {
+                    }, title = {
+                        if (homeScreenVM.isSelectionModeEnabled.value) {
+                            Row {
+                                AnimatedContent(
+                                    targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
+                                    label = "",
+                                    transitionSpec = {
                                     ContentTransform(
                                         initialContentExit = slideOutVertically(
                                             animationSpec = tween(
@@ -222,11 +245,13 @@ fun ParentHomeScreen(navController: NavController) {
                         IconButton(onClick = { shouldListsBottomSheetAppear.value = true }) {
                             Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                         }
-                        IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                contentDescription = null
-                            )
+                        if (homeScreenList.isNotEmpty()) {
+                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                    contentDescription = null
+                                )
+                            }
                         }
                     }
                 })
@@ -293,29 +318,123 @@ fun ParentHomeScreen(navController: NavController) {
                                 ).value,
                         )
                     }
-                }
-            }
-            if (shouldScreenTransparencyDecreasedBoxVisible.value) {
-                Box(modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(0.85f))
-                    .clickable {
-                        shouldScreenTransparencyDecreasedBoxVisible.value = false
-                        coroutineScope
-                            .launch {
-                                awaitAll(async {
-                                    rotationAnimation.animateTo(
-                                        -360f, animationSpec = tween(300)
-                                    )
-                                }, async { isMainFabRotated.value = false })
+                } else {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                        Column(modifier = Modifier
+                            .fillMaxWidth()
+                            .offset {
+                                IntOffset(
+                                    cardOffSetX.value.roundToInt(),
+                                    cardOffSetY.value.roundToInt()
+                                )
                             }
-                            .invokeOnCompletion {
-                                coroutineScope.launch {
-                                    rotationAnimation.snapTo(0f)
+                            .pointerInput(Unit) {
+                                detectDragGestures { change, dragAmount ->
+                                    change.consumeAllChanges()
+                                    cardOffSetX.value += dragAmount.x
+                                    cardOffSetY.value += dragAmount.y
+                                }
+                            }) {
+                            Box() {
+                                Card(
+                                    border = BorderStroke(
+                                        1.dp,
+                                        MaterialTheme.colorScheme.onSurface.copy(0.4f)
+                                    ),
+                                    colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 20.dp, end = 20.dp)
+                                ) {
+                                    Spacer(modifier = Modifier.height(20.dp))
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(
+                                                10.dp
+                                            )
+                                    ) {
+                                        Text(text = "• ")
+                                        Text(
+                                            text = "Access and manage folders directly from the home screen itself by clicking the tune icon in the top right corner to customize your home screen UI.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 18.sp,
+                                            lineHeight = 24.sp,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier
+                                                .padding(end = 10.dp)
+                                        )
+
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(
+                                                10.dp
+                                            )
+                                    ) {
+                                        Text(text = "• ")
+                                        Text(
+                                            text = "Please note that folders need to be created by you or already exist to be shown in the list.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 18.sp,
+                                            lineHeight = 24.sp,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier
+                                                .padding(end = 10.dp)
+                                        )
+
+                                    }
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(
+                                                10.dp
+                                            )
+                                    ) {
+                                        Text(text = "• ")
+                                        Text(
+                                            text = "Saved links and important links can be re-added from the next app version.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 18.sp,
+                                            lineHeight = 24.sp,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier
+                                                .padding(end = 10.dp)
+                                        )
+
+                                    }
+                                    Spacer(modifier = Modifier.height(20.dp))
                                 }
                             }
-                    })
-            }
+                        }
+                    }
+                }
+                if (shouldScreenTransparencyDecreasedBoxVisible.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                            .clickable {
+                                shouldScreenTransparencyDecreasedBoxVisible.value = false
+                                coroutineScope
+                                    .launch {
+                                        awaitAll(async {
+                                            rotationAnimation.animateTo(
+                                                -360f, animationSpec = tween(300)
+                                            )
+                                        }, async { isMainFabRotated.value = false })
+                                    }
+                                    .invokeOnCompletion {
+                                        coroutineScope.launch {
+                                            rotationAnimation.snapTo(0f)
+                                        }
+                                    }
+                            })
+                }
         }
         SortingBottomSheetUI(
             SortingBottomSheetUIParam(
@@ -514,4 +633,5 @@ fun ParentHomeScreen(navController: NavController) {
             activity?.finish()
         }
     }
+}
 }
