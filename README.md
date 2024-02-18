@@ -33,9 +33,9 @@ Linkora is an Android project that focuses on making link organization simpler. 
 ## Releases
 
 The latest release of Linkora (v0.4.0-beta02) is available
-on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta01).
+on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta02).
 You can download the APK file from there;
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta01/Linkora-v0.4.0-beta01.apk).
+or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta02/Linkora-v0.4.0-beta02.apk).
 
 [<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.4.0-beta02%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.4.0-beta02%2FLinkora-v0.4.0-beta02.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta02/Linkora-v0.4.0-beta02.apk)
 
