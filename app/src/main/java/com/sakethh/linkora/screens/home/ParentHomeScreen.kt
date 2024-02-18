@@ -6,6 +6,11 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,7 +21,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -58,10 +62,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -142,10 +152,14 @@ fun ParentHomeScreen(navController: NavController) {
     }
     val cardOffSetX = remember { mutableStateOf(0f) }
     val cardOffSetY = remember { mutableStateOf(0f) }
-    val cardHeight = remember {
-        mutableStateOf(0.dp)
-    }
-    val interactionSource = remember { MutableInteractionSource() }
+    val scaleState = rememberInfiniteTransition(label = "").animateFloat(
+        initialValue = 1f,
+        targetValue = 1.15f,
+        animationSpec = infiniteRepeatable(
+            tween(500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
+    )
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -165,24 +179,22 @@ fun ParentHomeScreen(navController: NavController) {
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
-                TopAppBar(
-                    navigationIcon = {
-                        if (homeScreenVM.isSelectionModeEnabled.value) {
-                            IconButton(onClick = {
-                                homeScreenVM.isSelectionModeEnabled.value = false
-                                homeScreenVM.areAllLinksChecked.value = false
-                                homeScreenVM.areAllFoldersChecked.value = false
-                                homeScreenVM.selectedLinksID.clear()
-                                homeScreenVM.selectedFoldersData.clear()
-                            }) {
-                                Icon(
-                                    imageVector = Icons.Default.Cancel, contentDescription = null
+                TopAppBar(navigationIcon = {
+                    if (homeScreenVM.isSelectionModeEnabled.value) {
+                        IconButton(onClick = {
+                            homeScreenVM.isSelectionModeEnabled.value = false
+                            homeScreenVM.areAllLinksChecked.value = false
+                            homeScreenVM.areAllFoldersChecked.value = false
+                            homeScreenVM.selectedLinksID.clear()
+                            homeScreenVM.selectedFoldersData.clear()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Default.Cancel, contentDescription = null
                                 )
                             }
                         }
                     }, title = {
                         if (homeScreenVM.isSelectionModeEnabled.value) {
-                            Row {
                                 AnimatedContent(
                                     targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
                                     label = "",
@@ -214,7 +226,6 @@ fun ParentHomeScreen(navController: NavController) {
                                 style = MaterialTheme.typography.titleLarge,
                                 fontSize = 18.sp
                             )
-                        }
                     } else {
                         Text(
                             text = homeScreenVM.currentPhaseOfTheDay.value,
@@ -242,7 +253,11 @@ fun ParentHomeScreen(navController: NavController) {
                             )
                         }
                     } else {
-                        IconButton(onClick = { shouldListsBottomSheetAppear.value = true }) {
+                        IconButton(
+                            modifier = if (homeScreenList.isEmpty()) Modifier.scale(
+                                scaleState.value
+                            ) else Modifier,
+                            onClick = { shouldListsBottomSheetAppear.value = true }) {
                             Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                         }
                         if (homeScreenList.isNotEmpty()) {
@@ -357,7 +372,18 @@ fun ParentHomeScreen(navController: NavController) {
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = "Access and manage folders directly from the home screen itself by clicking the tune icon in the top right corner to customize your home screen UI.",
+                                            buildAnnotatedString {
+                                                append("Access and manage folders directly from the home screen itself by clicking the ")
+                                                withStyle(
+                                                    style = SpanStyle(
+                                                        fontWeight = FontWeight.Bold,
+                                                        textDecoration = TextDecoration.Underline
+                                                    )
+                                                ) {
+                                                    append("tune icon in the top right corner ")
+                                                }
+                                                append("to customize your home screen UI.")
+                                            },
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -397,7 +423,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = "Saved links and important links can be re-added from the next app version.",
+                                            text = "Saved Links and Important Links can be re-added from the next app version.",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
