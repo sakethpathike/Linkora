@@ -292,9 +292,9 @@ class SettingsScreenVM(
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
-                title = "Import Links",
+                title = "Import Data",
                 doesDescriptionExists = true,
-                description = "Import Links from external JSON file.",
+                description = "Import Data from external JSON file.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -316,9 +316,9 @@ class SettingsScreenVM(
                 icon = Icons.Default.FileDownload
             ),
             SettingsUIElement(
-                title = "Export Links",
+                title = "Export Data",
                 doesDescriptionExists = true,
-                description = "Export all of your links in JSON format.",
+                description = "Export all of your data in JSON format.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -329,7 +329,7 @@ class SettingsScreenVM(
             SettingsUIElement(
                 title = "Delete entire data permanently",
                 doesDescriptionExists = true,
-                description = "Delete all links and folders permanently including archive(s).",
+                description = "Delete all links and folders permanently including archives.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
