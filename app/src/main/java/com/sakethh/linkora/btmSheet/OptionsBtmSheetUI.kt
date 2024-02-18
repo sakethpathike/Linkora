@@ -119,7 +119,7 @@ fun OptionsBtmSheetUI(
                             .show()
                     },
                     onFolderClick = { },
-                    maxLines = 8,
+                    maxLines = 2,
                     showMoreIcon = false,
                     folderIcon = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
                 )

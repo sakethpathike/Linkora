@@ -20,7 +20,7 @@ import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 enum class DataDialogBoxType {
-    LINK, FOLDER, REMOVE_ENTIRE_DATA
+    LINK, FOLDER, REMOVE_ENTIRE_DATA, SELECTED_DATA
 }
 
 data class DeleteDialogBoxParam(
@@ -73,7 +73,7 @@ fun DeleteDialogBox(
                     }
                 }, title = {
                     Text(
-                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected links?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected folders?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else "Are you sure you want to delete all folders and links?",
+                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected links?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected folders?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA) "Are you sure you want to delete all selected items?" else "Are you sure you want to delete all folders and links?",
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 27.sp,

@@ -195,37 +195,39 @@ fun ParentHomeScreen(navController: NavController) {
                         }
                     }, title = {
                         if (homeScreenVM.isSelectionModeEnabled.value) {
+                            Row {
                                 AnimatedContent(
                                     targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
                                     label = "",
                                     transitionSpec = {
-                                    ContentTransform(
-                                        initialContentExit = slideOutVertically(
-                                            animationSpec = tween(
-                                                150
+                                        ContentTransform(
+                                            initialContentExit = slideOutVertically(
+                                                animationSpec = tween(
+                                                    150
+                                                )
+                                            ) + fadeOut(
+                                                tween(150)
+                                            ), targetContentEnter = slideInVertically(
+                                                animationSpec = tween(durationMillis = 150)
+                                            ) + fadeIn(
+                                                tween(150)
                                             )
-                                        ) + fadeOut(
-                                            tween(150)
-                                        ), targetContentEnter = slideInVertically(
-                                            animationSpec = tween(durationMillis = 150)
-                                        ) + fadeIn(
-                                            tween(150)
                                         )
+                                    }) {
+                                    Text(
+                                        text = it.toString(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
                                     )
-                                }) {
+                                }
                                 Text(
-                                    text = it.toString(),
+                                    text = " items selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp
                                 )
                             }
-                            Text(
-                                text = " items selected",
-                                color = MaterialTheme.colorScheme.onSurface,
-                                style = MaterialTheme.typography.titleLarge,
-                                fontSize = 18.sp
-                            )
                     } else {
                         Text(
                             text = homeScreenVM.currentPhaseOfTheDay.value,
@@ -419,7 +421,6 @@ fun ParentHomeScreen(navController: NavController) {
                                     cardOffSetY.value += dragAmount.y
                                 }
                             }) {
-                            Box() {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -694,7 +695,7 @@ fun ParentHomeScreen(navController: NavController) {
             deleteDialogBoxParam = DeleteDialogBoxParam(
                 areFoldersSelectable = true,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-                deleteDialogBoxType = DataDialogBoxType.FOLDER,
+                deleteDialogBoxType = DataDialogBoxType.SELECTED_DATA,
                 onDeleteClick = {
                     homeScreenVM.onDeleteMultipleSelectedFolders()
                     homeScreenVM.onDeleteMultipleSelectedLinks()
@@ -727,5 +728,4 @@ fun ParentHomeScreen(navController: NavController) {
             activity?.finish()
         }
     }
-}
 }

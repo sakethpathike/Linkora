@@ -562,7 +562,8 @@ fun CollectionsScreen(navController: NavController) {
                 })
         )
         DeleteDialogBox(
-            DeleteDialogBoxParam(areFoldersSelectable = true,
+            DeleteDialogBoxParam(
+                areFoldersSelectable = areFoldersSelectable.value,
                 totalIds = mutableLongStateOf(
                     CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
                 ),

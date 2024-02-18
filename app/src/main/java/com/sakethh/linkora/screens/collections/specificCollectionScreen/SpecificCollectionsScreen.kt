@@ -253,6 +253,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             areElementsSelectable.value = false
                             specificCollectionsScreenVM.areAllLinksChecked.value = false
                             specificCollectionsScreenVM.areAllFoldersChecked.value = false
+                            specificCollectionsScreenVM.selectedImpLinks.clear()
                             specificCollectionsScreenVM.removeAllLinkSelections()
                             specificCollectionsScreenVM.changeAllFoldersSelectedData(
                                 childFoldersData
@@ -268,7 +269,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         if (areElementsSelectable.value) {
                             Row {
                                 AnimatedContent(
-                                    targetState = specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size,
+                                    targetState = specificCollectionsScreenVM.selectedImpLinks.size + specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -317,7 +318,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         if (areElementsSelectable.value) {
                             when (SpecificCollectionsScreenVM.screenType.value) {
                                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                                    if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
+                                    if ((specificCollectionsScreenVM.selectedImpLinks.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
                                         IconButton(onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
@@ -333,6 +334,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 false
                                             specificCollectionsScreenVM.areAllFoldersChecked.value =
                                                 false
+                                            specificCollectionsScreenVM.selectedImpLinks.clear()
                                             specificCollectionsScreenVM.removeAllLinkSelections()
                                             specificCollectionsScreenVM.changeAllFoldersSelectedData(
                                                 childFoldersData
@@ -816,8 +818,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
                                                 areElementsSelectable.value = true
-                                                specificCollectionsScreenVM.selectedLinksID.add(
-                                                    linkData.id
+                                                specificCollectionsScreenVM.selectedImpLinks.add(
+                                                    linkData.webURL
                                                 )
                                             }
                                         },
@@ -858,16 +860,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         onLinkClick = {
                                             if (areElementsSelectable.value) {
 
-                                                if (!specificCollectionsScreenVM.selectedLinksID.contains(
-                                                        linkData.id
+                                                if (!specificCollectionsScreenVM.selectedImpLinks.contains(
+                                                        linkData.webURL
                                                     )
                                                 ) {
-                                                    specificCollectionsScreenVM.selectedLinksID.add(
-                                                        linkData.id
+                                                    specificCollectionsScreenVM.selectedImpLinks.add(
+                                                        linkData.webURL
                                                     )
                                                 } else {
-                                                    specificCollectionsScreenVM.selectedLinksID.remove(
-                                                        linkData.id
+                                                    specificCollectionsScreenVM.selectedImpLinks.remove(
+                                                        linkData.webURL
                                                     )
                                                 }
                                             } else {
@@ -904,8 +906,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         },
                                         isItemSelected = mutableStateOf(
-                                            specificCollectionsScreenVM.selectedLinksID.contains(
-                                                linkData.id
+                                            specificCollectionsScreenVM.selectedImpLinks.contains(
+                                                linkData.webURL
                                             )
                                         )
                                     )
@@ -1284,7 +1286,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         )
                     }
                 },
-                deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
+                deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else if (areElementsSelectable.value) DataDialogBoxType.SELECTED_DATA else DataDialogBoxType.FOLDER,
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -1292,6 +1294,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         ),
                         folderID = CollectionsScreenVM.currentClickedFolderData.value.id
                     )
+                    specificCollectionsScreenVM.selectedImpLinks.clear()
                 })
         )
         RenameDialogBox(
@@ -1510,6 +1513,7 @@ fun SpecificCollectionScreen(navController: NavController) {
             specificCollectionsScreenVM.areAllFoldersChecked.value = false
             specificCollectionsScreenVM.removeAllLinkSelections()
             specificCollectionsScreenVM.changeAllFoldersSelectedData(childFoldersData)
+            specificCollectionsScreenVM.selectedImpLinks.clear()
         } else {
             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN

@@ -1035,8 +1035,9 @@ fun SearchScreen(navController: NavController) {
         )
         DeleteDialogBox(
             DeleteDialogBoxParam(
+                areFoldersSelectable = isSelectionModeEnabled.value,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-                deleteDialogBoxType = DataDialogBoxType.LINK,
+                deleteDialogBoxType = if (isSelectionModeEnabled.value) DataDialogBoxType.SELECTED_DATA else DataDialogBoxType.LINK,
                 onDeleteClick = {
                     if (!isSelectionModeEnabled.value) {
                         searchScreenVM.onDeleteClick(
