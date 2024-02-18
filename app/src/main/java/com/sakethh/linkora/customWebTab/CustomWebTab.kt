@@ -10,7 +10,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.UriHandler
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
@@ -36,18 +36,18 @@ suspend fun openInWeb(
     }
     coroutineScope {
         awaitAll(async {
-            if (!CustomFunctionsForLocalDB.localDB.crudDao()
+            if (!LocalDataBase.localDB.readDao()
                     .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisitedData.webURL)
             ) {
-                CustomFunctionsForLocalDB.localDB.crudDao()
+                LocalDataBase.localDB.createDao()
                     .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
             } else {
                 this.launch {
-                    CustomFunctionsForLocalDB.localDB.crudDao()
+                    LocalDataBase.localDB.deleteDao()
                         .deleteARecentlyVisitedLink(webURL = recentlyVisitedData.webURL)
                 }.invokeOnCompletion {
                     this.launch {
-                        CustomFunctionsForLocalDB.localDB.crudDao()
+                        LocalDataBase.localDB.createDao()
                             .addANewLinkInRecentlyVisited(recentlyVisited = recentlyVisitedData)
                     }
                 }

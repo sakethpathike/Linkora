@@ -2,13 +2,14 @@ package com.sakethh.linkora.localDB.dto
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 @Entity(tableName = "links_table")
 data class LinksTable(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     val title: String,
     val webURL: String,
     val baseURL: String,
@@ -18,13 +19,17 @@ data class LinksTable(
     var isLinkedWithSavedLinks: Boolean,
 
     var isLinkedWithFolders: Boolean,
-    var keyOfLinkedFolder: String,
+    @SerialName("keyOfLinkedFolderV10")
+    var keyOfLinkedFolderV10: Long? = null,
+    var keyOfLinkedFolder: String? = null,
 
     var isLinkedWithImpFolder: Boolean,
     var keyOfImpLinkedFolder: String,
+    var keyOfImpLinkedFolderV10: Long? = null,
 
     var isLinkedWithArchivedFolder: Boolean,
-    var keyOfArchiveLinkedFolder: String,
+    var keyOfArchiveLinkedFolderV10: Long? = null,
+    var keyOfArchiveLinkedFolder: String? = null
 )
 
 @Serializable
@@ -35,6 +40,11 @@ data class FoldersTable(
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
+
+    var parentFolderID: Long? = null,
+    var childFolderIDs: List<Long>? = null,
+    var isFolderArchived: Boolean = false,
+    var isMarkedAsImportant: Boolean = false
 )
 
 @Serializable
@@ -87,10 +97,20 @@ data class ImportantFolders(
 @Entity(tableName = "recently_visited_table")
 data class RecentlyVisited(
     @PrimaryKey(autoGenerate = true)
-    val id: Long = 0,
+    var id: Long = 0,
     var title: String,
     var webURL: String,
     var baseURL: String,
     var imgURL: String,
     var infoForSaving: String,
+)
+
+@Serializable
+@Entity(tableName = "home_screen_list_table")
+data class HomeScreenListTable(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    var position: Long,
+    val folderName: String,
+    val shouldSavedLinksTabVisible: Boolean = true,
+    val shouldImpLinksTabVisible: Boolean = true
 )

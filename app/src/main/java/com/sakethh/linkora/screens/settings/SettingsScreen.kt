@@ -12,9 +12,12 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,17 +28,25 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.outlined.GetApp
+import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.contentColorFor
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -54,15 +65,17 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customWebTab.openInWeb
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.screens.settings.composables.ImportConflictDialog
+import com.sakethh.linkora.screens.settings.composables.ImportConflictBtmSheet
 import com.sakethh.linkora.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.screens.settings.composables.PermissionDialog
-import com.sakethh.linkora.screens.settings.composables.SettingComponent
+import com.sakethh.linkora.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.screens.settings.composables.SettingsDataComposable
 import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -73,6 +86,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
 @Composable
 fun SettingsScreen(navController: NavController) {
+    val importModalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val settingsScreenVM: SettingsScreenVM = viewModel()
@@ -112,7 +126,7 @@ fun SettingsScreen(navController: NavController) {
         context,
         isDialogBoxVisible = isPermissionDialogBoxVisible,
         activityResultLauncher = activityResultLauncher,
-        isImportConflictDialogVisible = isImportConflictBoxVisible
+        importModalBtmSheetState = isImportConflictBoxVisible
     )
     val coroutineScope = rememberCoroutineScope()
     val shouldVersionCheckerDialogAppear = rememberSaveable {
@@ -121,26 +135,38 @@ fun SettingsScreen(navController: NavController) {
     val shouldBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val btmModalSheetState = androidx.compose.material3.rememberModalBottomSheetState()
+    val btmModalSheetState =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val privacySectionData = settingsScreenVM.privacySection(context)
     LinkoraTheme {
         Scaffold(topBar = {
-            TopAppBar(title = {
-                Text(
-                    text = "Settings",
-                    color = MaterialTheme.colorScheme.onSurface,
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 24.sp
-                )
-            })
-        }) {
+            Column {
+                TopAppBar(title = {
+                    Text(
+                        text = "Settings",
+                        color = MaterialTheme.colorScheme.onSurface,
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 24.sp
+                    )
+                })
+                HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+            }
+        }) { it ->
             LazyColumn(modifier = Modifier.padding(it)) {
-                item {
+                item(key = "settingsCard") {
                     Card(
+                        border = BorderStroke(
+                            1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
+                        ),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = contentColorFor(MaterialTheme.colorScheme.surface)
+                        ),
                         modifier = Modifier
                             .padding(15.dp)
                             .fillMaxWidth()
                             .wrapContentHeight()
+                            .animateContentSize()
                     ) {
                         Row {
                             Text(
@@ -152,51 +178,139 @@ fun SettingsScreen(navController: NavController) {
                                     .alignByBaseline()
                             )
                             Text(
-                                text = "v${SettingsScreenVM.currentAppVersion}",
+                                text = SettingsScreenVM.appVersionValue,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alignByBaseline()
                             )
                         }
-                        /* SettingsAppInfoComponent(hasDescription = false,
-                             description = "",
-                             icon = Icons.Outlined.Update,
-                             title = "Check for latest version",
-                             onClick = {
-                                 shouldVersionCheckerDialogAppear.value = true
-                                 if (isNetworkAvailable(context)) {
-                                     coroutineScope.launch {
-                                         SettingsScreenVM.Settings.latestAppVersionRetriever()
-                                     }.invokeOnCompletion {
-                                         shouldVersionCheckerDialogAppear.value = false
-                                         if (SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestVersion.value || SettingsScreenVM.currentAppVersion != SettingsScreenVM.latestAppInfoFromServer.latestStableVersion.value) {
-                                             shouldBtmModalSheetBeVisible.value = true
-                                             coroutineScope.launch {
-                                                 if (!btmModalSheetState.isVisible) {
-                                                     btmModalSheetState.show()
-                                                 }
-                                             }
-                                         } else {
-                                             Toast.makeText(
-                                                 context,
-                                                 "you're already on latest version",
-                                                 Toast.LENGTH_SHORT
-                                             ).show()
-                                         }
-                                     }
-                                 } else {
-                                     shouldVersionCheckerDialogAppear.value = false
-                                     Toast.makeText(
-                                         context,
-                                         "network error, check your network connection and try again",
-                                         Toast.LENGTH_SHORT
-                                     ).show()
-                                 }
-                             })*/
-                        Divider(
-                            color = MaterialTheme.colorScheme.outline,
+                        if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                                context
+                            )
+                        ) {
+                            SettingsAppInfoComponent(hasDescription = false,
+                                description = "",
+                                icon = Icons.Outlined.Update,
+                                title = "Check for latest version",
+                                onClick = {
+                                    shouldVersionCheckerDialogAppear.value = true
+                                    if (isNetworkAvailable(context)) {
+                                        coroutineScope.launch {
+                                            SettingsScreenVM.Settings.latestAppVersionRetriever(
+                                                context
+                                            )
+                                        }.invokeOnCompletion {
+                                            shouldVersionCheckerDialogAppear.value = false
+                                            if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                                shouldBtmModalSheetBeVisible.value = true
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    false
+                                            } else {
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    true
+                                            }
+                                        }
+                                    } else {
+                                        shouldVersionCheckerDialogAppear.value = false
+                                        Toast.makeText(
+                                            context,
+                                            "network error, check your network connection and try again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
+                        } else if (SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                                context
+                            )
+                        ) {
+                            if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) LaunchedEffect(
+                                key1 = Unit
+                            ) {
+                                SettingsScreenVM.Settings.latestAppVersionRetriever(context)
+                            }
+                            SettingsAppInfoComponent(hasDescription = false,
+                                description = "",
+                                icon = Icons.Outlined.GetApp,
+                                title = if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                    "Linkora ${SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value} is now available. Check it out and download it."
+                                } else {
+                                    "Linkora ${SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value} is now available. Check it out and download it."
+                                },
+                                onClick = {
+                                    shouldVersionCheckerDialogAppear.value = true
+                                    if (isNetworkAvailable(context)) {
+                                        coroutineScope.launch {
+                                            if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) {
+                                                SettingsScreenVM.Settings.latestAppVersionRetriever(
+                                                    context
+                                                )
+                                            }
+                                        }.invokeOnCompletion {
+                                            shouldVersionCheckerDialogAppear.value = false
+                                            if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                                shouldBtmModalSheetBeVisible.value = true
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    false
+                                            } else {
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    true
+                                            }
+                                        }
+                                    } else {
+                                        shouldVersionCheckerDialogAppear.value = false
+                                        Toast.makeText(
+                                            context,
+                                            "network error, check your network connection and try again",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    }
+                                })
+                        } else {
+                            if (isNetworkAvailable(context)) {
+                                Card(
+                                    border = BorderStroke(
+                                        1.dp, contentColorFor(MaterialTheme.colorScheme.surface)
+                                    ),
+                                    colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 15.dp, end = 15.dp, top = 15.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight()
+                                            .padding(
+                                                top = 10.dp, bottom = 10.dp
+                                            ), verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Box(
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            androidx.compose.material3.Icon(
+                                                imageVector = Icons.Outlined.CheckCircle,
+                                                contentDescription = null,
+                                                modifier = Modifier.padding(
+                                                    start = 10.dp, end = 10.dp
+                                                )
+                                            )
+                                        }
+                                        Text(
+                                            text = "You are using latest version of Linkora.",
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 14.sp,
+                                            lineHeight = 18.sp,
+                                            textAlign = TextAlign.Start,
+                                            modifier = Modifier.padding(end = 15.dp)
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                        HorizontalDivider(
+                            modifier = Modifier.padding(20.dp),
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp)
+                            color = MaterialTheme.colorScheme.outline
                         )
                         SettingsAppInfoComponent(description = "The source code for Linkora is public and open-source; feel free to check out what Linkora does under the hood.",
                             icon = null,
@@ -220,10 +334,10 @@ fun SettingsScreen(navController: NavController) {
                                 }
                             })
 
-                        Divider(
-                            color = MaterialTheme.colorScheme.outline,
+                        HorizontalDivider(
+                            modifier = Modifier.padding(20.dp),
                             thickness = 0.5.dp,
-                            modifier = Modifier.padding(20.dp)
+                            color = MaterialTheme.colorScheme.outline
                         )
 
                         SettingsAppInfoComponent(description = "Follow @LinkoraApp on the bird app to get the latest information about releases and everything in between about Linkora.",
@@ -250,19 +364,23 @@ fun SettingsScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
-                item {
+                item(key = "themeTitle") {
                     Text(
                         text = "Theme",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                    )
+                    Spacer(
+                        modifier = Modifier.padding(
+                            bottom = 10.dp
+                        )
                     )
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
-                    item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                    item(key = "Follow System Theme") {
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Follow System Theme",
                                 doesDescriptionExists = false,
                                 isSwitchNeeded = true,
@@ -284,23 +402,13 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(
-                                topStart = 10.dp,
-                                topEnd = 10.dp,
-                                bottomStart = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp,
-                                bottomEnd = if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value && Build.VERSION.SDK_INT < Build.VERSION_CODES.S) 10.dp else 0.dp
-                            ),
-                            topPadding = 20.dp
+                                })
                         )
                     }
                 }
                 if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
-                    item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                    item(key = "Use Dark Mode") {
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
                                 doesDescriptionExists = false,
                                 description = null,
@@ -322,23 +430,13 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(
-                                bottomEnd = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
-                                bottomStart = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) 0.dp else 10.dp,
-                                topStart = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp,
-                                topEnd = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 10.dp else 0.dp
-                            ),
-                            topPadding = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q || SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) 20.dp else 1.dp
+                                })
                         )
                     }
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                    item {
-                        SettingComponent(
-                            isSingleComponent = false,
+                    item(key = "Use dynamic theming") {
+                        RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
                                 doesDescriptionExists = true,
                                 description = "Change colour themes within the app based on your wallpaper.",
@@ -360,34 +458,47 @@ fun SettingsScreen(navController: NavController) {
                                                 ), dataStore = context.dataStore
                                             ) == true
                                     }
-                                }),
-                            data = emptyList(),
-                            forListOfSettings = false,
-                            shape = RoundedCornerShape(bottomStart = 10.dp, bottomEnd = 10.dp),
-                            topPadding = 1.dp
+                                })
                         )
                     }
                 }
-
                 item {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
+                item(key = "General") {
                     Text(
                         text = "General",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp)
+                    )
+                    Spacer(
+                        modifier = Modifier.padding(
+                            bottom = 10.dp
+                        )
                     )
                 }
-                items(generalSectionData) { settingsUIElement ->
-                    SettingComponent(
-                        settingsUIElement = settingsUIElement,
-                        data = generalSectionData,
-                        isSingleComponent = false,
-                        forListOfSettings = true,
+                items(items = generalSectionData, key = { settingsUIElement ->
+                    settingsUIElement.title
+                }) { settingsUIElement ->
+                    RegularSettingComponent(
+                        settingsUIElement = settingsUIElement
                     )
                 }
                 item {
-                    Spacer(modifier = Modifier.padding(top = 40.dp))
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
+                item(key = "Data") {
+                    Spacer(modifier = Modifier.padding(top = 20.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Data",
@@ -399,7 +510,7 @@ fun SettingsScreen(navController: NavController) {
                             )
                         )
                         Text(
-                            text = "Alpha",
+                            text = "Beta",
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 15.sp,
@@ -414,116 +525,89 @@ fun SettingsScreen(navController: NavController) {
                                 .padding(5.dp)
                         )
                     }
-                    Spacer(
-                        modifier = Modifier.padding(
-                            bottom = 20.dp
-                        )
+                    Text(
+                        text = "The Import feature is polished, not perfect. While it's much better, surprises might still pop up during import. However, exporting should be no problem.",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        lineHeight = 18.sp,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier.padding(start = 15.dp, top = 15.dp, end = 15.dp)
                     )
                 }
-                items(dataSectionData) { settingsUIElement ->
+                items(items = dataSectionData, key = { settingsUIElement ->
+                    settingsUIElement.title
+                }) { settingsUIElement ->
                     settingsUIElement.description?.let { it1 ->
                         SettingsDataComposable(
                             onClick = {
                                 settingsUIElement.onSwitchStateChange()
                             },
-                            shape = RoundedCornerShape(
-                                topStart = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                topEnd = when (settingsUIElement) {
-                                    dataSectionData.first() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomStart = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                                bottomEnd = when (settingsUIElement) {
-                                    dataSectionData.last() -> {
-                                        10.dp
-                                    }
-
-                                    else -> {
-                                        0.dp
-                                    }
-                                },
-                            ),
                             title = settingsUIElement.title,
                             description = it1,
                             icon = settingsUIElement.icon!!
                         )
                     }
-
                 }
                 item {
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 0.25.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(0.50f)
+                    )
+                }
+                item(key = "Privacy") {
                     Text(
                         text = "Privacy",
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 40.dp)
+                        modifier = Modifier.padding(start = 15.dp, top = 20.dp, bottom = 10.dp)
                     )
                 }
-                item {
-                    Card(colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(15.dp)
-                            .clickable {
-                                privacySectionData.onSwitchStateChange()
+                item(key = "Privacy Element") {
+                    Box(modifier = Modifier.clickable {
+                        privacySectionData.onSwitchStateChange()
+                    }) {
+                        Column {
+                            Row(
+                                modifier = Modifier
+                                    .padding(
+                                        start = 15.dp
+                                    )
+                                    .fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Text(
+                                    text = privacySectionData.title,
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 16.sp,
+                                    modifier = Modifier.padding(
+                                        top = 15.dp
+                                    )
+                                )
+                                Switch(
+                                    checked = privacySectionData.isSwitchEnabled.value,
+                                    onCheckedChange = {
+                                        privacySectionData.onSwitchStateChange()
+                                    },
+                                    modifier = Modifier.padding(
+                                        top = 15.dp, end = 15.dp
+                                    )
+                                )
                             }
-                            .animateContentSize(),
-                        shape = RoundedCornerShape(10.dp)) {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.SpaceBetween
-                        ) {
                             Text(
-                                text = privacySectionData.title,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 16.sp,
+                                text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 14.sp,
                                 modifier = Modifier.padding(
-                                    top = 15.dp, start = 15.dp
-                                )
-                            )
-                            Switch(
-                                checked = privacySectionData.isSwitchEnabled.value,
-                                onCheckedChange = {
-                                    privacySectionData.onSwitchStateChange()
-                                },
-                                modifier = Modifier.padding(
-                                    top = 15.dp, end = 15.dp
-                                )
+                                    top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
+                                ),
+                                lineHeight = 18.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Text(
-                            text = if (!SettingsScreenVM.Settings.isSendCrashReportsEnabled.value) "Every single bit of data is stored locally on your device." else "Linkora collects data related to app crashes and errors, device information, and app version.",
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(
-                                top = 10.dp, start = 15.dp, bottom = 20.dp, end = 15.dp
-                            ),
-                            lineHeight = 16.sp,
-                            textAlign = TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis
-                        )
                     }
                 }
                 item {
@@ -564,54 +648,91 @@ fun SettingsScreen(navController: NavController) {
             onClick = { activityResultLauncher.launch("text/*") },
             exceptionType = settingsScreenVM.exceptionType
         )
-        val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
-        ImportConflictDialog(isVisible = isImportConflictBoxVisible, onMergeClick = {
-            activityResultLauncher.launch("text/*")
-        }, onDeleteExistingDataClick = {
-            customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+        val deleteVM: DeleteVM = viewModel()
+        ImportConflictBtmSheet(isUIVisible = isImportConflictBoxVisible,
+            modalBottomSheetState = importModalBottomSheetState,
+            onMergeClick = {
                 activityResultLauncher.launch("text/*")
-            })
-        }, onExportAndThenImportClick = {
-            fun exportDataToAFile() {
-                settingsScreenVM.exportDataToAFile(
-                    context = context,
-                    isDialogBoxVisible = isPermissionDialogBoxVisible,
-                    runtimePermission = runtimePermission
-                )
-                Toast.makeText(
-                    context, "Successfully Exported", Toast.LENGTH_SHORT
-                ).show()
-                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+            },
+            onDeleteExistingDataClick = {
+                deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                     activityResultLauncher.launch("text/*")
                 })
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                exportDataToAFile()
-            } else {
-                when (ContextCompat.checkSelfPermission(
-                    context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                )) {
-                    PackageManager.PERMISSION_GRANTED -> {
-                        exportDataToAFile()
-                    }
+            },
+            onDataExportClick = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    settingsScreenVM.exportDataToAFile(
+                        context = context,
+                        isDialogBoxVisible = isPermissionDialogBoxVisible,
+                        runtimePermission = runtimePermission
+                    )
+                } else {
+                    when (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )) {
+                        PackageManager.PERMISSION_GRANTED -> {
+                            settingsScreenVM.exportDataToAFile(
+                                context = context,
+                                isDialogBoxVisible = isPermissionDialogBoxVisible,
+                                runtimePermission = runtimePermission
+                            )
+                            Toast.makeText(
+                                context, "Successfully Exported", Toast.LENGTH_SHORT
+                            ).show()
+                        }
 
-                    else -> {
-                        runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                        Toast.makeText(
-                            context, "Permission required to write the data", Toast.LENGTH_SHORT
-                        ).show()
+                        else -> {
+                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Toast.makeText(
+                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
                 }
-            }
-        })
-        DeleteDialogBox(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
-            onDeleteClick = {
-                customFunctionsForLocalDB.deleteEntireLinksAndFoldersData()
-                Toast.makeText(
-                    context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
-                ).show()
+            },
+            onExportAndThenImportClick = {
+                fun exportDataToAFile() {
+                    settingsScreenVM.exportDataToAFile(
+                        context = context,
+                        isDialogBoxVisible = isPermissionDialogBoxVisible,
+                        runtimePermission = runtimePermission
+                    )
+                    Toast.makeText(
+                        context, "Successfully Exported", Toast.LENGTH_SHORT
+                    ).show()
+                    deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                        activityResultLauncher.launch("text/*")
+                    })
+                }
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    exportDataToAFile()
+                } else {
+                    when (ContextCompat.checkSelfPermission(
+                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
+                    )) {
+                        PackageManager.PERMISSION_GRANTED -> {
+                            exportDataToAFile()
+                        }
+
+                        else -> {
+                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                            Toast.makeText(
+                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
             })
+        DeleteDialogBox(
+            DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+                deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
+                onDeleteClick = {
+                    deleteVM.deleteEntireLinksAndFoldersData()
+                    Toast.makeText(
+                        context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
+                    ).show()
+                })
+        )
     }
     BackHandler {
         if (btmModalSheetState.isVisible) {

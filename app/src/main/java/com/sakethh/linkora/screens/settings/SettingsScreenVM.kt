@@ -11,6 +11,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.core.content.ContextCompat
@@ -21,20 +22,22 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.sakethh.linkora.VERSION_CHECK_URL
+import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB._import.ImportImpl
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.export.ExportImpl
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.screens.settings.appInfo.dto.AppInfoDTO
-import com.sakethh.linkora.screens.settings.appInfo.dto.MutableStateAppInfoDTO
+import com.sakethh.linkora.screens.settings.appInfo.dto.MutableAppInfoDTO
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.json.Json
 import org.jsoup.Jsoup
 
@@ -49,22 +52,25 @@ data class SettingsUIElement(
 )
 
 class SettingsScreenVM(
-    private val exportImpl: ExportImpl = ExportImpl()
+    private val exportImpl: ExportImpl = ExportImpl(), private val updateVM: UpdateVM = UpdateVM()
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     companion object {
-        const val currentAppVersion = "0.3.1"
-        val latestAppInfoFromServer = MutableStateAppInfoDTO(
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf(""),
-            mutableStateOf("")
+        const val appVersionValue = "v0.4.0-beta02"
+        const val appVersionCode = 15
+        val latestAppInfoFromServer = MutableAppInfoDTO(
+            isNonStableVersion = mutableStateOf(false),
+            isStableVersion = mutableStateOf(false),
+            nonStableVersionValue = mutableStateOf(""),
+            stableVersionValue = mutableStateOf(""),
+            stableVersionGithubReleaseNotesURL = mutableStateOf(""),
+            nonStableVersionGithubReleaseNotesURL = mutableStateOf(""),
+            nonStableVersionCode = mutableIntStateOf(0),
+            stableVersionCode = mutableIntStateOf(0),
+            releaseNotes = mutableStateOf(emptyList()),
         )
     }
 
@@ -85,13 +91,16 @@ class SettingsScreenVM(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
                         dataStore = it.dataStore
                     ) == true
+                }.invokeOnCompletion {
+                    val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
+                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(isSendCrashReportsEnabled.value)
                 }
             })
     }
     val generalSection: (context: Context) -> List<SettingsUIElement> = {
         listOf(
             SettingsUIElement(title = "Use in-app browser",
-                doesDescriptionExists = false,
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will open every time you click on a link when using this app.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isInAppWebTabEnabled,
@@ -109,9 +118,8 @@ class SettingsScreenVM(
                             dataStore = it.dataStore
                         ) == true
                     }
-                }),
-            SettingsUIElement(title = "Enable Home Screen",
-                doesDescriptionExists = false,
+                }), SettingsUIElement(title = "Enable Home Screen",
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isHomeScreenEnabled,
@@ -129,10 +137,9 @@ class SettingsScreenVM(
                             dataStore = it.dataStore
                         ) == true
                     }
-                }),
-            SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
-                doesDescriptionExists = false,
-                description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a dialog box will be shown instead of bottom sheet.",
+                }), SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
                 onSwitchStateChange = {
@@ -150,8 +157,7 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
-            SettingsUIElement(title = "Auto-Detect Title",
+                }), SettingsUIElement(title = "Auto-Detect Title",
                 doesDescriptionExists = true,
                 description = "Note: This may not detect every website.",
                 isSwitchNeeded = true,
@@ -171,7 +177,47 @@ class SettingsScreenVM(
                                 dataStore = it.dataStore
                             ) == true
                     }
-                }),
+                }), SettingsUIElement(title = "Auto-Check for Updates",
+                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                description = "If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
+                isSwitchNeeded = true,
+                isSwitchEnabled = Settings.isAutoCheckUpdatesEnabled,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        Settings.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.AUTO_CHECK_UPDATES.name
+                            ),
+                            dataStore = it.dataStore,
+                            newValue = !Settings.isAutoCheckUpdatesEnabled.value
+                        )
+                        Settings.isAutoCheckUpdatesEnabled.value =
+                            Settings.readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
+                                dataStore = it.dataStore
+                            ) == true
+                    }
+                }), SettingsUIElement(title = "Show description for Settings",
+                doesDescriptionExists = true,
+                description = "If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you're reading now. If it is disabled, only the titles will be shown.",
+                isSwitchNeeded = true,
+                isSwitchEnabled = Settings.showDescriptionForSettingsState,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        Settings.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
+                            ),
+                            dataStore = it.dataStore,
+                            newValue = !Settings.showDescriptionForSettingsState.value
+                        )
+                        Settings.showDescriptionForSettingsState.value =
+                            Settings.readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                                dataStore = it.dataStore
+                            ) == true
+                    }
+                })
         )
     }
 
@@ -184,9 +230,10 @@ class SettingsScreenVM(
         viewModelScope.launch {
             ImportImpl().importToLocalDB(
                 exceptionType = exceptionType,
-                json = json,
+                jsonString = json,
                 context = context,
-                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
+                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible,
+                updateVM = updateVM
             )
         }
     }
@@ -197,8 +244,8 @@ class SettingsScreenVM(
         runtimePermission: ManagedActivityResultLauncher<String, Boolean>
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            exportImpl.exportToAFile()
             viewModelScope.launch {
+                exportImpl.exportToAFile()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context, "Successfully Exported", Toast.LENGTH_SHORT
@@ -210,8 +257,8 @@ class SettingsScreenVM(
                 context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             )) {
                 PackageManager.PERMISSION_GRANTED -> {
-                    exportImpl.exportToAFile()
                     viewModelScope.launch {
+                        exportImpl.exportToAFile()
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context, "Successfully Exported", Toast.LENGTH_SHORT
@@ -241,37 +288,37 @@ class SettingsScreenVM(
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
         activityResultLauncher: ManagedActivityResultLauncher<String, Uri?>,
-        isImportConflictDialogVisible: MutableState<Boolean>
+        importModalBtmSheetState: MutableState<Boolean>
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
-                title = "Import Links",
+                title = "Import Data",
                 doesDescriptionExists = true,
-                description = "Import Links from external JSON file.",
+                description = "Import Data from external JSON file.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        if (CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isHistoryLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isImpLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isLinksTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isArchivedFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
-                                .isFoldersTableEmpty() && CustomFunctionsForLocalDB.localDB.crudDao()
+                        if (LocalDataBase.localDB.readDao()
+                                .isHistoryLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isImpLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isLinksTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isArchivedFoldersTableEmpty() && LocalDataBase.localDB.readDao()
+                                .isFoldersTableEmpty() && LocalDataBase.localDB.readDao()
                                 .isArchivedLinksTableEmpty()
                         ) {
                             activityResultLauncher.launch("text/*")
                         } else {
-                            isImportConflictDialogVisible.value = true
+                            importModalBtmSheetState.value = true
                         }
                     }
                 },
                 icon = Icons.Default.FileDownload
             ),
             SettingsUIElement(
-                title = "Export Links",
+                title = "Export Data",
                 doesDescriptionExists = true,
-                description = "Export all of your links in JSON format.",
+                description = "Export all of your data in JSON format.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -282,7 +329,7 @@ class SettingsScreenVM(
             SettingsUIElement(
                 title = "Delete entire data permanently",
                 doesDescriptionExists = true,
-                description = "Delete all links and folders permanently including archive(s).",
+                description = "Delete all links and folders permanently including archives.",
                 isSwitchNeeded = false,
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -294,7 +341,7 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
     }
 
     enum class SortingPreferences {
@@ -310,9 +357,14 @@ class SettingsScreenVM(
         val shouldDarkThemeBeEnabled = mutableStateOf(false)
         val isInAppWebTabEnabled = mutableStateOf(true)
         val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
-        val isBtmSheetEnabledForSavingLinks = mutableStateOf(true)
+        val isBtmSheetEnabledForSavingLinks = mutableStateOf(false)
         val isHomeScreenEnabled = mutableStateOf(true)
         val isSendCrashReportsEnabled = mutableStateOf(true)
+        val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
+        val isAutoCheckUpdatesEnabled = mutableStateOf(true)
+        val showDescriptionForSettingsState = mutableStateOf(true)
+        val isOnLatestUpdate = mutableStateOf(false)
+        val didServerTimeOutErrorOccurred = mutableStateOf(false)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -367,8 +419,18 @@ class SettingsScreenVM(
                         dataStore = context.dataStore
                     ) ?: false
                 }, async {
+                    showDescriptionForSettingsState.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
                     isInAppWebTabEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                        dataStore = context.dataStore
+                    ) ?: false
+                }, async {
+                    didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
                         dataStore = context.dataStore
                     ) ?: false
                 }, async {
@@ -393,10 +455,15 @@ class SettingsScreenVM(
                     isBtmSheetEnabledForSavingLinks.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                         dataStore = context.dataStore
-                    ) ?: true
+                    ) ?: false
                 }, async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                        dataStore = context.dataStore
+                    ) ?: true
+                }, async {
+                    isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
                         dataStore = context.dataStore
                     ) ?: true
                 }, async {
@@ -408,21 +475,59 @@ class SettingsScreenVM(
             }
         }
 
-        suspend fun latestAppVersionRetriever() {
-            val rawData = withContext(Dispatchers.Default) {
-                Jsoup.connect("appInfoURL").get().body().ownText()
+        suspend fun latestAppVersionRetriever(context: Context) {
+            val rawData = try {
+                didServerTimeOutErrorOccurred.value = false
+                withContext(Dispatchers.Default) {
+                    this.launch(Dispatchers.Main) {
+                        Toast.makeText(context, "checking for new updates", Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
+                }
+            } catch (_: Exception) {
+                didServerTimeOutErrorOccurred.value = true
+                Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
+                ""
             }
-            val retrievedData = Json.decodeFromString<AppInfoDTO>(rawData)
+            val retrievedData = try {
+                Json.decodeFromString(rawData)
+            } catch (_: Exception) {
+                AppInfoDTO(
+                    isNonStableVersion = false,
+                    isStableVersion = false,
+                    nonStableVersionValue = "",
+                    stableVersionValue = "",
+                    nonStableVersionCode = 0,
+                    stableVersionCode = 0,
+                    stableVersionGithubReleaseNotesURL = "",
+                    nonStableVersionGithubReleaseNotesURL = "",
+                    releaseNotes = listOf()
+                )
+            }
             latestAppInfoFromServer.apply {
-                this.latestVersion.value = retrievedData.latestVersion
-                this.latestStableVersion.value = retrievedData.latestStableVersion
-                this.latestStableVersionReleaseURL.value =
-                    retrievedData.latestStableVersionReleaseURL
-                this.latestVersionReleaseURL.value = retrievedData.latestVersionReleaseURL
-                this.changeLogForLatestVersion.value = retrievedData.changeLogForLatestVersion
-                this.changeLogForLatestStableVersion.value =
-                    retrievedData.changeLogForLatestStableVersion
-                this.httpStatusCodeFromServer.value = ""
+
+                this.isNonStableVersion.value = retrievedData.isNonStableVersion
+
+                this.isStableVersion.value = retrievedData.isStableVersion
+
+                this.nonStableVersionValue.value = retrievedData.nonStableVersionValue
+
+                this.stableVersionValue.value = retrievedData.stableVersionValue
+
+                this.nonStableVersionCode.value = retrievedData.nonStableVersionCode
+
+                this.stableVersionCode.value = retrievedData.stableVersionCode
+
+                this.stableVersionGithubReleaseNotesURL.value =
+                    retrievedData.stableVersionGithubReleaseNotesURL
+
+                this.nonStableVersionGithubReleaseNotesURL.value =
+                    retrievedData.nonStableVersionGithubReleaseNotesURL
+
+                this.releaseNotes.value = retrievedData.releaseNotes
+
+                this.releaseNotes.value = retrievedData.releaseNotes
             }
         }
     }

@@ -1,9 +1,17 @@
 package com.sakethh.linkora.screens.collections
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -13,30 +21,29 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.AddLink
+import androidx.compose.material.icons.automirrored.outlined.Sort
+import androidx.compose.material.icons.filled.Archive
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
-import androidx.compose.material.icons.outlined.Sort
 import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material3.Card
-import androidx.compose.material3.Divider
+import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -45,13 +52,16 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -63,22 +73,31 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
+import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetType
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetUI
+import com.sakethh.linkora.btmSheet.OptionsBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.OptionsBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
+import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
+import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
+import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.customComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
+import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.FloatingActionBtn
+import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
-import com.sakethh.linkora.localDB.dto.ArchivedFolders
+import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.DeleteVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
+import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
-import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenVM
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -86,6 +105,7 @@ import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
+@SuppressLint("UnrememberedMutableState", "LongLogTag")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionsScreen(navController: NavController) {
@@ -105,11 +125,10 @@ fun CollectionsScreen(navController: NavController) {
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsState().value
     val coroutineScope = rememberCoroutineScope()
-    val btmModalSheetState = rememberModalBottomSheetState()
+    val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
-    val btmModalSheetStateForSavingLinks =
-        rememberModalBottomSheetState()
+    val btmModalSheetStateForSavingLinks = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -122,14 +141,8 @@ fun CollectionsScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val currentIconForMainFAB = remember(isMainFabRotated.value) {
-        mutableStateOf(
-            if (isMainFabRotated.value) {
-                Icons.Default.AddLink
-            } else {
-                Icons.Default.Add
-            }
-        )
+    val areFoldersSelectable = rememberSaveable {
+        mutableStateOf(false)
     }
     val shouldDialogForNewLinkAppear = rememberSaveable {
         mutableStateOf(false)
@@ -140,34 +153,109 @@ fun CollectionsScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val sortingBtmSheetState = rememberModalBottomSheetState()
+    val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldBtmSheetForNewLinkAdditionBeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
-    val customFunctionsForLocalDB: CustomFunctionsForLocalDB = viewModel()
+    val updateVM: UpdateVM = viewModel()
+    val deleteVM: DeleteVM = viewModel()
+    if (collectionsScreenVM.selectedFoldersData.size == 0) {
+        collectionsScreenVM.areAllFoldersChecked.value = false
+    }
     LinkoraTheme {
-        Scaffold(floatingActionButton = {
-            FloatingActionBtn(
-                newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
-                shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
-                shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
-                shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
-                isMainFabRotated = isMainFabRotated,
-                rotationAnimation = rotationAnimation
-            )
-        },
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionBtn(
+                    FloatingActionBtnParam(
+                        newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                        shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                        shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                        shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                        shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
+                        isMainFabRotated = isMainFabRotated,
+                        rotationAnimation = rotationAnimation,
+                        inASpecificScreen = false
+                    )
+                )
+            },
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
             topBar = {
-                TopAppBar(title = {
-                    Text(
-                        text = "Collections",
-                        color = MaterialTheme.colorScheme.onSurface,
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 24.sp
-                    )
-                })
+                Column {
+                    TopAppBar(actions = {
+                        if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersData.size != 0) && foldersData.isNotEmpty()) {
+                            IconButton(onClick = {
+                                shouldDeleteDialogBoxBeVisible.value = true
+                            }) {
+                                Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                            }
+                            IconButton(onClick = {
+                                collectionsScreenVM.archiveMultipleFolders()
+                                areFoldersSelectable.value = false
+                                collectionsScreenVM.areAllFoldersChecked.value = false
+                                collectionsScreenVM.changeAllFoldersSelectedData()
+                            }) {
+                                Icon(imageVector = Icons.Default.Archive, contentDescription = null)
+                            }
+                        }
+                    }, navigationIcon = {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
+                            IconButton(onClick = {
+                                areFoldersSelectable.value = false
+                                collectionsScreenVM.areAllFoldersChecked.value = false
+                                collectionsScreenVM.changeAllFoldersSelectedData()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel, contentDescription = null
+                                )
+                            }
+                        }
+                    }, title = {
+                        if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
+                            Row {
+                                AnimatedContent(
+                                    targetState = collectionsScreenVM.selectedFoldersData.size,
+                                    label = "",
+                                    transitionSpec = {
+                                        ContentTransform(
+                                            initialContentExit = slideOutVertically(
+                                                animationSpec = tween(
+                                                    150
+                                                )
+                                            ) + fadeOut(
+                                                tween(150)
+                                            ), targetContentEnter = slideInVertically(
+                                                animationSpec = tween(durationMillis = 150)
+                                            ) + fadeIn(
+                                                tween(150)
+                                            )
+                                        )
+                                    }) {
+                                    Text(
+                                        text = it.toString(),
+                                        color = MaterialTheme.colorScheme.onSurface,
+                                        style = MaterialTheme.typography.titleLarge,
+                                        fontSize = 18.sp
+                                    )
+                                }
+                                Text(
+                                    text = " folders selected",
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp
+                                )
+                            }
+                        } else {
+                            Text(
+                                text = "Collections",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 24.sp
+                            )
+                        }
+                    })
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outline.copy(0.25f))
+                }
             }) {
             LazyColumn(
                 modifier = Modifier
@@ -175,134 +263,135 @@ fun CollectionsScreen(navController: NavController) {
                     .fillMaxSize()
             ) {
                 item {
-                    Card(
-                        shape = RoundedCornerShape(10.dp), modifier = Modifier
-                            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .onGloballyPositioned {
-                                heightOfCard.value = with(localDensity) {
-                                    it.size.height.toDp()
+                    Box(modifier = Modifier.animateContentSize()) {
+                        Column {
+                            if (!areFoldersSelectable.value || foldersData.isEmpty()) {
+                                Card(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 20.dp, end = 20.dp, start = 20.dp
+                                        )
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .onGloballyPositioned {
+                                            heightOfCard.value = with(localDensity) {
+                                                it.size.height.toDp()
+                                            }
+                                        }
+                                        .clickable {
+                                            SpecificCollectionsScreenVM.screenType.value =
+                                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                        }) {
+                                    Row(horizontalArrangement = Arrangement.Center) {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.StarOutline,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Important Links",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
                                 }
-                            }
-                            .clickable {
-                                SpecificScreenVM.screenType.value =
-                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                            }
-                    ) {
-                        Row(horizontalArrangement = Arrangement.Center) {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.StarOutline,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Important Links",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
-                }
-                item {
-                    Card(
-                        shape = RoundedCornerShape(10.dp), modifier = Modifier
-                            .padding(top = 20.dp, end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .clickable {
-                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                            }
-                    ) {
-                        Row {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.Archive,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Archive",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
-                }
-                item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(25.dp),
-                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                    )
-                }
-                item {
-                    Card(
-                        shape = RoundedCornerShape(10.dp), modifier = Modifier
-                            .padding(end = 20.dp, start = 20.dp)
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .clickable {
-                                SpecificScreenVM.screenType.value =
-                                    SpecificScreenType.SAVED_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                            }
-                    ) {
-                        Row {
-                            Icon(
-                                modifier = Modifier.padding(20.dp),
-                                imageVector = Icons.Outlined.Link,
-                                contentDescription = null
-                            )
-                            Box(
-                                modifier = Modifier.height(heightOfCard.value),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Text(
-                                    text = "Saved Links",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    }
-                }
-                item {
-                    Divider(
-                        thickness = 0.5.dp,
-                        modifier = Modifier.padding(
-                            top = 20.dp,
-                            start = 20.dp,
-                            end = 20.dp,
-                            bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
-                        ),
-                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
-                    )
-                }
-
-                item {
-                    Row(
-                        modifier = Modifier
-                            .clickable {
-                                if (foldersData.isNotEmpty()) {
-                                    shouldSortingBottomSheetAppear.value = true
+                                Card(modifier = Modifier
+                                    .padding(
+                                        top = 20.dp, end = 20.dp, start = 20.dp
+                                    )
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                                    }) {
+                                    Row {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.Archive,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Archive",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
                                 }
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(25.dp),
+                                    thickness = 0.5.dp,
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                )
+                                Card(modifier = Modifier
+                                    .padding(end = 20.dp, start = 20.dp)
+                                    .wrapContentHeight()
+                                    .fillMaxWidth()
+                                    .clickable {
+                                        SpecificCollectionsScreenVM.screenType.value =
+                                            SpecificScreenType.SAVED_LINKS_SCREEN
+                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    }) {
+                                    Row {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.Link,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = "Saved Links",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(
+                                        top = 20.dp,
+                                        start = 20.dp,
+                                        end = 20.dp,
+                                        bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
+                                    ),
+                                    thickness = 0.5.dp,
+                                    color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                )
                             }
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
+                        }
+                    }
+                }
+                item {
+                    Row(modifier = Modifier
+                        .clickable {
+                            if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
+                                shouldSortingBottomSheetAppear.value = true
+                                coroutineScope.launch {
+                                    sortingBtmSheetState.expand()
+                                }
+                            } else {
+                                collectionsScreenVM.areAllFoldersChecked.value =
+                                    !collectionsScreenVM.areAllFoldersChecked.value
+                                collectionsScreenVM.changeAllFoldersSelectedData()
+                            }
+                        }
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
                         horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
+                        verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             text = "Folders",
                             color = MaterialTheme.colorScheme.primary,
@@ -310,9 +399,29 @@ fun CollectionsScreen(navController: NavController) {
                             fontSize = 20.sp,
                             modifier = Modifier.padding(start = 15.dp)
                         )
-                        if (foldersData.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(imageVector = Icons.Outlined.Sort, contentDescription = null)
+                        if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
+                            IconButton(onClick = {
+                                shouldSortingBottomSheetAppear.value = true
+                                coroutineScope.launch {
+                                    sortingBtmSheetState.expand()
+                                }
+                            }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                    contentDescription = null
+                                )
+                            }
+                        } else if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Select all folders",
+                                    style = MaterialTheme.typography.titleSmall
+                                )
+                                Checkbox(checked = collectionsScreenVM.areAllFoldersChecked.value,
+                                    onCheckedChange = {
+                                        collectionsScreenVM.areAllFoldersChecked.value = it
+                                        collectionsScreenVM.changeAllFoldersSelectedData()
+                                    })
                             }
                         }
                     }
@@ -321,28 +430,57 @@ fun CollectionsScreen(navController: NavController) {
                     Spacer(modifier = Modifier.padding(top = 0.dp))
                 }
                 if (foldersData.isNotEmpty()) {
-                    itemsIndexed(foldersData) { folderIndex, foldersData ->
+                    itemsIndexed(
+                        items = foldersData,
+                        key = { folderIndex, foldersData ->
+                            foldersData.id.toString() + foldersData.folderName
+                        }) { folderIndex, folderData ->
                         FolderIndividualComponent(
-                            showMoreIcon = true,
-                            folderName = foldersData.folderName,
-                            folderNote = foldersData.infoForSaving,
+                            showMoreIcon = !areFoldersSelectable.value,
+                            folderName = folderData.folderName,
+                            folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
-                                CollectionsScreenVM.selectedFolderData.folderName =
-                                    foldersData.folderName
-                                CollectionsScreenVM.selectedFolderData.infoForSaving =
-                                    foldersData.infoForSaving
-                                clickedFolderNote.value = foldersData.infoForSaving
+                                CollectionsScreenVM.selectedFolderData.value = folderData
+                                clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
-                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderName = foldersData.folderName)
+                                    optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
                                 }
-                                clickedFolderName.value = foldersData.folderName
+                                clickedFolderName.value = folderData.folderName
+                                CollectionsScreenVM.selectedFolderData.value = folderData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
-                            }, onFolderClick = {
-                                SpecificScreenVM.screenType.value =
-                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                SpecificScreenVM.currentClickedFolderName.value =
-                                    foldersData.folderName
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                            },
+                            onFolderClick = {
+                                if (!areFoldersSelectable.value) {
+                                    SpecificCollectionsScreenVM.inARegularFolder.value = true
+                                    SpecificCollectionsScreenVM.screenType.value =
+                                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                    CollectionsScreenVM.currentClickedFolderData.value = folderData
+                                    CollectionsScreenVM.rootFolderID = folderData.id
+                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                }
+                            },
+                            onLongClick = {
+                                if (!areFoldersSelectable.value) {
+                                    areFoldersSelectable.value = true
+                                    collectionsScreenVM.areAllFoldersChecked.value = false
+                                    collectionsScreenVM.changeAllFoldersSelectedData()
+                                    collectionsScreenVM.selectedFoldersData.add(folderData)
+                                }
+                            },
+                            showCheckBox = areFoldersSelectable,
+                            isCheckBoxChecked = mutableStateOf(
+                                collectionsScreenVM.selectedFoldersData.contains(
+                                    folderData
+                                )
+                            ),
+                            checkBoxState = { checkBoxState ->
+                                if (checkBoxState) {
+                                    collectionsScreenVM.selectedFoldersData.add(folderData)
+                                } else {
+                                    collectionsScreenVM.selectedFoldersData.removeAll {
+                                        it == folderData
+                                    }
+                                }
                             })
                     }
                 } else {
@@ -377,103 +515,230 @@ fun CollectionsScreen(navController: NavController) {
             }
         }
         OptionsBtmSheetUI(
-            btmModalSheetState = btmModalSheetState,
-            shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-            coroutineScope = coroutineScope,
-            btmSheetFor = OptionsBtmSheetType.FOLDER,
-            onDeleteCardClick = {
-                shouldDeleteDialogBoxBeVisible.value = true
-            },
-            onRenameClick = {
-                shouldRenameDialogBoxBeVisible.value = true
-            },
-            importantLinks = null,
-            onArchiveClick = {
-                customFunctionsForLocalDB.archiveFolderTableUpdater(
-                    archivedFolders = ArchivedFolders(
-                        archiveFolderName = CollectionsScreenVM.selectedFolderData.folderName,
-                        infoForSaving = CollectionsScreenVM.selectedFolderData.infoForSaving
-                    ), context = context, onTaskCompleted = {
-                        collectionsScreenVM.changeRetrievedFoldersData(
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
-                            )
-                        )
-                    }
-                )
-            },
-            noteForSaving = clickedFolderNote.value,
-            onNoteDeleteCardClick = {
-                collectionsScreenVM.onNoteDeleteClick(context)
-            },
-            linkTitle = "",
-            folderName = CollectionsScreenVM.selectedFolderData.folderName
+            OptionsBtmSheetUIParam(
+                btmModalSheetState = btmModalSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = OptionsBtmSheetType.FOLDER,
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxBeVisible.value = true
+                },
+                onRenameClick = {
+                    shouldRenameDialogBoxBeVisible.value = true
+                },
+                importantLinks = null,
+                onArchiveClick = {
+                    updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
+                },
+                noteForSaving = clickedFolderNote.value,
+                onNoteDeleteCardClick = {
+                    collectionsScreenVM.onNoteDeleteClick(
+                        context, CollectionsScreenVM.selectedFolderData.value.id
+                    )
+                },
+                linkTitle = "",
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+            )
         )
         RenameDialogBox(
-            onNoteChangeClickForLinks = null,
-            shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
-            coroutineScope = coroutineScope,
-            existingFolderName = clickedFolderName.value,
-            onTitleChangeClickForLinks = null,
-            onTitleRenamed = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
-                    )
+            RenameDialogBoxParam(onNoteChangeClick = {
+                updateVM.updateFolderNote(
+                    CollectionsScreenVM.selectedFolderData.value.id, newFolderNote = it
                 )
-            }
+                shouldRenameDialogBoxBeVisible.value = false
+            },
+                shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
+                existingFolderName = clickedFolderName.value,
+                onTitleChangeClick = {
+                    updateVM.updateFolderName(
+                        folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                        newFolderName = it
+                    )
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
+                    )
+                    shouldRenameDialogBoxBeVisible.value = false
+                })
         )
         DeleteDialogBox(
-            shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
-            onDeleteClick = {
-                collectionsScreenVM.onDeleteClick(clickedFolderName.value)
-            },
-            deleteDialogBoxType = DataDialogBoxType.FOLDER,
-            onDeleted = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            DeleteDialogBoxParam(
+                areFoldersSelectable = areFoldersSelectable.value,
+                totalIds = mutableLongStateOf(
+                    CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
+                ),
+                shouldDialogBoxAppear = shouldDeleteDialogBoxBeVisible,
+                onDeleteClick = {
+                    if (areFoldersSelectable.value) {
+                        collectionsScreenVM.onDeleteMultipleSelectedFolders()
+                        areFoldersSelectable.value = false
+                        collectionsScreenVM.areAllFoldersChecked.value = false
+                        collectionsScreenVM.changeAllFoldersSelectedData()
+                    } else {
+                        deleteVM.onRegularFolderDeleteClick(
+                            CollectionsScreenVM.selectedFolderData.value.id
+                        )
+                    }
+                },
+                deleteDialogBoxType = DataDialogBoxType.FOLDER,
+                onDeleted = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }
+                })
         )
-
+        val isDataExtractingForTheLink = rememberSaveable {
+            mutableStateOf(false)
+        }
+        val createVM: CreateVM = viewModel()
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
-            specificFolderName = "hi lol",
-            screenType = SpecificScreenType.ROOT_SCREEN
+            screenType = SpecificScreenType.ROOT_SCREEN,
+            parentFolderID = null,
+            onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
+                isDataExtractingForTheLink.value = true
+                if (selectedDefaultFolderName == "Saved Links") {
+                    createVM.addANewLinkInSavedLinks(
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        context = context
+                    )
+                }
+                if (selectedDefaultFolderName == "Important Links") {
+                    createVM.addANewLinkInImpLinks(
+                        context = context,
+                        onTaskCompleted = {
+                            shouldDialogForNewLinkAppear.value = false
+                            isDataExtractingForTheLink.value = false
+                        },
+                        title = title,
+                        webURL = webURL,
+                        noteForSaving = note,
+                        autoDetectTitle = isAutoDetectSelected
+                    )
+                }
+                when {
+                    selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
+                        if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
+                            createVM.addANewLinkInAFolderV10(title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                parentFolderID = selectedNonDefaultFolderID,
+                                context = context,
+                                folderName = selectedDefaultFolderName,
+                                autoDetectTitle = isAutoDetectSelected,
+                                onTaskCompleted = {
+                                    shouldDialogForNewLinkAppear.value = false
+                                    isDataExtractingForTheLink.value = false
+                                })
+                        }
+                    }
+                }
+            },
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value
         )
         AddNewFolderDialogBox(
-            shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-            onCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            AddNewFolderDialogBoxParam(
+                shouldDialogBoxAppear = shouldDialogForNewFolderAppear, onCreated = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }
+                }, parentFolderID = null, inAChildFolderScreen = false
+            )
         )
         NewLinkBtmSheet(
-            btmSheetState = btmModalSheetStateForSavingLinks,
-            _inIntentActivity = false,
-            screenType = SpecificScreenType.ROOT_SCREEN,
-            shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-            onFolderCreated = {
-                collectionsScreenVM.changeRetrievedFoldersData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+            NewLinkBtmSheetUIParam(
+                btmSheetState = btmModalSheetStateForSavingLinks,
+                inIntentActivity = false,
+                screenType = SpecificScreenType.ROOT_SCREEN,
+                shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                onFolderCreated = {
+                    collectionsScreenVM.changeRetrievedFoldersData(
+                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                            SettingsScreenVM.Settings.selectedSortingType.value
+                        )
                     )
-                )
-            }, onLinkSaved = {
-
-            }
+                },
+                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
+                    isDataExtractingForTheLink.value = true
+                    if (selectedDefaultFolder == "Saved Links") {
+                        createVM.addANewLinkInSavedLinks(
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            context = context
+                        )
+                    }
+                    if (selectedDefaultFolder == "Important Links") {
+                        createVM.addANewLinkInImpLinks(
+                            context = context,
+                            onTaskCompleted = {
+                                coroutineScope.launch {
+                                    btmModalSheetStateForSavingLinks.hide()
+                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                    isDataExtractingForTheLink.value = false
+                                }
+                            },
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected
+                        )
+                    }
+                    when {
+                        selectedDefaultFolder != "Important Links" && selectedDefaultFolder != "Saved Links" -> {
+                            if (selectedNonDefaultFolderID != null && selectedDefaultFolder != null) {
+                                createVM.addANewLinkInAFolderV10(title = title,
+                                    webURL = webURL,
+                                    noteForSaving = note,
+                                    parentFolderID = selectedNonDefaultFolderID,
+                                    context = context,
+                                    folderName = selectedDefaultFolder,
+                                    autoDetectTitle = isAutoDetectSelected,
+                                    onTaskCompleted = {
+                                        coroutineScope.launch {
+                                            btmModalSheetStateForSavingLinks.hide()
+                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
+                                            isDataExtractingForTheLink.value = false
+                                        }
+                                    })
+                            }
+                        }
+                    }
+                },
+                parentFolderID = null,
+                isDataExtractingForTheLink = isDataExtractingForTheLink
+            )
         )
         SortingBottomSheetUI(
-            shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
-            onSelectedAComponent = { sortingPreferences ->
-                collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
-            },
-            bottomModalSheetState = sortingBtmSheetState
+            SortingBottomSheetUIParam(
+                shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
+                onSelectedAComponent = { sortingPreferences, _, _ ->
+                    collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)
+                },
+                bottomModalSheetState = sortingBtmSheetState,
+                sortingBtmSheetType = SortingBtmSheetType.COLLECTIONS_SCREEN,
+                shouldFoldersSelectionBeVisible = mutableStateOf(false),
+                shouldLinksSelectionBeVisible = mutableStateOf(false)
+            )
         )
     }
     BackHandler {
@@ -497,6 +762,10 @@ fun CollectionsScreen(navController: NavController) {
             coroutineScope.launch {
                 btmModalSheetState.hide()
             }
+        } else if (areFoldersSelectable.value) {
+            areFoldersSelectable.value = false
+            collectionsScreenVM.areAllFoldersChecked.value = false
+            collectionsScreenVM.changeAllFoldersSelectedData()
         } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
             activity?.finish()
         } else {
@@ -507,42 +776,55 @@ fun CollectionsScreen(navController: NavController) {
     }
 }
 
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FolderIndividualComponent(
     folderName: String,
     folderNote: String,
     onMoreIconClick: () -> Unit,
-    onFolderClick: () -> Unit,
+    onFolderClick: (checkBoxState: Boolean) -> Unit,
     maxLines: Int = 1,
-    showMoreIcon: Boolean = true,
+    showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
+    showCheckBox: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(false)
+    },
+    checkBoxState: (Boolean) -> Unit = {},
+    isCheckBoxChecked: MutableState<Boolean> = rememberSaveable {
+        mutableStateOf(false)
+    },
+    onLongClick: () -> Unit = {},
+    inSelectionMode: Boolean = false,
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                if (showCheckBox.value && isCheckBoxChecked.value) MaterialTheme.colorScheme.primary.copy(
+                    0.25f
+                ) else Color.Transparent
+            )
+    ) {
         Row(
             modifier = Modifier
-                .combinedClickable(
-                    onClick = { onFolderClick() },
-                    onLongClick = { onMoreIconClick() })
-                .fillMaxWidth()
-                .requiredHeight(75.dp)
+                .combinedClickable(onClick = {
+                    onFolderClick(isCheckBoxChecked.value)
+                    isCheckBoxChecked.value = !isCheckBoxChecked.value
+                    checkBoxState(isCheckBoxChecked.value)
+                }, onLongClick = { onLongClick() })
+                .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
-            Box(
-                modifier = Modifier.fillMaxHeight(),
-                contentAlignment = Alignment.CenterStart
-            ) {
-                Icon(
-                    imageVector = folderIcon,
-                    contentDescription = null,
-                    modifier = Modifier
-                        .padding(20.dp)
-                        .size(28.dp)
-                )
-            }
+            Icon(
+                imageVector = folderIcon,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(20.dp)
+                    .size(28.dp)
+            )
             Column(
                 modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(if (showMoreIcon) 0.80f else 1f),
+                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox.value) 0.78f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -551,7 +833,6 @@ fun FolderIndividualComponent(
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(
-                        top = if (folderNote.isNotEmpty()) 10.dp else 0.dp,
                         end = if (showMoreIcon) 0.dp else 20.dp
                     ),
                     maxLines = maxLines,
@@ -564,34 +845,39 @@ fun FolderIndividualComponent(
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp,
-                        modifier = Modifier.padding(bottom = if (folderNote.isNotEmpty()) 10.dp else 0.dp),
+                        modifier = Modifier.padding(top = if (folderNote.isNotEmpty()) 5.dp else 0.dp),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
                 }
             }
             if (showMoreIcon) {
-                Box(
-                    modifier = Modifier
-                        .clickable {
-                            onMoreIconClick()
-                        }
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                ) {
+                IconButton(onClick = { onMoreIconClick() }) {
                     Icon(
                         imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier
-                            .padding(end = 20.dp)
-                            .align(Alignment.CenterEnd)
+                        contentDescription = null
                     )
                 }
             }
+            if (showCheckBox.value && inSelectionMode) {
+                Checkbox(
+                    checked = isCheckBoxChecked.value,
+                    onCheckedChange = {
+                        checkBoxState(it)
+                        isCheckBoxChecked.value = it
+                    })
+            } else if (showCheckBox.value && !inSelectionMode) {
+                Checkbox(
+                    checked = isCheckBoxChecked.value,
+                    onCheckedChange = {
+                        checkBoxState(it)
+                        isCheckBoxChecked.value = it
+                    })
+            }
         }
-        Divider(
-            thickness = 1.dp,
+        HorizontalDivider(
             modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+            thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )
     }

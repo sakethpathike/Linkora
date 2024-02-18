@@ -8,7 +8,7 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.sakethh.linkora.localDB.CustomFunctionsForLocalDB
+import com.sakethh.linkora.localDB.LocalDataBase
 
 
 enum class OptionsBtmSheetType {
@@ -22,7 +22,7 @@ class OptionsBtmSheetVM : ViewModel() {
     val archiveCardIcon = mutableStateOf(Icons.Outlined.Archive)
     val archiveCardText = mutableStateOf("")
     suspend fun updateImportantCardData(url: String) {
-        if (CustomFunctionsForLocalDB.localDB.crudDao()
+        if (LocalDataBase.localDB.readDao()
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
@@ -34,7 +34,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveLinkCardData(url: String) {
-        if (CustomFunctionsForLocalDB.localDB.crudDao()
+        if (LocalDataBase.localDB.readDao()
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
@@ -45,15 +45,15 @@ class OptionsBtmSheetVM : ViewModel() {
         }
     }
 
-    suspend fun updateArchiveFolderCardData(folderName: String) {
-        if (CustomFunctionsForLocalDB.localDB.crudDao()
-                .doesThisArchiveFolderExists(folderName = folderName)
+    suspend fun updateArchiveFolderCardData(folderID: Long) {
+        if (LocalDataBase.localDB.readDao()
+                .doesThisArchiveFolderExistsV10(folderID)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
-            archiveCardText.value = "Remove from Archive(s)"
+            archiveCardText.value = "Remove from Archive"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Move to Archive(s)"
+            archiveCardText.value = "Move to Archive"
         }
     }
 }
