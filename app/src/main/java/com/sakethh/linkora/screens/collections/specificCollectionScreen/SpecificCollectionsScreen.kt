@@ -1250,7 +1250,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         )
         DeleteDialogBox(
             DeleteDialogBoxParam(
-                areFoldersSelectable = true,
+                areFoldersSelectable = areElementsSelectable.value,
                 totalIds = mutableLongStateOf(
                     CollectionsScreenVM.selectedFolderData.value.childFolderIDs?.size?.toLong() ?: 0
                 ),
@@ -1286,7 +1286,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         )
                     }
                 },
-                deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else if (areElementsSelectable.value) DataDialogBoxType.SELECTED_DATA else DataDialogBoxType.FOLDER,
+                deleteDialogBoxType = if (areElementsSelectable.value) DataDialogBoxType.SELECTED_DATA else if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
