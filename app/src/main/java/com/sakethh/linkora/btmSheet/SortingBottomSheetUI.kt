@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -89,20 +90,23 @@ fun SortingBottomSheetUI(
                 ) {
                     androidx.compose.material3.Text(
                         text = when (sortingBottomSheetUIParam.sortingBtmSheetType) {
-                            SortingBtmSheetType.PARENT_HOME_SCREEN -> "Sort links by"
                             SortingBtmSheetType.COLLECTIONS_SCREEN -> "Sort folders by"
                             SortingBtmSheetType.HISTORY_SCREEN -> "Sort History Links by"
-                            SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN -> "Sort based on"
-                            SortingBtmSheetType.REGULAR_FOLDER_SCREEN -> "Sort based on"
                             SortingBtmSheetType.PARENT_ARCHIVE_SCREEN -> "Sort by"
                             SortingBtmSheetType.SAVED_LINKS_SCREEN -> "Sort Saved Links by"
                             SortingBtmSheetType.IMPORTANT_LINKS_SCREEN -> "Sort Important Links by"
+                            else -> {
+                                "Sort based on"
+                            }
                         },
                         style = MaterialTheme.typography.titleMedium,
                         color = MaterialTheme.colorScheme.primary,
                         fontSize = 14.sp,
                         modifier = Modifier.padding(start = 15.dp)
                     )
+                    if (sortingBottomSheetUIParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN) {
+                        Spacer(modifier = Modifier.height(10.dp))
+                    }
                     if ((sortingBottomSheetUIParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN || sortingBottomSheetUIParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN) && sortingBottomSheetUIParam.shouldFoldersSelectionBeVisible.value) {
                         FolderIndividualComponent(
                             folderName = "Folders",

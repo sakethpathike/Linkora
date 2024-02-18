@@ -322,15 +322,84 @@ fun ParentHomeScreen(navController: NavController) {
                         ChildHomeScreen(
                             homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                             navController = navController,
-                            folderLinksData = LocalDataBase.localDB.readDao()
-                                .getLinksOfThisFolderV10(homeScreenList[it].id).collectAsState(
-                                    initial = emptyList()
-                                ).value,
-                            childFoldersData = LocalDataBase.localDB.readDao()
-                                .getChildFoldersOfThisParentID(homeScreenList[it].id)
-                                .collectAsState(
-                                    initial = emptyList()
-                                ).value,
+                            folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
+                                SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
+                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                        .sortByAToZV10(homeScreenList[it].id).collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
+                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                        .sortByZToAV10(homeScreenList[it].id).collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
+                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                        .sortByLatestToOldestV10(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
+                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                        .sortByOldestToLatestV10(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                else -> {
+                                    LocalDataBase.localDB.readDao()
+                                        .getLinksOfThisFolderV10(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+                            },
+                            childFoldersData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
+                                SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
+                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                        .sortSubFoldersByAToZ(homeScreenList[it].id).collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
+                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                        .sortSubFoldersByZToA(homeScreenList[it].id).collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
+                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                        .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
+                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                        .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+
+                                else -> {
+                                    LocalDataBase.localDB.readDao()
+                                        .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                        .collectAsState(
+                                            initial = emptyList()
+                                        ).value
+                                }
+                            },
                         )
                     }
                 } else {
@@ -411,7 +480,6 @@ fun ParentHomeScreen(navController: NavController) {
                                             modifier = Modifier
                                                 .padding(end = 10.dp)
                                         )
-
                                     }
                                     Row(
                                         modifier = Modifier
