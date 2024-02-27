@@ -25,18 +25,28 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Hail
+import androidx.compose.material.icons.filled.Handshake
+import androidx.compose.material.icons.filled.Hd
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Hail
+import androidx.compose.material.icons.outlined.Handshake
+import androidx.compose.material.icons.outlined.Hd
+import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -62,6 +72,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
@@ -71,6 +82,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -105,6 +117,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @OptIn(
@@ -273,154 +286,216 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 })
             }) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface)
-            ) {
-                LazyColumn(modifier = Modifier.padding(it)) {
-                    stickyHeader {
-                        if (homeScreenList.isNotEmpty()) {
-                            Column(modifier = Modifier.animateContentSize()) {
-                                ScrollableTabRow(
-                                    divider = {},
-                                    modifier = Modifier
-                                        .fillMaxWidth(), selectedTabIndex = pagerState.currentPage
-                                ) {
-                                    homeScreenList.forEachIndexed { index, homeScreenListsElement ->
-                                        Tab(selected = pagerState.currentPage == index, onClick = {
-                                            coroutineScope.launch {
-                                                pagerState.animateScrollToPage(index)
-                                            }.start()
-                                        }) {
-                                            Text(
-                                                text = homeScreenListsElement.folderName,
-                                                style = MaterialTheme.typography.titleLarge,
-                                                fontSize = 18.sp,
-                                                modifier = Modifier.padding(15.dp),
-                                                color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                                    0.70f
-                                                )
-                                            )
-                                        }
+            val selectedInt = remember {
+                mutableStateOf(1)
+            }
+            Row {
+                Box(
+                    modifier = Modifier.fillMaxHeight(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column {
+                        (10..15).forEach {
+                            androidx.compose.material3.NavigationRailItem(
+                                modifier = Modifier.rotate(90f),
+                                selected = it == selectedInt.value,
+                                onClick = {
+                                    selectedInt.value = it
+                                },
+                                icon = {
+                                    Column {
+                                        Icon(
+                                            modifier = Modifier.rotate(180f),
+                                            imageVector = if (it == selectedInt.value) {
+                                                listOf(
+                                                    Icons.Filled.Home,
+                                                    Icons.Filled.Hail,
+                                                    Icons.Filled.Hd,
+                                                    Icons.Filled.Handshake
+                                                ).random()
+                                            } else {
+                                                listOf(
+                                                    Icons.Outlined.Home,
+                                                    Icons.Outlined.Hail,
+                                                    Icons.Outlined.Hd,
+                                                    Icons.Outlined.Handshake
+                                                ).random()
+                                            }, contentDescription = null
+                                        )
                                     }
-                                }
-                                HorizontalDivider(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    thickness = 1.dp
-                                )
-                            }
+                                }, label = {
+                                    Text(
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier
+                                            .rotate(180f)
+                                            .width(56.dp)
+                                            .padding(bottom = 2.dp),
+                                        text = (it.toDouble().pow(it.toDouble())).toString(),
+                                        style = MaterialTheme.typography.titleSmall,
+                                        maxLines = 1
+                                    )
+                                })
+                            Spacer(modifier = Modifier.height(15.dp))
                         }
                     }
                 }
-                if (homeScreenList.isNotEmpty()) {
-                    HorizontalPager(
-                        key = {
-                            it
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        count = homeScreenList.size, state = pagerState
-                    ) {
-                        ChildHomeScreen(
-                            homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
-                            navController = navController,
-                            folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
-                                SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByAToZV10(homeScreenList[it].id).collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
 
-                                SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByZToAV10(homeScreenList[it].id).collectAsState(
-                                            initial = emptyList()
-                                        ).value
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface)
+                ) {
+                    LazyColumn(modifier = Modifier.padding(it)) {
+                        stickyHeader {
+                            if (homeScreenList.isNotEmpty()) {
+                                Column(modifier = Modifier.animateContentSize()) {
+                                    ScrollableTabRow(
+                                        divider = {},
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        selectedTabIndex = pagerState.currentPage
+                                    ) {
+                                        homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                            Tab(
+                                                selected = pagerState.currentPage == index,
+                                                onClick = {
+                                                    coroutineScope.launch {
+                                                        pagerState.animateScrollToPage(index)
+                                                    }.start()
+                                                }) {
+                                                Text(
+                                                    text = homeScreenListsElement.folderName,
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    fontSize = 18.sp,
+                                                    modifier = Modifier.padding(15.dp),
+                                                    color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                        0.70f
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                    HorizontalDivider(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        thickness = 1.dp
+                                    )
                                 }
-
-                                SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByLatestToOldestV10(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByOldestToLatestV10(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                else -> {
-                                    LocalDataBase.localDB.readDao()
-                                        .getLinksOfThisFolderV10(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-                            },
-                            childFoldersData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
-                                SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByAToZ(homeScreenList[it].id).collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByZToA(homeScreenList[it].id).collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-
-                                else -> {
-                                    LocalDataBase.localDB.readDao()
-                                        .getChildFoldersOfThisParentID(homeScreenList[it].id)
-                                        .collectAsState(
-                                            initial = emptyList()
-                                        ).value
-                                }
-                            },
-                        )
-                    }
-                } else {
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Column(modifier = Modifier
-                            .fillMaxWidth()
-                            .offset {
-                                IntOffset(
-                                    cardOffSetX.value.roundToInt(),
-                                    cardOffSetY.value.roundToInt()
-                                )
                             }
-                            .pointerInput(Unit) {
-                                detectDragGestures { change, dragAmount ->
-                                    change.consumeAllChanges()
-                                    cardOffSetX.value += dragAmount.x
-                                    cardOffSetY.value += dragAmount.y
+                        }
+                    }
+                    if (homeScreenList.isNotEmpty()) {
+                        HorizontalPager(
+                            key = {
+                                it
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            count = homeScreenList.size, state = pagerState
+                        ) {
+                            ChildHomeScreen(
+                                homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
+                                navController = navController,
+                                folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
+                                    SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
+                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                            .sortByAToZV10(homeScreenList[it].id).collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
+                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                            .sortByZToAV10(homeScreenList[it].id).collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
+                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                            .sortByLatestToOldestV10(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
+                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                            .sortByOldestToLatestV10(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    else -> {
+                                        LocalDataBase.localDB.readDao()
+                                            .getLinksOfThisFolderV10(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+                                },
+                                childFoldersData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
+                                    SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
+                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                            .sortSubFoldersByAToZ(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
+                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                            .sortSubFoldersByZToA(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
+                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                            .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
+                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                            .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+
+                                    else -> {
+                                        LocalDataBase.localDB.readDao()
+                                            .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                            .collectAsState(
+                                                initial = emptyList()
+                                            ).value
+                                    }
+                                },
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(modifier = Modifier
+                                .fillMaxWidth()
+                                .offset {
+                                    IntOffset(
+                                        cardOffSetX.value.roundToInt(),
+                                        cardOffSetY.value.roundToInt()
+                                    )
                                 }
-                            }) {
+                                .pointerInput(Unit) {
+                                    detectDragGestures { change, dragAmount ->
+                                        change.consumeAllChanges()
+                                        cardOffSetX.value += dragAmount.x
+                                        cardOffSetY.value += dragAmount.y
+                                    }
+                                }) {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -508,6 +583,7 @@ fun ParentHomeScreen(navController: NavController) {
                         }
                     }
                 }
+            }
                 if (shouldScreenTransparencyDecreasedBoxVisible.value) {
                     Box(
                         modifier = Modifier
