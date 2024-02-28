@@ -13,6 +13,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.serialization.SerializationException
 
@@ -54,7 +55,8 @@ fun ImportExceptionDialogBox(
             }, confirmButton = {
                 Button(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                     onClick = {
                         isVisible.value = false
                         onClick()
@@ -68,7 +70,8 @@ fun ImportExceptionDialogBox(
             }, dismissButton = {
                 OutlinedButton(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                     onClick = {
                         isVisible.value = false
                     }) {

@@ -16,6 +16,7 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -91,6 +92,7 @@ import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
@@ -106,7 +108,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState", "LongLogTag")
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun CollectionsScreen(navController: NavController) {
     val context = LocalContext.current
@@ -184,12 +186,12 @@ fun CollectionsScreen(navController: NavController) {
                 Column {
                     TopAppBar(actions = {
                         if (areFoldersSelectable.value && (collectionsScreenVM.selectedFoldersData.size != 0) && foldersData.isNotEmpty()) {
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                 shouldDeleteDialogBoxBeVisible.value = true
                             }) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                             }
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                 collectionsScreenVM.archiveMultipleFolders()
                                 areFoldersSelectable.value = false
                                 collectionsScreenVM.areAllFoldersChecked.value = false
@@ -200,7 +202,7 @@ fun CollectionsScreen(navController: NavController) {
                         }
                     }, navigationIcon = {
                         if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                 areFoldersSelectable.value = false
                                 collectionsScreenVM.areAllFoldersChecked.value = false
                                 collectionsScreenVM.changeAllFoldersSelectedData()
@@ -278,11 +280,19 @@ fun CollectionsScreen(navController: NavController) {
                                                 it.size.height.toDp()
                                             }
                                         }
-                                        .clickable {
-                                            SpecificCollectionsScreenVM.screenType.value =
-                                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                                        }) {
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                SpecificCollectionsScreenVM.screenType.value =
+                                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                            },
+                                            onLongClick = {
+
+                                            })
+                                        .pulsateEffect()
+                                ) {
                                     Row(horizontalArrangement = Arrangement.Center) {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -301,15 +311,24 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
-                                Card(modifier = Modifier
-                                    .padding(
-                                        top = 20.dp, end = 20.dp, start = 20.dp
-                                    )
-                                    .wrapContentHeight()
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                                    }) {
+                                Card(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 20.dp, end = 20.dp, start = 20.dp
+                                        )
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                                            },
+                                            onLongClick = {
+
+                                            })
+                                        .pulsateEffect()
+                                ) {
                                     Row {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -333,15 +352,22 @@ fun CollectionsScreen(navController: NavController) {
                                     thickness = 0.5.dp,
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
-                                Card(modifier = Modifier
-                                    .padding(end = 20.dp, start = 20.dp)
-                                    .wrapContentHeight()
-                                    .fillMaxWidth()
-                                    .clickable {
-                                        SpecificCollectionsScreenVM.screenType.value =
-                                            SpecificScreenType.SAVED_LINKS_SCREEN
-                                        navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
-                                    }) {
+                                Card(
+                                    modifier = Modifier
+                                        .padding(end = 20.dp, start = 20.dp)
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                SpecificCollectionsScreenVM.screenType.value =
+                                                    SpecificScreenType.SAVED_LINKS_SCREEN
+                                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                            },
+                                            onLongClick = {})
+                                        .pulsateEffect()
+                                ) {
                                     Row {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
@@ -400,7 +426,7 @@ fun CollectionsScreen(navController: NavController) {
                             modifier = Modifier.padding(start = 15.dp)
                         )
                         if (foldersData.isNotEmpty() && !areFoldersSelectable.value) {
-                            IconButton(onClick = {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                 shouldSortingBottomSheetAppear.value = true
                                 coroutineScope.launch {
                                     sortingBtmSheetState.expand()
@@ -808,11 +834,18 @@ fun FolderIndividualComponent(
     ) {
         Row(
             modifier = Modifier
-                .combinedClickable(onClick = {
-                    onFolderClick(isCheckBoxChecked.value)
-                    isCheckBoxChecked.value = !isCheckBoxChecked.value
-                    checkBoxState(isCheckBoxChecked.value)
-                }, onLongClick = { onLongClick() })
+                .combinedClickable(interactionSource = remember {
+                    MutableInteractionSource()
+                }, indication = null,
+                    onClick = {
+                        onFolderClick(isCheckBoxChecked.value)
+                        isCheckBoxChecked.value = !isCheckBoxChecked.value
+                        checkBoxState(isCheckBoxChecked.value)
+                    },
+                    onLongClick = {
+                        onLongClick()
+                    })
+                .pulsateEffect()
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(

@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -111,7 +112,8 @@ fun SettingsNewVersionUpdateBtmContent(
                 Button(
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                     onClick = {
                         coroutineScope.launch {
                             if (modalBtmSheetState.isVisible) {
@@ -152,7 +154,9 @@ fun SettingsNewVersionUpdateBtmContent(
             }
             item {
                 Button(
-                    modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                    modifier = Modifier
+                        .padding(start = 20.dp, end = 20.dp)
+                        .pulsateEffect(),
                     onClick = {
                         coroutineScope.launch {
                             if (modalBtmSheetState.isVisible) {
@@ -188,7 +192,9 @@ fun SettingsNewVersionUpdateBtmContent(
         }
         item {
             TextButton(
-                modifier = Modifier.padding(start = 20.dp, end = 20.dp),
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp)
+                    .pulsateEffect(),
                 onClick = {
                     coroutineScope.launch {
                         if (modalBtmSheetState.isVisible) {

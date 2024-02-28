@@ -51,6 +51,7 @@ import com.sakethh.linkora.btmSheet.SortingBtmSheetType
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -75,7 +76,7 @@ fun ParentArchiveScreen(navController: NavController) {
         Scaffold(modifier = Modifier.background(MaterialTheme.colorScheme.surface), topBar = {
             TopAppBar(navigationIcon = {
                 if (archiveScreenVM.isSelectionModeEnabled.value) {
-                    IconButton(onClick = {
+                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                         archiveScreenVM.isSelectionModeEnabled.value = false
                         archiveScreenVM.areAllLinksChecked.value = false
                         archiveScreenVM.areAllFoldersChecked.value = false
@@ -131,20 +132,22 @@ fun ParentArchiveScreen(navController: NavController) {
                 }
             }, actions = {
                 if (archiveScreenVM.isSelectionModeEnabled.value && archiveScreenVM.selectedFoldersID.size + archiveScreenVM.selectedLinksData.size > 0) {
-                    IconButton(onClick = {
+                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                         archiveScreenVM.unArchiveMultipleFolders()
                         archiveScreenVM.unArchiveMultipleSelectedLinks()
                         archiveScreenVM.isSelectionModeEnabled.value = false
                     }) {
                         Icon(imageVector = Icons.Outlined.Unarchive, contentDescription = null)
                     }
-                    IconButton(onClick = {
+                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                         shouldDeleteDialogBoxAppear.value = true
                     }) {
                         Icon(imageVector = Icons.Outlined.DeleteForever, contentDescription = null)
                     }
                 } else {
-                    IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                    IconButton(
+                        modifier = Modifier.pulsateEffect(),
+                        onClick = { shouldSortingBottomSheetAppear.value = true }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.Sort,
                             contentDescription = null

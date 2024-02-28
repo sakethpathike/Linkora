@@ -21,6 +21,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -62,7 +63,8 @@ fun PermissionDialog(
                                 end = 20.dp,
                                 top = 20.dp,
                             )
-                            .align(Alignment.End),
+                            .align(Alignment.End)
+                            .pulsateEffect(),
                         onClick = {
                             isVisible.value = false
                             onClick()
@@ -85,7 +87,8 @@ fun PermissionDialog(
                                 top = 10.dp,
                                 bottom = 30.dp
                             )
-                            .align(Alignment.End),
+                            .align(Alignment.End)
+                            .pulsateEffect(),
                         onClick = {
                             isVisible.value = false
                         }) {

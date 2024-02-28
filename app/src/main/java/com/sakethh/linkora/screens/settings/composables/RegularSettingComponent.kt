@@ -1,7 +1,9 @@
 package com.sakethh.linkora.screens.settings.composables
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,8 +23,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.screens.settings.SettingsUIElement
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun RegularSettingComponent(
     settingsUIElement: SettingsUIElement
@@ -32,9 +36,16 @@ fun RegularSettingComponent(
     }
     val localDensity = LocalDensity.current
     Row(modifier = Modifier
-        .clickable {
-            settingsUIElement.onSwitchStateChange()
-        }
+        .combinedClickable(interactionSource = remember {
+            MutableInteractionSource()
+        }, indication = null,
+            onClick = {
+                settingsUIElement.onSwitchStateChange()
+            },
+            onLongClick = {
+
+            })
+        .pulsateEffect()
         .fillMaxWidth()
         .animateContentSize()) {
         Row(modifier = Modifier.fillMaxWidth(if (settingsUIElement.isSwitchNeeded) 0.70f else 1f)) {

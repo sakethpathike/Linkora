@@ -63,7 +63,9 @@ fun AddNewFolderDialogBox(
         LinkoraTheme {
             AlertDialog(dismissButton = {
                 if (!isFolderCreationInProgress.value) {
-                    androidx.compose.material3.OutlinedButton(modifier = Modifier.fillMaxWidth(),
+                    androidx.compose.material3.OutlinedButton(modifier = Modifier
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                         onClick = {
                             addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
@@ -77,7 +79,9 @@ fun AddNewFolderDialogBox(
             },
                 confirmButton = {
                     if (!isFolderCreationInProgress.value) {
-                        Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                        Button(modifier = Modifier
+                            .fillMaxWidth()
+                            .pulsateEffect(), onClick = {
                             isFolderCreationInProgress.value = true
                             if (folderNameTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(

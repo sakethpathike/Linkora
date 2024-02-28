@@ -65,6 +65,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.IntentActivityData
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.customComposables.AddNewFolderDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -228,7 +229,8 @@ fun NewLinkBtmSheet(
                                 ) {
                                     Button(modifier = Modifier
                                         .align(Alignment.CenterEnd)
-                                        .padding(end = 20.dp), onClick = {
+                                        .padding(end = 20.dp)
+                                        .pulsateEffect(), onClick = {
                                         newLinkBtmSheetUIParam.onLinkSaveClick(
                                             isAutoDetectTitleEnabled.value,
                                             linkTextFieldValue.value,

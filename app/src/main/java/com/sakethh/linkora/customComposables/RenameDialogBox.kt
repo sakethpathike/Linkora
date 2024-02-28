@@ -63,7 +63,9 @@ fun RenameDialogBox(
         }
         LinkoraTheme {
             AlertDialog(confirmButton = {
-                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .pulsateEffect(), onClick = {
                     renameDialogBoxParam.onNoteChangeClick(newNote.value)
                 }) {
                     Text(
@@ -72,7 +74,9 @@ fun RenameDialogBox(
                         fontSize = 16.sp
                     )
                 }
-                Button(modifier = Modifier.fillMaxWidth(), onClick = {
+                Button(modifier = Modifier
+                    .fillMaxWidth()
+                    .pulsateEffect(), onClick = {
                     if (newFolderOrTitleName.value.isNotEmpty()) {
                         if (newNote.value.isNotEmpty()) {
                             renameDialogBoxParam.onTitleChangeClick(newFolderOrTitleName.value)
@@ -93,7 +97,9 @@ fun RenameDialogBox(
                     )
                 }
             }, dismissButton = {
-                OutlinedButton(modifier = Modifier.fillMaxWidth(), onClick = {
+                OutlinedButton(modifier = Modifier
+                    .fillMaxWidth()
+                    .pulsateEffect(), onClick = {
                     renameDialogBoxParam.shouldDialogBoxAppear.value = false
                 }) {
                     Text(

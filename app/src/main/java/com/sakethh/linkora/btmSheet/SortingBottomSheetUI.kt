@@ -1,7 +1,9 @@
 package com.sakethh.linkora.btmSheet
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -31,6 +34,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -53,7 +57,7 @@ data class SortingBottomSheetUIParam @OptIn(ExperimentalMaterial3Api::class) con
     val shouldLinksSelectionBeVisible: MutableState<Boolean>
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SortingBottomSheetUI(
     sortingBottomSheetUIParam: SortingBottomSheetUIParam
@@ -147,18 +151,23 @@ fun SortingBottomSheetUI(
                         sortingBtmSheetVM.sortingBottomSheetData(context).forEach {
                             Column(
                                 modifier = Modifier
-                                    .clickable {
-                                        sortingBottomSheetUIParam.onSelectedAComponent(
-                                            it.sortingType, linksSortingSelectedState.value,
-                                            foldersSortingSelectedState.value
-                                        )
-                                        it.onClick()
-                                        coroutineScope.launch {
-                                            sortingBottomSheetUIParam.bottomModalSheetState.hide()
-                                            sortingBottomSheetUIParam.shouldBottomSheetVisible.value =
-                                                false
-                                        }
-                                    }
+                                    .combinedClickable(interactionSource = remember {
+                                        MutableInteractionSource()
+                                    }, indication = null,
+                                        onClick = {
+                                            sortingBottomSheetUIParam.onSelectedAComponent(
+                                                it.sortingType, linksSortingSelectedState.value,
+                                                foldersSortingSelectedState.value
+                                            )
+                                            it.onClick()
+                                            coroutineScope.launch {
+                                                sortingBottomSheetUIParam.bottomModalSheetState.hide()
+                                                sortingBottomSheetUIParam.shouldBottomSheetVisible.value =
+                                                    false
+                                            }
+                                        },
+                                        onLongClick = {})
+                                    .pulsateEffect()
                                     .fillMaxWidth()
                                     .wrapContentHeight()
                             ) {

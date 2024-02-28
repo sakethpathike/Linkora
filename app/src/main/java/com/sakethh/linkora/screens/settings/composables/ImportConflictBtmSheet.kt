@@ -1,9 +1,7 @@
 package com.sakethh.linkora.screens.settings.composables
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -24,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -84,7 +83,8 @@ fun ImportConflictBtmSheet(
                             end = 20.dp, top = 10.dp, start = 20.dp
                         )
                         .fillMaxWidth()
-                        .align(Alignment.End),
+                        .align(Alignment.End)
+                        .pulsateEffect(),
                     onClick = {
                         onDataExportClick(
                         )
@@ -99,7 +99,8 @@ fun ImportConflictBtmSheet(
                 Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                     onClick = {
                         coroutineScope.launch {
                             awaitAll(
@@ -120,7 +121,8 @@ fun ImportConflictBtmSheet(
                 Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp, top = 10.dp)
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .pulsateEffect(),
                     onClick = {
                         coroutineScope.launch {
                             awaitAll(
@@ -142,7 +144,8 @@ fun ImportConflictBtmSheet(
                     modifier = Modifier
                         .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                         .fillMaxWidth()
-                        .navigationBarsPadding(),
+                        .navigationBarsPadding()
+                        .pulsateEffect(),
                     onClick = {
                         coroutineScope.launch {
                             awaitAll(
@@ -160,11 +163,6 @@ fun ImportConflictBtmSheet(
                         textAlign = TextAlign.Start
                     )
                 }
-                Spacer(
-                    modifier = Modifier
-                        .height(20.dp)
-                        .navigationBarsPadding()
-                )
             }
         }
     }

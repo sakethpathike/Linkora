@@ -300,16 +300,18 @@ fun AddNewLinkDialogBox(
                                     modifier = Modifier.padding(top = 15.dp)
                                 )
                                 Spacer(modifier = Modifier.width(10.dp))
-                                OutlinedButton(border = BorderStroke(
-                                    width = 1.dp, color = MaterialTheme.colorScheme.primary
-                                ), onClick = {
-                                    if (!isDataExtractingForTheLink) {
-                                        isDropDownMenuIconClicked.value = true
-                                        coroutineScope.launch {
-                                            btmModalSheetState.expand()
+                                OutlinedButton(modifier = Modifier.pulsateEffect(),
+                                    border = BorderStroke(
+                                        width = 1.dp, color = MaterialTheme.colorScheme.primary
+                                    ),
+                                    onClick = {
+                                        if (!isDataExtractingForTheLink) {
+                                            isDropDownMenuIconClicked.value = true
+                                            coroutineScope.launch {
+                                                btmModalSheetState.expand()
+                                            }
                                         }
-                                    }
-                                }) {
+                                    }) {
                                     Text(
                                         text = selectedFolderName.value,
                                         color = MaterialTheme.colorScheme.primary,
@@ -370,7 +372,8 @@ fun AddNewLinkDialogBox(
                                         end = 20.dp, top = 10.dp, start = 20.dp
                                     )
                                     .fillMaxWidth()
-                                    .align(Alignment.End),
+                                    .align(Alignment.End)
+                                    .pulsateEffect(),
                                 onClick = {
                                     shouldDialogBoxAppear.value = false
                                 }) {
@@ -381,7 +384,8 @@ fun AddNewLinkDialogBox(
                                     fontSize = 16.sp
                                 )
                             }
-                            Button(colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
+                            Button(
+                                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
                                 modifier = Modifier
                                     .padding(
                                         end = 20.dp,
@@ -389,7 +393,8 @@ fun AddNewLinkDialogBox(
                                         start = 20.dp
                                     )
                                     .fillMaxWidth()
-                                    .align(Alignment.End),
+                                    .align(Alignment.End)
+                                    .pulsateEffect(),
                                 onClick = {
                                     if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
                                         LocalDataBase.localDB = LocalDataBase.getLocalDB(context)

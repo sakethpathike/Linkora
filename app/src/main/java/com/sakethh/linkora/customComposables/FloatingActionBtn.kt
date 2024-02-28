@@ -16,6 +16,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -56,6 +57,7 @@ fun FloatingActionBtn(
             )
         ) {
             androidx.compose.material3.FloatingActionButton(
+                modifier = Modifier.pulsateEffect(),
                 onClick = {
                     coroutineScope.launch {
                         kotlinx.coroutines.awaitAll(
@@ -121,12 +123,14 @@ fun FloatingActionBtn(
                         androidx.compose.animation.core.tween(300)
                     )
                 ) {
-                    androidx.compose.material3.FloatingActionButton(onClick = {
-                        floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
-                            false
-                        floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
-                        floatingActionBtnParam.isMainFabRotated.value = false
-                    }) {
+                    androidx.compose.material3.FloatingActionButton(
+                        modifier = Modifier.pulsateEffect(),
+                        onClick = {
+                            floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
+                                false
+                            floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
+                            floatingActionBtnParam.isMainFabRotated.value = false
+                        }) {
                         androidx.compose.material3.Icon(
                             imageVector = Icons.Default.CreateNewFolder,
                             contentDescription = null
@@ -170,9 +174,12 @@ fun FloatingActionBtn(
                         )
                     }
                 }
-                androidx.compose.material3.FloatingActionButton(modifier = androidx.compose.ui.Modifier.rotate(
-                    floatingActionBtnParam.rotationAnimation.value
-                ),
+                androidx.compose.material3.FloatingActionButton(
+                    modifier = androidx.compose.ui.Modifier
+                        .rotate(
+                            floatingActionBtnParam.rotationAnimation.value
+                        )
+                        .pulsateEffect(),
                     onClick = {
                         if (floatingActionBtnParam.isMainFabRotated.value) {
                             floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =

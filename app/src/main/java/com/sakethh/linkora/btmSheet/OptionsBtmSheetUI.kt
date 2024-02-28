@@ -2,8 +2,8 @@ package com.sakethh.linkora.btmSheet
 
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -50,6 +50,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.screens.collections.FolderIndividualComponent
@@ -305,6 +306,7 @@ fun OptionsBtmSheetUI(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptionsBtmSheetIndividualComponent(
     onClick: () -> Unit,
@@ -317,9 +319,16 @@ fun OptionsBtmSheetIndividualComponent(
     val localDensity = LocalDensity.current
     Row(
         modifier = Modifier
-            .clickable {
-                onClick()
-            }
+            .combinedClickable(interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null,
+                onClick = {
+                    onClick()
+                },
+                onLongClick = {
+
+                })
+            .pulsateEffect()
             .padding(end = 10.dp)
             .wrapContentHeight()
             .fillMaxWidth()

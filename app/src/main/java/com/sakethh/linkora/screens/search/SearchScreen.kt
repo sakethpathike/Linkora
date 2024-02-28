@@ -69,6 +69,7 @@ import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.screens.DataEmptyScreen
@@ -135,7 +136,7 @@ fun SearchScreen(navController: NavController) {
                 enabled = !isSelectionModeEnabled.value, interactionSource = interactionSource,
                 trailingIcon = {
                     if (SearchScreenVM.isSearchEnabled.value && !isSelectionModeEnabled.value) {
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             if (searchTextField == "") {
                                 SearchScreenVM.focusRequester.freeFocus()
                                 SearchScreenVM.isSearchEnabled.value = false
@@ -191,7 +192,7 @@ fun SearchScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically
                         ) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(onClick = {
+                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                     isSelectionModeEnabled.value =
                                         false
                                     searchScreenVM.areAllLinksChecked.value =
@@ -248,7 +249,7 @@ fun SearchScreen(navController: NavController) {
                             }
                             Row {
                                 if (searchScreenVM.selectedArchiveLinksTableData.isEmpty()) {
-                                    IconButton(onClick = {
+                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         searchScreenVM.archiveSelectedImportantLinks()
                                         searchScreenVM.archiveSelectedLinksTableLinks()
                                         searchScreenVM.archiveSelectedHistoryLinks()
@@ -261,7 +262,7 @@ fun SearchScreen(navController: NavController) {
                                         )
                                     }
                                 }
-                                IconButton(onClick = {
+                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                     shouldDeleteDialogBoxAppear.value = true
                                 }) {
                                     Icon(
@@ -771,7 +772,7 @@ fun SearchScreen(navController: NavController) {
                             verticalAlignment = Alignment.CenterVertically) {
                             if (isSelectionModeEnabled.value) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(onClick = {
+                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         isSelectionModeEnabled.value =
                                             false
                                         searchScreenVM.areAllLinksChecked.value =
@@ -833,7 +834,7 @@ fun SearchScreen(navController: NavController) {
                                 )
                             }
                             if (recentlyVisitedLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
-                                IconButton(onClick = {
+                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                     shouldSortingBottomSheetAppear.value = true
                                 }) {
                                     Icon(
@@ -843,7 +844,7 @@ fun SearchScreen(navController: NavController) {
                                 }
                             } else if (isSelectionModeEnabled.value) {
                                 Row {
-                                    IconButton(onClick = {
+                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         isSelectionModeEnabled.value =
                                             false
                                         searchScreenVM.archiveSelectedHistoryLinks()
@@ -853,7 +854,7 @@ fun SearchScreen(navController: NavController) {
                                             contentDescription = null
                                         )
                                     }
-                                    IconButton(onClick = {
+                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         shouldDeleteDialogBoxAppear.value = true
                                     }) {
                                         Icon(

@@ -87,7 +87,7 @@ fun LinkUIComponent(
             .padding(start = 15.dp, end = 15.dp, top = 15.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .pulsateEffect(0.9f)
+            .pulsateEffect()
             .animateContentSize(),
         verticalArrangement = Arrangement.SpaceBetween
     ) {

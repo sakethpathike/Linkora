@@ -13,8 +13,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -48,6 +50,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -66,6 +69,7 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.customComposables.DataDialogBoxType
 import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
@@ -83,7 +87,10 @@ import com.sakethh.linkora.screens.settings.composables.SettingsNewVersionUpdate
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(
+    ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun SettingsScreen(navController: NavController) {
     val importModalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -565,9 +572,19 @@ fun SettingsScreen(navController: NavController) {
                     )
                 }
                 item(key = "Privacy Element") {
-                    Box(modifier = Modifier.clickable {
-                        privacySectionData.onSwitchStateChange()
-                    }) {
+                    Box(
+                        modifier = Modifier
+                            .combinedClickable(interactionSource = remember {
+                                MutableInteractionSource()
+                            }, indication = null,
+                                onClick = {
+                                    privacySectionData.onSwitchStateChange()
+                                },
+                                onLongClick = {
+
+                                })
+                            .pulsateEffect()
+                    ) {
                         Column {
                             Row(
                                 modifier = Modifier

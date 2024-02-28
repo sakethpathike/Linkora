@@ -46,7 +46,8 @@ fun DeleteDialogBox(
                 AlertDialog(confirmButton = {
                     Button(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .pulsateEffect(),
                         onClick = {
                             deleteDialogBoxParam.onDeleteClick()
                             deleteDialogBoxParam.shouldDialogBoxAppear.value = false
@@ -61,7 +62,8 @@ fun DeleteDialogBox(
                 }, dismissButton = {
                     OutlinedButton(
                         modifier = Modifier
-                            .fillMaxWidth(),
+                            .fillMaxWidth()
+                            .pulsateEffect(),
                         onClick = {
                             deleteDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {

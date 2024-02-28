@@ -78,6 +78,7 @@ import com.sakethh.linkora.customComposables.LinkUIComponent
 import com.sakethh.linkora.customComposables.LinkUIComponentParam
 import com.sakethh.linkora.customComposables.RenameDialogBox
 import com.sakethh.linkora.customComposables.RenameDialogBoxParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.customWebTab.openInWeb
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
@@ -227,7 +228,7 @@ fun SpecificCollectionScreen(navController: NavController) {
             Column {
                 TopAppBar(navigationIcon = {
                     if (!areElementsSelectable.value) {
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             if (CollectionsScreenVM.currentClickedFolderData.value.parentFolderID != null
                                 && (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                         || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
@@ -249,7 +250,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             )
                         }
                     } else {
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             areElementsSelectable.value = false
                             specificCollectionsScreenVM.areAllLinksChecked.value = false
                             specificCollectionsScreenVM.areAllFoldersChecked.value = false
@@ -319,7 +320,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             when (SpecificCollectionsScreenVM.screenType.value) {
                                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                                     if ((specificCollectionsScreenVM.selectedImpLinks.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
                                             Icon(
@@ -327,7 +328,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 contentDescription = null
                                             )
                                         }
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             specificCollectionsScreenVM.moveMultipleLinksFromImpLinksToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
@@ -350,7 +351,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                                     if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
                                             Icon(
@@ -358,7 +359,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 contentDescription = null
                                             )
                                         }
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
@@ -380,7 +381,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
                                     if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
                                             Icon(
@@ -388,7 +389,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 contentDescription = null
                                             )
                                         }
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
@@ -410,7 +411,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                                     if ((specificCollectionsScreenVM.selectedLinksID.size + specificCollectionsScreenVM.selectedFoldersData.size != 0)) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldDeleteDialogBeVisible.value = true
                                         }) {
                                             Icon(
@@ -419,7 +420,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             )
                                         }
 
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
                                             specificCollectionsScreenVM.archiveMultipleFolders()
                                             areElementsSelectable.value = false
@@ -446,7 +447,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             when (SpecificCollectionsScreenVM.screenType.value) {
                                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                                     if (impLinksData.isNotEmpty()) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldSortingBottomSheetAppear.value = true
                                         }) {
                                             Icon(
@@ -459,7 +460,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                                     if (archivedFoldersLinksData.isNotEmpty() || archivedSubFoldersData.isNotEmpty()) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldSortingBottomSheetAppear.value = true
                                             coroutineScope.launch {
                                                 sortingBtmSheetState.expand()
@@ -475,7 +476,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
                                     if (savedLinksData.isNotEmpty()) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldSortingBottomSheetAppear.value = true
                                         }) {
                                             Icon(
@@ -488,7 +489,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                 SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                                     if (specificFolderLinksData.isNotEmpty() || childFoldersData.isNotEmpty()) {
-                                        IconButton(onClick = {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             shouldSortingBottomSheetAppear.value = true
                                             coroutineScope.launch {
                                                 sortingBtmSheetState.expand()

@@ -14,7 +14,7 @@ enum class OnClickState {
     IDLE, GESTURED
 }
 
-fun Modifier.pulsateEffect(targetValue: Float) = composed {
+fun Modifier.pulsateEffect(targetValue: Float = 0.98f) = composed {
     val composableState = remember {
         mutableStateOf(OnClickState.IDLE)
     }

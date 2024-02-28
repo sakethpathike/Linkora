@@ -107,6 +107,7 @@ import com.sakethh.linkora.customComposables.DeleteDialogBox
 import com.sakethh.linkora.customComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.customComposables.FloatingActionBtn
 import com.sakethh.linkora.customComposables.FloatingActionBtnParam
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -194,7 +195,7 @@ fun ParentHomeScreen(navController: NavController) {
             topBar = {
                 TopAppBar(navigationIcon = {
                     if (homeScreenVM.isSelectionModeEnabled.value) {
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             homeScreenVM.isSelectionModeEnabled.value = false
                             homeScreenVM.areAllLinksChecked.value = false
                             homeScreenVM.areAllFoldersChecked.value = false
@@ -203,8 +204,8 @@ fun ParentHomeScreen(navController: NavController) {
                         }) {
                             Icon(
                                 imageVector = Icons.Default.Cancel, contentDescription = null
-                                )
-                            }
+                            )
+                        }
                         }
                     }, title = {
                         if (homeScreenVM.isSelectionModeEnabled.value) {
@@ -250,7 +251,7 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 }, actions = {
                     if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedLinksID.size > 0) {
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             homeScreenVM.archiveMultipleFolders()
                             homeScreenVM.moveMultipleLinksFromLinksTableToArchive()
                             homeScreenVM.selectedFoldersData.clear()
@@ -259,7 +260,7 @@ fun ParentHomeScreen(navController: NavController) {
                         }) {
                             Icon(imageVector = Icons.Outlined.Archive, contentDescription = null)
                         }
-                        IconButton(onClick = {
+                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             shouldDeleteDialogBoxAppear.value = true
                         }) {
                             Icon(
@@ -269,14 +270,18 @@ fun ParentHomeScreen(navController: NavController) {
                         }
                     } else {
                         IconButton(
-                            modifier = if (homeScreenList.isEmpty()) Modifier.scale(
-                                scaleState.value
-                            ) else Modifier,
+                            modifier = if (homeScreenList.isEmpty()) Modifier
+                                .scale(
+                                    scaleState.value
+                                )
+                                .pulsateEffect() else Modifier.pulsateEffect(),
                             onClick = { shouldListsBottomSheetAppear.value = true }) {
                             Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                         }
                         if (homeScreenList.isNotEmpty()) {
-                            IconButton(onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                            IconButton(
+                                modifier = Modifier.pulsateEffect(),
+                                onClick = { shouldSortingBottomSheetAppear.value = true }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Outlined.Sort,
                                     contentDescription = null
