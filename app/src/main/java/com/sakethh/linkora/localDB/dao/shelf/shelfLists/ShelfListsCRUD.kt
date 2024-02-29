@@ -1,4 +1,4 @@
-package com.sakethh.linkora.localDB.dao.shelf.homeLists
+package com.sakethh.linkora.localDB.dao.shelf.shelfLists
 
 import androidx.room.Dao
 import androidx.room.Insert
@@ -8,9 +8,9 @@ import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface HomeListsCRUD {
-    @Query("SELECT * FROM home_screen_list_table ORDER BY position ASC")
-    fun getAllHomeScreenListFolders(): Flow<List<HomeScreenListTable>>
+interface ShelfListsCRUD {
+    @Query("SELECT * FROM home_screen_list_table WHERE parentShelfID = :shelfID ORDER BY position ASC")
+    fun getAllHomeScreenListFoldersOfThisShelf(shelfID: Long): Flow<List<HomeScreenListTable>>
 
     @Query("DELETE from home_screen_list_table WHERE id = :folderID")
     suspend fun deleteAHomeScreenListFolder(folderID: Long)

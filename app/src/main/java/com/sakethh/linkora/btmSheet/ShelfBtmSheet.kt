@@ -55,7 +55,9 @@ import com.sakethh.linkora.customComposables.DeleteAShelfDialogBoxDTO
 import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
+import com.sakethh.linkora.localDB.commonVMs.ReadVM
 import com.sakethh.linkora.localDB.dto.Shelf
+import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,6 +75,16 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val isTuneIconClicked = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val selectedShelfName = rememberSaveable {
+        mutableStateOf("")
+    }
+    val collectionsScreenVM: CollectionsScreenVM = viewModel()
+    val readVM: ReadVM = viewModel()
+    val selectedShelfFolders = readVM.selectedShelfFolders.collectAsState().value
+    val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
             sheetState = modalBottomSheetState,
@@ -86,25 +98,62 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                 if (shelfData.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Currently shown in Shelf",
+                            text = if (isTuneIconClicked.value) "Currently shown in ${selectedShelfName.value}" else "Currently shown in Shelf",
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(start = 15.dp, end = 20.dp),
                             color = MaterialTheme.colorScheme.primary
                         )
                     }
-                    items(shelfData) {
-                        OptionsBtmSheetIndividualComponent(
-                            onOptionClick = {
-                            },
-                            elementName = it.shelfName,
-                            elementImageVector = Icons.Default.HomeMax,
-                            inShelfUI = true,
-                            onDeleteIconClick = {
-                                shelfBtmSheetVM.selectedShelfData = it
-                                isDeleteAShelfDialogBoxVisible.value = true
-                            }
-                        )
+                    if (!isTuneIconClicked.value) {
+                        items(shelfData) {
+                            OptionsBtmSheetIndividualComponent(
+                                onOptionClick = {
+                                    selectedShelfName.value = it.shelfName
+                                    isTuneIconClicked.value = true
+                                },
+                                elementName = it.shelfName,
+                                elementImageVector = Icons.Default.HomeMax,
+                                inShelfUI = true,
+                                onDeleteIconClick = {
+                                    ShelfBtmSheetVM.selectedShelfData = it
+                                    isDeleteAShelfDialogBoxVisible.value = true
+                                },
+                                onTuneIconClick = {
+                                    selectedShelfName.value = it.shelfName
+                                    readVM.changeSelectedShelfFoldersData(it.id)
+                                    isTuneIconClicked.value = true
+                                }
+                            )
+                        }
+                    } else {
+                        /* items(rootFolders) { rootFolderElement ->
+                             if (!selectedShelfFolders.contains(
+                                     HomeScreenListTable(
+                                         id = rootFolderElement.id,
+                                         position = 0L,
+                                         folderName = rootFolderElement.folderName,
+                                         parentShelfID = 0L
+                                     )
+                                 )
+                             ) {
+                                 ListFolderUIComponent(
+                                     folderName = rootFolderElement.folderName,
+                                     {},
+                                     {},
+                                     {},
+                                     onAddClick = {
+                                         createVM.insertANewElementInHomeScreenList(
+                                             HomeScreenListTable(
+                                                 id = rootFolderElement.id,
+                                                 folderName = rootFolderElement.folderName
+                                             )
+                                         )
+                                     },
+                                     shouldAddIconBeVisible = true
+                                 )
+                             }
+                         }*/
                     }
                 } else {
                     item {
@@ -153,7 +202,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     }
                 }
 
-                if (shelfData.size == 5) {
+                if (shelfData.size == 5 && !isTuneIconClicked.value) {
                     item {
                         Card(
                             border = BorderStroke(
@@ -200,7 +249,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                if (shelfData.size < 5) {
+                if (shelfData.size < 5 && !isTuneIconClicked.value) {
                     item {
                         Button(modifier = Modifier
                             .padding(start = 20.dp, end = 20.dp)
@@ -237,10 +286,8 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         deleteAShelfDialogBoxDTO = DeleteAShelfDialogBoxDTO(
             isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
             onDeleteClick = { ->
-                deleteVM.deleteAShelf(shelfBtmSheetVM.selectedShelfData)
+                deleteVM.deleteAShelf(ShelfBtmSheetVM.selectedShelfData)
             },
-            selectedShelfIcon = Icons.Default.HomeMax,
-            selectedShelfName = shelfBtmSheetVM.selectedShelfData.shelfName
         )
     )
 }

@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
@@ -313,7 +314,8 @@ fun OptionsBtmSheetIndividualComponent(
     elementName: String,
     elementImageVector: ImageVector,
     inShelfUI: Boolean = false,
-    onDeleteIconClick: () -> Unit = {}
+    onDeleteIconClick: () -> Unit = {},
+    onTuneIconClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -348,8 +350,11 @@ fun OptionsBtmSheetIndividualComponent(
         }
         if (inShelfUI) {
             Row {
-                IconButton(
-                    modifier = Modifier.padding(10.dp), onClick = { onDeleteIconClick() }
+                IconButton(onClick = { onTuneIconClick() }
+                ) {
+                    Icon(imageVector = Icons.Default.Tune, contentDescription = null)
+                }
+                IconButton(onClick = { onDeleteIconClick() }
                 ) {
                     Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                 }
