@@ -12,8 +12,9 @@ import com.sakethh.linkora.localDB.dao.crud.CreateDao
 import com.sakethh.linkora.localDB.dao.crud.DeleteDao
 import com.sakethh.linkora.localDB.dao.crud.ReadDao
 import com.sakethh.linkora.localDB.dao.crud.UpdateDao
-import com.sakethh.linkora.localDB.dao.homeLists.HomeListsCRUD
 import com.sakethh.linkora.localDB.dao.searching.LinksSearching
+import com.sakethh.linkora.localDB.dao.shelf.ShelfCRUD
+import com.sakethh.linkora.localDB.dao.shelf.homeLists.HomeListsCRUD
 import com.sakethh.linkora.localDB.dao.sorting.folders.ParentArchivedFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.folders.ParentRegularFoldersSorting
 import com.sakethh.linkora.localDB.dao.sorting.folders.SubFoldersSorting
@@ -31,14 +32,15 @@ import com.sakethh.linkora.localDB.dto.ImportantFolders
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
 import com.sakethh.linkora.localDB.dto.RecentlyVisited
-import com.sakethh.linkora.localDB.typeConverters.ChildIDFolderTypeConverter
+import com.sakethh.linkora.localDB.dto.Shelf
+import com.sakethh.linkora.localDB.typeConverters.LongToStringConverter
 
 @Database(
-    version = 4,
+    version = 5,
     exportSchema = true,
-    entities = [HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
+    entities = [Shelf::class, HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
 )
-@TypeConverters(ChildIDFolderTypeConverter::class)
+@TypeConverters(LongToStringConverter::class)
 abstract class LocalDataBase : RoomDatabase() {
     abstract fun createDao(): CreateDao
     abstract fun readDao(): ReadDao
@@ -56,6 +58,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun importDao(): ImportDao
     abstract fun subFoldersSortingDao(): SubFoldersSorting
     abstract fun homeListsCrud(): HomeListsCRUD
+    abstract fun shelfCrud(): ShelfCRUD
 
     companion object {
         lateinit var localDB: LocalDataBase

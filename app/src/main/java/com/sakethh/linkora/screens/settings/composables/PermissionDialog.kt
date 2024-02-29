@@ -93,7 +93,7 @@ fun PermissionDialog(
                             isVisible.value = false
                         }) {
                         Text(
-                            text = "Never-mind",
+                            text = "Cacnel",
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp

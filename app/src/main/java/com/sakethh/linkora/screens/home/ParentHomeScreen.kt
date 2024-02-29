@@ -34,19 +34,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Hail
-import androidx.compose.material.icons.filled.Handshake
-import androidx.compose.material.icons.filled.Hd
-import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.HorizontalDistribute
+import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.Hail
-import androidx.compose.material.icons.outlined.Handshake
-import androidx.compose.material.icons.outlined.Hd
-import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.HorizontalDistribute
+import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -73,10 +71,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -92,10 +91,10 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.btmSheet.HomeListBtmSheet
-import com.sakethh.linkora.btmSheet.HomeListsBtmSheetVM
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
+import com.sakethh.linkora.btmSheet.ShelfBtmSheet
+import com.sakethh.linkora.btmSheet.ShelfBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
@@ -118,7 +117,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import kotlin.math.pow
 import kotlin.math.roundToInt
 
 @OptIn(
@@ -134,7 +132,7 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val shouldListsBottomSheetAppear = rememberSaveable {
+    val shouldShelfBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -159,8 +157,8 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val homeListsBtmSheetVM: HomeListsBtmSheetVM = viewModel()
-    val homeScreenList = homeListsBtmSheetVM.readHomeScreenListTable.collectAsState().value
+    val shelfBtmSheetVM: ShelfBtmSheetVM = viewModel()
+    val homeScreenList = shelfBtmSheetVM.readHomeScreenListTable.collectAsState().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
@@ -174,6 +172,7 @@ fun ParentHomeScreen(navController: NavController) {
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
+    val shelfData = homeScreenVM.shelfData.collectAsState().value
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -269,15 +268,6 @@ fun ParentHomeScreen(navController: NavController) {
                             )
                         }
                     } else {
-                        IconButton(
-                            modifier = if (homeScreenList.isEmpty()) Modifier
-                                .scale(
-                                    scaleState.value
-                                )
-                                .pulsateEffect() else Modifier.pulsateEffect(),
-                            onClick = { shouldListsBottomSheetAppear.value = true }) {
-                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
-                        }
                         if (homeScreenList.isNotEmpty()) {
                             IconButton(
                                 modifier = Modifier.pulsateEffect(),
@@ -291,40 +281,42 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 })
             }) {
-            val selectedInt = remember {
-                mutableStateOf(1)
+            val selectedString = remember {
+                mutableStateOf("Home")
             }
-            Row {
+            val widthOfShelfNavigation = remember {
+                mutableStateOf(0.dp)
+            }
+            val localDensity = LocalDensity.current
+            Row(modifier = Modifier.fillMaxSize()) {
                 Box(
-                    modifier = Modifier.fillMaxHeight(),
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .onGloballyPositioned {
+                            with(localDensity) {
+                                widthOfShelfNavigation.value = it.size.width.toDp()
+                            }
+                        }
+                        .verticalScroll(rememberScrollState()),
                     contentAlignment = Alignment.Center
                 ) {
                     Column {
-                        (10..15).forEach {
+                        Spacer(modifier = Modifier.height(100.dp))
+                        shelfData.forEach {
                             androidx.compose.material3.NavigationRailItem(
                                 modifier = Modifier.rotate(90f),
-                                selected = it == selectedInt.value,
+                                selected = it.shelfName == selectedString.value,
                                 onClick = {
-                                    selectedInt.value = it
+                                    selectedString.value = it.shelfName
                                 },
                                 icon = {
                                     Column {
                                         Icon(
                                             modifier = Modifier.rotate(180f),
-                                            imageVector = if (it == selectedInt.value) {
-                                                listOf(
-                                                    Icons.Filled.Home,
-                                                    Icons.Filled.Hail,
-                                                    Icons.Filled.Hd,
-                                                    Icons.Filled.Handshake
-                                                ).random()
+                                            imageVector = if (it.shelfName == selectedString.value) {
+                                                Icons.Filled.HorizontalDistribute
                                             } else {
-                                                listOf(
-                                                    Icons.Outlined.Home,
-                                                    Icons.Outlined.Hail,
-                                                    Icons.Outlined.Hd,
-                                                    Icons.Outlined.Handshake
-                                                ).random()
+                                                Icons.Outlined.HorizontalDistribute
                                             }, contentDescription = null
                                         )
                                     }
@@ -335,13 +327,55 @@ fun ParentHomeScreen(navController: NavController) {
                                             .rotate(180f)
                                             .width(56.dp)
                                             .padding(bottom = 2.dp),
-                                        text = (it.toDouble().pow(it.toDouble())).toString(),
+                                        text = it.shelfName,
                                         style = MaterialTheme.typography.titleSmall,
-                                        maxLines = 1
+                                        maxLines = 1,
+                                        textAlign = TextAlign.Center
                                     )
                                 })
-                            Spacer(modifier = Modifier.height(15.dp))
+                            Spacer(modifier = Modifier.height(20.dp))
                         }
+                        androidx.compose.material3.NavigationRailItem(
+                            modifier = Modifier.rotate(90f),
+                            selected = "Default" == selectedString.value,
+                            onClick = {
+                                selectedString.value = "Default"
+                            },
+                            icon = {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier.rotate(180f),
+                                        imageVector = if ("Default" == selectedString.value) {
+                                            Icons.Filled.Layers
+                                        } else {
+                                            Icons.Outlined.Layers
+                                        }, contentDescription = null
+                                    )
+                                }
+                            }, label = {
+                                Text(
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .rotate(180f)
+                                        .width(56.dp)
+                                        .padding(bottom = 2.dp),
+                                    text = "Default",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    textAlign = TextAlign.Center
+                                )
+                            })
+                        Spacer(modifier = Modifier.height(20.dp))
+                        IconButton(
+                            modifier = Modifier
+                                .align(Alignment.CenterHorizontally)
+                                .pulsateEffect(0.9f),
+                            onClick = {
+                                shouldShelfBottomSheetAppear.value = true
+                            }) {
+                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
+                        }
+                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
 
@@ -483,24 +517,26 @@ fun ParentHomeScreen(navController: NavController) {
                         }
                     } else {
                         Box(
-                            modifier = Modifier.fillMaxSize(),
+                            modifier = Modifier
+                                .fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Column(modifier = Modifier
-                                .fillMaxWidth()
-                                .offset {
-                                    IntOffset(
-                                        cardOffSetX.value.roundToInt(),
-                                        cardOffSetY.value.roundToInt()
-                                    )
-                                }
-                                .pointerInput(Unit) {
-                                    detectDragGestures { change, dragAmount ->
-                                        change.consumeAllChanges()
-                                        cardOffSetX.value += dragAmount.x
-                                        cardOffSetY.value += dragAmount.y
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .offset {
+                                        IntOffset(
+                                            cardOffSetX.value.roundToInt(),
+                                            cardOffSetY.value.roundToInt()
+                                        )
                                     }
-                                }) {
+                                    .pointerInput(Unit) {
+                                        detectDragGestures { change, dragAmount ->
+                                            change.consumeAllChanges()
+                                            cardOffSetX.value += dragAmount.x
+                                            cardOffSetY.value += dragAmount.y
+                                        }
+                                    }) {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -572,7 +608,13 @@ fun ParentHomeScreen(navController: NavController) {
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = "Saved Links and Important Links can be re-added from the next app version.",
+                                            text = buildAnnotatedString {
+                                                append("Saved and Important Links can be accessed from the ")
+                                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                                    append("Default")
+                                                }
+                                                append(" section on the left-side shelf.")
+                                            },
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -580,7 +622,6 @@ fun ParentHomeScreen(navController: NavController) {
                                             modifier = Modifier
                                                 .padding(end = 10.dp)
                                         )
-
                                     }
                                     Spacer(modifier = Modifier.height(20.dp))
                                 }
@@ -702,7 +743,7 @@ fun ParentHomeScreen(navController: NavController) {
             )
         )
 
-        HomeListBtmSheet(isBtmSheetVisible = shouldListsBottomSheetAppear)
+        ShelfBtmSheet(isBtmSheetVisible = shouldShelfBottomSheetAppear)
 
         NewLinkBtmSheet(
             NewLinkBtmSheetUIParam(

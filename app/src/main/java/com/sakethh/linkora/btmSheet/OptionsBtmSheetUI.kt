@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,6 +18,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
@@ -41,10 +43,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -127,7 +127,7 @@ fun OptionsBtmSheetUI(
                 Spacer(modifier = Modifier.height(5.dp))
                 if (!isNoteBtnSelected.value) {
                     OptionsBtmSheetIndividualComponent(
-                        onClick = {
+                        onOptionClick = {
                             coroutineScope.launch {
                                 if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                     optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -143,7 +143,7 @@ fun OptionsBtmSheetUI(
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
                     OptionsBtmSheetIndividualComponent(
-                        onClick = {
+                        onOptionClick = {
                             coroutineScope.launch {
                                 if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                     optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -159,7 +159,7 @@ fun OptionsBtmSheetUI(
 
                     if ((optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.LINK || optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !optionsBtmSheetUIParam.inArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
-                            onClick = {
+                            onOptionClick = {
                                 optionsBtmSheetUIParam.importantLinks?.let {
                                     updateDBVM.importantLinkTableUpdater(
                                         importantLinks = it,
@@ -185,7 +185,7 @@ fun OptionsBtmSheetUI(
                     }
                     if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
-                            onClick = {
+                            onOptionClick = {
                                 coroutineScope.launch {
                                     if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                         optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -202,7 +202,7 @@ fun OptionsBtmSheetUI(
                     }
                     if (optionsBtmSheetUIParam.inArchiveScreen.value && !optionsBtmSheetUIParam.inSpecificArchiveScreen.value) {
                         OptionsBtmSheetIndividualComponent(
-                            onClick = {
+                            onOptionClick = {
                                 coroutineScope.launch {
                                     if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                         optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -219,7 +219,7 @@ fun OptionsBtmSheetUI(
                     }
                     if (mutableStateNote.value.isNotEmpty()) {
                         OptionsBtmSheetIndividualComponent(
-                            onClick = {
+                            onOptionClick = {
                                 coroutineScope.launch {
                                     if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                         optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -236,7 +236,7 @@ fun OptionsBtmSheetUI(
                     }
                     if (optionsBtmSheetUIParam.inSpecificArchiveScreen.value || optionsBtmSheetUIParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         OptionsBtmSheetIndividualComponent(
-                            onClick = {
+                            onOptionClick = {
                                 coroutineScope.launch {
                                     if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
                                         optionsBtmSheetUIParam.btmModalSheetState.hide()
@@ -309,21 +309,19 @@ fun OptionsBtmSheetUI(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OptionsBtmSheetIndividualComponent(
-    onClick: () -> Unit,
+    onOptionClick: () -> Unit,
     elementName: String,
     elementImageVector: ImageVector,
+    inShelfUI: Boolean = false,
+    onDeleteIconClick: () -> Unit = {}
 ) {
-    val heightOfCard = remember {
-        mutableStateOf(0.dp)
-    }
-    val localDensity = LocalDensity.current
     Row(
         modifier = Modifier
             .combinedClickable(interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null,
                 onClick = {
-                    onClick()
+                    onOptionClick()
                 },
                 onLongClick = {
 
@@ -331,27 +329,31 @@ fun OptionsBtmSheetIndividualComponent(
             .pulsateEffect()
             .padding(end = 10.dp)
             .wrapContentHeight()
-            .fillMaxWidth()
-            .onGloballyPositioned {
-                heightOfCard.value = with(localDensity) {
-                    it.size.height.toDp()
-                }
-            }) {
-        IconButton(
-            modifier = Modifier.padding(10.dp), onClick = { onClick() },
-            colors = IconButtonDefaults.filledIconButtonColors()
-        ) {
-            Icon(imageVector = elementImageVector, contentDescription = null)
-        }
-        Box(
-            modifier = Modifier.height(heightOfCard.value),
-            contentAlignment = Alignment.CenterStart
-        ) {
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(
+                modifier = Modifier.padding(10.dp), onClick = { onOptionClick() },
+                colors = IconButtonDefaults.filledTonalIconButtonColors()
+            ) {
+                Icon(imageVector = elementImageVector, contentDescription = null)
+            }
             Text(
                 text = elementName,
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp
             )
+        }
+        if (inShelfUI) {
+            Row {
+                IconButton(
+                    modifier = Modifier.padding(10.dp), onClick = { onDeleteIconClick() }
+                ) {
+                    Icon(imageVector = Icons.Default.Delete, contentDescription = null)
+                }
+            }
         }
     }
 }

@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -15,16 +14,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Folder
+import androidx.compose.material.icons.filled.HomeMax
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +39,8 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -46,24 +48,31 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.customComposables.AddANewShelfDTO
+import com.sakethh.linkora.customComposables.AddANewShelfDialogBox
+import com.sakethh.linkora.customComposables.DeleteAShelfDialogBox
+import com.sakethh.linkora.customComposables.DeleteAShelfDialogBoxDTO
+import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
-import com.sakethh.linkora.localDB.commonVMs.UpdateVM
-import com.sakethh.linkora.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.localDB.dto.Shelf
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
+fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lazyListState = rememberLazyListState()
-    val collectionsScreenVM: CollectionsScreenVM = viewModel()
-    val homeListsBtmSheetVM: HomeListsBtmSheetVM = viewModel()
+    val shelfBtmSheetVM: ShelfBtmSheetVM = viewModel()
+    val shelfData = shelfBtmSheetVM.shelfData.collectAsState().value
+    val isAddANewShelfDialogBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
     val createVM: CreateVM = viewModel()
     val deleteVM: DeleteVM = viewModel()
-    val updateVM: UpdateVM = viewModel()
-    val homeScreenList = homeListsBtmSheetVM.readHomeScreenListTable.collectAsState().value
-    val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
+    val isDeleteAShelfDialogBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
             sheetState = modalBottomSheetState,
@@ -73,16 +82,28 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .animateContentSize()
-                    .navigationBarsPadding()
             ) {
-                if (homeScreenList.isNotEmpty()) {
+                if (shelfData.isNotEmpty()) {
                     item {
                         Text(
-                            text = "Currently shown in Home",
+                            text = "Currently shown in Shelf",
                             style = MaterialTheme.typography.titleMedium,
-                            fontSize = 16.sp,
+                            fontSize = 14.sp,
                             modifier = Modifier.padding(start = 15.dp, end = 20.dp),
                             color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    items(shelfData) {
+                        OptionsBtmSheetIndividualComponent(
+                            onOptionClick = {
+                            },
+                            elementName = it.shelfName,
+                            elementImageVector = Icons.Default.HomeMax,
+                            inShelfUI = true,
+                            onDeleteIconClick = {
+                                shelfBtmSheetVM.selectedShelfData = it
+                                isDeleteAShelfDialogBoxVisible.value = true
+                            }
                         )
                     }
                 } else {
@@ -95,7 +116,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp)
+                                .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
                         ) {
                             Row(
                                 modifier = Modifier
@@ -119,7 +140,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     )
                                 }
                                 Text(
-                                    text = "No folders are shown on the Home Screen.",
+                                    text = "Shelf is empty.",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 14.sp,
                                     lineHeight = 18.sp,
@@ -131,34 +152,8 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                itemsIndexed(items = homeScreenList) { currentIndex, listElement ->
-                    ListFolderUIComponent(
-                        folderName = listElement.folderName,
-                        onMoveUpClick = {
-                            val mutableList = homeScreenList.toMutableList()
-                            --mutableList[currentIndex].position
-                            ++mutableList[currentIndex - 1].position
-                            updateVM.updateHomeListElement(mutableList[currentIndex])
-                            updateVM.updateHomeListElement(mutableList[currentIndex - 1])
-                        },
-                        onMoveDownClick = {
-                            val mutableList = homeScreenList.toMutableList()
-                            ++mutableList[currentIndex].position
-                            --mutableList[currentIndex + 1].position
-                            updateVM.updateHomeListElement(mutableList[currentIndex])
-                            updateVM.updateHomeListElement(mutableList[currentIndex + 1])
-                        },
-                        onRemoveClick = {
-                            deleteVM.deleteAnElementFromHomeScreenList(listElement.id)
-                        }, onAddClick = {}, shouldAddIconBeVisible = false,
-                        shouldMoveUpIconVisible = currentIndex != 0,
-                        shouldMoveDownIconVisible = currentIndex != homeScreenList.size - 1
-                    )
-                }
-                if (homeScreenList.size == 5) {
-                    item {
-                        Spacer(modifier = Modifier.navigationBarsPadding())
-                    }
+
+                if (shelfData.size == 5) {
                     item {
                         Card(
                             border = BorderStroke(
@@ -169,6 +164,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 20.dp, end = 20.dp)
+                                .navigationBarsPadding()
                         ) {
                             Row(
                                 modifier = Modifier
@@ -192,7 +188,7 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     )
                                 }
                                 Text(
-                                    text = "Maximum of 5 folders can be added to the Home List. Remove any folder from the list above to add another folder.",
+                                    text = "Only a maximum of 5 shelf rows can be added to the shelf. To add another shelf, you need to remove one from the list above.",
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 14.sp,
                                     lineHeight = 18.sp,
@@ -204,35 +200,18 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                if (homeScreenList.size < 5 && homeScreenList.size != rootFolders.size) {
+                if (shelfData.size < 5) {
                     item {
-                        Text(
-                            text = if (homeScreenList.isEmpty()) "Select folders" else "Select other folders",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(start = 15.dp, end = 20.dp, top = 15.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                    items(items = rootFolders) { rootFolderElement ->
-                        if (!homeScreenList.any {
-                                it.id == rootFolderElement.id
-                            }
-                        ) {
-                            ListFolderUIComponent(
-                                folderName = rootFolderElement.folderName,
-                                {},
-                                {},
-                                {},
-                                onAddClick = {
-                                    createVM.insertANewElementInHomeScreenList(
-                                        folderID = rootFolderElement.id,
-                                        folderName = rootFolderElement.folderName
-                                    )
-                                },
-                                shouldAddIconBeVisible = true,
-                                shouldMoveUpIconVisible = false,
-                                shouldMoveDownIconVisible = false,
+                        Button(modifier = Modifier
+                            .padding(start = 20.dp, end = 20.dp)
+                            .navigationBarsPadding()
+                            .fillMaxWidth()
+                            .pulsateEffect(0.9f),
+                            onClick = { isAddANewShelfDialogBoxVisible.value = true }) {
+                            Text(
+                                text = "Create a new Shelf row",
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
                             )
                         }
                     }
@@ -240,6 +219,30 @@ fun HomeListBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             }
         }
     }
+    AddANewShelfDialogBox(
+        addANewShelfDTO = AddANewShelfDTO(
+            isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
+            onCreateClick = { shelfName, shelfIconName ->
+                createVM.addANewShelf(
+                    shelf = Shelf(
+                        shelfName = shelfName,
+                        shelfIconName = shelfIconName,
+                        folderIds = emptyList()
+                    )
+                )
+            })
+    )
+
+    DeleteAShelfDialogBox(
+        deleteAShelfDialogBoxDTO = DeleteAShelfDialogBoxDTO(
+            isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
+            onDeleteClick = { ->
+                deleteVM.deleteAShelf(shelfBtmSheetVM.selectedShelfData)
+            },
+            selectedShelfIcon = Icons.Default.HomeMax,
+            selectedShelfName = shelfBtmSheetVM.selectedShelfData.shelfName
+        )
+    )
 }
 
 @Composable

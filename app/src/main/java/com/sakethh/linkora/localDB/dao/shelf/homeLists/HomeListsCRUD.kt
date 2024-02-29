@@ -1,4 +1,4 @@
-package com.sakethh.linkora.localDB.dao.homeLists
+package com.sakethh.linkora.localDB.dao.shelf.homeLists
 
 import androidx.room.Dao
 import androidx.room.Insert

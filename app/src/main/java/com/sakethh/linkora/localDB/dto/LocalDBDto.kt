@@ -111,6 +111,14 @@ data class HomeScreenListTable(
     @PrimaryKey(autoGenerate = true) var id: Long = 0,
     var position: Long,
     val folderName: String,
-    val shouldSavedLinksTabVisible: Boolean = true,
-    val shouldImpLinksTabVisible: Boolean = true
+    val parentShelfID: Long
+)
+
+@Serializable
+@Entity("shelf")
+data class Shelf(
+    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    val shelfName: String,
+    val shelfIconName: String,
+    val folderIds: List<Long>
 )

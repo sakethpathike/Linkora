@@ -5,16 +5,15 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 
-class ChildNameFolderTypeConverter {
-
+class LongToStringConverter {
 
     @TypeConverter
-    fun toJson(jsonString: String?): List<String?>? {
+    fun toJson(jsonString: String?): List<Long>? {
         return jsonString?.let { Json.decodeFromString(it) }
     }
 
     @TypeConverter
-    fun toString(namesList: List<String?>): String {
-        return Json.encodeToString(namesList)
+    fun toString(idList: List<Long>?): String {
+        return Json.encodeToString(idList)
     }
 }

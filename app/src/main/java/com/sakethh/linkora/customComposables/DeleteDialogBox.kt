@@ -68,7 +68,7 @@ fun DeleteDialogBox(
                             deleteDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = "Never-mind",
+                            text = "Cacnel",
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )

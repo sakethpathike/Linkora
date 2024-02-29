@@ -10,6 +10,7 @@ import com.sakethh.linkora.localDB.dto.FoldersTable
 import com.sakethh.linkora.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.LinksTable
+import com.sakethh.linkora.localDB.dto.Shelf
 import com.sakethh.linkora.localDB.isNetworkAvailable
 import com.sakethh.linkora.localDB.linkDataExtractor
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -19,6 +20,12 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class CreateVM : ViewModel() {
+
+    fun addANewShelf(shelf: Shelf) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.shelfCrud().addANewShelf(shelf)
+        }
+    }
 
     fun addANewLinkInImpLinks(
         title: String,
@@ -314,7 +321,7 @@ class CreateVM : ViewModel() {
                     } catch (_: NullPointerException) {
                         1
                     }
-                }, folderName = folderName)
+                }, folderName = folderName, 0)
             LocalDataBase.localDB.homeListsCrud().addAHomeScreenListFolder(homeScreenListTable)
         }
     }

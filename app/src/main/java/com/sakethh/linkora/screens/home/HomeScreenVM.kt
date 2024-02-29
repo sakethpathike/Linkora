@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.localDB.dto.ImportantLinks
+import com.sakethh.linkora.localDB.dto.Shelf
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
@@ -16,14 +17,20 @@ import com.sakethh.linkora.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
 
-class HomeScreenVM : SpecificCollectionsScreenVM() {
+open class HomeScreenVM : SpecificCollectionsScreenVM() {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     val isSelectionModeEnabled = mutableStateOf(false)
+
+    private val _shelfData = MutableStateFlow(emptyList<Shelf>())
+    val shelfData = _shelfData.asStateFlow()
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
@@ -68,6 +75,11 @@ class HomeScreenVM : SpecificCollectionsScreenVM() {
                     }
                 }
             })
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.shelfCrud().getAllShelfItems().collectLatest {
+                _shelfData.emit(it)
+            }
         }
     }
 
