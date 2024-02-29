@@ -32,7 +32,7 @@ fun AddANewShelfDialogBox(addANewShelfDTO: AddANewShelfDTO) {
 
         AlertDialog(title = {
             Text(
-                text = "Create a new shelf", style = MaterialTheme.typography.titleMedium,
+                text = "Create a new Shelf row", style = MaterialTheme.typography.titleMedium,
                 fontSize = 22.sp,
                 lineHeight = 28.sp
             )

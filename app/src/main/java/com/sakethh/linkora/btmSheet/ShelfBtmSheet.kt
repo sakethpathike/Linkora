@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -43,8 +45,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -78,8 +85,8 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val isTuneIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
-    val selectedShelfName = rememberSaveable {
-        mutableStateOf("")
+    val selectedShelfName = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
+        mutableStateOf(ShelfBtmSheetVM.selectedShelfData.shelfName)
     }
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val readVM: ReadVM = viewModel()
@@ -88,7 +95,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
             sheetState = modalBottomSheetState,
-            onDismissRequest = { isBtmSheetVisible.value = false }) {
+            onDismissRequest = {
+                isBtmSheetVisible.value = false; isTuneIconClicked.value = false
+            }) {
             LazyColumn(
                 state = lazyListState,
                 modifier = Modifier
@@ -96,19 +105,35 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     .animateContentSize()
             ) {
                 if (shelfData.isNotEmpty()) {
-                    item {
-                        Text(
-                            text = if (isTuneIconClicked.value) "Currently shown in ${selectedShelfName.value}" else "Currently shown in Shelf",
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 14.sp,
-                            modifier = Modifier.padding(start = 15.dp, end = 20.dp),
-                            color = MaterialTheme.colorScheme.primary
-                        )
+                    if (!isTuneIconClicked.value) {
+                        item {
+                            Text(
+                                text = if (isTuneIconClicked.value) "Currently shown in ${selectedShelfName.value}" else "Currently shown in Shelf",
+                                style = MaterialTheme.typography.titleMedium,
+                                fontSize = 14.sp,
+                                modifier = Modifier.padding(start = 15.dp, end = 20.dp),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
+                    } else {
+                        if (isTuneIconClicked.value && selectedShelfFolders.isEmpty()) {
+                            item {
+                                InfoUI(infoText = buildAnnotatedString {
+                                    append("No folders are added in the shelf ")
+                                    withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                        append(selectedShelfName.value)
+                                    }
+                                    append(".")
+                                })
+                            }
+                        }
                     }
                     if (!isTuneIconClicked.value) {
                         items(shelfData) {
                             OptionsBtmSheetIndividualComponent(
                                 onOptionClick = {
+                                    readVM.changeSelectedShelfFoldersData(it.id)
+                                    ShelfBtmSheetVM.selectedShelfData = it
                                     selectedShelfName.value = it.shelfName
                                     isTuneIconClicked.value = true
                                 },
@@ -121,141 +146,91 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 },
                                 onTuneIconClick = {
                                     selectedShelfName.value = it.shelfName
+                                    ShelfBtmSheetVM.selectedShelfData = it
                                     readVM.changeSelectedShelfFoldersData(it.id)
                                     isTuneIconClicked.value = true
                                 }
                             )
                         }
                     } else {
-                        /* items(rootFolders) { rootFolderElement ->
-                             if (!selectedShelfFolders.contains(
-                                     HomeScreenListTable(
-                                         id = rootFolderElement.id,
-                                         position = 0L,
-                                         folderName = rootFolderElement.folderName,
-                                         parentShelfID = 0L
-                                     )
-                                 )
-                             ) {
-                                 ListFolderUIComponent(
-                                     folderName = rootFolderElement.folderName,
-                                     {},
-                                     {},
-                                     {},
-                                     onAddClick = {
-                                         createVM.insertANewElementInHomeScreenList(
-                                             HomeScreenListTable(
-                                                 id = rootFolderElement.id,
-                                                 folderName = rootFolderElement.folderName
-                                             )
-                                         )
-                                     },
-                                     shouldAddIconBeVisible = true
-                                 )
-                             }
-                         }*/
+                        if (selectedShelfFolders.isNotEmpty()) {
+                            item {
+                                Spacer(modifier = Modifier.height(10.dp))
+                                Text(
+                                    text = "Folders in Shelf ${selectedShelfName.value}",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    fontSize = 14.sp,
+                                    modifier = Modifier.padding(start = 15.dp, end = 20.dp),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                        items(selectedShelfFolders) { selectedShelfFolder ->
+                            ListFolderUIComponent(
+                                folderName = selectedShelfFolder.folderName,
+                                {},
+                                {},
+                                onRemoveClick = {
+                                    deleteVM.deleteAnElementFromHomeScreenList(selectedShelfFolder.id)
+                                },
+                                onAddClick = { },
+                                shouldAddIconBeVisible = false,
+                                shouldMoveUpIconVisible = false,
+                                shouldMoveDownIconVisible = false
+                            )
+                        }
                     }
                 } else {
                     item {
-                        Card(
-                            border = BorderStroke(
-                                1.dp,
-                                contentColorFor(MaterialTheme.colorScheme.surface)
-                            ),
-                            colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(
-                                        top = 10.dp, bottom = 10.dp
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Info,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(
-                                                start = 10.dp, end = 10.dp
-                                            )
+                        InfoUI(infoText = "Shelf is empty.")
+                    }
+                }
+                if (rootFolders.any { it.id !in selectedShelfFolders.map { it.id } } && isTuneIconClicked.value) {
+                    item {
+                        Spacer(modifier = Modifier.height(15.dp))
+                        Text(
+                            text = "Add folders into the Shelf ${selectedShelfName.value}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(start = 15.dp, end = 20.dp),
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                    items(rootFolders) { rootFolderElement ->
+                        if (!selectedShelfFolders.any { it.id == rootFolderElement.id }) {
+                            ListFolderUIComponent(
+                                folderName = rootFolderElement.folderName,
+                                {},
+                                {},
+                                {},
+                                onAddClick = {
+                                    createVM.insertANewElementInHomeScreenList(
+                                        folderName = rootFolderElement.folderName,
+                                        folderID = rootFolderElement.id,
+                                        parentShelfID = ShelfBtmSheetVM.selectedShelfData.id
                                     )
-                                }
-                                Text(
-                                    text = "Shelf is empty.",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 14.sp,
-                                    lineHeight = 18.sp,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier
-                                        .padding(end = 10.dp)
-                                )
-                            }
+                                },
+                                shouldAddIconBeVisible = true,
+                                shouldMoveUpIconVisible = false,
+                                shouldMoveDownIconVisible = false
+                            )
                         }
                     }
                 }
-
                 if (shelfData.size == 5 && !isTuneIconClicked.value) {
                     item {
-                        Card(
-                            border = BorderStroke(
-                                1.dp,
-                                contentColorFor(MaterialTheme.colorScheme.surface)
-                            ),
-                            colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp)
-                                .navigationBarsPadding()
-                        ) {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .padding(
-                                        top = 10.dp, bottom = 10.dp
-                                    ),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Box(
-                                    contentAlignment = Alignment.CenterStart
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.Info,
-                                        contentDescription = null,
-                                        modifier = Modifier
-                                            .padding(
-                                                start = 10.dp, end = 10.dp
-                                            )
-                                    )
-                                }
-                                Text(
-                                    text = "Only a maximum of 5 shelf rows can be added to the shelf. To add another shelf, you need to remove one from the list above.",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    fontSize = 14.sp,
-                                    lineHeight = 18.sp,
-                                    textAlign = TextAlign.Start,
-                                    modifier = Modifier
-                                        .padding(end = 10.dp)
-                                )
-                            }
-                        }
+                        InfoUI(infoText = "Only a maximum of 5 shelf rows can be added to the shelf. To add another shelf, you need to remove one from the list above.")
+                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
                 }
                 if (shelfData.size < 5 && !isTuneIconClicked.value) {
                     item {
-                        Button(modifier = Modifier
-                            .padding(start = 20.dp, end = 20.dp)
-                            .navigationBarsPadding()
-                            .fillMaxWidth()
-                            .pulsateEffect(0.9f),
+                        Button(
+                            modifier = Modifier
+                                .padding(start = 20.dp, end = 20.dp)
+                                .navigationBarsPadding()
+                                .fillMaxWidth()
+                                .pulsateEffect(0.9f),
                             onClick = { isAddANewShelfDialogBoxVisible.value = true }) {
                             Text(
                                 text = "Create a new Shelf row",
@@ -263,6 +238,11 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 fontSize = 16.sp
                             )
                         }
+                    }
+                }
+                if (isTuneIconClicked.value) {
+                    item {
+                        Spacer(modifier = Modifier.navigationBarsPadding())
                     }
                 }
             }
@@ -290,6 +270,98 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             },
         )
     )
+}
+
+@Composable
+fun InfoUI(infoText: String) {
+    Card(
+        border = BorderStroke(
+            1.dp,
+            contentColorFor(MaterialTheme.colorScheme.surface)
+        ),
+        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(
+                    top = 10.dp, bottom = 10.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(
+                            start = 10.dp, end = 10.dp
+                        )
+                )
+            }
+            Text(
+                text = infoText,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 14.sp,
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun InfoUI(infoText: AnnotatedString) {
+    Card(
+        border = BorderStroke(
+            1.dp,
+            contentColorFor(MaterialTheme.colorScheme.surface)
+        ),
+        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 20.dp, end = 20.dp, bottom = 10.dp)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .padding(
+                    top = 10.dp, bottom = 10.dp
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(
+                            start = 10.dp, end = 10.dp
+                        )
+                )
+            }
+            Text(
+                text = infoText,
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 14.sp,
+                lineHeight = 18.sp,
+                textAlign = TextAlign.Start,
+                modifier = Modifier
+                    .padding(end = 10.dp)
+            )
+        }
+    }
 }
 
 @Composable

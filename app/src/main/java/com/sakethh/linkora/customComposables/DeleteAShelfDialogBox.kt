@@ -1,6 +1,5 @@
 package com.sakethh.linkora.customComposables
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -68,7 +67,7 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                     )
             }, text = {
                 Text(
-                    text = "This deletion can't be undone.",
+                    text = "This shelf deletion can't be undone.",
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 14.sp,
                     lineHeight = 18.sp,
@@ -79,7 +78,5 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                     deleteAShelfDialogBoxDTO.isDialogBoxVisible.value = false
                 })
         }
-    }
-    Column {
     }
 }
