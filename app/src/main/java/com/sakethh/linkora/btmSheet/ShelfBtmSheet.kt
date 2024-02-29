@@ -3,6 +3,7 @@ package com.sakethh.linkora.btmSheet
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +42,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -391,13 +393,18 @@ private fun ListFolderUIComponent(
     shouldMoveUpIconVisible: Boolean,
     shouldMoveDownIconVisible: Boolean,
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .clickable {
-            if (shouldAddIconBeVisible) {
-                onAddClick()
-            }
-        }) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .pulsateEffect()
+            .clickable(interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null, onClick = {
+                if (shouldAddIconBeVisible) {
+                    onAddClick()
+                }
+            })
+    ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
