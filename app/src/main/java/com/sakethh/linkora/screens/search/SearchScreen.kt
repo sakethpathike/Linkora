@@ -1082,7 +1082,7 @@ fun SearchScreen(navController: NavController) {
                     popUpTo(0)
                 }
             } else {
-                activity?.finish()
+                activity?.moveTaskToBack(true)
             }
         }
     }

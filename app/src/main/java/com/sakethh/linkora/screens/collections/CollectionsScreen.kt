@@ -793,7 +793,7 @@ fun CollectionsScreen(navController: NavController) {
             collectionsScreenVM.areAllFoldersChecked.value = false
             collectionsScreenVM.changeAllFoldersSelectedData()
         } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
-            activity?.finish()
+            activity?.moveTaskToBack(true)
         } else {
             navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                 popUpTo(0)

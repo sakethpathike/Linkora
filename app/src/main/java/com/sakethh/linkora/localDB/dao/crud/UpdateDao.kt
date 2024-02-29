@@ -27,6 +27,14 @@ interface UpdateDao {
         "INSERT INTO archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)\n" +
                 "SELECT title, webURL, baseURL, imgURL, infoForSaving\n" +
                 "FROM important_links_table\n" +
+                "WHERE id = :id;\n"
+    )
+    suspend fun copyLinkFromImpLinksTableToArchiveLinks(id: Long)
+
+    @Query(
+        "INSERT INTO archived_links_table (title, webURL, baseURL, imgURL, infoForSaving)\n" +
+                "SELECT title, webURL, baseURL, imgURL, infoForSaving\n" +
+                "FROM important_links_table\n" +
                 "WHERE webURL = :link;\n"
     )
     suspend fun copyLinkFromImpTableToArchiveLinks(link: String)

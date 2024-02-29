@@ -3,6 +3,7 @@ package com.sakethh.linkora.screens.home
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.localDB.LocalDataBase
@@ -35,6 +36,40 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
+    }
+
+    val selectedSavedLinkIds = mutableStateListOf<Long>()
+    val selectedImpLinkIds = mutableStateListOf<Long>()
+    fun moveSelectedSavedAndImpLinksToArchive() {
+        viewModelScope.launch {
+            awaitAll(async {
+                selectedSavedLinkIds.toList().forEach {
+                    LocalDataBase.localDB.updateDao()
+                        .copyLinkFromLinksTableToArchiveLinks(it)
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                }
+            }, async {
+                selectedImpLinkIds.toList().forEach {
+                    LocalDataBase.localDB.updateDao()
+                        .copyLinkFromImpLinksTableToArchiveLinks(it)
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                }
+            })
+        }
+    }
+
+    fun deleteSelectedSavedAndImpLinks() {
+        viewModelScope.launch {
+            awaitAll(async {
+                selectedSavedLinkIds.toList().forEach {
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                }
+            }, async {
+                selectedImpLinkIds.toList().forEach {
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                }
+            })
+        }
     }
 
     val defaultScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {

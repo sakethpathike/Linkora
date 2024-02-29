@@ -35,12 +35,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Folder
@@ -74,11 +77,12 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
@@ -201,6 +205,8 @@ fun ParentHomeScreen(navController: NavController) {
                             homeScreenVM.areAllLinksChecked.value = false
                             homeScreenVM.areAllFoldersChecked.value = false
                             homeScreenVM.selectedLinksID.clear()
+                            homeScreenVM.selectedImpLinkIds.clear()
+                            homeScreenVM.selectedSavedLinkIds.clear()
                             homeScreenVM.selectedFoldersData.clear()
                         }) {
                             Icon(
@@ -212,7 +218,7 @@ fun ParentHomeScreen(navController: NavController) {
                         if (homeScreenVM.isSelectionModeEnabled.value) {
                             Row {
                                 AnimatedContent(
-                                    targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size,
+                                    targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -237,7 +243,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     )
                                 }
                                 Text(
-                                    text = " items selected",
+                                    text = if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size == 1) " item" else " items selected",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp
@@ -251,12 +257,15 @@ fun ParentHomeScreen(navController: NavController) {
                         )
                     }
                 }, actions = {
-                    if (homeScreenVM.isSelectionModeEnabled.value && homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedLinksID.size > 0) {
+                    if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size > 0) {
                         IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                             homeScreenVM.archiveMultipleFolders()
                             homeScreenVM.moveMultipleLinksFromLinksTableToArchive()
+                            homeScreenVM.moveSelectedSavedAndImpLinksToArchive()
                             homeScreenVM.selectedFoldersData.clear()
                             homeScreenVM.selectedLinksID.clear()
+                            homeScreenVM.selectedImpLinkIds.clear()
+                            homeScreenVM.selectedSavedLinkIds.clear()
                             homeScreenVM.isSelectionModeEnabled.value = false
                         }) {
                             Icon(imageVector = Icons.Outlined.Archive, contentDescription = null)
@@ -589,18 +598,31 @@ fun ParentHomeScreen(navController: NavController) {
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            buildAnnotatedString {
-                                                append("Access and manage folders directly from the shelf itself by clicking the ")
+                                            text = buildAnnotatedString {
+                                                append("To add folders into this shelf, click on the ")
+                                                appendInlineContent("tuneIcon")
                                                 withStyle(
                                                     style = SpanStyle(
-                                                        fontWeight = FontWeight.Bold,
-                                                        textDecoration = TextDecoration.Underline
+                                                        fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append("tune icon in the bottom of Shelf")
+                                                    append(" at the bottom of the Shelf")
                                                 }
-                                                append(" to customize your home screen UI.")
+                                                append(".")
                                             },
+                                            inlineContent = mapOf(
+                                                Pair("tuneIcon", InlineTextContent(
+                                                    Placeholder(
+                                                        22.sp, 22.sp,
+                                                        PlaceholderVerticalAlign.TextCenter
+                                                    )
+                                                ) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Tune,
+                                                        contentDescription = null
+                                                    )
+                                                })
+                                            ),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -620,32 +642,32 @@ fun ParentHomeScreen(navController: NavController) {
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = "Please note that folders need to be created by you or already exist to be shown in the list.",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            fontSize = 18.sp,
-                                            lineHeight = 24.sp,
-                                            textAlign = TextAlign.Start,
-                                            modifier = Modifier
-                                                .padding(end = 10.dp)
-                                        )
-                                    }
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                            .padding(
-                                                10.dp
-                                            )
-                                    ) {
-                                        Text(text = "• ")
-                                        Text(
                                             text = buildAnnotatedString {
                                                 append("Saved and Important Links can be accessed from the ")
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("Default")
+                                                    append("Default Shelf ")
                                                 }
-                                                append(" section on the left-side shelf.")
+                                                append("(")
+                                                appendInlineContent("defaultSectionIcon")
+                                                append(").")
                                             },
+                                            inlineContent = mapOf(
+                                                Pair(
+                                                    "defaultSectionIcon",
+                                                    InlineTextContent(
+                                                        Placeholder(
+                                                            22.sp, 22.sp,
+                                                            PlaceholderVerticalAlign.TextCenter
+                                                        )
+                                                    ) {
+                                                        Icon(
+                                                            modifier = Modifier.rotate(-90f),
+                                                            imageVector = Icons.Outlined.Layers,
+                                                            contentDescription = null
+                                                        )
+                                                    }
+                                                )
+                                            ),
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -852,9 +874,12 @@ fun ParentHomeScreen(navController: NavController) {
                 onDeleteClick = {
                     homeScreenVM.onDeleteMultipleSelectedFolders()
                     homeScreenVM.onDeleteMultipleSelectedLinks()
+                    homeScreenVM.deleteSelectedSavedAndImpLinks()
                     homeScreenVM.isSelectionModeEnabled.value = false
                     homeScreenVM.selectedFoldersData.clear()
                     homeScreenVM.selectedLinksID.clear()
+                    homeScreenVM.selectedImpLinkIds.clear()
+                    homeScreenVM.selectedSavedLinkIds.clear()
                 }
             )
         )
@@ -877,8 +902,16 @@ fun ParentHomeScreen(navController: NavController) {
                     rotationAnimation.snapTo(0f)
                 }
             }
+        } else if (homeScreenVM.isSelectionModeEnabled.value) {
+            homeScreenVM.isSelectionModeEnabled.value = false
+            homeScreenVM.areAllLinksChecked.value = false
+            homeScreenVM.areAllFoldersChecked.value = false
+            homeScreenVM.selectedLinksID.clear()
+            homeScreenVM.selectedImpLinkIds.clear()
+            homeScreenVM.selectedSavedLinkIds.clear()
+            homeScreenVM.selectedFoldersData.clear()
         } else {
-            activity?.finish()
+            activity?.moveTaskToBack(true)
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.sakethh.linkora.screens.home
 
 import android.annotation.SuppressLint
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -132,6 +131,19 @@ fun ChildHomeScreen(
                     }) {
                         LinkUIComponent(
                             LinkUIComponentParam(
+                                onLongClick = {
+                                    if (!homeScreenVM.isSelectionModeEnabled.value) {
+                                        homeScreenVM.isSelectionModeEnabled.value =
+                                            true
+                                        homeScreenVM.selectedSavedLinkIds.add(it.id)
+                                    }
+                                },
+                                isSelectionModeEnabled = homeScreenVM.isSelectionModeEnabled,
+                                isItemSelected = mutableStateOf(
+                                    homeScreenVM.selectedSavedLinkIds.contains(
+                                        it.id
+                                    )
+                                ),
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -162,17 +174,29 @@ fun ChildHomeScreen(
                                     }
                                 },
                                 onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ), context = context, uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                    if (homeScreenVM.isSelectionModeEnabled.value) {
+                                        if (!homeScreenVM.selectedSavedLinkIds.contains(it.id)) {
+                                            homeScreenVM.selectedSavedLinkIds.add(
+                                                it.id
+                                            )
+                                        } else {
+                                            homeScreenVM.selectedSavedLinkIds.remove(
+                                                it.id
+                                            )
+                                        }
+                                    } else {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
+                                            )
+                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -188,11 +212,7 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-
-                                onLongClick = { -> })
+                                })
                         )
                     }
                 } else {
@@ -210,6 +230,19 @@ fun ChildHomeScreen(
                     }) {
                         LinkUIComponent(
                             LinkUIComponentParam(
+                                onLongClick = {
+                                    if (!homeScreenVM.isSelectionModeEnabled.value) {
+                                        homeScreenVM.isSelectionModeEnabled.value =
+                                            true
+                                        homeScreenVM.selectedImpLinkIds.add(it.id)
+                                    }
+                                },
+                                isSelectionModeEnabled = homeScreenVM.isSelectionModeEnabled,
+                                isItemSelected = mutableStateOf(
+                                    homeScreenVM.selectedImpLinkIds.contains(
+                                        it.id
+                                    )
+                                ),
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
@@ -240,17 +273,29 @@ fun ChildHomeScreen(
                                     }
                                 },
                                 onLinkClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ), context = context, uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                    if (homeScreenVM.isSelectionModeEnabled.value) {
+                                        if (!homeScreenVM.selectedImpLinkIds.contains(it.id)) {
+                                            homeScreenVM.selectedImpLinkIds.add(
+                                                it.id
+                                            )
+                                        } else {
+                                            homeScreenVM.selectedImpLinkIds.remove(
+                                                it.id
+                                            )
+                                        }
+                                    } else {
+                                        coroutineScope.launch {
+                                            openInWeb(
+                                                recentlyVisitedData = RecentlyVisited(
+                                                    title = it.title,
+                                                    webURL = it.webURL,
+                                                    baseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    infoForSaving = it.infoForSaving
+                                                ), context = context, uriHandler = uriHandler,
+                                                forceOpenInExternalBrowser = false
+                                            )
+                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -266,11 +311,7 @@ fun ChildHomeScreen(
                                         onTaskCompleted = {},
                                         forceOpenInExternalBrowser = true
                                     )
-                                },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-
-                                onLongClick = { -> })
+                                })
                         )
                     }
                 } else {
@@ -391,7 +432,6 @@ fun ChildHomeScreen(
                                 },
                                 onLinkClick = {
                                     if (homeScreenVM.isSelectionModeEnabled.value) {
-
                                         if (!homeScreenVM.selectedLinksID.contains(it.id)) {
                                             homeScreenVM.selectedLinksID.add(
                                                 it.id
@@ -401,7 +441,6 @@ fun ChildHomeScreen(
                                                 it.id
                                             )
                                         }
-
                                     } else {
                                         coroutineScope.launch {
                                             openInWeb(
@@ -604,21 +643,6 @@ fun ChildHomeScreen(
             }
         )
     )
-
-
-    BackHandler {
-        if (btmModalSheetState.isVisible) {
-            coroutineScope.launch {
-                btmModalSheetState.hide()
-            }
-        } else if (homeScreenVM.isSelectionModeEnabled.value) {
-            homeScreenVM.isSelectionModeEnabled.value = false
-            homeScreenVM.areAllLinksChecked.value = false
-            homeScreenVM.areAllFoldersChecked.value = false
-            homeScreenVM.selectedLinksID.clear()
-            homeScreenVM.selectedFoldersData.clear()
-        }
-    }
 }
 
 enum class HomeScreenBtmSheetType {

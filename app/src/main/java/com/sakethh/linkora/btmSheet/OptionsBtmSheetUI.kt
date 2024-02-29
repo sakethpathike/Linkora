@@ -1,6 +1,7 @@
 package com.sakethh.linkora.btmSheet
 
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -306,6 +307,11 @@ fun OptionsBtmSheetUI(
                 }
             }
         }
+        BackHandler {
+            coroutineScope.launch {
+                optionsBtmSheetUIParam.btmModalSheetState.hide()
+            }
+        }
     }
 }
 
@@ -349,7 +355,7 @@ fun OptionsBtmSheetIndividualComponent(
                 text = elementName,
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
-                modifier = Modifier.fillMaxWidth(0.4f),
+                modifier = Modifier.fillMaxWidth(if (inShelfUI) 0.4f else 1f),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
