@@ -1,4 +1,4 @@
-![Linkora Header](https://github.com/sakethpathike/Linkora/assets/83284398/eced359e-f327-4316-ba65-ae14722e1384)
+![Linkora Header](https://github.com/sakethpathike/Linkora/assets/83284398/08e63d01-c767-4e85-a7d2-1e605697e76d)
 Linkora is an Android project that focuses on making link organization simpler. From saving a single link individually to saving links in a folder for respective use cases, Linkora has almost all of them with a simpler UI and will be updated in further releases with a few other helpful and useful features that you would expect from a link utility app.
 
 ## Features
@@ -6,7 +6,7 @@ Linkora is an Android project that focuses on making link organization simpler. 
 - Store links individually effortlessly.
 - Organize links into folders for better management.
 - Create nested folders to further organize your links (sub-folders can be added from
-  the [latest beta release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta02)).
+  the [latest beta release](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta03)).
 - Mark important links for quick access.
 - Archive links or folders to keep things tidy.
 - Customize link names as you like.
@@ -14,7 +14,8 @@ Linkora is an Android project that focuses on making link organization simpler. 
 - Easily search and sort through your links and folders.
 - Import and export data (beta feature).
 - Linkora recognizes images and titles whenever possible.
-- Personalize your Home screen UI with your favorite folders, similar to Twitter Lists.
+- Personalize your home screen UI by adding your favorite folders using the *Shelf* feature, similar
+  to Twitter Lists but better.
 - Perform various operations by selecting multiple links or folders.
 
 ## Tech Stack
@@ -32,14 +33,14 @@ Linkora is an Android project that focuses on making link organization simpler. 
 
 ## Releases
 
-The latest release of Linkora (v0.4.0-beta02) is available
-on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta02).
+The latest release of Linkora (v0.4.0-beta03) is available
+on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta03).
 You can download the APK file from there;
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta02/Linkora-v0.4.0-beta02.apk).
+or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta03/Linkora-v0.4.0-beta03.apk).
 
-[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.4.0-beta02%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.4.0-beta02%2FLinkora-v0.4.0-beta02.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta02/Linkora-v0.4.0-beta02.apk)
+[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.4.0-beta03%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.4.0-beta03%2FLinkora-v0.4.0-beta03.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0-beta03/Linkora-v0.4.0-beta03.apk)
 
-[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.4.0-beta02%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.4.0-beta02">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta02)
+[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.4.0-beta03%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.4.0-beta03">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0-beta03)
 
 ## Screenshots
 
@@ -47,7 +48,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                          Home                                                           |                                                           Home                                                           |                                                           Home                                                           |                                                           Home                                                           |
 |:-----------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------:|:------------------------------------------------------------------------------------------------------------------------:|
-| ![HomeScreen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/45a36ea1-63cb-4c07-9eb5-d8a08e0b7926) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/68c25f56-9d8f-4025-bc2a-81883b42aa07) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/ae8d6477-9882-4923-927f-1f0fb351bd55) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/1acf8de2-f57c-439c-9286-40568e6e562b) |
+| ![HomeScreen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/05da8d1e-51e6-4fb2-8a15-f853973c0e1a) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/313b38ca-21dc-498c-af2e-ccbbe5c739d7) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/ae8d6477-9882-4923-927f-1f0fb351bd55) | ![Home Screen of Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/307fcae0-679f-4a6e-9b9e-5245a5f751ff) |
 
 ### Search Screen
 
@@ -81,7 +82,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                       Settings Screen                                                        |                                                       Settings Screen                                                        |
 |:----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------:|
-| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/e8902ba7-03bc-4ffb-b666-aa8aa5d09011) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/36dee10a-8058-43d0-9d85-4f7b438ddc28) |
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/63a046ae-4c40-482b-9a48-23ebc4497e43) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/36dee10a-8058-43d0-9d85-4f7b438ddc28) |
 
 ### Sharing from other apps
 
@@ -102,7 +103,9 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - [ ] Reading links from Barcode and text
 - [x] Lists similar to Twitter Lists (in beta)
 - [x] Selectable items for different operations (in beta)
+- [x] Shelf in HomeScreen
 - [ ] Saving multiple links in a single click
+- [ ] UI Improvements in Search
 
 #### Note: This project is in active development and new features and improvements will be added over time.
 

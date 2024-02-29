@@ -279,7 +279,6 @@ fun ParentHomeScreen(navController: NavController) {
                             )
                         }
                     } else {
-                        if (homeScreenList.isNotEmpty()) {
                             IconButton(
                                 modifier = Modifier.pulsateEffect(),
                                 onClick = { shouldSortingBottomSheetAppear.value = true }) {
@@ -288,7 +287,6 @@ fun ParentHomeScreen(navController: NavController) {
                                     contentDescription = null
                                 )
                             }
-                        }
                     }
                 })
             }) {
