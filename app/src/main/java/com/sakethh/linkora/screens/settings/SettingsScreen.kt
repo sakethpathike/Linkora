@@ -185,7 +185,7 @@ fun SettingsScreen(navController: NavController) {
                                     .alignByBaseline()
                             )
                             Text(
-                                text = SettingsScreenVM.appVersionValue,
+                                text = SettingsScreenVM.appVersionName,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp,
                                 modifier = Modifier.alignByBaseline()

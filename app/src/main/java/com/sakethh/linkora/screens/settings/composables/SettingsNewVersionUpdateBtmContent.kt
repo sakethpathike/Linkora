@@ -60,7 +60,7 @@ fun SettingsNewVersionUpdateBtmContent(
         item {
             VersionCardForBtmSheetContent(
                 title = "version you're using",
-                value = SettingsScreenVM.appVersionValue
+                value = SettingsScreenVM.appVersionName
             )
         }
         if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value) {
