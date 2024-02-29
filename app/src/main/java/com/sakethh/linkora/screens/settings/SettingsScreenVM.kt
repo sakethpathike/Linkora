@@ -341,7 +341,7 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
     }
 
     enum class SortingPreferences {
@@ -365,6 +365,7 @@ class SettingsScreenVM(
         val showDescriptionForSettingsState = mutableStateOf(true)
         val isOnLatestUpdate = mutableStateOf(false)
         val didServerTimeOutErrorOccurred = mutableStateOf(false)
+        val shouldNewFeatureDialogBeVisible = mutableStateOf(false)
         val selectedSortingType = mutableStateOf("")
 
         suspend fun readSettingPreferenceValue(
@@ -471,6 +472,11 @@ class SettingsScreenVM(
                         preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
                         dataStore = context.dataStore
                     ) ?: SortingPreferences.NEW_TO_OLD.name
+                }, async {
+                    shouldNewFeatureDialogBeVisible.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.NEW_FEATURE_DIALOG_BOX_VISIBILITY.name),
+                        dataStore = context.dataStore
+                    ) ?: true
                 })
             }
         }

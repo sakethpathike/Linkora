@@ -12,6 +12,7 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -23,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.sakethh.linkora.customComposables.NewFeatureDialogBox
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.isNetworkAvailable
@@ -65,6 +67,10 @@ class MainActivity : ComponentActivity() {
                 val bottomBarSheetState =
                     androidx.compose.material.rememberBottomSheetScaffoldState()
                 systemUIController.setStatusBarColor(colorScheme.surface)
+                val isNewFeatureDialogBoxVisible =
+                    rememberSaveable(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value) {
+                        mutableStateOf(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value)
+                    }
                 LaunchedEffect(key1 = currentRoute, key2 = SearchScreenVM.isSearchEnabled.value) {
                     if (NavigationRoutes.entries.any {
                             it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute && it.name != NavigationRoutes.ARCHIVE_SCREEN.name
@@ -166,6 +172,7 @@ class MainActivity : ComponentActivity() {
                 systemUIController.setNavigationBarColor(
                     color = if (currentRoute == NavigationRoutes.SPECIFIC_SCREEN.name || currentRoute == NavigationRoutes.ARCHIVE_SCREEN.name) specificCollectionScreenBtmNavColor else nonSpecificCollectionScreenBtmNavColor
                 )
+                NewFeatureDialogBox(isDialogBoxVisible = isNewFeatureDialogBoxVisible)
             }
         }
     }
