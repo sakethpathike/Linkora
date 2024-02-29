@@ -39,11 +39,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.HorizontalDistribute
+import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.HorizontalDistribute
+import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Layers
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialogDefaults
@@ -64,6 +64,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -94,7 +95,6 @@ import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheet
 import com.sakethh.linkora.btmSheet.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.btmSheet.ShelfBtmSheet
-import com.sakethh.linkora.btmSheet.ShelfBtmSheetVM
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUI
 import com.sakethh.linkora.btmSheet.SortingBottomSheetUIParam
 import com.sakethh.linkora.btmSheet.SortingBtmSheetType
@@ -109,6 +109,7 @@ import com.sakethh.linkora.customComposables.FloatingActionBtnParam
 import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.LocalDataBase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
+import com.sakethh.linkora.localDB.commonVMs.ReadVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -157,9 +158,10 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val shelfBtmSheetVM: ShelfBtmSheetVM = viewModel()
-    val homeScreenList = shelfBtmSheetVM.readHomeScreenListTable.collectAsState().value
+    val readVM: ReadVM = viewModel()
+    val homeScreenList = readVM.selectedShelfFoldersForSelectedShelf.collectAsState().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
+        mutableStateOf(false)
         mutableStateOf(false)
     }
     val cardOffSetX = remember { mutableStateOf(0f) }
@@ -172,6 +174,12 @@ fun ParentHomeScreen(navController: NavController) {
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
+    val selectedShelfName = remember {
+        mutableStateOf("Default")
+    }
+    val selectedShelfID = rememberSaveable {
+        mutableLongStateOf(-1)
+    }
     val shelfData = homeScreenVM.shelfData.collectAsState().value
     LinkoraTheme {
         Scaffold(
@@ -281,9 +289,7 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 })
             }) {
-            val selectedString = remember {
-                mutableStateOf("Home")
-            }
+
             val widthOfShelfNavigation = remember {
                 mutableStateOf(0.dp)
             }
@@ -305,18 +311,20 @@ fun ParentHomeScreen(navController: NavController) {
                         shelfData.forEach {
                             androidx.compose.material3.NavigationRailItem(
                                 modifier = Modifier.rotate(90f),
-                                selected = it.shelfName == selectedString.value,
+                                selected = it.shelfName == selectedShelfName.value,
                                 onClick = {
-                                    selectedString.value = it.shelfName
+                                    selectedShelfName.value = it.shelfName
+                                    selectedShelfID.longValue = it.id
+                                    readVM.changeSelectedShelfFoldersDataForSelectedShelf(it.id)
                                 },
                                 icon = {
                                     Column {
                                         Icon(
                                             modifier = Modifier.rotate(180f),
-                                            imageVector = if (it.shelfName == selectedString.value) {
-                                                Icons.Filled.HorizontalDistribute
+                                            imageVector = if (it.shelfName == selectedShelfName.value) {
+                                                Icons.Filled.Folder
                                             } else {
-                                                Icons.Outlined.HorizontalDistribute
+                                                Icons.Outlined.Folder
                                             }, contentDescription = null
                                         )
                                     }
@@ -337,15 +345,15 @@ fun ParentHomeScreen(navController: NavController) {
                         }
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = "Default" == selectedString.value,
+                            selected = "Default" == selectedShelfName.value,
                             onClick = {
-                                selectedString.value = "Default"
+                                selectedShelfName.value = "Default"
                             },
                             icon = {
                                 Column {
                                     Icon(
                                         modifier = Modifier.rotate(180f),
-                                        imageVector = if ("Default" == selectedString.value) {
+                                        imageVector = if ("Default" == selectedShelfName.value) {
                                             Icons.Filled.Layers
                                         } else {
                                             Icons.Outlined.Layers
@@ -386,49 +394,83 @@ fun ParentHomeScreen(navController: NavController) {
                 ) {
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
-                            if (homeScreenList.isNotEmpty()) {
                                 Column(modifier = Modifier.animateContentSize()) {
-                                    ScrollableTabRow(
-                                        divider = {},
-                                        modifier = Modifier
-                                            .fillMaxWidth(),
-                                        selectedTabIndex = pagerState.currentPage
-                                    ) {
-                                        homeScreenList.forEachIndexed { index, homeScreenListsElement ->
-                                            Tab(
-                                                selected = pagerState.currentPage == index,
-                                                onClick = {
-                                                    coroutineScope.launch {
-                                                        pagerState.animateScrollToPage(index)
-                                                    }.start()
-                                                }) {
-                                                Text(
-                                                    text = homeScreenListsElement.folderName,
-                                                    style = MaterialTheme.typography.titleLarge,
-                                                    fontSize = 18.sp,
-                                                    modifier = Modifier.padding(15.dp),
-                                                    color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                                        0.70f
+                                    if (homeScreenList.isNotEmpty() && selectedShelfName.value != "Default") {
+                                        ScrollableTabRow(
+                                            divider = {},
+                                            modifier = Modifier
+                                                .fillMaxWidth(),
+                                            selectedTabIndex = pagerState.currentPage
+                                        ) {
+                                            homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                                Tab(
+                                                    selected = pagerState.currentPage == index,
+                                                    onClick = {
+                                                        coroutineScope.launch {
+                                                            pagerState.animateScrollToPage(index)
+                                                        }.start()
+                                                    }) {
+                                                    Text(
+                                                        text = homeScreenListsElement.folderName,
+                                                        style = MaterialTheme.typography.titleLarge,
+                                                        fontSize = 18.sp,
+                                                        modifier = Modifier.padding(15.dp),
+                                                        color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                            0.70f
+                                                        )
                                                     )
-                                                )
+                                                }
                                             }
                                         }
+                                        HorizontalDivider(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            thickness = 1.dp
+                                        )
+                                    } else if (selectedShelfName.value == "Default") {
+                                        Column {
+                                            ScrollableTabRow(
+                                                divider = {},
+                                                modifier = Modifier
+                                                    .fillMaxWidth(),
+                                                selectedTabIndex = pagerState.currentPage
+                                            ) {
+                                                homeScreenVM.defaultScreenData.forEachIndexed { index, archiveScreenModal ->
+                                                    Tab(
+                                                        selected = pagerState.currentPage == index,
+                                                        onClick = {
+                                                            coroutineScope.launch {
+                                                                pagerState.animateScrollToPage(index)
+                                                            }.start()
+                                                        }) {
+                                                        Text(
+                                                            text = archiveScreenModal.name,
+                                                            style = MaterialTheme.typography.titleLarge,
+                                                            fontSize = 18.sp,
+                                                            modifier = Modifier.padding(15.dp),
+                                                            color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                                0.70f
+                                                            )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            HorizontalDivider(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                thickness = 1.dp
+                                            )
+                                        }
                                     }
-                                    HorizontalDivider(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        thickness = 1.dp
-                                    )
                                 }
-                            }
                         }
                     }
-                    if (homeScreenList.isNotEmpty()) {
+                    if (homeScreenList.isNotEmpty() && selectedShelfName.value != "Default") {
                         HorizontalPager(
                             key = {
                                 it
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            count = homeScreenList.size, state = pagerState
+                            count = homeScreenList.size,
+                            state = pagerState
                         ) {
                             ChildHomeScreen(
                                 homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
@@ -515,6 +557,17 @@ fun ParentHomeScreen(navController: NavController) {
                                 },
                             )
                         }
+                    } else if (selectedShelfName.value == "Default") {
+                        HorizontalPager(
+                            key = {
+                                it
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            count = homeScreenVM.defaultScreenData.size,
+                            state = pagerState
+                        ) {
+                            homeScreenVM.defaultScreenData[it].screen(navController)
+                        }
                     } else {
                         Box(
                             modifier = Modifier
@@ -559,16 +612,16 @@ fun ParentHomeScreen(navController: NavController) {
                                         Text(text = "• ")
                                         Text(
                                             buildAnnotatedString {
-                                                append("Access and manage folders directly from the home screen itself by clicking the ")
+                                                append("Access and manage folders directly from the shelf itself by clicking the ")
                                                 withStyle(
                                                     style = SpanStyle(
                                                         fontWeight = FontWeight.Bold,
                                                         textDecoration = TextDecoration.Underline
                                                     )
                                                 ) {
-                                                    append("tune icon in the top right corner ")
+                                                    append("tune icon in the bottom of Shelf")
                                                 }
-                                                append("to customize your home screen UI.")
+                                                append(" to customize your home screen UI.")
                                             },
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,

@@ -321,7 +321,7 @@ class CreateVM : ViewModel() {
                     } catch (_: NullPointerException) {
                         1
                     }
-                }, folderName = folderName, parentShelfID)
+                }, folderName = folderName, parentShelfID = parentShelfID)
             LocalDataBase.localDB.homeListsCrud().addAHomeScreenListFolder(homeScreenListTable)
         }
     }

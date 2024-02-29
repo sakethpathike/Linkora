@@ -90,7 +90,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     }
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val readVM: ReadVM = viewModel()
-    val selectedShelfFolders = readVM.selectedShelfFolders.collectAsState().value
+    val selectedShelfFolders = readVM.selectedShelfFoldersForShelfBtmSheet.collectAsState().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
@@ -132,7 +132,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         items(shelfData) {
                             OptionsBtmSheetIndividualComponent(
                                 onOptionClick = {
-                                    readVM.changeSelectedShelfFoldersData(it.id)
+                                    readVM.changeSelectedShelfFoldersDataForShelfBtmSheet(it.id)
                                     ShelfBtmSheetVM.selectedShelfData = it
                                     selectedShelfName.value = it.shelfName
                                     isTuneIconClicked.value = true
@@ -147,7 +147,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 onTuneIconClick = {
                                     selectedShelfName.value = it.shelfName
                                     ShelfBtmSheetVM.selectedShelfData = it
-                                    readVM.changeSelectedShelfFoldersData(it.id)
+                                    readVM.changeSelectedShelfFoldersDataForShelfBtmSheet(it.id)
                                     isTuneIconClicked.value = true
                                 }
                             )

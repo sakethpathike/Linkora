@@ -11,6 +11,7 @@ import com.sakethh.linkora.localDB.dto.ImportantLinks
 import com.sakethh.linkora.localDB.dto.Shelf
 import com.sakethh.linkora.navigation.NavigationRoutes
 import com.sakethh.linkora.navigation.NavigationVM
+import com.sakethh.linkora.screens.collections.archiveScreen.ArchiveScreenModal
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificCollectionsScreenVM
 import com.sakethh.linkora.screens.collections.specificCollectionScreen.SpecificScreenType
 import com.sakethh.linkora.screens.settings.SettingsScreenVM
@@ -35,6 +36,17 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
     }
+
+    val defaultScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
+        ChildHomeScreen(
+            homeScreenType = HomeScreenType.SAVED_LINKS,
+            navController = it,
+            folderLinksData = emptyList(),
+            childFoldersData = emptyList()
+        )
+    }), ArchiveScreenModal(name = "Important Links", screen = {
+        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS, it, emptyList(), emptyList())
+    }))
 
     companion object {
         var currentHomeScreenType = HomeScreenType.SAVED_LINKS

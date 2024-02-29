@@ -108,7 +108,8 @@ data class RecentlyVisited(
 @Serializable
 @Entity(tableName = "home_screen_list_table")
 data class HomeScreenListTable(
-    @PrimaryKey(autoGenerate = true) var id: Long = 0,
+    @PrimaryKey(autoGenerate = true) var primaryKey: Long = 0,
+    val id: Long,
     var position: Long,
     val folderName: String,
     val parentShelfID: Long

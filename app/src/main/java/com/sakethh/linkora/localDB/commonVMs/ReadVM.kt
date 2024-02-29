@@ -10,14 +10,28 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class ReadVM : ViewModel() {
-    private val _selectedShelfFolders = MutableStateFlow(emptyList<HomeScreenListTable>())
-    val selectedShelfFolders = _selectedShelfFolders.asStateFlow()
+    private val _selectedShelfFoldersForShelfBtmSheet =
+        MutableStateFlow(emptyList<HomeScreenListTable>())
+    val selectedShelfFoldersForShelfBtmSheet = _selectedShelfFoldersForShelfBtmSheet.asStateFlow()
 
-    fun changeSelectedShelfFoldersData(shelfID: Long) {
+    private val _selectedShelfFoldersForSelectedShelf =
+        MutableStateFlow(emptyList<HomeScreenListTable>())
+    val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
+
+    fun changeSelectedShelfFoldersDataForShelfBtmSheet(shelfID: Long) {
         viewModelScope.launch {
             LocalDataBase.localDB.homeListsCrud().getAllHomeScreenListFoldersOfThisShelf(shelfID)
                 .collectLatest {
-                    _selectedShelfFolders.emit(it)
+                    _selectedShelfFoldersForShelfBtmSheet.emit(it)
+                }
+        }
+    }
+
+    fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.homeListsCrud().getAllHomeScreenListFoldersOfThisShelf(shelfID)
+                .collectLatest {
+                    _selectedShelfFoldersForSelectedShelf.emit(it)
                 }
         }
     }
