@@ -51,7 +51,6 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -74,9 +73,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -174,9 +171,6 @@ fun ParentHomeScreen(navController: NavController) {
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
-    val selectedShelfName = remember {
-        mutableStateOf("Default")
-    }
     val selectedShelfID = rememberSaveable {
         mutableLongStateOf(-1)
     }
@@ -289,42 +283,65 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 })
             }) {
-
-            val widthOfShelfNavigation = remember {
-                mutableStateOf(0.dp)
-            }
-            val localDensity = LocalDensity.current
             Row(modifier = Modifier.fillMaxSize()) {
                 Box(
                     modifier = Modifier
                         .fillMaxHeight()
-                        .onGloballyPositioned {
-                            with(localDensity) {
-                                widthOfShelfNavigation.value = it.size.width.toDp()
-                            }
-                        }
-                        .verticalScroll(rememberScrollState()),
+                        .verticalScroll(rememberScrollState())
+                        .animateContentSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Column {
-                        Spacer(modifier = Modifier.height(100.dp))
-                        shelfData.forEach {
+                    if (!homeScreenVM.isSelectionModeEnabled.value) {
+                        Column {
+                            Spacer(modifier = Modifier.height(100.dp))
+                            shelfData.forEach {
+                                androidx.compose.material3.NavigationRailItem(
+                                    modifier = Modifier.rotate(90f),
+                                    selected = it.id == selectedShelfID.longValue,
+                                    onClick = {
+                                        selectedShelfID.longValue = it.id
+                                        readVM.changeSelectedShelfFoldersDataForSelectedShelf(it.id)
+                                    },
+                                    icon = {
+                                        Column {
+                                            Icon(
+                                                modifier = Modifier.rotate(180f),
+                                                imageVector = if (it.id == selectedShelfID.longValue) {
+                                                    Icons.Filled.Folder
+                                                } else {
+                                                    Icons.Outlined.Folder
+                                                }, contentDescription = null
+                                            )
+                                        }
+                                    }, label = {
+                                        Text(
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier
+                                                .rotate(180f)
+                                                .width(56.dp)
+                                                .padding(bottom = 2.dp),
+                                            text = it.shelfName,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            maxLines = 1,
+                                            textAlign = TextAlign.Center
+                                        )
+                                    })
+                                Spacer(modifier = Modifier.height(20.dp))
+                            }
                             androidx.compose.material3.NavigationRailItem(
                                 modifier = Modifier.rotate(90f),
-                                selected = it.shelfName == selectedShelfName.value,
+                                selected = (-1).toLong() == selectedShelfID.longValue,
                                 onClick = {
-                                    selectedShelfName.value = it.shelfName
-                                    selectedShelfID.longValue = it.id
-                                    readVM.changeSelectedShelfFoldersDataForSelectedShelf(it.id)
+                                    selectedShelfID.longValue = (-1).toLong()
                                 },
                                 icon = {
                                     Column {
                                         Icon(
                                             modifier = Modifier.rotate(180f),
-                                            imageVector = if (it.shelfName == selectedShelfName.value) {
-                                                Icons.Filled.Folder
+                                            imageVector = if (selectedShelfID.longValue == (-1).toLong()) {
+                                                Icons.Filled.Layers
                                             } else {
-                                                Icons.Outlined.Folder
+                                                Icons.Outlined.Layers
                                             }, contentDescription = null
                                         )
                                     }
@@ -335,55 +352,24 @@ fun ParentHomeScreen(navController: NavController) {
                                             .rotate(180f)
                                             .width(56.dp)
                                             .padding(bottom = 2.dp),
-                                        text = it.shelfName,
+                                        text = "Default",
                                         style = MaterialTheme.typography.titleSmall,
                                         maxLines = 1,
                                         textAlign = TextAlign.Center
                                     )
                                 })
                             Spacer(modifier = Modifier.height(20.dp))
+                            IconButton(
+                                modifier = Modifier
+                                    .align(Alignment.CenterHorizontally)
+                                    .pulsateEffect(0.9f),
+                                onClick = {
+                                    shouldShelfBottomSheetAppear.value = true
+                                }) {
+                                Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
+                            }
+                            Spacer(modifier = Modifier.height(100.dp))
                         }
-                        androidx.compose.material3.NavigationRailItem(
-                            modifier = Modifier.rotate(90f),
-                            selected = "Default" == selectedShelfName.value,
-                            onClick = {
-                                selectedShelfName.value = "Default"
-                            },
-                            icon = {
-                                Column {
-                                    Icon(
-                                        modifier = Modifier.rotate(180f),
-                                        imageVector = if ("Default" == selectedShelfName.value) {
-                                            Icons.Filled.Layers
-                                        } else {
-                                            Icons.Outlined.Layers
-                                        }, contentDescription = null
-                                    )
-                                }
-                            }, label = {
-                                Text(
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .rotate(180f)
-                                        .width(56.dp)
-                                        .padding(bottom = 2.dp),
-                                    text = "Default",
-                                    style = MaterialTheme.typography.titleSmall,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.Center
-                                )
-                            })
-                        Spacer(modifier = Modifier.height(20.dp))
-                        IconButton(
-                            modifier = Modifier
-                                .align(Alignment.CenterHorizontally)
-                                .pulsateEffect(0.9f),
-                            onClick = {
-                                shouldShelfBottomSheetAppear.value = true
-                            }) {
-                            Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
-                        }
-                        Spacer(modifier = Modifier.height(100.dp))
                     }
                 }
 
@@ -395,7 +381,7 @@ fun ParentHomeScreen(navController: NavController) {
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
                                 Column(modifier = Modifier.animateContentSize()) {
-                                    if (homeScreenList.isNotEmpty() && selectedShelfName.value != "Default") {
+                                    if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
                                         ScrollableTabRow(
                                             divider = {},
                                             modifier = Modifier
@@ -422,11 +408,7 @@ fun ParentHomeScreen(navController: NavController) {
                                                 }
                                             }
                                         }
-                                        HorizontalDivider(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            thickness = 1.dp
-                                        )
-                                    } else if (selectedShelfName.value == "Default") {
+                                    } else if (selectedShelfID.longValue == (-1).toLong()) {
                                         Column {
                                             ScrollableTabRow(
                                                 divider = {},
@@ -454,16 +436,12 @@ fun ParentHomeScreen(navController: NavController) {
                                                     }
                                                 }
                                             }
-                                            HorizontalDivider(
-                                                modifier = Modifier.fillMaxWidth(),
-                                                thickness = 1.dp
-                                            )
                                         }
                                     }
                                 }
                         }
                     }
-                    if (homeScreenList.isNotEmpty() && selectedShelfName.value != "Default") {
+                    if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -557,7 +535,7 @@ fun ParentHomeScreen(navController: NavController) {
                                 },
                             )
                         }
-                    } else if (selectedShelfName.value == "Default") {
+                    } else if (selectedShelfID.longValue == (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it

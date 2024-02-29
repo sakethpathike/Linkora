@@ -20,4 +20,7 @@ interface ShelfCRUD {
 
     @Query("SELECT COUNT(*) FROM shelf WHERE shelfName = :shelfName")
     suspend fun doesThisShelfExists(shelfName: String): Boolean
+
+    @Query("UPDATE SHELF SET shelfName=:newShelfName WHERE id = :shelfID")
+    suspend fun updateAShelfName(newShelfName: String, shelfID: Long)
 }

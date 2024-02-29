@@ -59,10 +59,12 @@ import com.sakethh.linkora.customComposables.AddANewShelfDTO
 import com.sakethh.linkora.customComposables.AddANewShelfDialogBox
 import com.sakethh.linkora.customComposables.DeleteAShelfDialogBox
 import com.sakethh.linkora.customComposables.DeleteAShelfDialogBoxDTO
+import com.sakethh.linkora.customComposables.RenameAShelfDialogBox
 import com.sakethh.linkora.customComposables.pulsateEffect
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.localDB.commonVMs.DeleteVM
 import com.sakethh.linkora.localDB.commonVMs.ReadVM
+import com.sakethh.linkora.localDB.commonVMs.UpdateVM
 import com.sakethh.linkora.localDB.dto.Shelf
 import com.sakethh.linkora.screens.collections.CollectionsScreenVM
 
@@ -92,6 +94,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val readVM: ReadVM = viewModel()
     val selectedShelfFolders = readVM.selectedShelfFoldersForShelfBtmSheet.collectAsState().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
+    val isRenameAShelfDialogBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
             sheetState = modalBottomSheetState,
@@ -131,6 +136,10 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     if (!isTuneIconClicked.value) {
                         items(shelfData) {
                             OptionsBtmSheetIndividualComponent(
+                                onRenameIconClick = {
+                                    ShelfBtmSheetVM.selectedShelfData = it
+                                    isRenameAShelfDialogBoxVisible.value = true
+                                },
                                 onOptionClick = {
                                     readVM.changeSelectedShelfFoldersDataForShelfBtmSheet(it.id)
                                     ShelfBtmSheetVM.selectedShelfData = it
@@ -157,11 +166,12 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             item {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    text = "Folders in Shelf ${selectedShelfName.value}",
+                                    text = "Folders in \"${selectedShelfName.value}\" Shelf",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 14.sp,
                                     modifier = Modifier.padding(start = 15.dp, end = 20.dp),
-                                    color = MaterialTheme.colorScheme.primary
+                                    color = MaterialTheme.colorScheme.primary,
+                                    lineHeight = 18.sp
                                 )
                             }
                         }
@@ -189,11 +199,12 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     item {
                         Spacer(modifier = Modifier.height(15.dp))
                         Text(
-                            text = "Add folders into the Shelf ${selectedShelfName.value}",
+                            text = "Add folders into the \"${selectedShelfName.value}\" Shelf",
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(start = 15.dp, end = 20.dp),
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
+                            lineHeight = 18.sp
                         )
                     }
                     items(rootFolders) { rootFolderElement ->
@@ -271,6 +282,10 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             },
         )
     )
+    val updateVM: UpdateVM = viewModel()
+    RenameAShelfDialogBox(isDialogBoxVisible = isRenameAShelfDialogBoxVisible, onRenameClick = {
+        updateVM.updateAShelfName(it, ShelfBtmSheetVM.selectedShelfData.id)
+    })
 }
 
 @Composable

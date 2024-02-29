@@ -19,6 +19,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -48,6 +49,7 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -316,6 +318,7 @@ fun OptionsBtmSheetIndividualComponent(
     inShelfUI: Boolean = false,
     onDeleteIconClick: () -> Unit = {},
     onTuneIconClick: () -> Unit = {},
+    onRenameIconClick: () -> Unit = {},
 ) {
     Row(
         modifier = Modifier
@@ -345,11 +348,21 @@ fun OptionsBtmSheetIndividualComponent(
             Text(
                 text = elementName,
                 style = MaterialTheme.typography.titleSmall,
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth(0.4f),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
         }
         if (inShelfUI) {
             Row {
+                IconButton(onClick = { onRenameIconClick() }
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.DriveFileRenameOutline,
+                        contentDescription = null
+                    )
+                }
                 IconButton(onClick = { onTuneIconClick() }
                 ) {
                     Icon(imageVector = Icons.Default.Tune, contentDescription = null)

@@ -26,6 +26,12 @@ class UpdateVM : ViewModel() {
         }
     }
 
+    fun updateAShelfName(newShelfName: String, shelfID: Long) {
+        viewModelScope.launch {
+            LocalDataBase.localDB.shelfCrud().updateAShelfName(newShelfName, shelfID)
+        }
+    }
+
     fun updateRegularLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
             async {
