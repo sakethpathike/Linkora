@@ -22,7 +22,6 @@ import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Folder
-import androidx.compose.material.icons.filled.HomeMax
 import androidx.compose.material.icons.filled.RemoveCircle
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
@@ -45,6 +44,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -138,7 +138,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     isTuneIconClicked.value = true
                                 },
                                 elementName = it.shelfName,
-                                elementImageVector = Icons.Default.HomeMax,
+                                elementImageVector = Icons.Default.Folder,
                                 inShelfUI = true,
                                 onDeleteIconClick = {
                                     ShelfBtmSheetVM.selectedShelfData = it
@@ -248,6 +248,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             }
         }
     }
+    val localContext = LocalContext.current
     AddANewShelfDialogBox(
         addANewShelfDTO = AddANewShelfDTO(
             isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
@@ -257,7 +258,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         shelfName = shelfName,
                         shelfIconName = shelfIconName,
                         folderIds = emptyList()
-                    )
+                    ), context = localContext
                 )
             })
     )

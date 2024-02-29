@@ -21,9 +21,19 @@ import kotlinx.coroutines.withContext
 
 class CreateVM : ViewModel() {
 
-    fun addANewShelf(shelf: Shelf) {
+    fun addANewShelf(shelf: Shelf, context: Context) {
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfCrud().addANewShelf(shelf)
+            if (LocalDataBase.localDB.shelfCrud().doesThisShelfExists(shelf.shelfName)) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(
+                        context,
+                        "Shelf named ${shelf.shelfName} already exists",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            } else {
+                LocalDataBase.localDB.shelfCrud().addANewShelf(shelf)
+            }
         }
     }
 

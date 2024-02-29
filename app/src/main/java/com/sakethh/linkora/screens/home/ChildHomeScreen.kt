@@ -136,6 +136,8 @@ fun ChildHomeScreen(
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                        OptionsBtmSheetType.LINK
                                     selectedElementID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
@@ -212,6 +214,8 @@ fun ChildHomeScreen(
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                        OptionsBtmSheetType.LINK
                                     selectedElementID.longValue = it.id
                                     HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
                                     HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
@@ -463,8 +467,18 @@ fun ChildHomeScreen(
                 },
                 onArchiveClick = {
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        SpecificCollectionsScreenVM.screenType.value =
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        when (homeScreenType) {
+                            HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
+                                SpecificCollectionsScreenVM.screenType.value =
+                                    SpecificScreenType.SAVED_LINKS_SCREEN
+                            }
+
+                            HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
+
+                            HomeScreenVM.HomeScreenType.CUSTOM_LIST -> SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        }
                         homeScreenVM.onArchiveClick(
                             HomeScreenVM.tempImpLinkData,
                             context,
@@ -476,10 +490,18 @@ fun ChildHomeScreen(
                 }, noteForSaving = selectedNote.value,
                 onNoteDeleteCardClick = {
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        SpecificCollectionsScreenVM.screenType.value =
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                            OptionsBtmSheetType.LINK
+                        when (homeScreenType) {
+                            HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
+                                SpecificCollectionsScreenVM.screenType.value =
+                                    SpecificScreenType.SAVED_LINKS_SCREEN
+                            }
+
+                            HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.IMPORTANT_LINKS_SCREEN
+
+                            HomeScreenVM.HomeScreenType.CUSTOM_LIST -> SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                        }
                         homeScreenVM.onNoteDeleteCardClick(
                             HomeScreenVM.tempImpLinkData.webURL,
                             context,
@@ -507,10 +529,18 @@ fun ChildHomeScreen(
             deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
             onDeleteClick = {
                 if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                    SpecificCollectionsScreenVM.screenType.value =
-                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                        OptionsBtmSheetType.LINK
+                    when (homeScreenType) {
+                        HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
+                            SpecificCollectionsScreenVM.screenType.value =
+                                SpecificScreenType.SAVED_LINKS_SCREEN
+                        }
+
+                        HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificCollectionsScreenVM.screenType.value =
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN
+
+                        HomeScreenVM.HomeScreenType.CUSTOM_LIST -> SpecificCollectionsScreenVM.screenType.value =
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                    }
                     homeScreenVM.onDeleteClick(
                         folderID = 0,
                         selectedWebURL = "",
@@ -531,18 +561,44 @@ fun ChildHomeScreen(
             existingFolderName = selectedURLTitle.value,
             renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
             onNoteChangeClick = { newNote: String ->
-                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                    updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
-                } else {
-                    updateVM.updateFolderNote(selectedElementID.longValue, newNote)
+                when (homeScreenType) {
+                    HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
+                        updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
+                    }
+
+                    HomeScreenVM.HomeScreenType.IMP_LINKS -> updateVM.updateImpLinkNote(
+                        selectedElementID.longValue,
+                        newNote
+                    )
+
+                    else -> {
+                        if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                            updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
+                        } else {
+                            updateVM.updateFolderNote(selectedElementID.longValue, newNote)
+                        }
+                    }
                 }
                 shouldRenameDialogBoxAppear.value = false
             },
             onTitleChangeClick = { newTitle: String ->
-                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                    updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
-                } else {
-                    updateVM.updateFolderName(selectedElementID.longValue, newTitle)
+                when (homeScreenType) {
+                    HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
+                        updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
+                    }
+
+                    HomeScreenVM.HomeScreenType.IMP_LINKS -> updateVM.updateImpLinkTitle(
+                        selectedElementID.longValue,
+                        newTitle
+                    )
+
+                    else -> {
+                        if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                            updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
+                        } else {
+                            updateVM.updateFolderName(selectedElementID.longValue, newTitle)
+                        }
+                    }
                 }
                 shouldRenameDialogBoxAppear.value = false
             }

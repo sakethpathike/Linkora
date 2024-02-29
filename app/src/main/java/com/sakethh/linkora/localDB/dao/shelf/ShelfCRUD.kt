@@ -17,4 +17,7 @@ interface ShelfCRUD {
 
     @Delete
     suspend fun deleteAShelf(shelf: Shelf)
+
+    @Query("SELECT COUNT(*) FROM shelf WHERE shelfName = :shelfName")
+    suspend fun doesThisShelfExists(shelfName: String): Boolean
 }
