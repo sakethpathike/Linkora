@@ -10,6 +10,7 @@ import com.sakethh.linkora.ui.screens.collections.specificCollectionScreen.Speci
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
+import com.sakethh.linkora.ui.screens.settings.SpecificSettingSectionScreen
 
 @Composable
 fun MainNavigation(navController: NavHostController) {
@@ -35,6 +36,9 @@ fun MainNavigation(navController: NavHostController) {
         }
         composable(route = NavigationRoutes.SEARCH_SCREEN.name) {
             SearchScreen(navController = navController)
+        }
+        composable(route = NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name) {
+            SpecificSettingSectionScreen(navController = navController)
         }
     }
 

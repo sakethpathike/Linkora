@@ -7,9 +7,16 @@ import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ShortText
+import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -25,13 +32,13 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.utils.ImportImpl
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
-import com.sakethh.linkora.utils.ExportImpl
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashReportsEnabled
+import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
+import com.sakethh.linkora.utils.ExportImpl
+import com.sakethh.linkora.utils.ImportImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -49,7 +56,12 @@ data class SettingsUIElement(
     val isSwitchEnabled: MutableState<Boolean>,
     val onSwitchStateChange: () -> Unit,
     val icon: ImageVector? = null,
+    val isIconNeeded: MutableState<Boolean>
 )
+
+enum class SettingsSections {
+    THEME, GENERAL, DATA, PRIVACY, ABOUT
+}
 
 class SettingsScreenVM(
     private val exportImpl: ExportImpl = ExportImpl(), private val updateVM: UpdateVM = UpdateVM()
@@ -57,10 +69,10 @@ class SettingsScreenVM(
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
-
+    val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
     companion object {
-        const val appVersionName = "v0.4.0-beta03"
-        const val appVersionCode = 16
+        const val APP_VERSION_NAME = "v0.4.0-beta03"
+        const val APP_VERSION_CODE = 16
         val latestAppInfoFromServer = MutableAppInfoDTO(
             isNonStableVersion = mutableStateOf(false),
             isStableVersion = mutableStateOf(false),
@@ -76,10 +88,14 @@ class SettingsScreenVM(
 
     val privacySection: (context: Context) -> SettingsUIElement = {
         SettingsUIElement(title = "Send crash reports",
-            doesDescriptionExists = false,
-            description = "",
+            doesDescriptionExists = true,
+            description = if (!isSendCrashReportsEnabled.value) mutableStateOf("Every single bit of data is stored locally on your device.").value else mutableStateOf(
+                "Linkora collects data related to app crashes and errors, device information, and app version."
+            ).value,
             isSwitchNeeded = true,
             isSwitchEnabled = isSendCrashReportsEnabled,
+            isIconNeeded = mutableStateOf(true),
+            icon = Icons.Default.BugReport,
             onSwitchStateChange = {
                 viewModelScope.launch {
                     Settings.changeSettingPreferenceValue(
@@ -104,6 +120,8 @@ class SettingsScreenVM(
                 description = "If this is enabled, links will be opened within the app; if this setting is not enabled, your default browser will open every time you click on a link when using this app.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isInAppWebTabEnabled,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.OpenInBrowser,
                 onSwitchStateChange = {
                     viewModelScope.launch {
                         Settings.changeSettingPreferenceValue(
@@ -122,6 +140,8 @@ class SettingsScreenVM(
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Home Screen option will be shown in Bottom Navigation Bar; if this setting is not enabled, Home screen option will NOT be shown.",
                 isSwitchNeeded = true,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.Home,
                 isSwitchEnabled = Settings.isHomeScreenEnabled,
                 onSwitchStateChange = {
                     viewModelScope.launch {
@@ -142,6 +162,8 @@ class SettingsScreenVM(
                 description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.ExpandMore,
                 onSwitchStateChange = {
                     viewModelScope.launch {
                         Settings.changeSettingPreferenceValue(
@@ -162,6 +184,8 @@ class SettingsScreenVM(
                 description = "Note: This may not detect every website.",
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.Search,
                 onSwitchStateChange = {
                     viewModelScope.launch {
                         Settings.changeSettingPreferenceValue(
@@ -180,6 +204,8 @@ class SettingsScreenVM(
                 }), SettingsUIElement(title = "Auto-Check for Updates",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.SystemUpdateAlt,
                 isSwitchNeeded = true,
                 isSwitchEnabled = Settings.isAutoCheckUpdatesEnabled,
                 onSwitchStateChange = {
@@ -201,6 +227,8 @@ class SettingsScreenVM(
                 doesDescriptionExists = true,
                 description = "If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you're reading now. If it is disabled, only the titles will be shown.",
                 isSwitchNeeded = true,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.AutoMirrored.Default.ShortText,
                 isSwitchEnabled = Settings.showDescriptionForSettingsState,
                 onSwitchStateChange = {
                     viewModelScope.launch {
@@ -292,6 +320,7 @@ class SettingsScreenVM(
     ): List<SettingsUIElement> {
         return listOf(
             SettingsUIElement(
+                isIconNeeded = mutableStateOf(true),
                 title = "Import Data",
                 doesDescriptionExists = true,
                 description = "Import Data from external JSON file.",
@@ -316,6 +345,7 @@ class SettingsScreenVM(
                 icon = Icons.Default.FileDownload
             ),
             SettingsUIElement(
+                isIconNeeded = mutableStateOf(true),
                 title = "Export Data",
                 doesDescriptionExists = true,
                 description = "Export all of your data in JSON format.",
@@ -327,6 +357,7 @@ class SettingsScreenVM(
                 icon = Icons.Default.FileUpload
             ),
             SettingsUIElement(
+                isIconNeeded = mutableStateOf(true),
                 title = "Delete entire data permanently",
                 doesDescriptionExists = true,
                 description = "Delete all links and folders permanently including archives.",

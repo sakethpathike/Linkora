@@ -27,9 +27,9 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.launch
 
@@ -60,10 +60,10 @@ fun SettingsNewVersionUpdateBtmContent(
         item {
             VersionCardForBtmSheetContent(
                 title = "version you're using",
-                value = SettingsScreenVM.appVersionName
+                value = SettingsScreenVM.APP_VERSION_NAME
             )
         }
-        if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value) {
+        if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value) {
             item {
                 VersionCardForBtmSheetContent(
                     title = "latest stable version which you should be using",
@@ -77,13 +77,13 @@ fun SettingsNewVersionUpdateBtmContent(
                     start = 20.dp,
                     top = 20.dp,
                     end = 20.dp,
-                    bottom = if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) 0.dp else 20.dp
+                    bottom = if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) 0.dp else 20.dp
                 ),
                 thickness = 0.5.dp,
                 color = MaterialTheme.colorScheme.outline
             )
         }
-        if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+        if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
             item {
                 VersionCardForBtmSheetContent(
                     title = "latest version which is available for usage",
@@ -107,7 +107,7 @@ fun SettingsNewVersionUpdateBtmContent(
         item {
             Spacer(modifier = Modifier.height(20.dp))
         }
-        if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value) {
+        if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value) {
             item {
                 Button(
                     modifier = Modifier
@@ -148,7 +148,7 @@ fun SettingsNewVersionUpdateBtmContent(
                 }
             }
         }
-        if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+        if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
             item {
                 Spacer(modifier = Modifier.height(5.dp))
             }

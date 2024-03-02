@@ -105,9 +105,9 @@ class MainActivity : ComponentActivity() {
                     }.await()
                     if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                         SettingsScreenVM.Settings.isOnLatestUpdate.value =
-                            !(SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value)
+                            !(SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value)
                         withContext(Dispatchers.Main) {
-                            if (SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.appVersionCode < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                            if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
                                 Toast.makeText(
                                     context,
                                     "A new update is available; check out the latest update from settings screen",
