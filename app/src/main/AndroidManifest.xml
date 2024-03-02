@@ -24,7 +24,7 @@
         android:largeHeap="true"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Linkora">
 
@@ -37,7 +37,7 @@
         </activity>
 
         <activity
-            android:name=".IntentActivity"
+            android:name=".ui.IntentActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@style/Theme.IntentActivity">
