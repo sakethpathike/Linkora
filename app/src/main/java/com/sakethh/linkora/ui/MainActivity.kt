@@ -68,8 +68,8 @@ class MainActivity : ComponentActivity() {
                     androidx.compose.material.rememberBottomSheetScaffoldState()
                 systemUIController.setStatusBarColor(colorScheme.surface)
                 val isNewFeatureDialogBoxVisible =
-                    rememberSaveable(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value) {
-                        mutableStateOf(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value)
+                    rememberSaveable(SettingsScreenVM.Settings.savedAppCode.intValue) {
+                        mutableStateOf(SettingsScreenVM.APP_VERSION_CODE > SettingsScreenVM.Settings.savedAppCode.intValue)
                     }
                 val rootRoutes = rememberSaveable {
                     mutableListOf(
@@ -182,7 +182,16 @@ class MainActivity : ComponentActivity() {
                             it == currentRoute
                         }) nonSpecificCollectionScreenBtmNavColor else specificCollectionScreenBtmNavColor
                 )
-                NewFeatureDialogBox(isDialogBoxVisible = isNewFeatureDialogBoxVisible)
+                NewFeatureDialogBox(isDialogBoxVisible = rememberSaveable {
+                    mutableStateOf(isNewFeatureDialogBoxVisible.value)
+                })
+                LaunchedEffect(key1 = Unit) {
+                    SettingsScreenVM.Settings.deleteASettingPreference(
+                        booleanPreferencesKey(
+                            SettingsScreenVM.SettingsPreferences.NEW_FEATURE_DIALOG_BOX_VISIBILITY.name
+                        ), context.dataStore
+                    )
+                }
             }
         }
     }

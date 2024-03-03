@@ -26,6 +26,7 @@ import androidx.core.content.ContextCompat
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
@@ -606,7 +607,10 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE,
+        CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS,
+        HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS,
+        IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
     }
 
     enum class SortingPreferences {
@@ -630,13 +634,13 @@ class SettingsScreenVM(
         val showDescriptionForSettingsState = mutableStateOf(true)
         val isOnLatestUpdate = mutableStateOf(false)
         val didServerTimeOutErrorOccurred = mutableStateOf(false)
-        val shouldNewFeatureDialogBeVisible = mutableStateOf(false)
+        val savedAppCode = mutableIntStateOf(16)
         val selectedSortingType = mutableStateOf("")
 
-        suspend fun readSettingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<Boolean>,
+        suspend fun <T> readSettingPreferenceValue(
+            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-        ): Boolean? {
+        ): T? {
             return dataStore.data.first()[preferenceKey]
         }
 
@@ -647,16 +651,28 @@ class SettingsScreenVM(
             return dataStore.data.first()[preferenceKey]
         }
 
-        suspend fun changeSettingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<Boolean>,
+        suspend fun <T> changeSettingPreferenceValue(
+            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-            newValue: Boolean,
+            newValue: T,
         ) {
             dataStore.edit {
                 it[preferenceKey] = newValue
             }
         }
 
+        suspend fun <T> deleteASettingPreference(
+            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
+            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
+        ) {
+            dataStore.edit {
+                try {
+                    it.remove(preferenceKey)
+                } catch (_: Exception) {
+
+                }
+            }
+        }
         suspend fun changeSortingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<String>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
@@ -738,10 +754,10 @@ class SettingsScreenVM(
                         dataStore = context.dataStore
                     ) ?: SortingPreferences.NEW_TO_OLD.name
                 }, async {
-                    shouldNewFeatureDialogBeVisible.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.NEW_FEATURE_DIALOG_BOX_VISIBILITY.name),
+                    savedAppCode.intValue = readSettingPreferenceValue(
+                        preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
                         dataStore = context.dataStore
-                    ) ?: true
+                    ) ?: 16
                 })
             }
         }
