@@ -11,8 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -36,7 +37,7 @@ fun RegularSettingComponent(
             MutableInteractionSource()
         }, indication = null,
             onClick = {
-                settingsUIElement.onSwitchStateChange()
+                settingsUIElement.onSwitchStateChange(!settingsUIElement.isSwitchEnabled.value)
             },
             onLongClick = {
 
@@ -46,7 +47,9 @@ fun RegularSettingComponent(
         .animateContentSize(), verticalAlignment = Alignment.CenterVertically) {
         if (settingsUIElement.isIconNeeded.value && settingsUIElement.icon != null) {
             Spacer(modifier = Modifier.width(10.dp))
-            FilledTonalIconButton(onClick = { settingsUIElement.onSwitchStateChange() }) {
+            IconButton(
+                colors = if (settingsUIElement.shouldFilledIconBeUsed.value) IconButtonDefaults.filledTonalIconButtonColors() else IconButtonDefaults.iconButtonColors(),
+                onClick = { settingsUIElement.onSwitchStateChange(!settingsUIElement.isSwitchEnabled.value) }) {
                 Icon(imageVector = settingsUIElement.icon, contentDescription = null)
             }
             Spacer(modifier = Modifier.width(10.dp))
@@ -86,7 +89,7 @@ fun RegularSettingComponent(
                         .padding(end = 15.dp),
                     checked = settingsUIElement.isSwitchEnabled.value,
                     onCheckedChange = {
-                        settingsUIElement.onSwitchStateChange()
+                        settingsUIElement.onSwitchStateChange(it)
                     })
             }
             }

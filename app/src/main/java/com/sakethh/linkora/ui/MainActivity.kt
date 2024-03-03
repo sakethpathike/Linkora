@@ -71,9 +71,17 @@ class MainActivity : ComponentActivity() {
                     rememberSaveable(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value) {
                         mutableStateOf(SettingsScreenVM.Settings.shouldNewFeatureDialogBeVisible.value)
                     }
+                val rootRoutes = rememberSaveable {
+                    mutableListOf(
+                        NavigationRoutes.HOME_SCREEN.name,
+                        NavigationRoutes.SEARCH_SCREEN.name,
+                        NavigationRoutes.COLLECTIONS_SCREEN.name,
+                        NavigationRoutes.SETTINGS_SCREEN.name
+                    )
+                }
                 LaunchedEffect(key1 = currentRoute, key2 = SearchScreenVM.isSearchEnabled.value) {
-                    if (NavigationRoutes.entries.any {
-                            it.name != NavigationRoutes.SPECIFIC_SCREEN.name && it.name == currentRoute && it.name != NavigationRoutes.ARCHIVE_SCREEN.name
+                    if (rootRoutes.any {
+                            it == currentRoute
                         } && !SearchScreenVM.isSearchEnabled.value) {
                         coroutineScope.launch {
                             bottomBarSheetState.bottomSheetState.expand()
@@ -170,7 +178,9 @@ class MainActivity : ComponentActivity() {
                 )
                 val specificCollectionScreenBtmNavColor = colorScheme.surface
                 systemUIController.setNavigationBarColor(
-                    color = if (currentRoute == NavigationRoutes.SPECIFIC_SCREEN.name || currentRoute == NavigationRoutes.ARCHIVE_SCREEN.name) specificCollectionScreenBtmNavColor else nonSpecificCollectionScreenBtmNavColor
+                    color = if (rootRoutes.any {
+                            it == currentRoute
+                        }) nonSpecificCollectionScreenBtmNavColor else specificCollectionScreenBtmNavColor
                 )
                 NewFeatureDialogBox(isDialogBoxVisible = isNewFeatureDialogBoxVisible)
             }

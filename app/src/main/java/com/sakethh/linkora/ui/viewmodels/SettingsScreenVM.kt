@@ -54,13 +54,14 @@ data class SettingsUIElement(
     val description: String?,
     val isSwitchNeeded: Boolean,
     val isSwitchEnabled: MutableState<Boolean>,
-    val onSwitchStateChange: () -> Unit,
+    val onSwitchStateChange: (newValue: Boolean) -> Unit,
     val icon: ImageVector? = null,
-    val isIconNeeded: MutableState<Boolean>
+    val isIconNeeded: MutableState<Boolean>,
+    val shouldFilledIconBeUsed: MutableState<Boolean> = mutableStateOf(false),
 )
 
 enum class SettingsSections {
-    THEME, GENERAL, DATA, PRIVACY, ABOUT
+    THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT
 }
 
 class SettingsScreenVM(
@@ -69,8 +70,8 @@ class SettingsScreenVM(
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
-    val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
     companion object {
+        val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
         const val APP_VERSION_NAME = "v0.4.0-beta03"
         const val APP_VERSION_CODE = 16
         val latestAppInfoFromServer = MutableAppInfoDTO(
@@ -86,7 +87,7 @@ class SettingsScreenVM(
         )
     }
 
-    val privacySection: (context: Context) -> SettingsUIElement = {
+    val privacySection: (context: Context) -> SettingsUIElement = { context ->
         SettingsUIElement(title = "Send crash reports",
             doesDescriptionExists = true,
             description = if (!isSendCrashReportsEnabled.value) mutableStateOf("Every single bit of data is stored locally on your device.").value else mutableStateOf(
@@ -101,11 +102,13 @@ class SettingsScreenVM(
                     Settings.changeSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(
                             SettingsPreferences.SEND_CRASH_REPORTS.name
-                        ), dataStore = it.dataStore, newValue = !isSendCrashReportsEnabled.value
+                        ),
+                        dataStore = context.dataStore,
+                        newValue = !isSendCrashReportsEnabled.value
                     )
                     isSendCrashReportsEnabled.value = Settings.readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                        dataStore = it.dataStore
+                        dataStore = context.dataStore
                     ) == true
                 }.invokeOnCompletion {
                     val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
@@ -113,7 +116,7 @@ class SettingsScreenVM(
                 }
             })
     }
-    val generalSection: (context: Context) -> List<SettingsUIElement> = {
+    val generalSection: (context: Context) -> List<SettingsUIElement> = { context ->
         listOf(
             SettingsUIElement(title = "Use in-app browser",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
@@ -128,12 +131,12 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.CUSTOM_TABS.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.isInAppWebTabEnabled.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.isInAppWebTabEnabled.value = Settings.readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
-                            dataStore = it.dataStore
+                            dataStore = context.dataStore
                         ) == true
                     }
                 }), SettingsUIElement(title = "Enable Home Screen",
@@ -149,12 +152,12 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.HOME_SCREEN_VISIBILITY.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.isHomeScreenEnabled.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.isHomeScreenEnabled.value = Settings.readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = it.dataStore
+                            dataStore = context.dataStore
                         ) == true
                     }
                 }), SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
@@ -170,13 +173,13 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.isBtmSheetEnabledForSavingLinks.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.isBtmSheetEnabledForSavingLinks.value =
                             Settings.readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                                dataStore = it.dataStore
+                                dataStore = context.dataStore
                             ) == true
                     }
                 }), SettingsUIElement(title = "Auto-Detect Title",
@@ -192,13 +195,13 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.isAutoDetectTitleForLinksEnabled.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.isAutoDetectTitleForLinksEnabled.value =
                             Settings.readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                                dataStore = it.dataStore
+                                dataStore = context.dataStore
                             ) == true
                     }
                 }), SettingsUIElement(title = "Auto-Check for Updates",
@@ -214,13 +217,13 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_CHECK_UPDATES.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.isAutoCheckUpdatesEnabled.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.isAutoCheckUpdatesEnabled.value =
                             Settings.readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
-                                dataStore = it.dataStore
+                                dataStore = context.dataStore
                             ) == true
                     }
                 }), SettingsUIElement(title = "Show description for Settings",
@@ -236,13 +239,13 @@ class SettingsScreenVM(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
                             ),
-                            dataStore = it.dataStore,
-                            newValue = !Settings.showDescriptionForSettingsState.value
+                            dataStore = context.dataStore,
+                            newValue = it
                         )
                         Settings.showDescriptionForSettingsState.value =
                             Settings.readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
-                                dataStore = it.dataStore
+                                dataStore = context.dataStore
                             ) == true
                     }
                 })
