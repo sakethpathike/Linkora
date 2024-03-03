@@ -23,4 +23,10 @@ interface ShelfCRUD {
 
     @Query("UPDATE SHELF SET shelfName=:newShelfName WHERE id = :shelfID")
     suspend fun updateAShelfName(newShelfName: String, shelfID: Long)
+
+    @Query("SELECT * FROM SHELF WHERE :folderID in (folderIds)")
+    suspend fun getShelvesOfThisFolder(folderID: Long): List<Shelf>
+
+    @Query("UPDATE SHELF SET folderIds = :folderIds WHERE id=:shelfID")
+    suspend fun updateFoldersOfThisShelf(folderIds: List<Long>, shelfID: Long)
 }

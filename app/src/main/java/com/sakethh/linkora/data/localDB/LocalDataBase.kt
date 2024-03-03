@@ -57,7 +57,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun linksSearching(): LinksSearching
     abstract fun importDao(): ImportDao
     abstract fun subFoldersSortingDao(): SubFoldersSorting
-    abstract fun homeListsCrud(): ShelfListsCRUD
+    abstract fun shelfFolders(): ShelfListsCRUD
     abstract fun shelfCrud(): ShelfCRUD
 
     companion object {

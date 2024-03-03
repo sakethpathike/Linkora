@@ -7,11 +7,14 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.utils.DeleteAFolderFromShelf
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -45,16 +48,24 @@ open class CollectionsScreenVM : ViewModel() {
     open fun onDeleteMultipleSelectedFolders() {
         SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.FOLDER
         viewModelScope.launch {
-            selectedFoldersData.toList().forEach { folder ->
-                folder.childFolderIDs?.toTypedArray()
-                    ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
-                folder.childFolderIDs?.toTypedArray()
-                    ?.let {
-                        LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
-                    }
-                LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
-                LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
-            }
+            awaitAll(async {
+                selectedFoldersData.toList().forEach {
+                    DeleteAFolderFromShelf.execute(it.id)
+                }
+            }, async {
+                selectedFoldersData.toList().forEach { folder ->
+                    folder.childFolderIDs?.toTypedArray()
+                        ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
+                    folder.childFolderIDs?.toTypedArray()
+                        ?.let {
+                            LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
+                        }
+                    LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
+                    LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
+                    DeleteAFolderFromShelf.execute(folder.id)
+                }
+            })
+
         }
     }
 

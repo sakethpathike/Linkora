@@ -327,12 +327,12 @@ class CreateVM : ViewModel() {
             val homeScreenListTable =
                 HomeScreenListTable(id = folderID, position = withContext(Dispatchers.IO) {
                     try {
-                        ++LocalDataBase.localDB.homeListsCrud().getLastInsertedElement().position
+                        ++LocalDataBase.localDB.shelfFolders().getLastInsertedElement().position
                     } catch (_: NullPointerException) {
                         1
                     }
                 }, folderName = folderName, parentShelfID = parentShelfID)
-            LocalDataBase.localDB.homeListsCrud().addAHomeScreenListFolder(homeScreenListTable)
+            LocalDataBase.localDB.shelfFolders().addAHomeScreenListFolder(homeScreenListTable)
         }
     }
 }

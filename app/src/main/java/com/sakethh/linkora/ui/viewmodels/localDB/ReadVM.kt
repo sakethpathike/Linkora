@@ -20,7 +20,7 @@ class ReadVM : ViewModel() {
 
     fun changeSelectedShelfFoldersDataForShelfBtmSheet(shelfID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.homeListsCrud().getAllHomeScreenListFoldersOfThisShelf(shelfID)
+            LocalDataBase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
                 .collectLatest {
                     _selectedShelfFoldersForShelfBtmSheet.emit(it)
                 }
@@ -29,7 +29,7 @@ class ReadVM : ViewModel() {
 
     fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.homeListsCrud().getAllHomeScreenListFoldersOfThisShelf(shelfID)
+            LocalDataBase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
                 .collectLatest {
                     _selectedShelfFoldersForSelectedShelf.emit(it)
                 }

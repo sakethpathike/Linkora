@@ -184,7 +184,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 {},
                                 {},
                                 onRemoveClick = {
-                                    deleteVM.deleteAnElementFromHomeScreenList(selectedShelfFolder.id)
+                                    deleteVM.deleteAFolderFromShelf(
+                                        folderID = selectedShelfFolder.id,
+                                    )
                                 },
                                 onAddClick = { },
                                 shouldAddIconBeVisible = false,

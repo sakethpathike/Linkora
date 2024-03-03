@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.utils.DeleteAFolderFromShelf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -26,7 +27,9 @@ class DeleteVM : ViewModel() {
                 .deleteAFolder(
                     folderID = clickedFolderID
                 )
-            deleteAnElementFromHomeScreenList(clickedFolderID)
+        }
+        viewModelScope.launch {
+            DeleteAFolderFromShelf.execute(clickedFolderID)
         }
     }
 
@@ -40,9 +43,9 @@ class DeleteVM : ViewModel() {
         }
     }
 
-    fun deleteAnElementFromHomeScreenList(folderID: Long) {
+    fun deleteAFolderFromShelf(folderID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.homeListsCrud().deleteAHomeScreenListFolder(folderID)
+            LocalDataBase.localDB.shelfFolders().deleteAShelfFolder(folderID)
         }
     }
 }
