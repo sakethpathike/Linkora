@@ -37,7 +37,6 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -52,7 +51,6 @@ import com.sakethh.linkora.ui.viewmodels.SettingsSections
 @PreviewLightDark
 @Composable
 fun SettingsScreen(navController: NavController = rememberNavController()) {
-    val settingsScreenVM: SettingsScreenVM = viewModel()
     val topAppBarScrollState = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LinkoraTheme {
         Scaffold(topBar = {
@@ -62,7 +60,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         text = "Settings",
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge,
-                        fontSize = if (topAppBarScrollState.state.collapsedFraction > 0.6f) 24.sp else 32.sp
+                        fontSize = 24.sp
                     )
                 })
             }

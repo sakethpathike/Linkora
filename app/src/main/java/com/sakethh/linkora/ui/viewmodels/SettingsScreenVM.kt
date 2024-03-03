@@ -77,8 +77,8 @@ class SettingsScreenVM(
     val exceptionType: MutableState<String?> = mutableStateOf(null)
     companion object {
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
-        const val APP_VERSION_NAME = "v0.4.0-beta03"
-        const val APP_VERSION_CODE = 16
+        const val APP_VERSION_NAME = "v0.4.0"
+        const val APP_VERSION_CODE = 17
         val latestAppInfoFromServer = MutableAppInfoDTO(
             isNonStableVersion = mutableStateOf(false),
             isStableVersion = mutableStateOf(false),

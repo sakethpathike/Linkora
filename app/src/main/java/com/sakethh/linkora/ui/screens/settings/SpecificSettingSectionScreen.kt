@@ -161,19 +161,11 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                     }
                 }, scrollBehavior = topAppBarScrollState, title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (topAppBarScrollState.state.collapsedFraction > 0.8f) {
                             Text(
                                 text = topAppBarText,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 18.sp
                             )
-                        } else {
-                            Text(
-                                text = topAppBarText,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 24.sp
-                            )
-                        }
                         if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
                             Text(
                                 text = "Beta",

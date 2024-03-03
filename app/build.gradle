@@ -14,8 +14,8 @@ android {
         applicationId "com.sakethh.linkora"
         minSdk 21
         targetSdk 34
-        versionCode 16
-        versionName "v0.4.0-beta03"
+        versionCode 17
+        versionName "v0.4.0"
         ksp {
             arg('room.schemaLocation', "$projectDir/schemas")
         }
