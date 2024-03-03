@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -21,6 +23,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -32,12 +36,15 @@ import com.sakethh.linkora.ui.viewmodels.SettingsUIElement
 fun RegularSettingComponent(
     settingsUIElement: SettingsUIElement
 ) {
+    val uriHandler = LocalUriHandler.current
+    val context = LocalContext.current
     Row(modifier = Modifier
         .combinedClickable(interactionSource = remember {
             MutableInteractionSource()
         }, indication = null,
             onClick = {
                 settingsUIElement.onSwitchStateChange(!settingsUIElement.isSwitchEnabled.value)
+                settingsUIElement.onAcknowledgmentClick(uriHandler, context)
             },
             onLongClick = {
 
@@ -60,7 +67,7 @@ fun RegularSettingComponent(
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 16.sp,
                     modifier = Modifier
-                        .fillMaxWidth(if (settingsUIElement.isSwitchNeeded) 0.75f else 1f)
+                        .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
                         .padding(
                             start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
                         ),
@@ -74,7 +81,7 @@ fun RegularSettingComponent(
                         lineHeight = 18.sp,
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .fillMaxWidth(if (settingsUIElement.isSwitchNeeded) 0.75f else 1f)
+                            .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
                             .padding(
                                 start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
                                 top = 10.dp
@@ -93,5 +100,20 @@ fun RegularSettingComponent(
                     })
             }
             }
+        if (settingsUIElement.shouldArrowIconBeAppear.value) {
+            Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                IconButton(onClick = {
+                    settingsUIElement.onAcknowledgmentClick(
+                        uriHandler,
+                        context
+                    )
+                }) {
+                    Icon(
+                        imageVector = Icons.Default.ChevronRight,
+                        contentDescription = null
+                    )
+                }
+            }
+        }
     }
 }

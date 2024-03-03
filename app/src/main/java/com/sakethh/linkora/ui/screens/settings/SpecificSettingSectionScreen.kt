@@ -220,6 +220,18 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                         )
                     }
                 }
+                if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.ACKNOWLEDGMENT) {
+                    item {
+                        Text(
+                            text = "Linkora wouldn't be possible without the following open-source software, libraries.",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 15.sp,
+                            lineHeight = 20.sp,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                        )
+                    }
+                }
                 when (SettingsScreenVM.currentSelectedSettingSection.value) {
                     SettingsSections.THEME -> {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
@@ -568,20 +580,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                         }
                     }
 
-                    SettingsSections.ACKNOWLEDGMENT -> {
-                        item {
-                            Text(
-                                text = "Linkora wouldn't be possible without the following open-source software, libraries.",
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 15.sp,
-                                lineHeight = 20.sp,
-                                textAlign = TextAlign.Start,
-                                modifier = Modifier.padding(start = 15.dp, end = 15.dp)
-                            )
-                        }
-
-                    }
-
                     else -> {
                         items(
                             when (SettingsScreenVM.currentSelectedSettingSection.value) {
@@ -602,25 +600,11 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                 )
 
                                 SettingsSections.ABOUT -> emptyList()
-                                SettingsSections.ACKNOWLEDGMENT -> emptyList()
+                                SettingsSections.ACKNOWLEDGMENT -> settingsScreenVM.acknowledgmentsSection
                             }
                         ) {
                             RegularSettingComponent(
-                                settingsUIElement = SettingsUIElement(
-                                    title = it.title,
-                                    doesDescriptionExists = it.doesDescriptionExists,
-                                    description = it.description,
-                                    isSwitchNeeded = it.isSwitchNeeded,
-                                    isSwitchEnabled = it.isSwitchEnabled,
-                                    onSwitchStateChange = it.onSwitchStateChange,
-                                    isIconNeeded = it.isIconNeeded,
-                                    icon = it.icon,
-                                    shouldFilledIconBeUsed = if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) rememberSaveable {
-                                        mutableStateOf(true)
-                                    } else rememberSaveable {
-                                        mutableStateOf(false)
-                                    }
-                                )
+                                settingsUIElement = it
                             )
                         }
                     }
