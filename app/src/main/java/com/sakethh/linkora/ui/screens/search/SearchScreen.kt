@@ -318,30 +318,36 @@ fun SearchScreen(navController: NavController) {
                                         "Links from folders",
                                         "History"
                                     ).forEach {
-                                        Row(modifier = Modifier.animateContentSize()) {
-                                            Spacer(modifier = Modifier.width(10.dp))
-                                            androidx.compose.material3.FilterChip(
-                                                selected = selectedSearchFilters.contains(it),
-                                                onClick = {
-                                                    if (selectedSearchFilters.contains(it)) {
-                                                        selectedSearchFilters.remove(it)
-                                                    } else {
-                                                        selectedSearchFilters.add(it)
-                                                    }
-                                                },
-                                                label = {
-                                                    Text(
-                                                        text = it,
-                                                        style = MaterialTheme.typography.titleSmall
-                                                    )
-                                                }, leadingIcon = {
-                                                    if (selectedSearchFilters.contains(it)) {
-                                                        Icon(
-                                                            imageVector = Icons.Default.Check,
-                                                            contentDescription = null
+                                        if (it == "Saved Links" && queriedSavedLinks.isNotEmpty() || it == "Important Links" && impLinksQueriedData.isNotEmpty() ||
+                                            it == "Archived Links" && archiveLinksQueriedData.isNotEmpty() || it == "Folders" && queriedUnarchivedFoldersData.isNotEmpty()
+                                            || it == "Archived Folders" && queriedArchivedFoldersData.isNotEmpty() || it == "Links from folders" && queriedFolderLinks.isNotEmpty()
+                                            || it == "History" && historyLinksQueriedData.isNotEmpty()
+                                        ) {
+                                            Row(modifier = Modifier.animateContentSize()) {
+                                                Spacer(modifier = Modifier.width(10.dp))
+                                                androidx.compose.material3.FilterChip(
+                                                    selected = selectedSearchFilters.contains(it),
+                                                    onClick = {
+                                                        if (selectedSearchFilters.contains(it)) {
+                                                            selectedSearchFilters.remove(it)
+                                                        } else {
+                                                            selectedSearchFilters.add(it)
+                                                        }
+                                                    },
+                                                    label = {
+                                                        Text(
+                                                            text = it,
+                                                            style = MaterialTheme.typography.titleSmall
                                                         )
-                                                    }
-                                                })
+                                                    }, leadingIcon = {
+                                                        if (selectedSearchFilters.contains(it)) {
+                                                            Icon(
+                                                                imageVector = Icons.Default.Check,
+                                                                contentDescription = null
+                                                            )
+                                                        }
+                                                    })
+                                            }
                                         }
                                     }
                                     Spacer(modifier = Modifier.width(10.dp))
@@ -355,7 +361,7 @@ fun SearchScreen(navController: NavController) {
                                 }
                             }
 
-                            searchTextField.isNotEmpty() && selectedSearchFilters.isEmpty() &&
+                            searchTextField.isNotEmpty() &&
                                     queriedUnarchivedFoldersData.isEmpty()
                                     && queriedArchivedFoldersData.isEmpty()
                                     && queriedSavedLinks.isEmpty()
@@ -364,9 +370,10 @@ fun SearchScreen(navController: NavController) {
                                     && archiveLinksQueriedData.isEmpty()
                                     && historyLinksQueriedData.isEmpty() -> {
                                 item {
-                                    DataEmptyScreen(text = "No Matching Links Found. Try a Different Search.")
+                                    DataEmptyScreen(text = "No Matching items Found. Try a Different Search.")
                                 }
                             }
+
                             else -> {
                                 if (queriedUnarchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
                                         "Folders"
