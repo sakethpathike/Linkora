@@ -635,7 +635,7 @@ class SettingsScreenVM(
         val isOnLatestUpdate = mutableStateOf(false)
         val didServerTimeOutErrorOccurred = mutableStateOf(false)
         val savedAppCode = mutableIntStateOf(16)
-        val selectedSortingType = mutableStateOf("")
+        val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
 
         suspend fun <T> readSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
