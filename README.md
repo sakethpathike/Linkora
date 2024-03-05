@@ -32,14 +32,14 @@ Linkora is an Android project that focuses on making link organization simpler. 
 
 ## Releases
 
-The latest release of Linkora (v0.4.0) is available
-on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0).
+The latest release of Linkora (v0.5.0-alpha01) is available
+on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha01).
 You can download the APK file from there;
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0/Linkora-v0.4.0.apk).
+or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha01/Linkora-v0.5.0-alpha01.apk).
 
-[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.4.0%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.4.0%2FLinkora-v0.4.0.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.4.0/Linkora-v0.4.0.apk)
+[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0-alpha01%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0-alpha01%2FLinkora-v0.5.0-alpha01.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha01/Linkora-v0.5.0-alpha01.apk)
 
-[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.4.0%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.4.0">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.4.0)
+[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0-alpha01%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0-alpha01">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha01)
 
 ## Screenshots
 
@@ -53,7 +53,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                           Search                                                           |                                                                Search                                                                 |                                                  Search Screen  (History links are selected)                                                  |                                                                    Search                                                                     |
 |:--------------------------------------------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------:|:---------------------------------------------------------------------------------------------------------------------------------------------:|
-| ![Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/f3902502-acfe-4f58-9e76-eb4aaa002b3c) | ![History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/469e9e11-c935-48f3-b797-44e8203973ca) | ![Sorting History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/0dfac08a-e544-4f5b-b87b-900e2c383823) | ![Sorting History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/d455303b-8e9b-421f-808e-e98672840d9c) |
+| ![Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/f3902502-acfe-4f58-9e76-eb4aaa002b3c) | ![History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/63cf55ac-aaee-4ff1-ae06-81eed4e8da46) | ![Sorting History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/0dfac08a-e544-4f5b-b87b-900e2c383823) | ![Sorting History in Search Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/18934abc-1648-44cc-b2fc-4e59fde3340b) |
 
 ### Collections Screen
 
@@ -81,7 +81,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                       Settings Screen                                                        |                                                       Settings Screen                                                        |
 |:----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------:|
-| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/d3942a0c-bdd3-46c5-bf9b-79e3f86d5a4b) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a38aa3f9-cc21-487a-a71e-581128ff9ed7) |
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/b04b8db7-4662-4ffc-ad68-787754d7d8d2) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a38aa3f9-cc21-487a-a71e-581128ff9ed7) |
 
 ### Sharing from other apps
 

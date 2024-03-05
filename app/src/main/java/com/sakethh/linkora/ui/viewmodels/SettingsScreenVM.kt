@@ -634,7 +634,7 @@ class SettingsScreenVM(
         val showDescriptionForSettingsState = mutableStateOf(true)
         val isOnLatestUpdate = mutableStateOf(false)
         val didServerTimeOutErrorOccurred = mutableStateOf(false)
-        val savedAppCode = mutableIntStateOf(16)
+        val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
         val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
 
         suspend fun <T> readSettingPreferenceValue(
@@ -757,7 +757,7 @@ class SettingsScreenVM(
                     savedAppCode.intValue = readSettingPreferenceValue(
                         preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
                         dataStore = context.dataStore
-                    ) ?: 16
+                    ) ?: (APP_VERSION_CODE - 1)
                 })
             }
         }
