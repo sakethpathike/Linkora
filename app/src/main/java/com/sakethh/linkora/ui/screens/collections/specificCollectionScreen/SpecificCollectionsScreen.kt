@@ -42,7 +42,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -55,14 +54,16 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sakethh.linkora.data.localDB.dto.ImportantLinks
+import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI
 import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUIParam
 import com.sakethh.linkora.ui.commonBtmSheets.SortingBtmSheetType
@@ -79,20 +80,19 @@ import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.openInWeb
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
+import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
+import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -110,14 +110,17 @@ fun SpecificCollectionScreen(navController: NavController) {
     val isDataExtractingForTheLink = rememberSaveable {
         mutableStateOf(false)
     }
-    val specificFolderLinksData = specificCollectionsScreenVM.folderLinksData.collectAsState().value
-    val childFoldersData = specificCollectionsScreenVM.childFoldersData.collectAsState().value
-    val savedLinksData = specificCollectionsScreenVM.savedLinksTable.collectAsState().value
-    val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsState().value
+    val specificFolderLinksData =
+        specificCollectionsScreenVM.folderLinksData.collectAsStateWithLifecycle().value
+    val childFoldersData =
+        specificCollectionsScreenVM.childFoldersData.collectAsStateWithLifecycle().value
+    val savedLinksData =
+        specificCollectionsScreenVM.savedLinksTable.collectAsStateWithLifecycle().value
+    val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsStateWithLifecycle().value
     val archivedFoldersLinksData =
-        specificCollectionsScreenVM.archiveFoldersLinksData.collectAsState().value
+        specificCollectionsScreenVM.archiveFoldersLinksData.collectAsStateWithLifecycle().value
     val archivedSubFoldersData =
-        specificCollectionsScreenVM.archiveSubFolderData.collectAsState().value
+        specificCollectionsScreenVM.archiveSubFolderData.collectAsStateWithLifecycle().value
     val tempImpLinkData = specificCollectionsScreenVM.impLinkDataForBtmSheet
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val btmModalSheetStateForSavingLink =
