@@ -12,7 +12,7 @@ import com.sakethh.linkora.data.localDB.dao.crud.CreateDao
 import com.sakethh.linkora.data.localDB.dao.crud.DeleteDao
 import com.sakethh.linkora.data.localDB.dao.crud.ReadDao
 import com.sakethh.linkora.data.localDB.dao.crud.UpdateDao
-import com.sakethh.linkora.data.localDB.dao.searching.LinksSearching
+import com.sakethh.linkora.data.localDB.dao.searching.SearchDao
 import com.sakethh.linkora.data.localDB.dao.shelf.ShelfCRUD
 import com.sakethh.linkora.data.localDB.dao.shelf.shelfLists.ShelfListsCRUD
 import com.sakethh.linkora.data.localDB.dao.sorting.folders.ParentArchivedFoldersSorting
@@ -54,7 +54,7 @@ abstract class LocalDataBase : RoomDatabase() {
     abstract fun regularFolderSorting(): ParentRegularFoldersSorting
     abstract fun savedLinksSorting(): SavedLinksSorting
     abstract fun historyLinksSorting(): HistoryLinksSorting
-    abstract fun linksSearching(): LinksSearching
+    abstract fun searchDao(): SearchDao
     abstract fun importDao(): ImportDao
     abstract fun subFoldersSortingDao(): SubFoldersSorting
     abstract fun shelfFolders(): ShelfListsCRUD

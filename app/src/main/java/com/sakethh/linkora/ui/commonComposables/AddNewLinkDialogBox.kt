@@ -51,7 +51,6 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -65,13 +64,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.ui.commonBtmSheets.SelectableFolderUIComponent
 import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.ui.commonBtmSheets.SelectableFolderUIComponent
+import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -432,13 +432,11 @@ fun AddNewLinkDialogBox(
                 if (isDropDownMenuIconClicked.value) {
                     val foldersTableData = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
                         LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
-                        LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
-                            initial = emptyList()
-                        ).value
+                        LocalDataBase.localDB.readDao().getAllRootFolders()
+                            .collectAsStateWithLifecycle(initialValue = emptyList()).value
                     } else {
-                        LocalDataBase.localDB.readDao().getAllRootFolders().collectAsState(
-                            initial = emptyList()
-                        ).value
+                        LocalDataBase.localDB.readDao().getAllRootFolders()
+                            .collectAsStateWithLifecycle(initialValue = emptyList()).value
                     }
                     ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
                         coroutineScope.launch {

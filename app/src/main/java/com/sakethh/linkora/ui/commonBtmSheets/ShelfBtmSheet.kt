@@ -40,7 +40,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
+
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -56,6 +56,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.data.localDB.dto.Shelf
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
@@ -78,7 +79,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lazyListState = rememberLazyListState()
     val shelfBtmSheetVM: ShelfBtmSheetVM = viewModel()
-    val shelfData = shelfBtmSheetVM.shelfData.collectAsState().value
+    val shelfData = shelfBtmSheetVM.shelfData.collectAsStateWithLifecycle().value
     val isAddANewShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -95,8 +96,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     }
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val readVM: ReadVM = viewModel()
-    val selectedShelfFolders = readVM.selectedShelfFoldersForShelfBtmSheet.collectAsState().value
-    val rootFolders = collectionsScreenVM.foldersData.collectAsState().value
+    val selectedShelfFolders =
+        readVM.selectedShelfFoldersForShelfBtmSheet.collectAsStateWithLifecycle().value
+    val rootFolders = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value
     val isRenameAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }

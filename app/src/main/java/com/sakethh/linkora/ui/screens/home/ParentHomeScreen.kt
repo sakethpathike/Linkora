@@ -65,7 +65,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -88,11 +87,14 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.ui.commonBtmSheets.ShelfBtmSheet
@@ -108,14 +110,12 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
+import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
+import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -161,7 +161,8 @@ fun ParentHomeScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val readVM: ReadVM = viewModel()
-    val homeScreenList = readVM.selectedShelfFoldersForSelectedShelf.collectAsState().value
+    val homeScreenList =
+        readVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
         mutableStateOf(false)
@@ -179,7 +180,7 @@ fun ParentHomeScreen(navController: NavController) {
     val selectedShelfID = rememberSaveable {
         mutableLongStateOf(-1)
     }
-    val shelfData = homeScreenVM.shelfData.collectAsState().value
+    val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle().value
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -464,39 +465,41 @@ fun ParentHomeScreen(navController: NavController) {
                                 folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
                                         LocalDataBase.localDB.regularFolderLinksSorting()
-                                            .sortByAToZV10(homeScreenList[it].id).collectAsState(
-                                                initial = emptyList()
+                                            .sortByAToZV10(homeScreenList[it].id)
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
                                         LocalDataBase.localDB.regularFolderLinksSorting()
-                                            .sortByZToAV10(homeScreenList[it].id).collectAsState(
-                                                initial = emptyList()
+                                            .sortByZToAV10(homeScreenList[it].id)
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
                                         LocalDataBase.localDB.regularFolderLinksSorting()
                                             .sortByLatestToOldestV10(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
                                         LocalDataBase.localDB.regularFolderLinksSorting()
                                             .sortByOldestToLatestV10(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     else -> {
                                         LocalDataBase.localDB.readDao()
                                             .getLinksOfThisFolderV10(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
                                 },
@@ -504,40 +507,40 @@ fun ParentHomeScreen(navController: NavController) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
                                         LocalDataBase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByAToZ(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
                                         LocalDataBase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByZToA(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
                                         LocalDataBase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
                                         LocalDataBase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
 
                                     else -> {
                                         LocalDataBase.localDB.readDao()
                                             .getChildFoldersOfThisParentID(homeScreenList[it].id)
-                                            .collectAsState(
-                                                initial = emptyList()
+                                            .collectAsStateWithLifecycle(
+                                                initialValue = emptyList()
                                             ).value
                                     }
                                 },

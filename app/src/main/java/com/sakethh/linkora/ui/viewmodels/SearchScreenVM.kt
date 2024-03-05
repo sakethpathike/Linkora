@@ -9,6 +9,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.data.localDB.dto.FoldersTable
 import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
@@ -36,23 +37,29 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         var selectedLinkID: Long = 0
     }
 
-    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
-    val historyLinksData = _historyLinksData.asStateFlow()
+    private val _queriedUnarchivedFoldersData = MutableStateFlow(emptyList<FoldersTable>())
+    val queriedUnarchivedFoldersData = _queriedUnarchivedFoldersData.asStateFlow()
 
-    private val _linksTableQueriedData = MutableStateFlow(
-        emptyList<LinksTable>()
-    )
-    val linksTableData = _linksTableQueriedData.asStateFlow()
+    private val _queriedArchivedFoldersData = MutableStateFlow(emptyList<FoldersTable>())
+    val queriedArchivedFoldersData = _queriedArchivedFoldersData.asStateFlow()
 
-    private val _impLinksQueriedData = MutableStateFlow(
-        emptyList<ImportantLinks>()
-    )
+    private val _queriedSavedLinks = MutableStateFlow(emptyList<LinksTable>())
+    val queriedSavedLinks = _queriedSavedLinks.asStateFlow()
+
+    private val _queriedFolderLinks = MutableStateFlow(emptyList<LinksTable>())
+    val queriedFolderLinks = _queriedFolderLinks.asStateFlow()
+
+    private val _impLinksQueriedData = MutableStateFlow(emptyList<ImportantLinks>())
     val impLinksQueriedData = _impLinksQueriedData.asStateFlow()
 
-    private val _archiveLinksQueriedData = MutableStateFlow(
-        emptyList<ArchivedLinks>()
-    )
+    private val _archiveLinksQueriedData = MutableStateFlow(emptyList<ArchivedLinks>())
     val archiveLinksQueriedData = _archiveLinksQueriedData.asStateFlow()
+
+    private val _historyLinksQueriedData = MutableStateFlow(emptyList<RecentlyVisited>())
+    val historyLinksQueriedData = _historyLinksQueriedData.asStateFlow()
+
+    private val _historyLinksData = MutableStateFlow(emptyList<RecentlyVisited>())
+    val historyLinksData = _historyLinksData.asStateFlow()
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
@@ -62,6 +69,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
     val selectedImportantLinksData = mutableStateListOf<ImportantLinks>()
     val selectedLinksTableData = mutableStateListOf<LinksTable>()
     val selectedArchiveLinksTableData = mutableStateListOf<ArchivedLinks>()
+    val selectedSearchFilters = mutableStateListOf<String>()
 
     init {
         viewModelScope.launch {
@@ -76,8 +84,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedHistoryLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -99,8 +105,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -123,8 +127,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedImportantLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it.webURL)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -142,8 +144,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 )
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(it.id)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -152,8 +152,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it.id)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -162,8 +160,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedArchiveLinksTableData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -172,8 +168,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
             selectedImportantLinksData.toList().forEach {
                 LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it.webURL)
             }
-        }.invokeOnCompletion {
-            retrieveQueryData(searchQuery.value)
         }
     }
 
@@ -185,40 +179,39 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
     private fun retrieveQueryData(query: String) {
         viewModelScope.launch {
-            awaitAll(async {
-                if (query.isNotEmpty()) {
-                    val data = LocalDataBase.localDB.linksSearching()
-                        .getFromImportantLinks(query = query)
-                    _impLinksQueriedData.emit(
-                        data
-                    )
-                }
-            }, async {
-                if (query.isNotEmpty()) {
-                    val data =
-                        LocalDataBase.localDB.linksSearching()
-                            .getFromLinksTable(query = query)
-                    _linksTableQueriedData.emit(
-                        data
-                    )
-                }
-            }, async {
-                if (query.isNotEmpty()) {
-                    val data = LocalDataBase.localDB.linksSearching()
-                        .getFromArchiveLinks(query = query)
-                    _archiveLinksQueriedData.emit(
-                        data
-                    )
-                }
-            }, async {
-                if (query.isNotEmpty()) {
-                    val data = LocalDataBase.localDB.linksSearching()
-                        .getFromHistoryLinks(query = query)
-                    _historyLinksData.emit(
-                        data
-                    )
-                }
-            })
+            LocalDataBase.localDB.searchDao().getUnArchivedFolders(query).collectLatest {
+                _queriedUnarchivedFoldersData.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getSavedLinks(query).collectLatest {
+                _queriedSavedLinks.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getFromImportantLinks(query).collectLatest {
+                _impLinksQueriedData.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getArchiveLinks(query).collectLatest {
+                _archiveLinksQueriedData.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getHistoryLinks(query).collectLatest {
+                _historyLinksQueriedData.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getLinksFromFolders(query).collectLatest {
+                _queriedFolderLinks.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalDataBase.localDB.searchDao().getArchivedFolders(query).collectLatest {
+                _queriedArchivedFoldersData.emit(it)
+            }
         }
     }
 

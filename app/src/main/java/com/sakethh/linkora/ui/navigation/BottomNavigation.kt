@@ -1,13 +1,11 @@
 package com.sakethh.linkora.ui.navigation
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material3.Badge
 import androidx.compose.material3.BadgedBox
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -20,12 +18,11 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isOnLatestUpdate
-import com.sakethh.linkora.ui.theme.LinkoraTheme
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val navigationVM: NavigationVM = viewModel()
@@ -35,7 +32,7 @@ fun BottomNavigationBar(navController: NavController) {
     }
     LinkoraTheme {
         NavigationBar(
-            modifier = Modifier.fillMaxWidth()/*.requiredHeight(55.dp)*/
+            modifier = Modifier.fillMaxWidth()
         ) {
             if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 NavigationBarItem(selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
@@ -54,7 +51,11 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     },
                     label = {
-                        Text(text = "Home", style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            text = "Home",
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1
+                        )
                     })
             }
             navigationVM.btmBarList.forEach {
@@ -80,7 +81,11 @@ fun BottomNavigationBar(navController: NavController) {
                             )
                         }
                     }, label = {
-                        Text(text = it.itemName, style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            text = it.itemName,
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 1
+                        )
                     })
             }
         }

@@ -10,7 +10,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -18,12 +17,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -31,18 +30,19 @@ import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
-import com.sakethh.linkora.ui.screens.openInWeb
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenType
 import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenVM
+import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -50,9 +50,11 @@ import kotlinx.coroutines.launch
 @Composable
 fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavController) {
     val archiveScreenVM: ArchiveScreenVM = viewModel()
-    val archiveLinksData = archiveScreenVM.archiveLinksData.collectAsState().value
-    val archiveFoldersDataV9 = archiveScreenVM.archiveFoldersDataV9.collectAsState().value
-    val archiveFoldersDataV10 = archiveScreenVM.archiveFoldersDataV10.collectAsState().value
+    val archiveLinksData = archiveScreenVM.archiveLinksData.collectAsStateWithLifecycle().value
+    val archiveFoldersDataV9 =
+        archiveScreenVM.archiveFoldersDataV9.collectAsStateWithLifecycle().value
+    val archiveFoldersDataV10 =
+        archiveScreenVM.archiveFoldersDataV10.collectAsStateWithLifecycle().value
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
