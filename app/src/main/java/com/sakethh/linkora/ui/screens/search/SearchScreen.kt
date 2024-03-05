@@ -281,8 +281,14 @@ fun SearchScreen(navController: NavController) {
                                         searchScreenVM.archiveSelectedLinksTableLinks()
                                         searchScreenVM.archiveSelectedHistoryLinks()
                                         searchScreenVM.archiveSelectedMultipleFolders()
+                                        searchScreenVM.selectedFoldersData.clear()
+                                        searchScreenVM.selectedImportantLinksData.clear()
+                                        searchScreenVM.selectedLinksTableData.clear()
+                                        searchScreenVM.selectedArchiveLinksTableData.clear()
+                                        searchScreenVM.selectedHistoryLinksData.clear()
                                         isSelectionModeEnabled.value =
                                             false
+                                        SearchScreenVM.isSearchEnabled.value = false
                                     }) {
                                         Icon(
                                             imageVector = Icons.Outlined.Archive,
@@ -311,6 +317,7 @@ fun SearchScreen(navController: NavController) {
                             stickyHeader {
                                 Row(
                                     Modifier
+                                        .fillMaxWidth()
                                         .background(SearchBarDefaults.colors().containerColor)
                                         .horizontalScroll(rememberScrollState())
                                         .padding(top = 2.dp)
@@ -1468,6 +1475,8 @@ fun SearchScreen(navController: NavController) {
                         searchScreenVM.selectedLinksTableData.clear()
                         searchScreenVM.selectedArchiveLinksTableData.clear()
                         searchScreenVM.selectedHistoryLinksData.clear()
+                        SearchScreenVM.selectedArchiveFoldersData.clear()
+                        SearchScreenVM.isSearchEnabled.value = false
                         isSelectionModeEnabled.value = false
                     }
                 })
