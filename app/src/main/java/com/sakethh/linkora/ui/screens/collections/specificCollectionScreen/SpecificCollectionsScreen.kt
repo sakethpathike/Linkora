@@ -427,7 +427,7 @@ fun SpecificCollectionScreen(navController: NavController) {
 
                                         IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                             specificCollectionsScreenVM.moveMultipleLinksFromLinksTableToArchive()
-                                            specificCollectionsScreenVM.archiveMultipleFolders()
+                                            specificCollectionsScreenVM.archiveSelectedMultipleFolders()
                                             areElementsSelectable.value = false
                                             specificCollectionsScreenVM.areAllLinksChecked.value =
                                                 false

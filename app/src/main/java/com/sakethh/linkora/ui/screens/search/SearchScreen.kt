@@ -88,8 +88,11 @@ import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
+import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
+import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.UUID
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(
@@ -225,6 +228,8 @@ fun SearchScreen(navController: NavController) {
                                     searchScreenVM.selectedLinksTableData.clear()
                                     searchScreenVM.selectedArchiveLinksTableData.clear()
                                     searchScreenVM.selectedHistoryLinksData.clear()
+                                    searchScreenVM.selectedFoldersData.clear()
+                                    SearchScreenVM.selectedArchiveFoldersData.clear()
                                 }) {
                                     Icon(
                                         imageVector = Icons.Default.Cancel,
@@ -234,8 +239,8 @@ fun SearchScreen(navController: NavController) {
                                 AnimatedContent(
                                     targetState = searchScreenVM.selectedLinksTableData.size +
                                             searchScreenVM.selectedHistoryLinksData.size +
-                                            searchScreenVM.selectedArchiveLinksTableData.size +
-                                            searchScreenVM.selectedImportantLinksData.size,
+                                            searchScreenVM.selectedArchiveLinksTableData.size + SearchScreenVM.selectedArchiveFoldersData.size +
+                                            searchScreenVM.selectedImportantLinksData.size + searchScreenVM.selectedFoldersData.size,
                                     label = "",
                                     transitionSpec = {
                                         ContentTransform(
@@ -270,11 +275,12 @@ fun SearchScreen(navController: NavController) {
                                 )
                             }
                             Row {
-                                if (searchScreenVM.selectedArchiveLinksTableData.isEmpty()) {
+                                if (searchScreenVM.selectedArchiveLinksTableData.isEmpty() && SearchScreenVM.selectedArchiveFoldersData.isEmpty()) {
                                     IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         searchScreenVM.archiveSelectedImportantLinks()
                                         searchScreenVM.archiveSelectedLinksTableLinks()
                                         searchScreenVM.archiveSelectedHistoryLinks()
+                                        searchScreenVM.archiveSelectedMultipleFolders()
                                         isSelectionModeEnabled.value =
                                             false
                                     }) {
@@ -398,6 +404,8 @@ fun SearchScreen(navController: NavController) {
                                             folderName = folderData.folderName,
                                             folderNote = folderData.infoForSaving,
                                             onMoreIconClick = {
+                                                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                    OptionsBtmSheetType.FOLDER
                                                 CollectionsScreenVM.selectedFolderData.value =
                                                     folderData
                                                 clickedFolderNote.value = folderData.infoForSaving
@@ -407,8 +415,6 @@ fun SearchScreen(navController: NavController) {
                                                     )
                                                 }
                                                 clickedFolderName.value = folderData.folderName
-                                                CollectionsScreenVM.selectedFolderData.value =
-                                                    folderData
                                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                             },
                                             onFolderClick = {
@@ -468,7 +474,8 @@ fun SearchScreen(navController: NavController) {
                                     }
                                     itemsIndexed(items = queriedSavedLinks,
                                         key = { index, linksTable ->
-                                            linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + linksTable.webURL + +index
+                                            linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, it ->
                                         LinkUIComponent(
                                             LinkUIComponentParam(
@@ -489,6 +496,8 @@ fun SearchScreen(navController: NavController) {
                                                 webBaseURL = it.webURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
                                                     selectedLinkTitle.value = it.title
                                                     SearchScreenVM.selectedLinkType =
@@ -580,8 +589,8 @@ fun SearchScreen(navController: NavController) {
                                     }
                                     itemsIndexed(items = impLinksQueriedData,
                                         key = { index, impLink ->
-                                            impLink.id.toString() + impLink.baseURL
-                                            +index
+                                            impLink.id.toString() + impLink.baseURL + index.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, it ->
                                         LinkUIComponent(
                                             LinkUIComponentParam(
@@ -604,6 +613,8 @@ fun SearchScreen(navController: NavController) {
                                                 webBaseURL = it.webURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
                                                     selectedLinkTitle.value = it.title
                                                     SearchScreenVM.selectedLinkType =
@@ -696,7 +707,8 @@ fun SearchScreen(navController: NavController) {
                                     }
                                     itemsIndexed(items = queriedFolderLinks,
                                         key = { index, folderLink ->
-                                            folderLink.baseURL + folderLink.id.toString() + index
+                                            folderLink.baseURL + folderLink.id.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, it ->
                                         LinkUIComponent(
                                             LinkUIComponentParam(
@@ -717,15 +729,12 @@ fun SearchScreen(navController: NavController) {
                                                 webBaseURL = it.webURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
                                                     selectedLinkTitle.value = it.title
-                                                    when (it.isLinkedWithArchivedFolder) {
-                                                        true -> SearchScreenVM.selectedLinkType =
-                                                            SearchScreenVM.SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS
-
-                                                        false -> SearchScreenVM.selectedLinkType =
-                                                            SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
-                                                    }
+                                                    SearchScreenVM.selectedLinkType =
+                                                        SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
                                                     HomeScreenVM.tempImpLinkData.webURL = it.webURL
                                                     HomeScreenVM.tempImpLinkData.baseURL =
                                                         it.baseURL
@@ -813,7 +822,8 @@ fun SearchScreen(navController: NavController) {
                                     }
                                     itemsIndexed(items = historyLinksQueriedData,
                                         key = { index, historyLink ->
-                                            historyLink.baseURL + historyLink.id.toString() + index
+                                            historyLink.baseURL + historyLink.id.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, it ->
                                         LinkUIComponent(
                                             LinkUIComponentParam(
@@ -836,6 +846,8 @@ fun SearchScreen(navController: NavController) {
                                                 webBaseURL = it.webURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
                                                     selectedLinkTitle.value = it.title
                                                     SearchScreenVM.selectedLinkType =
@@ -927,7 +939,8 @@ fun SearchScreen(navController: NavController) {
                                     }
                                     itemsIndexed(items = archiveLinksQueriedData,
                                         key = { index, archiveLink ->
-                                            archiveLink.baseURL + archiveLink.id.toString() + index
+                                            archiveLink.baseURL + archiveLink.id.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, it ->
                                         LinkUIComponent(
                                             LinkUIComponentParam(
@@ -950,6 +963,8 @@ fun SearchScreen(navController: NavController) {
                                                 webBaseURL = it.webURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
                                                     selectedLinkTitle.value = it.title
                                                     SearchScreenVM.selectedLinkType =
@@ -1042,13 +1057,16 @@ fun SearchScreen(navController: NavController) {
                                     itemsIndexed(
                                         items = queriedArchivedFoldersData,
                                         key = { index, folderData ->
-                                            folderData.folderName + folderData.id.toString() + index
+                                            folderData.folderName + folderData.id.toString() + UUID.randomUUID()
+                                                .toString()
                                         }) { index, folderData ->
                                         FolderIndividualComponent(
                                             showMoreIcon = !isSelectionModeEnabled.value,
                                             folderName = folderData.folderName,
                                             folderNote = folderData.infoForSaving,
                                             onMoreIconClick = {
+                                                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                    OptionsBtmSheetType.FOLDER
                                                 CollectionsScreenVM.selectedFolderData.value =
                                                     folderData
                                                 clickedFolderNote.value = folderData.infoForSaving
@@ -1067,7 +1085,7 @@ fun SearchScreen(navController: NavController) {
                                                     SpecificCollectionsScreenVM.inARegularFolder.value =
                                                         true
                                                     SpecificCollectionsScreenVM.screenType.value =
-                                                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                                     CollectionsScreenVM.currentClickedFolderData.value =
                                                         folderData
                                                     CollectionsScreenVM.rootFolderID = folderData.id
@@ -1077,27 +1095,25 @@ fun SearchScreen(navController: NavController) {
                                             onLongClick = {
                                                 if (!isSelectionModeEnabled.value) {
                                                     isSelectionModeEnabled.value = true
-                                                    searchScreenVM.areAllFoldersChecked.value =
-                                                        false
-                                                    searchScreenVM.changeAllFoldersSelectedData()
-                                                    searchScreenVM.selectedFoldersData.add(
+                                                    SearchScreenVM.selectedArchiveFoldersData.clear()
+                                                    SearchScreenVM.selectedArchiveFoldersData.add(
                                                         folderData
                                                     )
                                                 }
                                             },
                                             showCheckBox = isSelectionModeEnabled,
                                             isCheckBoxChecked = mutableStateOf(
-                                                searchScreenVM.selectedFoldersData.contains(
+                                                SearchScreenVM.selectedArchiveFoldersData.contains(
                                                     folderData
                                                 )
                                             ),
                                             checkBoxState = { checkBoxState ->
                                                 if (checkBoxState) {
-                                                    searchScreenVM.selectedFoldersData.add(
+                                                    SearchScreenVM.selectedArchiveFoldersData.add(
                                                         folderData
                                                     )
                                                 } else {
-                                                    searchScreenVM.selectedFoldersData.removeAll {
+                                                    SearchScreenVM.selectedArchiveFoldersData.removeAll {
                                                         it == folderData
                                                     }
                                                 }
@@ -1246,6 +1262,8 @@ fun SearchScreen(navController: NavController) {
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
                                 onMoreIconCLick = {
+                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                        OptionsBtmSheetType.LINK
                                     SearchScreenVM.selectedLinkID = it.id
                                     selectedLinkTitle.value = it.title
                                     SearchScreenVM.selectedLinkType =
@@ -1336,82 +1354,116 @@ fun SearchScreen(navController: NavController) {
                 shouldLinksSelectionBeVisible = mutableStateOf(false)
             )
         )
+        val updateVM: UpdateVM = viewModel()
         OptionsBtmSheetUI(
             OptionsBtmSheetUIParam(
                 btmModalSheetState = optionsBtmSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-                btmSheetFor = OptionsBtmSheetType.LINK,
+                btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onDeleteCardClick = {
                     shouldDeleteDialogBoxAppear.value = true
                 },
                 onNoteDeleteCardClick = {
-                    searchScreenVM.onNoteDeleteCardClick(
-                        context = context,
-                        selectedWebURL = selectedWebURL.value,
-                        selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID
-                    )
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        searchScreenVM.onNoteDeleteCardClick(
+                            context = context,
+                            selectedWebURL = selectedWebURL.value,
+                            selectedLinkType = SearchScreenVM.selectedLinkType,
+                            folderID = selectedFolderID
+                        )
+                    } else {
+                        searchScreenVM.onNoteDeleteClick(
+                            context,
+                            CollectionsScreenVM.selectedFolderData.value.id
+                        )
+                    }
                 },
                 onRenameClick = {
                     shouldRenameDialogBoxAppear.value = true
                 },
                 onArchiveClick = {
-                    searchScreenVM.onArchiveClick(
-                        context,
-                        selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID
-                    )
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        searchScreenVM.onArchiveClick(
+                            context,
+                            selectedLinkType = SearchScreenVM.selectedLinkType,
+                            folderID = selectedFolderID
+                        )
+                    } else {
+                        updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
+                    }
                 },
                 importantLinks = HomeScreenVM.tempImpLinkData,
                 noteForSaving = selectedURLNote.value,
-                folderName = "",
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 linkTitle = selectedLinkTitle.value
             )
         )
         RenameDialogBox(
             RenameDialogBoxParam(
                 shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
-                existingFolderName = "",
+                existingFolderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 onNoteChangeClick = { newNote ->
-                    searchScreenVM.onNoteChangeClickForLinks(
-                        HomeScreenVM.tempImpLinkData.webURL,
-                        newNote,
-                        selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
-                    )
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        searchScreenVM.onNoteChangeClickForLinks(
+                            HomeScreenVM.tempImpLinkData.webURL,
+                            newNote,
+                            selectedLinkType = SearchScreenVM.selectedLinkType,
+                            folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
+                        )
+                    } else {
+                        updateVM.updateFolderNote(
+                            CollectionsScreenVM.selectedFolderData.value.id,
+                            newNote
+                        )
+                    }
                     shouldRenameDialogBoxAppear.value = false
                 },
-                renameDialogBoxFor = OptionsBtmSheetType.LINK,
+                renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onTitleChangeClick = { newTitle ->
-                    searchScreenVM.onTitleChangeClickForLinks(
-                        HomeScreenVM.tempImpLinkData.webURL,
-                        newTitle,
-                        selectedLinkType = SearchScreenVM.selectedLinkType,
-                        folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
-                    )
+                    if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                        searchScreenVM.onTitleChangeClickForLinks(
+                            HomeScreenVM.tempImpLinkData.webURL,
+                            newTitle,
+                            selectedLinkType = SearchScreenVM.selectedLinkType,
+                            folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
+                        )
+                    } else {
+                        updateVM.updateFolderName(
+                            CollectionsScreenVM.selectedFolderData.value.id,
+                            newTitle
+                        )
+                    }
                     shouldRenameDialogBoxAppear.value = false
                 }
             )
         )
+        val deleteVM: DeleteVM = viewModel()
         DeleteDialogBox(
             DeleteDialogBoxParam(
+                folderName = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName),
                 areFoldersSelectable = isSelectionModeEnabled.value,
                 shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-                deleteDialogBoxType = if (isSelectionModeEnabled.value) DataDialogBoxType.SELECTED_DATA else DataDialogBoxType.LINK,
+                deleteDialogBoxType = if (isSelectionModeEnabled.value) DataDialogBoxType.SELECTED_DATA else if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
                 onDeleteClick = {
                     if (!isSelectionModeEnabled.value) {
-                        searchScreenVM.onDeleteClick(
-                            context = context,
-                            selectedWebURL = selectedWebURL.value,
-                            shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
-                            selectedLinkType = SearchScreenVM.selectedLinkType,
-                            folderID = selectedFolderID
-                        )
+                        if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
+                            searchScreenVM.onDeleteClick(
+                                context = context,
+                                selectedWebURL = selectedWebURL.value,
+                                shouldDeleteBoxAppear = shouldDeleteDialogBoxAppear,
+                                selectedLinkType = SearchScreenVM.selectedLinkType,
+                                folderID = selectedFolderID
+                            )
+                        } else {
+                            deleteVM.onRegularFolderDeleteClick(CollectionsScreenVM.selectedFolderData.value.id)
+                        }
                     } else {
                         searchScreenVM.deleteSelectedHistoryLinks()
                         searchScreenVM.deleteSelectedArchivedLinks()
                         searchScreenVM.deleteSelectedImpLinksData()
                         searchScreenVM.deleteSelectedLinksTableData()
+                        searchScreenVM.onDeleteMultipleSelectedFolders()
+                        searchScreenVM.selectedFoldersData.clear()
                         searchScreenVM.selectedImportantLinksData.clear()
                         searchScreenVM.selectedLinksTableData.clear()
                         searchScreenVM.selectedArchiveLinksTableData.clear()
@@ -1436,6 +1488,7 @@ fun SearchScreen(navController: NavController) {
                 searchScreenVM.selectedLinksTableData.clear()
                 searchScreenVM.selectedArchiveLinksTableData.clear()
                 searchScreenVM.selectedHistoryLinksData.clear()
+                SearchScreenVM.selectedArchiveFoldersData.clear()
             } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                     popUpTo(0)

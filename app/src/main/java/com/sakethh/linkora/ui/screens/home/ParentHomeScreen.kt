@@ -261,7 +261,7 @@ fun ParentHomeScreen(navController: NavController) {
                 }, actions = {
                     if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size > 0) {
                         IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                            homeScreenVM.archiveMultipleFolders()
+                            homeScreenVM.archiveSelectedMultipleFolders()
                             homeScreenVM.moveMultipleLinksFromLinksTableToArchive()
                             homeScreenVM.moveSelectedSavedAndImpLinksToArchive()
                             homeScreenVM.selectedFoldersData.clear()

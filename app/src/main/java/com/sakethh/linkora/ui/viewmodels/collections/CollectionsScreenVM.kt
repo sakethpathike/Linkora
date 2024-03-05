@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
+import com.sakethh.linkora.ui.viewmodels.SearchScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.utils.DeleteAFolderFromShelf
@@ -64,12 +65,24 @@ open class CollectionsScreenVM : ViewModel() {
                     LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
                     DeleteAFolderFromShelf.execute(folder.id)
                 }
+            }, async {
+                SearchScreenVM.selectedArchiveFoldersData.toList().forEach { folder ->
+                    folder.childFolderIDs?.toTypedArray()
+                        ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
+                    folder.childFolderIDs?.toTypedArray()
+                        ?.let {
+                            LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
+                        }
+                    LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
+                    LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
+                    DeleteAFolderFromShelf.execute(folder.id)
+                }
             })
 
         }
     }
 
-    fun archiveMultipleFolders() {
+    fun archiveSelectedMultipleFolders() {
         viewModelScope.launch {
             LocalDataBase.localDB.updateDao()
                 .moveAMultipleFoldersToArchivesV10(selectedFoldersData.toList().map { it.id }

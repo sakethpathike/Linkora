@@ -35,6 +35,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         val focusRequester = FocusRequester()
         var selectedFolderID: Long = 0
         var selectedLinkID: Long = 0
+        val selectedArchiveFoldersData = mutableStateListOf<FoldersTable>()
     }
 
     private val _queriedUnarchivedFoldersData = MutableStateFlow(emptyList<FoldersTable>())
@@ -458,8 +459,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                         .renameALinkTitleFromRecentlyVisited(
                             webURL = webURL, newTitle = newTitle
                         )
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -468,24 +467,18 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     LocalDataBase.localDB.updateDao().renameALinkTitleFromSavedLinks(
                         webURL = webURL, newTitle = newTitle
                     )
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
                     updateVM.updateRegularLinkTitle(linkID, newTitle)
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
                     updateVM.updateImpLinkTitle(linkID, newTitle)
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -494,8 +487,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     LocalDataBase.localDB.updateDao().renameALinkTitleFromArchiveLinks(
                         webURL = webURL, newTitle = newTitle
                     )
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -505,8 +496,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                         .renameALinkTitleFromArchiveBasedFolderLinksV10(
                             webURL = webURL, newTitle = newTitle, folderID = folderID
                         )
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
         }
@@ -530,8 +519,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                         context, "deleted the link successfully", Toast.LENGTH_SHORT
                     ).show()
                 }
-            }.invokeOnCompletion {
-                retrieveQueryData(searchQuery.value)
             }
 
             SelectedLinkType.SAVED_LINKS -> {
@@ -545,8 +532,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -561,8 +546,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -577,8 +560,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -593,8 +574,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
 
@@ -610,8 +589,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             context, "deleted the link successfully", Toast.LENGTH_SHORT
                         ).show()
                     }
-                }.invokeOnCompletion {
-                    retrieveQueryData(searchQuery.value)
                 }
             }
         }

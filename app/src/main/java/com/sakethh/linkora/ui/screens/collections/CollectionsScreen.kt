@@ -193,7 +193,7 @@ fun CollectionsScreen(navController: NavController) {
                                 Icon(imageVector = Icons.Default.Delete, contentDescription = null)
                             }
                             IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                collectionsScreenVM.archiveMultipleFolders()
+                                collectionsScreenVM.archiveSelectedMultipleFolders()
                                 areFoldersSelectable.value = false
                                 collectionsScreenVM.areAllFoldersChecked.value = false
                                 collectionsScreenVM.changeAllFoldersSelectedData()
