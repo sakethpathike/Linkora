@@ -24,6 +24,9 @@
       <entry key="SearchScreen">
         <State />
       </entry>
+      <entry key="SettingsNewVersionCheckerDialogBox">
+        <State />
+      </entry>
       <entry key="app">
         <State>
           <targetsSelectedWithDialog>

@@ -43,6 +43,10 @@ import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashRe
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.ExportImpl
 import com.sakethh.linkora.utils.ImportImpl
+import io.ktor.client.HttpClient
+import io.ktor.client.request.get
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -50,7 +54,6 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
-import org.jsoup.Jsoup
 
 data class SettingsUIElement(
     val title: String,
@@ -762,7 +765,9 @@ class SettingsScreenVM(
             }
         }
 
+        val ktorClient = HttpClient()
         suspend fun latestAppVersionRetriever(context: Context) {
+            val serverConnection = ktorClient.get(VERSION_CHECK_URL)
             val rawData = try {
                 didServerTimeOutErrorOccurred.value = false
                 withContext(Dispatchers.Default) {
@@ -770,13 +775,19 @@ class SettingsScreenVM(
                         Toast.makeText(context, "checking for new updates", Toast.LENGTH_SHORT)
                             .show()
                     }
-                    Jsoup.connect(VERSION_CHECK_URL).get().body().ownText()
+                    if (serverConnection.status == HttpStatusCode.OK) {
+                        serverConnection.bodyAsText()
+                    } else {
+                        didServerTimeOutErrorOccurred.value = true
+                        ""
+                    }
                 }
             } catch (_: Exception) {
                 didServerTimeOutErrorOccurred.value = true
                 Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
                 ""
             }
+            ktorClient.close()
             val retrievedData = try {
                 Json.decodeFromString(rawData)
             } catch (_: Exception) {
