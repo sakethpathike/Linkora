@@ -620,7 +620,7 @@ class SettingsScreenVM(
         A_TO_Z, Z_TO_A, NEW_TO_OLD, OLD_TO_NEW
     }
 
-    object Settings {
+    object Settings : ViewModel() {
 
         val Context.dataStore by preferencesDataStore("linkoraDataStore")
 
@@ -654,13 +654,15 @@ class SettingsScreenVM(
             return dataStore.data.first()[preferenceKey]
         }
 
-        suspend fun <T> changeSettingPreferenceValue(
+        fun <T> changeSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
             newValue: T,
         ) {
-            dataStore.edit {
-                it[preferenceKey] = newValue
+            viewModelScope.launch {
+                dataStore.edit {
+                    it[preferenceKey] = newValue
+                }
             }
         }
 

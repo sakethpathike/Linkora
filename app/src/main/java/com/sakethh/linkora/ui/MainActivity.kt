@@ -182,9 +182,7 @@ class MainActivity : ComponentActivity() {
                             it == currentRoute
                         }) nonSpecificCollectionScreenBtmNavColor else specificCollectionScreenBtmNavColor
                 )
-                NewFeatureDialogBox(isDialogBoxVisible = rememberSaveable {
-                    mutableStateOf(isNewFeatureDialogBoxVisible.value)
-                })
+                NewFeatureDialogBox(isDialogBoxVisible = isNewFeatureDialogBoxVisible)
                 LaunchedEffect(key1 = Unit) {
                     SettingsScreenVM.Settings.deleteASettingPreference(
                         booleanPreferencesKey(

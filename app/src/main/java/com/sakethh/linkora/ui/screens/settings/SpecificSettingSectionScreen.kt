@@ -31,7 +31,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
-import androidx.compose.material.icons.outlined.Update
+import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -74,6 +75,7 @@ import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.NewFeatureDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.composables.ImportConflictBtmSheet
@@ -105,6 +107,9 @@ fun SpecificSettingSectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val isImportConflictBoxVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isNewFeatureDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
     val settingsScreenVM: SettingsScreenVM = viewModel()
@@ -236,7 +241,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         description = null,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowSystemTheme,
                                         onSwitchStateChange = {
-                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                                     preferenceKey = booleanPreferencesKey(
                                                         SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
@@ -244,6 +248,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                     dataStore = context.dataStore,
                                                     newValue = !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
                                                 )
+                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                         preferenceKey = booleanPreferencesKey(
@@ -266,7 +271,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         isSwitchNeeded = true,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldDarkThemeBeEnabled,
                                         onSwitchStateChange = {
-                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                                     preferenceKey = booleanPreferencesKey(
                                                         SettingsScreenVM.SettingsPreferences.DARK_THEME.name
@@ -274,6 +278,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                     dataStore = context.dataStore,
                                                     newValue = !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
                                                 )
+                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                         preferenceKey = booleanPreferencesKey(
@@ -296,7 +301,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         isSwitchNeeded = true,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowDynamicTheming,
                                         onSwitchStateChange = {
-                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                                     preferenceKey = booleanPreferencesKey(
                                                         SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
@@ -304,6 +308,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                     dataStore = context.dataStore,
                                                     newValue = !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
                                                 )
+                                            coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                         preferenceKey = booleanPreferencesKey(
@@ -337,13 +342,20 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                     modifier = Modifier.alignByBaseline()
                                 )
                             }
+                            SettingsAppInfoComponent(hasDescription = false,
+                                description = "",
+                                icon = Icons.Outlined.UnfoldMore,
+                                title = "What's New",
+                                onClick = {
+                                    isNewFeatureDialogBoxVisible.value = true
+                                })
                             if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
                                     context
                                 )
                             ) {
                                 SettingsAppInfoComponent(hasDescription = false,
                                     description = "",
-                                    icon = Icons.Outlined.Update,
+                                    icon = Icons.Outlined.Refresh,
                                     title = "Check for latest version",
                                     onClick = {
                                         shouldVersionCheckerDialogAppear.value = true
@@ -552,7 +564,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                     isSwitchNeeded = true,
                                     isSwitchEnabled = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled,
                                     onSwitchStateChange = {
-                                        coroutineScope.launch {
                                             SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                                 preferenceKey = booleanPreferencesKey(
                                                     SettingsScreenVM.SettingsPreferences.AUTO_CHECK_UPDATES.name
@@ -560,6 +571,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                 dataStore = context.dataStore,
                                                 newValue = it
                                             )
+                                        coroutineScope.launch {
                                             SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value =
                                                 SettingsScreenVM.Settings.readSettingPreferenceValue(
                                                     preferenceKey = booleanPreferencesKey(
@@ -726,6 +738,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                     ).show()
                 })
         )
+        NewFeatureDialogBox(isNewFeatureDialogBoxVisible)
     }
 }
 

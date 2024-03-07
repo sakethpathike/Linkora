@@ -42,7 +42,6 @@ import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.intPreferencesKey
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
@@ -146,13 +145,11 @@ fun NewFeatureDialogBox(isDialogBoxVisible: MutableState<Boolean> = mutableState
                     .fillMaxWidth()
                     .pulsateEffect(),
                 onClick = {
-                    coroutineScope.launch {
                         SettingsScreenVM.Settings.changeSettingPreferenceValue(
                             intPreferencesKey(
                                 SettingsScreenVM.SettingsPreferences.SAVED_APP_CODE.name
                             ), context.dataStore, SettingsScreenVM.APP_VERSION_CODE
                         )
-                    }
                     isDialogBoxVisible.value = false
                 }) {
                 Text(
