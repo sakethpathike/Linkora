@@ -54,7 +54,17 @@ suspend fun openInWeb(
             }
         }, async {
             if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value || forceOpenInExternalBrowser) {
-                uriHandler.openUri(recentlyVisitedData.webURL)
+                try {
+                    uriHandler.openUri(recentlyVisitedData.webURL)
+                } catch (_: android.content.ActivityNotFoundException) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(
+                            context,
+                            "No Activity found to handle Intent",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
             } else {
                 if ((Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && context.packageManager.getInstalledApplications(
                         0

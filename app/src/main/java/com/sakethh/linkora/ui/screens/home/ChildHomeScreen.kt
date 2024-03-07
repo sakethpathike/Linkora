@@ -369,7 +369,7 @@ fun ChildHomeScreen(
                                     CollectionsScreenVM.currentClickedFolderData.value =
                                         folderElement
                                     CollectionsScreenVM.rootFolderID = folderElement.id
-                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                 }
                             },
                             showMoreIcon = !homeScreenVM.isSelectionModeEnabled.value,

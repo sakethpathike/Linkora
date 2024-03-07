@@ -160,6 +160,24 @@ fun NewFeatureDialogBox(isDialogBoxVisible: MutableState<Boolean> = mutableState
                             modifier = Modifier.padding(end = 10.dp)
                         )
                     }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(
+                                start = 10.dp, end = 10.dp, top = 20.dp
+                            )
+                    ) {
+                        Text(text = "• ")
+                        Text(
+                            text = "Fixed known reported crashes.",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 18.sp,
+                            lineHeight = 24.sp,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                    }
                 }
             }, confirmButton = {
                 Button(

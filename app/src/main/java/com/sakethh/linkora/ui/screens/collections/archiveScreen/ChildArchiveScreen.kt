@@ -218,7 +218,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     it.archiveFolderName
                                 SpecificCollectionsScreenVM.screenType.value =
                                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                             })
                     }
                 }
@@ -265,7 +265,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                     SpecificCollectionsScreenVM.inARegularFolder.value = false
                                     SpecificCollectionsScreenVM.screenType.value =
                                         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                 }
                             }, onLongClick = {
                                 if (!archiveScreenVM.isSelectionModeEnabled.value) {

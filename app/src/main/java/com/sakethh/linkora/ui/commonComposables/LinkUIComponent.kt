@@ -195,7 +195,15 @@ fun LinkUIComponent(
                         modifier = Modifier
                             .clickable {
                                 linkUIComponentParam.onForceOpenInExternalBrowserClicked()
-                                localURIHandler.openUri(linkUIComponentParam.webURL)
+                                try {
+                                    localURIHandler.openUri(linkUIComponentParam.webURL)
+                                } catch (_: android.content.ActivityNotFoundException) {
+                                    Toast.makeText(
+                                        context,
+                                        "No Activity found to handle Intent",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
                             }
                     )
                     Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,

@@ -287,7 +287,7 @@ fun CollectionsScreen(navController: NavController) {
                                             onClick = {
                                                 SpecificCollectionsScreenVM.screenType.value =
                                                     SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                             },
                                             onLongClick = {
 
@@ -364,7 +364,7 @@ fun CollectionsScreen(navController: NavController) {
                                             onClick = {
                                                 SpecificCollectionsScreenVM.screenType.value =
                                                     SpecificScreenType.SAVED_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                             },
                                             onLongClick = {})
                                         .pulsateEffect()
@@ -483,7 +483,7 @@ fun CollectionsScreen(navController: NavController) {
                                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     CollectionsScreenVM.currentClickedFolderData.value = folderData
                                     CollectionsScreenVM.rootFolderID = folderData.id
-                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                 }
                             },
                             onLongClick = {

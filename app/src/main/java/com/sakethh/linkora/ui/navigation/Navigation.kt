@@ -28,7 +28,7 @@ fun MainNavigation(navController: NavHostController) {
         composable(route = NavigationRoutes.SETTINGS_SCREEN.name) {
             SettingsScreen(navController = navController)
         }
-        composable(route = NavigationRoutes.SPECIFIC_SCREEN.name) {
+        composable(route = NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name) {
             SpecificCollectionScreen(navController = navController)
         }
         composable(route = NavigationRoutes.ARCHIVE_SCREEN.name) {

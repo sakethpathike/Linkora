@@ -162,7 +162,11 @@ fun SpecificCollectionScreen(navController: NavController) {
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-            CollectionsScreenVM.currentClickedFolderData.value.folderName
+            try {
+                CollectionsScreenVM.currentClickedFolderData.value.folderName
+            } catch (_: java.lang.NullPointerException) {
+                ""
+            }
         }
 
         else -> {
@@ -573,7 +577,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         if (!areElementsSelectable.value) {
                                             CollectionsScreenVM.currentClickedFolderData.value =
                                                 folderData
-                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                         }
                                     }, onLongClick = {
                                         if (!areElementsSelectable.value) {
@@ -982,7 +986,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         if (!areElementsSelectable.value) {
                                             CollectionsScreenVM.currentClickedFolderData.value =
                                                 folderData
-                                            navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                         }
                                     })
                             }

@@ -434,7 +434,7 @@ fun SearchScreen(navController: NavController) {
                                                     CollectionsScreenVM.currentClickedFolderData.value =
                                                         folderData
                                                     CollectionsScreenVM.rootFolderID = folderData.id
-                                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                                 }
                                             },
                                             onLongClick = {
@@ -1097,7 +1097,7 @@ fun SearchScreen(navController: NavController) {
                                                     CollectionsScreenVM.currentClickedFolderData.value =
                                                         folderData
                                                     CollectionsScreenVM.rootFolderID = folderData.id
-                                                    navController.navigate(NavigationRoutes.SPECIFIC_SCREEN.name)
+                                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                                 }
                                             },
                                             onLongClick = {
