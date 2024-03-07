@@ -342,13 +342,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                     modifier = Modifier.alignByBaseline()
                                 )
                             }
-                            SettingsAppInfoComponent(hasDescription = false,
-                                description = "",
-                                icon = Icons.Outlined.UnfoldMore,
-                                title = "What's New",
-                                onClick = {
-                                    isNewFeatureDialogBoxVisible.value = true
-                                })
                             if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
                                     context
                                 )
@@ -472,6 +465,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                     }
                                 }
                             }
+                            SettingsAppInfoComponent(hasDescription = false,
+                                description = "",
+                                icon = Icons.Outlined.UnfoldMore,
+                                title = "What's New",
+                                onClick = {
+                                    isNewFeatureDialogBoxVisible.value = true
+                                })
                             HorizontalDivider(
                                 modifier = Modifier.padding(20.dp),
                                 thickness = 0.5.dp,

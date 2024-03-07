@@ -1,150 +1,171 @@
 package com.sakethh.linkora.ui.commonComposables
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.gestures.animateScrollBy
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.compose.ui.tooling.preview.PreviewScreenSizes
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.intPreferencesKey
+import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
+import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview
+@PreviewLightDark
+@PreviewScreenSizes
 @Composable
 fun NewFeatureDialogBox(isDialogBoxVisible: MutableState<Boolean> = mutableStateOf(true)) {
-    val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val selectedSearchFilters = remember {
-        mutableStateListOf<String>()
-    }
-    val state = rememberLazyListState()
-    val interacted = remember {
-        mutableStateOf(false)
-    }
     if (isDialogBoxVisible.value) {
-        AlertDialog(onDismissRequest = { }, title = {
-            Text(
-                text = "v0.5.0-alpha01", style = MaterialTheme.typography.titleMedium,
-                fontSize = 22.sp,
-                lineHeight = 27.sp,
-                textAlign = TextAlign.Start
-            )
-        }, text = {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Row(
+        LinkoraTheme {
+            AlertDialog(onDismissRequest = { }, title = {
+                Text(
+                    text = SettingsScreenVM.APP_VERSION_NAME,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 22.sp,
+                    lineHeight = 27.sp,
+                    textAlign = TextAlign.Start
+                )
+            }, text = {
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .wrapContentHeight()
-                        .padding(
-                            10.dp
-                        )
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    Text(text = "• ")
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(
+                                start = 10.dp, end = 10.dp, top = 10.dp
+                            )
+                    ) {
+                        Text(text = "• ")
+                        Text(
+                            text = buildAnnotatedString {
+                                append("A new option has been added to the ")
+                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("About")
+                                }
+                                append(" (")
+                                appendInlineContent("aboutIcon")
+                                append(") section in ")
+                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                    append("Settings")
+                                }
+                                append(" (     ")
+                                appendInlineContent("settingsIcon")
+                                append("     ), allowing you to easily check what's new in the current release you're using.\nTo access this feature, Tap on:")
+                            },
+                            inlineContent = mapOf(
+                                Pair("aboutIcon", InlineTextContent(
+                                    Placeholder(
+                                        22.sp, 22.sp, PlaceholderVerticalAlign.TextCenter
+                                    )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Info,
+                                        contentDescription = null
+                                    )
+                                }),
+                                Pair("settingsIcon", InlineTextContent(
+                                    Placeholder(
+                                        22.sp, 22.sp, PlaceholderVerticalAlign.TextCenter
+                                    )
+                                ) {
+                                    NavigationBarItem(selected = true, onClick = { }, icon = {
+                                        Icon(
+                                            imageVector = Icons.Default.Settings,
+                                            contentDescription = null
+                                        )
+                                    })
+                                }),
+                            ),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 18.sp,
+                            lineHeight = 28.sp,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
+                    }
+                    SettingsAppInfoComponent(paddingValues = PaddingValues(
+                        start = 20.dp, end = 20.dp, top = 10.dp
+                    ),
+                        hasDescription = false,
+                        description = "",
+                        icon = Icons.Outlined.UnfoldMore,
+                        title = "What's New",
+                        onClick = {})
                     Text(
                         text = buildAnnotatedString {
-                            append("Search has been improved! You can now filter out the links and folders you want based on your search.")
+                            append("in ")
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
+                                append("About")
+                            }
+                            append(".")
                         },
-                        style = MaterialTheme.typography.titleSmall,
+                        style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp,
                         lineHeight = 24.sp,
                         textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .padding(end = 10.dp)
+                        modifier = Modifier.padding(start = 20.dp, top = 10.dp)
                     )
 
-                }
-                LazyRow(
-                    Modifier
-                        .fillMaxWidth()
-                        .pointerInput(Unit) {
-                            detectDragGestures { change, _ ->
-                                change.consume()
-                                interacted.value = true
-                            }
-                        }, state = state
-                ) {
-                    items(
-                        listOf(
-                            "Saved Links",
-                            "Important Links",
-                            "Archived Links",
-                            "Folders",
-                            "Archived Folders",
-                            "Links from folders",
-                            "History"
-                        )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(
+                                start = 10.dp, end = 10.dp, top = 20.dp
+                            )
                     ) {
-                        Row(modifier = Modifier.animateContentSize()) {
-                            Spacer(modifier = Modifier.width(10.dp))
-                            androidx.compose.material3.FilterChip(selected = selectedSearchFilters.contains(
-                                it
-                            ), onClick = {
-                                if (selectedSearchFilters.contains(it)) {
-                                    selectedSearchFilters.remove(it)
-                                } else {
-                                    selectedSearchFilters.add(it)
-                                }
-                            }, label = {
-                                Text(
-                                    text = it, style = MaterialTheme.typography.titleSmall
-                                )
-                            }, leadingIcon = {
-                                if (selectedSearchFilters.contains(it)) {
-                                    Icon(
-                                        imageVector = Icons.Default.Check,
-                                        contentDescription = null
-                                    )
-                                }
-                            })
-                        }
+                        Text(text = "• ")
+                        Text(
+                            text = "A few minor UI improvements have been made in the Settings Screen and the Search Screen.",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 18.sp,
+                            lineHeight = 24.sp,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.padding(end = 10.dp)
+                        )
                     }
                 }
-            }
-        }, confirmButton = {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .pulsateEffect(),
-                onClick = {
+            }, confirmButton = {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .pulsateEffect(), onClick = {
                         SettingsScreenVM.Settings.changeSettingPreferenceValue(
                             intPreferencesKey(
                                 SettingsScreenVM.SettingsPreferences.SAVED_APP_CODE.name
@@ -152,26 +173,11 @@ fun NewFeatureDialogBox(isDialogBoxVisible: MutableState<Boolean> = mutableState
                         )
                     isDialogBoxVisible.value = false
                 }) {
-                Text(
-                    text = "Ok",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp
-                )
-            }
-        })
-        LaunchedEffect(key1 = interacted.value) {
-            var backIteration = false
-            while (!interacted.value) {
-                if (state.canScrollForward && !backIteration) {
-                    state.animateScrollBy(500f, animationSpec = tween(1500))
-                } else {
-                    backIteration = true
-                    state.animateScrollBy(-500f, animationSpec = tween(1500))
+                    Text(
+                        text = "Ok", style = MaterialTheme.typography.titleSmall, fontSize = 16.sp
+                    )
                 }
-                if (!state.canScrollBackward) {
-                    backIteration = false
-                }
-            }
+            })
         }
     }
 }
