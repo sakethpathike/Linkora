@@ -365,10 +365,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
                     SelectedLinkType.FOLDER_BASED_LINKS -> {
                         LocalDataBase.localDB.deleteDao()
-                            .deleteALinkFromSpecificFolderV10(
-                                folderID = folderID,
-                                webURL = HomeScreenVM.tempImpLinkData.webURL
-                            )
+                            .deleteALinkFromLinksTable(selectedLinkID)
                     }
 
                     SelectedLinkType.IMP_LINKS -> {
@@ -537,9 +534,7 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromSpecificFolderV10(
-                        webURL = selectedWebURL, folderID = folderID
-                    )
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(selectedLinkID)
                     shouldDeleteBoxAppear.value = false
                     withContext(Dispatchers.Main) {
                         Toast.makeText(

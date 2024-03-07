@@ -13,6 +13,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -176,9 +177,7 @@ fun SearchScreen(navController: NavController) {
                 modifier = Modifier
                     .animateContentSize()
                     .padding(
-                        top = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
-                        start = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
-                        end = if (!SearchScreenVM.isSearchEnabled.value) 10.dp else 0.dp,
+                        if (!isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) 15.dp else 0.dp
                     )
                     .fillMaxWidth()
                     .then(
@@ -203,8 +202,10 @@ fun SearchScreen(navController: NavController) {
                 },
                 placeholder = {
                     Text(
-                        text = "Search titles to find links",
-                        style = MaterialTheme.typography.titleSmall
+                        text = "Search titles to find links and folders",
+                        style = MaterialTheme.typography.titleSmall,
+                        modifier = Modifier.basicMarquee(),
+                        maxLines = 1
                     )
                 },
                 content = {
@@ -1209,19 +1210,30 @@ fun SearchScreen(navController: NavController) {
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 20.sp,
                                     modifier = Modifier.padding(
-                                        start = 15.dp,
-                                        top = if (historyLinksData.isNotEmpty()) 0.dp else 11.dp
+                                        start = 15.dp
                                     )
                                 )
                             }
-                            if (historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
-                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                    shouldSortingBottomSheetAppear.value = true
+                            if (!isSelectionModeEnabled.value) {
+                                IconButton(
+                                    modifier = if (historyLinksData.isNotEmpty()) Modifier
+                                        .clickable(
+                                            onClick = {},
+                                            indication = null,
+                                            interactionSource = remember {
+                                                MutableInteractionSource()
+                                            })
+                                        .pulsateEffect() else Modifier, onClick = {
+                                        if (historyLinksData.isNotEmpty()) {
+                                            shouldSortingBottomSheetAppear.value = true
+                                        }
                                 }) {
-                                    Icon(
-                                        imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                        contentDescription = null
-                                    )
+                                    if (historyLinksData.isNotEmpty()) {
+                                        Icon(
+                                            imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                            contentDescription = null
+                                        )
+                                    }
                                 }
                             } else if (isSelectionModeEnabled.value) {
                                 Row {
@@ -1487,6 +1499,15 @@ fun SearchScreen(navController: NavController) {
         when {
             SearchScreenVM.isSearchEnabled.value -> {
                 SearchScreenVM.isSearchEnabled.value = false
+                if (isSelectionModeEnabled.value) {
+                    searchScreenVM.selectedFoldersData.clear()
+                    searchScreenVM.selectedImportantLinksData.clear()
+                    searchScreenVM.selectedLinksTableData.clear()
+                    searchScreenVM.selectedArchiveLinksTableData.clear()
+                    searchScreenVM.selectedHistoryLinksData.clear()
+                    SearchScreenVM.selectedArchiveFoldersData.clear()
+                    isSelectionModeEnabled.value = false
+                }
             }
 
             else -> if (isSelectionModeEnabled.value) {
