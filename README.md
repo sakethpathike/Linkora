@@ -32,14 +32,14 @@ Linkora is an Android project that focuses on making link organization simpler. 
 
 ## Releases
 
-The latest release of Linkora (v0.5.0-alpha01) is available
-on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha01).
+The latest release of Linkora (v0.5.0-alpha02) is available
+on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha02).
 You can download the APK file from there;
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha01/Linkora-v0.5.0-alpha01.apk).
+or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha02/Linkora-v0.5.0-alpha02.apk).
 
-[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0-alpha01%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0-alpha01%2FLinkora-v0.5.0-alpha01.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha01/Linkora-v0.5.0-alpha01.apk)
+[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0-alpha02%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0-alpha02%2FLinkora-v0.5.0-alpha02.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha02/Linkora-v0.5.0-alpha02.apk)
 
-[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0-alpha01%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0-alpha01">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha01)
+[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0-alpha02%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0-alpha02">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha02)
 
 ## Screenshots
 
@@ -81,7 +81,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                       Settings Screen                                                        |                                                       Settings Screen                                                        |
 |:----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------:|
-| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/b04b8db7-4662-4ffc-ad68-787754d7d8d2) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a38aa3f9-cc21-487a-a71e-581128ff9ed7) |
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/8c94764c-b73b-4b9e-99d2-96c65144d5f0) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a38aa3f9-cc21-487a-a71e-581128ff9ed7) |
 
 ### Sharing from other apps
 
