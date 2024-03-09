@@ -11,49 +11,48 @@ import org.jsoup.Jsoup
 data class LinkDataExtractor(
     val baseURL: String,
     val imgURL: String,
-    val title: String,
-    val errorInGivenURL: Boolean,
+    val title: String
 )
 
-suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
-    var errorInGivenURL = false
+suspend fun linkDataExtractor(context: Context, webURL: String): LinkDataExtractorResult {
+    if (!isNetworkAvailable(context)) {
+        return LinkDataExtractorResult.Failure.NoInternetConnection
+    }
     val urlHost =
         try {
-            errorInGivenURL = false
             webURL.split("/")[2]
         } catch (_: Exception) {
-            errorInGivenURL = true
-            ""
+            return LinkDataExtractorResult.Failure.InvalidURL
         }
-    val imgURL = withContext(Dispatchers.IO) {
+    val (imgURL, title) = withContext(Dispatchers.IO) {
         try {
-            return@withContext Jsoup.connect(webURL).get().head()
+            val jsonDoc = Jsoup.connect(webURL).get()
+            val imgURL = jsonDoc.head()
                 .select("link[href~=.*\\.ico]").first()
                 ?.attr("href").toString()
+            val title = jsonDoc.title()
+            Pair(imgURL, title)
         } catch (e: Exception) {
-            return@withContext ""
+            Pair("", "")
         }
     }
-    val title = withContext(Dispatchers.IO) {
-        try {
-            Jsoup.connect(webURL).get().title()
-        } catch (e: Exception) {
-            "Couldn't fetch title"
-        }
+    return LinkDataExtractorResult.Success(LinkDataExtractor(baseURL = urlHost, imgURL, title))
+}
+
+sealed class LinkDataExtractorResult {
+    data class Success(val linkDataExtractor: LinkDataExtractor) :
+        LinkDataExtractorResult()
+
+    sealed class Failure(val errorMsg: String) : LinkDataExtractorResult() {
+        data object InvalidURL : Failure("Invalid URL")
+        data object NoInternetConnection : Failure("network error, title and image couldn't detect")
     }
-    return LinkDataExtractor(
-        baseURL = urlHost,
-        imgURL = imgURL,
-        title = title,
-        errorInGivenURL = errorInGivenURL
-    )
 }
 
 fun isNetworkAvailable(context: Context): Boolean {
-    var result = false
     val connectivityManager =
         context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
-    result = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
         val networkCapabilities = connectivityManager.activeNetwork ?: return false
         val activeNetwork =
             connectivityManager.getNetworkCapabilities(networkCapabilities) ?: return false
@@ -66,5 +65,4 @@ fun isNetworkAvailable(context: Context): Boolean {
     } else {
         connectivityManager.activeNetworkInfo != null && connectivityManager.activeNetworkInfo!!.isConnectedOrConnecting
     }
-    return result
 }

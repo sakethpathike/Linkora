@@ -11,6 +11,7 @@ import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
+import com.sakethh.linkora.utils.LinkDataExtractorResult
 import com.sakethh.linkora.utils.isNetworkAvailable
 import com.sakethh.linkora.utils.linkDataExtractor
 import kotlinx.coroutines.Dispatchers
@@ -122,43 +123,42 @@ class UpdateVM : ViewModel() {
                     }.invokeOnCompletion {
                         onTaskCompleted()
                     }
-                } else if (try {
-                        importantLinks.webURL.split("/")[2]
-                        false
-                    } catch (_: Exception) {
-                        true
-                    }
-                ) {
-                    viewModelScope.launch {
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT).show()
-                        }
-                    }.invokeOnCompletion {
-                        onTaskCompleted()
-                    }
                 } else {
                     viewModelScope.launch {
                         val linkDataExtractor =
-                            linkDataExtractor(importantLinks.webURL)
-                        val linksData = ImportantLinks(
-                            title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else importantLinks.title,
-                            webURL = importantLinks.webURL,
-                            baseURL = linkDataExtractor.baseURL,
-                            imgURL = linkDataExtractor.imgURL,
-                            infoForSaving = importantLinks.infoForSaving
-                        )
-                        LocalDataBase.localDB.createDao()
-                            .addANewLinkToImpLinks(importantLinks = linksData)
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context,
-                                "added the link to Important Links",
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
+                            linkDataExtractor(context, importantLinks.webURL)
+                        when (linkDataExtractor) {
+                            is LinkDataExtractorResult.Failure.InvalidURL -> {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(context, "invalid url", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                                onTaskCompleted()
+                            }
+
+                            is LinkDataExtractorResult.Success -> {
+                                val linksData = ImportantLinks(
+                                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else importantLinks.title,
+                                    webURL = importantLinks.webURL,
+                                    baseURL = linkDataExtractor.linkDataExtractor.baseURL,
+                                    imgURL = linkDataExtractor.linkDataExtractor.imgURL,
+                                    infoForSaving = importantLinks.infoForSaving
+                                )
+                                LocalDataBase.localDB.createDao()
+                                    .addANewLinkToImpLinks(importantLinks = linksData)
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        "added the link to Important Links",
+                                        Toast.LENGTH_SHORT
+                                    )
+                                        .show()
+                                }
+                                onTaskCompleted()
+                            }
+
+                            LinkDataExtractorResult.Failure.NoInternetConnection -> TODO()
                         }
-                    }.invokeOnCompletion {
-                        onTaskCompleted()
                     }
                 }
             }
