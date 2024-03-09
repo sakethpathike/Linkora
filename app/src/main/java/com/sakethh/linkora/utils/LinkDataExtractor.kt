@@ -43,7 +43,7 @@ sealed class LinkDataExtractorResult {
     data class Success(val linkDataExtractor: LinkDataExtractor) :
         LinkDataExtractorResult()
 
-    sealed class Failure(val errorMsg: String) : LinkDataExtractorResult() {
+    sealed class Failure(val failureMsg: String) : LinkDataExtractorResult() {
         data object InvalidURL : Failure("Invalid URL")
         data object NoInternetConnection : Failure("network error, title and image couldn't detect")
     }

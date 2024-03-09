@@ -1,4 +1,4 @@
-package com.sakethh.linkora.localDB.commonVMs
+package com.sakethh.linkora.ui.viewmodels.localDB
 
 import android.content.Context
 import android.widget.Toast
@@ -12,8 +12,6 @@ import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.Shelf
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.utils.LinkDataExtractorResult
-import com.sakethh.linkora.utils.LinkDataExtractor
-import com.sakethh.linkora.utils.isNetworkAvailable
 import com.sakethh.linkora.utils.linkDataExtractor
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -46,71 +44,71 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
-        viewModelScope.launch {
-            val doesThisLinkExists = async {
-                LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
-                    webURL
-                )
-            }.await()
-            when (doesThisLinkExists) {
-                true -> {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "given link already exists in the \"Important Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
+        try {
+            viewModelScope.launch {
+                val doesThisLinkExists = async {
+                    LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
+                        webURL
+                    )
+                }.await()
+                when (doesThisLinkExists) {
+                    true -> {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "given link already exists in the \"Important Links\"",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }
 
-                else -> {
-                    val linkDataExtractor = async {
-                        if (isNetworkAvailable(context)) {
-                            linkDataExtractor(context, webURL)
-                        } else {
-                            if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) {
-                                viewModelScope.launch {
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(
-                                            context,
-                                            "network error, title and image couldn't detect",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
+                    else -> {
+                        when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
+                            is LinkDataExtractorResult.Failure.InvalidURL -> {
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        linkDataExtractor.failureMsg,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             }
-                            LinkDataExtractorResult.Failure.InvalidURL
-                        }
-                    }.await()
-                    when (linkDataExtractor) {
-                        is LinkDataExtractorResult.Failure.InvalidURL -> {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    LinkDataExtractorResult.Failure.InvalidURL.errorMsg,
-                                    Toast.LENGTH_SHORT
+
+                            is LinkDataExtractorResult.Failure.NoInternetConnection -> {
+                                LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
+                                    importantLinks = ImportantLinks(
+                                        title = "",
+                                        webURL = webURL,
+                                        baseURL = webURL,
+                                        imgURL = "",
+                                        infoForSaving = noteForSaving
+                                    )
                                 )
-                                    .show()
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        linkDataExtractor.failureMsg,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
+
+                            is LinkDataExtractorResult.Success -> {
+                                LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
+                                    importantLinks = ImportantLinks(
+                                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title,
+                                        webURL = webURL,
+                                        baseURL = webURL,
+                                        imgURL = linkDataExtractor.linkDataExtractor.imgURL,
+                                        infoForSaving = noteForSaving
+                                    )
+                                )
                             }
                         }
-
-                        is LinkDataExtractorResult.Success -> {
-                            LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
-                                importantLinks = ImportantLinks(
-                                    title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title,
-                                    webURL = webURL,
-                                    baseURL = webURL,
-                                    imgURL = linkDataExtractor.linkDataExtractor.imgURL,
-                                    infoForSaving = noteForSaving
-                                )
-                            )
-                        }
-
-                        LinkDataExtractorResult.Failure.NoInternetConnection -> TODO()
                     }
                 }
             }
-        }.invokeOnCompletion {
+        } finally {
             onTaskCompleted()
         }
     }
@@ -123,67 +121,44 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
-        viewModelScope.launch {
-            val doesThisLinkExists = LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
-                webURL
-            )
-            if (doesThisLinkExists) {
-                viewModelScope.launch {
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context,
-                            "given link already exists in the \"Saved Links\"",
-                            Toast.LENGTH_SHORT
-                        ).show()
+        try {
+            viewModelScope.launch {
+                val doesThisLinkExists = async {
+                    LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
+                        webURL
+                    )
+                }.await()
+                when (doesThisLinkExists) {
+                    true -> {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                "given link already exists in the \"Saved Links\"",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
                     }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            } else {
-                viewModelScope.launch {
-                    val linkDataExtractor = if (isNetworkAvailable(context)) {
-                        linkDataExtractor(context, webURL)
-                    } else {
-                        if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) {
-                            viewModelScope.launch {
+
+                    else -> {
+                        when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
+                            is LinkDataExtractorResult.Failure.InvalidURL -> {
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
                                         context,
-                                        "network error, title and image couldn't detect",
+                                        linkDataExtractor.failureMsg,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
                             }
-                        }
-                        LinkDataExtractorResult.Success(
-                            LinkDataExtractor(
-                                baseURL = webURL,
-                                imgURL = "",
-                                title = ""
-                            )
-                        )
-                    }
-                    when (linkDataExtractor) {
-                        is LinkDataExtractorResult.Failure.InvalidURL -> {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(
-                                    context,
-                                    linkDataExtractor.errorMsg,
-                                    Toast.LENGTH_SHORT
-                                )
-                                    .show()
-                            }
-                        }
 
-                        is LinkDataExtractorResult.Success -> {
-                            if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title.let {
+                            is LinkDataExtractorResult.Failure.NoInternetConnection -> {
                                 LocalDataBase.localDB.createDao()
                                     .addANewLinkToSavedLinksOrInFolders(
                                         LinksTable(
-                                            title = it,
+                                            title = "",
                                             webURL = webURL,
-                                            baseURL = it,
-                                            imgURL = it,
+                                            baseURL = webURL,
+                                            imgURL = "",
                                             infoForSaving = noteForSaving,
                                             isLinkedWithSavedLinks = true,
                                             isLinkedWithFolders = false,
@@ -194,19 +169,43 @@ class CreateVM : ViewModel() {
                                             keyOfArchiveLinkedFolderV10 = 0
                                         )
                                     )
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        context,
+                                        linkDataExtractor.failureMsg,
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+
+                            }
+
+                            is LinkDataExtractorResult.Success -> {
+                                if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title.let {
+                                    LocalDataBase.localDB.createDao()
+                                        .addANewLinkToSavedLinksOrInFolders(
+                                            LinksTable(
+                                                title = it,
+                                                webURL = webURL,
+                                                baseURL = it,
+                                                imgURL = it,
+                                                infoForSaving = noteForSaving,
+                                                isLinkedWithSavedLinks = true,
+                                                isLinkedWithFolders = false,
+                                                keyOfLinkedFolderV10 = 0,
+                                                isLinkedWithImpFolder = false,
+                                                keyOfImpLinkedFolder = "",
+                                                isLinkedWithArchivedFolder = false,
+                                                keyOfArchiveLinkedFolderV10 = 0
+                                            )
+                                        )
+                                }
                             }
                         }
-
-                        LinkDataExtractorResult.Failure.NoInternetConnection -> TODO()
                     }
-
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
                 }
             }
+        } finally {
+            onTaskCompleted()
         }
     }
 
@@ -241,7 +240,7 @@ class CreateVM : ViewModel() {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
-                                    LinkDataExtractorResult.Failure.InvalidURL.errorMsg,
+                                    LinkDataExtractorResult.Failure.InvalidURL.failureMsg,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -290,7 +289,7 @@ class CreateVM : ViewModel() {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
-                                    LinkDataExtractorResult.Failure.NoInternetConnection.errorMsg,
+                                    LinkDataExtractorResult.Failure.NoInternetConnection.failureMsg,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
