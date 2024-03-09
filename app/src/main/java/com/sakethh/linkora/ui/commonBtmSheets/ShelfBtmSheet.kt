@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.commonBtmSheets
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
@@ -39,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -70,6 +72,8 @@ import com.sakethh.linkora.ui.viewmodels.localDB.CreateVM
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,6 +87,15 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         mutableStateOf(false)
     }
     val createVM: CreateVM = viewModel()
+    val context = LocalContext.current
+    LaunchedEffect(key1 = createVM.showToast.value.first) {
+        if (createVM.showToast.value.first) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, createVM.showToast.value.second, Toast.LENGTH_SHORT).show()
+            }
+            createVM.showToast.value = false to ""
+        }
+    }
     val deleteVM: DeleteVM = viewModel()
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
@@ -265,7 +278,6 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             }
         }
     }
-    val localContext = LocalContext.current
     AddANewShelfDialogBox(
         addANewShelfDTO = AddANewShelfDTO(
             isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
@@ -275,7 +287,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         shelfName = shelfName,
                         shelfIconName = shelfIconName,
                         folderIds = emptyList()
-                    ), context = localContext
+                    )
                 )
             })
     )

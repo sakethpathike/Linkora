@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.collections
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -53,6 +54,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -103,10 +105,12 @@ import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.viewmodels.localDB.CreateVM
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState", "LongLogTag")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -620,6 +624,15 @@ fun CollectionsScreen(navController: NavController) {
             mutableStateOf(false)
         }
         val createVM: CreateVM = viewModel()
+        LaunchedEffect(key1 = createVM.showToast.value.first) {
+            if (createVM.showToast.value.first) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, createVM.showToast.value.second, Toast.LENGTH_SHORT)
+                        .show()
+                }
+                createVM.showToast.value = false to ""
+            }
+        }
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,

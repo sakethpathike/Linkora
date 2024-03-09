@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.home
 
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -65,6 +66,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -116,10 +118,12 @@ import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
 import com.sakethh.linkora.ui.viewmodels.localDB.CreateVM
 import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.roundToInt
 
 @OptIn(
@@ -131,6 +135,15 @@ fun ParentHomeScreen(navController: NavController) {
     val homeScreenVM: HomeScreenVM = viewModel()
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
     val createVM: CreateVM = viewModel()
+    val context = LocalContext.current
+    LaunchedEffect(key1 = createVM.showToast.value.first) {
+        if (createVM.showToast.value.first) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, createVM.showToast.value.second, Toast.LENGTH_SHORT).show()
+            }
+            createVM.showToast.value = false to ""
+        }
+    }
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)

@@ -1,8 +1,10 @@
 package com.sakethh.linkora.ui
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
@@ -12,6 +14,8 @@ import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.localDB.CreateVM
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 class IntentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,6 +26,15 @@ class IntentActivity : ComponentActivity() {
             }
             val createVM: CreateVM = viewModel()
             val context = LocalContext.current
+            LaunchedEffect(key1 = createVM.showToast.value.first) {
+                if (createVM.showToast.value.first) {
+                    withContext(Dispatchers.Main) {
+                        Toast.makeText(context, createVM.showToast.value.second, Toast.LENGTH_SHORT)
+                            .show()
+                    }
+                    createVM.showToast.value = false to ""
+                }
+            }
             val isDataExtractingForTheLink = rememberSaveable {
                 mutableStateOf(false)
             }
