@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 data class MutableImportantLinks(
@@ -159,7 +160,6 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
-    // ::
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
         folderID: Long,
@@ -167,170 +167,161 @@ open class SpecificCollectionsScreenVM(
         isFoldersSortingSelected: Boolean = false,
         isLinksSortingSelected: Boolean = false
     ) {
-        when (screenType) {
-            SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                val sortedData = when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> LocalDataBase.localDB.savedLinksSorting()
-                        .sortByAToZ()
-
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> LocalDataBase.localDB.savedLinksSorting()
-                        .sortByZToA()
-
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> LocalDataBase.localDB.savedLinksSorting()
-                        .sortByLatestToOldest()
-
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> LocalDataBase.localDB.savedLinksSorting()
-                        .sortByOldestToLatest()
-                }
-                viewModelScope.launch {
-                    sortedData.collectLatest {
-                        _savedLinksData.emit(it)
+        val sortedData = sortData(
+            sortingPreferences = sortingPreferences,
+            folderID = folderID,
+            screenType = screenType
+        )
+        viewModelScope.launch {
+            applySortedData(
+                isLinksSortingSelected = isLinksSortingSelected,
+                isFoldersSortingSelected = isFoldersSortingSelected,
+                sortedLinksTableDataFlow = {
+                    when (sortedData) {
+                        is SortingData.FoldersDataSorting -> sortedData.folderLinksData
+                        is SortingData.SavedLinksSorting -> sortedData.data
+                        else -> flow { }
                     }
-                }
-            }
-
-            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                val sortedData = when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> LocalDataBase.localDB.importantLinksSorting()
-                        .sortByAToZ()
-
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> LocalDataBase.localDB.importantLinksSorting()
-                        .sortByZToA()
-
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> LocalDataBase.localDB.importantLinksSorting()
-                        .sortByLatestToOldest()
-
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> LocalDataBase.localDB.importantLinksSorting()
-                        .sortByOldestToLatest()
-                }
-                viewModelScope.launch {
-                    sortedData.collectLatest {
-                        _impLinksData.emit(it)
+                },
+                sortedFoldersDataFlow = {
+                    if (sortedData is SortingData.FoldersDataSorting) {
+                        sortedData.childFoldersData
+                    } else {
+                        flow {}
                     }
-                }
-            }
-
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                val (sortedLinks, sortedFolders) = when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        Pair(
-                            LocalDataBase.localDB.archivedFolderLinksSorting()
-                                .sortLinksByAToZV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
+                },
+                sortedLinksDataEmit = if (screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) _folderLinksData else _savedLinksData,
+                sortedFoldersDataEmit = _childFoldersData,
+                sortedImpLinksTableDataFlow = {
+                    when (sortedData) {
+                        is SortingData.ImportantLinksSorting -> sortedData.data
+                        else -> flow { }
                     }
-
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        Pair(
-                            LocalDataBase.localDB.archivedFolderLinksSorting()
-                                .sortLinksByAToZV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        Pair(
-                            LocalDataBase.localDB.archivedFolderLinksSorting()
-                                .sortLinksByAToZV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        Pair(
-                            LocalDataBase.localDB.archivedFolderLinksSorting()
-                                .sortLinksByAToZV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-                }
-                viewModelScope.launch {
-                    applySortedData(
-                        isLinksSortingSelected = isLinksSortingSelected,
-                        isFoldersSortingSelected = isFoldersSortingSelected,
-                        sortedLinksDataFlow = { sortedLinks },
-                        sortedFoldersDataFlow = { sortedFolders },
-                        sortedLinksDataEmit = _archiveFolderLinksData,
-                        sortedFoldersDataEmit = _archiveSubFolderData
-                    )
-                }
-            }
-
-            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                val (sortedLinks, sortedFolders) = when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        Pair(
-                            LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByZToAV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        Pair(
-                            LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByAToZV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        Pair(
-                            LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByLatestToOldestV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        Pair(
-                            LocalDataBase.localDB.regularFolderLinksSorting()
-                                .sortByOldestToLatestV10(folderID),
-                            LocalDataBase.localDB.subFoldersSortingDao()
-                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                        )
-                    }
-                }
-                viewModelScope.launch {
-                    applySortedData(
-                        isLinksSortingSelected = isLinksSortingSelected,
-                        isFoldersSortingSelected = isFoldersSortingSelected,
-                        sortedLinksDataFlow = { sortedLinks },
-                        sortedFoldersDataFlow = { sortedFolders },
-                        sortedLinksDataEmit = _folderLinksData,
-                        sortedFoldersDataEmit = _childFoldersData
-                    )
-                }
-            }
-
-            else -> {}
+                },
+                sortedImpLinksDataEmit = _impLinksData,
+            )
         }
     }
 
-    private suspend inline fun <T1, T2> applySortedData(
+    private sealed class SortingData {
+        class SavedLinksSorting(val data: Flow<List<LinksTable>>) :
+            SortingData()
+
+        class ImportantLinksSorting(val data: Flow<List<ImportantLinks>>) :
+            SortingData()
+
+        class FoldersDataSorting(
+            val folderLinksData: Flow<List<LinksTable>>,
+            val childFoldersData: Flow<List<FoldersTable>>
+        ) : SortingData()
+
+        data object Other : SortingData()
+    }
+
+    private fun sortData(
+        sortingPreferences: SettingsScreenVM.SortingPreferences,
+        folderID: Long,
+        screenType: SpecificScreenType
+    ) = when (sortingPreferences) {
+        SettingsScreenVM.SortingPreferences.A_TO_Z -> when (screenType) {
+            SpecificScreenType.SAVED_LINKS_SCREEN -> SortingData.SavedLinksSorting(
+                LocalDataBase.localDB.savedLinksSorting().sortByAToZ()
+            )
+
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingData.ImportantLinksSorting(
+                LocalDataBase.localDB.importantLinksSorting()
+                    .sortByAToZ()
+            )
+
+            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingData.FoldersDataSorting(
+                LocalDataBase.localDB.regularFolderLinksSorting()
+                    .sortByAToZV10(folderID),
+                LocalDataBase.localDB.subFoldersSortingDao()
+                    .sortSubFoldersByAToZ(folderID)
+            )
+
+            else -> SortingData.Other
+            }
+
+        SettingsScreenVM.SortingPreferences.Z_TO_A -> when (screenType) {
+            SpecificScreenType.SAVED_LINKS_SCREEN -> SortingData.SavedLinksSorting(
+                LocalDataBase.localDB.savedLinksSorting().sortByZToA()
+            )
+
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingData.ImportantLinksSorting(
+                LocalDataBase.localDB.importantLinksSorting()
+                    .sortByZToA()
+            )
+
+            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingData.FoldersDataSorting(
+                LocalDataBase.localDB.regularFolderLinksSorting()
+                    .sortByZToAV10(folderID),
+                LocalDataBase.localDB.subFoldersSortingDao()
+                    .sortSubFoldersByZToA(folderID)
+            )
+
+            else -> SortingData.Other
+        }
+
+        SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> when (screenType) {
+            SpecificScreenType.SAVED_LINKS_SCREEN -> SortingData.SavedLinksSorting(
+                LocalDataBase.localDB.savedLinksSorting().sortByLatestToOldest()
+            )
+
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingData.ImportantLinksSorting(
+                LocalDataBase.localDB.importantLinksSorting()
+                    .sortByLatestToOldest()
+            )
+
+            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingData.FoldersDataSorting(
+                LocalDataBase.localDB.regularFolderLinksSorting()
+                    .sortByLatestToOldestV10(folderID),
+                LocalDataBase.localDB.subFoldersSortingDao()
+                    .sortSubFoldersByLatestToOldest(folderID)
+            )
+
+            else -> SortingData.Other
+        }
+
+        SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> when (screenType) {
+            SpecificScreenType.SAVED_LINKS_SCREEN -> SortingData.SavedLinksSorting(
+                LocalDataBase.localDB.savedLinksSorting().sortByOldestToLatest()
+            )
+
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> SortingData.ImportantLinksSorting(
+                LocalDataBase.localDB.importantLinksSorting()
+                    .sortByOldestToLatest()
+            )
+
+            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingData.FoldersDataSorting(
+                LocalDataBase.localDB.regularFolderLinksSorting()
+                    .sortByOldestToLatestV10(folderID),
+                LocalDataBase.localDB.subFoldersSortingDao()
+                    .sortSubFoldersByOldestToLatest(folderID)
+            )
+
+            else -> SortingData.Other
+        }
+        }
+
+    // ::
+    private suspend inline fun <LinksTable, FoldersTable, ImportantLinksTable> applySortedData(
         isLinksSortingSelected: Boolean,
         isFoldersSortingSelected: Boolean,
-        sortedLinksDataFlow: () -> Flow<List<T1>>,
-        sortedFoldersDataFlow: () -> Flow<List<T2>>,
-        sortedLinksDataEmit: MutableStateFlow<List<T1>>,
-        sortedFoldersDataEmit: MutableStateFlow<List<T2>>,
+        sortedData: SortingData
     ) {
         if (isLinksSortingSelected) {
-            sortedLinksDataFlow().collectLatest {
-                sortedLinksDataEmit.emit(it)
+            sortedLinksTableDataFlow()?.collectLatest {
+                sortedLinksDataEmit?.emit(it)
             }
         }
         if (isFoldersSortingSelected) {
-            sortedFoldersDataFlow().collectLatest {
-                sortedFoldersDataEmit.emit(it)
+            sortedFoldersDataFlow()?.collectLatest {
+                sortedFoldersDataEmit?.emit(it)
             }
+        }
+        sortedImpLinksTableDataFlow()?.collectLatest {
+            sortedImpLinksDataEmit?.emit(it)
         }
     }
 
