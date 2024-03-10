@@ -222,24 +222,13 @@ class CreateVM : ViewModel() {
                         }
 
                         LinkDataExtractorResult.Failure.NoInternetConnection -> {
-                            LocalDataBase.localDB.createDao()
-                                .addANewLinkToSavedLinksOrInFolders(
-                                    LinksTable(
-                                        title = title,
-                                        webURL = webURL,
-                                        baseURL = webURL,
-                                        imgURL = "",
-                                        infoForSaving = noteForSaving,
-                                        isLinkedWithSavedLinks = false,
-                                        isLinkedWithFolders = true,
-                                        keyOfLinkedFolderV10 = parentFolderID,
-                                        keyOfLinkedFolder = folderName,
-                                        isLinkedWithImpFolder = false,
-                                        isLinkedWithArchivedFolder = false,
-                                        keyOfArchiveLinkedFolderV10 = 0,
-                                        keyOfImpLinkedFolder = ""
-                                    )
-                                )
+                            addLinkToAFolderWithoutFetchingData(
+                                title,
+                                webURL,
+                                noteForSaving,
+                                parentFolderID,
+                                folderName
+                            )
                             _showToast.value =
                                 true to LinkDataExtractorResult.Failure.NoInternetConnection.failureMsg
                         }
@@ -250,6 +239,32 @@ class CreateVM : ViewModel() {
             }
     }
 
+    private suspend fun addLinkToAFolderWithoutFetchingData(
+        title: String,
+        webURL: String,
+        noteForSaving: String,
+        parentFolderID: Long,
+        folderName: String
+    ) {
+        LocalDataBase.localDB.createDao()
+            .addANewLinkToSavedLinksOrInFolders(
+                LinksTable(
+                    title = title,
+                    webURL = webURL,
+                    baseURL = webURL,
+                    imgURL = "",
+                    infoForSaving = noteForSaving,
+                    isLinkedWithSavedLinks = false,
+                    isLinkedWithFolders = true,
+                    keyOfLinkedFolderV10 = parentFolderID,
+                    keyOfLinkedFolder = folderName,
+                    isLinkedWithImpFolder = false,
+                    isLinkedWithArchivedFolder = false,
+                    keyOfArchiveLinkedFolderV10 = 0,
+                    keyOfImpLinkedFolder = ""
+                )
+            )
+    }
     fun createANewFolder(
         infoForSaving: String,
         onTaskCompleted: () -> Unit,

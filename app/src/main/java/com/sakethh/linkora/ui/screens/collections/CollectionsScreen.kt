@@ -563,7 +563,7 @@ fun CollectionsScreen(navController: NavController) {
                 noteForSaving = clickedFolderNote.value,
                 onNoteDeleteCardClick = {
                     collectionsScreenVM.onNoteDeleteClick(
-                        context, CollectionsScreenVM.selectedFolderData.value.id
+                        CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 linkTitle = "",

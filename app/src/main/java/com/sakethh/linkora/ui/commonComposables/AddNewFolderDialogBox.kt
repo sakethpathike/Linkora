@@ -17,7 +17,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -31,10 +30,8 @@ import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.localDB.CreateVM
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 
 data class AddNewFolderDialogBoxParam(
@@ -52,14 +49,6 @@ fun AddNewFolderDialogBox(
     val scrollState = rememberScrollState()
     val context = LocalContext.current
     val createVM: CreateVM = viewModel()
-    LaunchedEffect(key1 = createVM.showToast.value.first) {
-        if (createVM.showToast.value.first) {
-            withContext(Dispatchers.Main) {
-                Toast.makeText(context, createVM.showToast.value.second, Toast.LENGTH_SHORT).show()
-            }
-            createVM.showToast.value = false to ""
-        }
-    }
     val coroutineScope = rememberCoroutineScope()
     val isFolderCreationInProgress = rememberSaveable {
         mutableStateOf(false)

@@ -1,29 +1,23 @@
 package com.sakethh.linkora.ui.viewmodels.collections
 
-import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.data.localDB.dto.ArchivedFolders
 import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
 import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.ui.screens.collections.archiveScreen.ChildArchiveScreen
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
+import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 data class ArchiveScreenModal(
     val name: String,
@@ -37,6 +31,8 @@ enum class ArchiveScreenType {
 class ArchiveScreenVM(
     private val deleteVM: DeleteVM = DeleteVM()
 ) : ViewModel() {
+    private val _showToast = mutableStateOf(Pair(false, ""))
+    val showToast = _showToast
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
             title = "",
@@ -205,137 +201,67 @@ class ArchiveScreenVM(
         }
     }
 
-    fun changeRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
-        when (sortingPreferences) {
+    fun changeRetrievedData(
+        sortingPreferences: SettingsScreenVM.SortingPreferences
+    ) {
+        val (sortedLinks, sortedFolders) = when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                viewModelScope.launch {
-                    awaitAll(async {
-                        LocalDataBase.localDB.archivedLinksSorting().sortByAToZ()
-                            .collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveLinksData.emit(
-                                    it
-                                )
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting().sortByAToZV10()
-                            .collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveFoldersDataV10.emit(it)
-                            }
-                    })
-                }
+                Pair(
+                    LocalDataBase.localDB.archivedLinksSorting().sortByAToZ(),
+                    LocalDataBase.localDB.archivedFolderSorting().sortByAToZV10()
+                )
             }
 
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                viewModelScope.launch {
-                    awaitAll(async {
-                        LocalDataBase.localDB.archivedLinksSorting().sortByZToA()
-                            .collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveLinksData.emit(
-                                    it
-                                )
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting().sortByZToAV10()
-                            .collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveFoldersDataV10.emit(it)
-                            }
-                    })
-                }
+                Pair(
+                    LocalDataBase.localDB.archivedLinksSorting().sortByZToA(),
+                    LocalDataBase.localDB.archivedFolderSorting().sortByZToAV10()
+                )
             }
 
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                viewModelScope.launch {
-                    awaitAll(async {
-                        LocalDataBase.localDB.archivedLinksSorting()
-                            .sortByLatestToOldest().collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveLinksData.emit(
-                                    it
-                                )
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting()
-                            .sortByLatestToOldestV10().collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveFoldersDataV10.emit(it)
-                            }
-                    })
-                }
+                Pair(
+                    LocalDataBase.localDB.archivedLinksSorting().sortByLatestToOldest(),
+                    LocalDataBase.localDB.archivedFolderSorting().sortByLatestToOldestV10()
+                )
             }
 
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                viewModelScope.launch {
-                    awaitAll(async {
-                        LocalDataBase.localDB.archivedLinksSorting()
-                            .sortByOldestToLatest().collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveLinksData.emit(
-                                    it
-                                )
-                            }
-                    }, async {
-                        LocalDataBase.localDB.archivedFolderSorting()
-                            .sortByOldestToLatestV10().collect {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _archiveFoldersDataV10.emit(it)
-                            }
-                    })
-                }
+                Pair(
+                    LocalDataBase.localDB.archivedLinksSorting().sortByOldestToLatest(),
+                    LocalDataBase.localDB.archivedFolderSorting().sortByOldestToLatestV10()
+                )
+            }
+        }
+        viewModelScope.launch {
+            sortedLinks.collectLatest {
+                _archiveLinksData.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            sortedFolders.collectLatest {
+                _archiveFoldersDataV10.emit(it)
             }
         }
     }
-
     fun onDeleteClick(
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
-        context: Context,
         onTaskCompleted: () -> Unit
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
                 LocalDataBase.localDB.deleteDao()
                     .deleteALinkFromArchiveLinksV9(webURL = selectedURLOrFolderName)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context, "removed the link from archive permanently", Toast.LENGTH_SHORT
-                    ).show()
-                }
+                _showToast.value = true to "removed the link from archive permanently"
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
-
             deleteVM.onRegularFolderDeleteClick(
                 CollectionsScreenVM.selectedFolderData.value.id
             )
+            _showToast.value = true to "deleted the folder"
         }
 
     }
@@ -343,16 +269,12 @@ class ArchiveScreenVM(
     fun onNoteDeleteCardClick(
         archiveScreenType: ArchiveScreenType,
         selectedURLOrFolderName: String,
-        context: Context,
         onTaskCompleted: () -> Unit,
         folderID: Long
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
                 LocalDataBase.localDB.deleteDao().deleteAFolderNote(folderID)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                }
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -360,13 +282,11 @@ class ArchiveScreenVM(
             viewModelScope.launch {
                 LocalDataBase.localDB.deleteDao()
                     .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName)
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                }
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         }
+        _showToast.value = true to "deleted the note"
     }
 
     fun onUnArchiveClickV10(folderID: Long) {

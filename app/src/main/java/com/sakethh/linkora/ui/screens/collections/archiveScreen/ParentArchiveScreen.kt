@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.archiveScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -54,7 +56,9 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(
@@ -70,6 +74,15 @@ fun ParentArchiveScreen(navController: NavController) {
     }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val context = LocalContext.current
+    LaunchedEffect(key1 = archiveScreenVM.showToast.value.first) {
+        if (archiveScreenVM.showToast.value.first) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, archiveScreenVM.showToast.value.second, Toast.LENGTH_SHORT)
+                    .show()
+            }
+            archiveScreenVM.showToast.value = false to ""
+        }
+    }
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }

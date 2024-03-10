@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.archiveScreen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -43,7 +45,9 @@ import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,6 +61,15 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
         archiveScreenVM.archiveFoldersDataV10.collectAsStateWithLifecycle().value
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+    LaunchedEffect(key1 = archiveScreenVM.showToast.value.first) {
+        if (archiveScreenVM.showToast.value.first) {
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, archiveScreenVM.showToast.value.second, Toast.LENGTH_SHORT)
+                    .show()
+            }
+            archiveScreenVM.showToast.value = false to ""
+        }
+    }
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState =
         androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -317,7 +330,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     archiveScreenVM.onNoteDeleteCardClick(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
-                        context = context,
                         onTaskCompleted = {},
                         folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
@@ -334,7 +346,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     archiveScreenVM.onDeleteClick(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
-                        context = context,
                         onTaskCompleted = {
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(

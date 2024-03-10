@@ -552,7 +552,6 @@ fun ChildHomeScreen(
                         )
                     } else {
                         specificCollectionsScreenVM.onNoteDeleteClick(
-                            context,
                             selectedElementID.longValue
                         )
                     }

@@ -1392,7 +1392,6 @@ fun SearchScreen(navController: NavController) {
                         )
                     } else {
                         searchScreenVM.onNoteDeleteClick(
-                            context,
                             CollectionsScreenVM.selectedFolderData.value.id
                         )
                     }
