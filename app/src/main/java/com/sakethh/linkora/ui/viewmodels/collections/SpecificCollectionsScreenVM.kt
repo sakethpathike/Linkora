@@ -7,19 +7,20 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
 import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
+import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -69,25 +70,28 @@ open class SpecificCollectionsScreenVM(
     val selectedImpLinks = mutableStateListOf<String>()
     val areAllLinksChecked = mutableStateOf(false)
     fun removeAllLinkSelections() {
-        when (screenType.value) {
+        val selectedIds = when (screenType.value) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                selectedLinksID.removeAll(savedLinksTable.value.map { it.id })
+                savedLinksTable.value.map { it.id }
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                selectedLinksID.removeAll(folderLinksData.value.map { it.id })
+                folderLinksData.value.map { it.id }
             }
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                selectedLinksID.removeAll(impLinksTable.value.map { it.id })
+                impLinksTable.value.map { it.id }
             }
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                selectedLinksID.removeAll(archiveFoldersLinksData.value.map { it.id })
+                archiveFoldersLinksData.value.map { it.id }
             }
 
-            else -> {}
+            else -> {
+                emptyList()
+            }
         }
+        selectedLinksID.removeAll(selectedIds)
     }
 
     val impLinkDataForBtmSheet = MutableImportantLinks(
@@ -109,10 +113,6 @@ open class SpecificCollectionsScreenVM(
             LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
                 currentClickedFolderData.value.id
             ).collectLatest { it ->
-                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                List(it.size) { index ->
-                    mutableBooleanList.add(index, mutableStateOf(false))
-                }
                 _childFoldersData.emit(
                     it
                 )
@@ -159,6 +159,7 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
+    // ::
     fun changeRetrievedData(
         sortingPreferences: SettingsScreenVM.SortingPreferences,
         folderID: Long,
@@ -168,430 +169,167 @@ open class SpecificCollectionsScreenVM(
     ) {
         when (screenType) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByAToZ().collectLatest {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _savedLinksData.emit(
-                                    it
-                                )
-                            }
-                        }
-                    }
+                val sortedData = when (sortingPreferences) {
+                    SettingsScreenVM.SortingPreferences.A_TO_Z -> LocalDataBase.localDB.savedLinksSorting()
+                        .sortByAToZ()
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByZToA().collectLatest {
-                                val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                List(it.size) { index ->
-                                    mutableBooleanList.add(index, mutableStateOf(false))
-                                }
-                                _savedLinksData.emit(
-                                    it
-                                )
-                            }
-                        }
-                    }
+                    SettingsScreenVM.SortingPreferences.Z_TO_A -> LocalDataBase.localDB.savedLinksSorting()
+                        .sortByZToA()
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByLatestToOldest()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _savedLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
-                    }
+                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> LocalDataBase.localDB.savedLinksSorting()
+                        .sortByLatestToOldest()
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByOldestToLatest()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _savedLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
+                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> LocalDataBase.localDB.savedLinksSorting()
+                        .sortByOldestToLatest()
+                }
+                viewModelScope.launch {
+                    sortedData.collectLatest {
+                        _savedLinksData.emit(it)
                     }
                 }
             }
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByAToZ()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _impLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
-                    }
+                val sortedData = when (sortingPreferences) {
+                    SettingsScreenVM.SortingPreferences.A_TO_Z -> LocalDataBase.localDB.importantLinksSorting()
+                        .sortByAToZ()
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByZToA()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _impLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
-                    }
+                    SettingsScreenVM.SortingPreferences.Z_TO_A -> LocalDataBase.localDB.importantLinksSorting()
+                        .sortByZToA()
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByLatestToOldest()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _impLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
-                    }
+                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> LocalDataBase.localDB.importantLinksSorting()
+                        .sortByLatestToOldest()
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByOldestToLatest()
-                                .collectLatest {
-                                    val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
-                                    List(it.size) { index ->
-                                        mutableBooleanList.add(index, mutableStateOf(false))
-                                    }
-                                    _impLinksData.emit(
-                                        it
-                                    )
-                                }
-                        }
+                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> LocalDataBase.localDB.importantLinksSorting()
+                        .sortByOldestToLatest()
+                }
+                viewModelScope.launch {
+                    sortedData.collectLatest {
+                        _impLinksData.emit(it)
                     }
                 }
             }
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                when (sortingPreferences) {
+                val (sortedLinks, sortedFolders) = when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByAToZV10(folderID = folderID).collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveFolderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveSubFolderData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.archivedFolderLinksSorting()
+                                .sortLinksByAToZV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByZToAV10(folderID = folderID).collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveFolderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveSubFolderData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-
-                        }
+                        Pair(
+                            LocalDataBase.localDB.archivedFolderLinksSorting()
+                                .sortLinksByAToZV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByLatestToOldestV10(folderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveFolderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveSubFolderData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.archivedFolderLinksSorting()
+                                .sortLinksByAToZV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
-                                        .sortLinksByOldestToLatestV10(folderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveFolderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _archiveSubFolderData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.archivedFolderLinksSorting()
+                                .sortLinksByAToZV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
+                }
+                viewModelScope.launch {
+                    applySortedData(
+                        isLinksSortingSelected = isLinksSortingSelected,
+                        isFoldersSortingSelected = isFoldersSortingSelected,
+                        sortedLinksDataFlow = { sortedLinks },
+                        sortedFoldersDataFlow = { sortedFolders },
+                        sortedLinksDataEmit = _archiveFolderLinksData,
+                        sortedFoldersDataEmit = _archiveSubFolderData
+                    )
                 }
             }
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                when (sortingPreferences) {
+                val (sortedLinks, sortedFolders) = when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByAToZV10(folderID = folderID).collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _folderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByAToZ(parentFolderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _childFoldersData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByZToAV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByZToAV10(folderID = folderID).collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _folderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByZToA(parentFolderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _childFoldersData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByAToZV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByLatestToOldestV10(folderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _folderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByLatestToOldest(parentFolderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _childFoldersData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByLatestToOldestV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
-                        viewModelScope.launch {
-                            awaitAll(async {
-                                if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
-                                        .sortByOldestToLatestV10(folderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _folderLinksData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            }, async {
-                                if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
-                                        .sortSubFoldersByOldestToLatest(parentFolderID = folderID)
-                                        .collectLatest {
-                                            val mutableBooleanList =
-                                                mutableListOf<MutableState<Boolean>>()
-                                            List(it.size) { index ->
-                                                mutableBooleanList.add(index, mutableStateOf(false))
-                                            }
-                                            _childFoldersData.emit(
-                                                it
-                                            )
-                                        }
-                                }
-                            })
-                        }
+                        Pair(
+                            LocalDataBase.localDB.regularFolderLinksSorting()
+                                .sortByOldestToLatestV10(folderID),
+                            LocalDataBase.localDB.subFoldersSortingDao()
+                                .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
+                        )
                     }
+                }
+                viewModelScope.launch {
+                    applySortedData(
+                        isLinksSortingSelected = isLinksSortingSelected,
+                        isFoldersSortingSelected = isFoldersSortingSelected,
+                        sortedLinksDataFlow = { sortedLinks },
+                        sortedFoldersDataFlow = { sortedFolders },
+                        sortedLinksDataEmit = _folderLinksData,
+                        sortedFoldersDataEmit = _childFoldersData
+                    )
                 }
             }
 
-            SpecificScreenType.INTENT_ACTIVITY -> {
+            else -> {}
+        }
+    }
 
+    private suspend inline fun <T1, T2> applySortedData(
+        isLinksSortingSelected: Boolean,
+        isFoldersSortingSelected: Boolean,
+        sortedLinksDataFlow: () -> Flow<List<T1>>,
+        sortedFoldersDataFlow: () -> Flow<List<T2>>,
+        sortedLinksDataEmit: MutableStateFlow<List<T1>>,
+        sortedFoldersDataEmit: MutableStateFlow<List<T2>>,
+    ) {
+        if (isLinksSortingSelected) {
+            sortedLinksDataFlow().collectLatest {
+                sortedLinksDataEmit.emit(it)
             }
-
-            SpecificScreenType.ROOT_SCREEN -> {
-
+        }
+        if (isFoldersSortingSelected) {
+            sortedFoldersDataFlow().collectLatest {
+                sortedFoldersDataEmit.emit(it)
             }
         }
     }
