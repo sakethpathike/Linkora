@@ -20,11 +20,11 @@ import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 
 data class MutableImportantLinks(
@@ -149,15 +149,13 @@ open class SpecificCollectionsScreenVM(
     }
 
     init {
-        viewModelScope.launch {
-            changeRetrievedData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
-                folderID = currentClickedFolderData.value.id,
-                isFoldersSortingSelected = true,
-                isLinksSortingSelected = true
-            )
+        changeRetrievedData(
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+            folderID = currentClickedFolderData.value.id,
+            isFoldersSortingSelected = true,
+            isLinksSortingSelected = true
+        )
             retrieveChildFoldersData()
-        }
     }
 
     fun changeRetrievedData(
@@ -176,29 +174,7 @@ open class SpecificCollectionsScreenVM(
             applySortedData(
                 isLinksSortingSelected = isLinksSortingSelected,
                 isFoldersSortingSelected = isFoldersSortingSelected,
-                sortedLinksTableDataFlow = {
-                    when (sortedData) {
-                        is SortingData.FoldersDataSorting -> sortedData.folderLinksData
-                        is SortingData.SavedLinksSorting -> sortedData.data
-                        else -> flow { }
-                    }
-                },
-                sortedFoldersDataFlow = {
-                    if (sortedData is SortingData.FoldersDataSorting) {
-                        sortedData.childFoldersData
-                    } else {
-                        flow {}
-                    }
-                },
-                sortedLinksDataEmit = if (screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) _folderLinksData else _savedLinksData,
-                sortedFoldersDataEmit = _childFoldersData,
-                sortedImpLinksTableDataFlow = {
-                    when (sortedData) {
-                        is SortingData.ImportantLinksSorting -> sortedData.data
-                        else -> flow { }
-                    }
-                },
-                sortedImpLinksDataEmit = _impLinksData,
+                sortedData = sortedData
             )
         }
     }
@@ -302,26 +278,43 @@ open class SpecificCollectionsScreenVM(
 
             else -> SortingData.Other
         }
-        }
+    }
 
-    // ::
-    private suspend inline fun <LinksTable, FoldersTable, ImportantLinksTable> applySortedData(
+    private suspend inline fun applySortedData(
         isLinksSortingSelected: Boolean,
         isFoldersSortingSelected: Boolean,
         sortedData: SortingData
-    ) {
-        if (isLinksSortingSelected) {
-            sortedLinksTableDataFlow()?.collectLatest {
-                sortedLinksDataEmit?.emit(it)
+    ) = coroutineScope {
+        when (sortedData) {
+            is SortingData.FoldersDataSorting -> {
+                if (isLinksSortingSelected) {
+                    sortedData.folderLinksData.collectLatest {
+                        _folderLinksData.emit(it)
+                    }
+                }
+                if (isFoldersSortingSelected) {
+                    sortedData.childFoldersData.collectLatest {
+                        _childFoldersData.emit(it)
+                    }
+                }
             }
-        }
-        if (isFoldersSortingSelected) {
-            sortedFoldersDataFlow()?.collectLatest {
-                sortedFoldersDataEmit?.emit(it)
+
+            is SortingData.ImportantLinksSorting -> {
+                sortedData.data.collectLatest {
+                    _impLinksData.emit(it)
+                }
             }
-        }
-        sortedImpLinksTableDataFlow()?.collectLatest {
-            sortedImpLinksDataEmit?.emit(it)
+
+            is SortingData.SavedLinksSorting -> {
+                sortedData.data.collectLatest {
+                    _savedLinksData.emit(it)
+                }
+            }
+
+            SortingData.Other -> {
+
+            }
+
         }
     }
 
