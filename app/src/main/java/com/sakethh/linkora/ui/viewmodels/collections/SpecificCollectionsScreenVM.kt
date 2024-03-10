@@ -1,7 +1,6 @@
 package com.sakethh.linkora.ui.viewmodels.collections
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -39,8 +38,8 @@ data class MutableImportantLinks(
 open class SpecificCollectionsScreenVM(
     val updateVM: UpdateVM = UpdateVM(), private val deleteVM: DeleteVM = DeleteVM()
 ) : CollectionsScreenVM() {
-
-
+    private val _showToast = mutableStateOf(Pair(false, ""))
+    override val showToast = _showToast
     private val _folderLinksData = MutableStateFlow(
         emptyList<LinksTable>()
     )
@@ -429,10 +428,7 @@ open class SpecificCollectionsScreenVM(
 
     fun onDeleteClick(
         folderID: Long,
-        selectedWebURL: String,
-        context: Context,
         onTaskCompleted: () -> Unit,
-        folderName: String,
         linkID: Long,
         shouldShowToastOnCompletion: Boolean = true
     ) {
@@ -482,15 +478,13 @@ open class SpecificCollectionsScreenVM(
             else -> {}
         }
         if (shouldShowToastOnCompletion) {
-            Toast.makeText(
-                context, "deleted the link successfully", Toast.LENGTH_SHORT
-            ).show()
+            _showToast.value = true to "deleted the link successfully"
         }
 
     }
 
     fun onNoteDeleteCardClick(
-        selectedWebURL: String, context: Context, folderID: Long, folderName: String, linkID: Long
+        selectedWebURL: String, folderID: Long, linkID: Long
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -498,7 +492,7 @@ open class SpecificCollectionsScreenVM(
                     LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    _showToast.value = true to "deleted the note"
                 }
             }
 
@@ -514,7 +508,7 @@ open class SpecificCollectionsScreenVM(
                         )
                     }
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    _showToast.value = true to "deleted the note"
                 }
             }
 
@@ -523,7 +517,7 @@ open class SpecificCollectionsScreenVM(
                     LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    _showToast.value = true to "deleted the note"
                 }
             }
 
@@ -539,7 +533,7 @@ open class SpecificCollectionsScreenVM(
                         )
                     }
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    _showToast.value = true to "deleted the note"
                 }
             }
 

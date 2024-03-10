@@ -11,9 +11,12 @@ import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.Shelf
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.utils.LinkDataExtractor
 import com.sakethh.linkora.utils.LinkDataExtractorResult
 import com.sakethh.linkora.utils.linkDataExtractor
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -31,6 +34,41 @@ class CreateVM : ViewModel() {
         }
     }
 
+    private suspend fun addANewLink(
+        webURL: String,
+        doesItExists: Boolean,
+        onLinkAdd: (LinkDataExtractor?) -> Unit,
+        onTaskCompleted: () -> Unit,
+        context: Context
+    ) = coroutineScope {
+        async {
+            when (doesItExists) {
+                true -> {
+                    _showToast.value = true to "given link already exists"
+                }
+
+                else -> {
+                    when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
+                        is LinkDataExtractorResult.Failure.InvalidURL -> {
+                            _showToast.value = true to linkDataExtractor.failureMsg
+                        }
+
+                        is LinkDataExtractorResult.Failure.NoInternetConnection -> {
+                            onLinkAdd(null)
+                            _showToast.value = true to linkDataExtractor.failureMsg
+                        }
+
+                        is LinkDataExtractorResult.Success -> {
+                            _showToast.value = true to "added the link"
+                            onLinkAdd(linkDataExtractor.linkDataExtractor)
+                        }
+                    }
+                }
+            }
+        }.await()
+        onTaskCompleted()
+    }
+
     fun addANewLinkInImpLinks(
         title: String,
         webURL: String,
@@ -39,56 +77,29 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
-        try {
-            viewModelScope.launch {
-                val doesThisLinkExists = withContext(Dispatchers.IO) {
-                    LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
-                        webURL
-                    )
-                }
-                when (doesThisLinkExists) {
-                    true -> {
-                        _showToast.value =
-                            true to "given link already exists in the \"Important Links\""
+        viewModelScope.launch {
+            addANewLink(
+                webURL = webURL,
+                doesItExists = LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
+                    webURL
+                ),
+                onLinkAdd = {
+                    this.launch {
+                        LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
+                            importantLinks = ImportantLinks(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) it?.title
+                                    ?: title else title,
+                                webURL = webURL,
+                                baseURL = it?.baseURL ?: webURL,
+                                imgURL = it?.imgURL ?: "",
+                                infoForSaving = noteForSaving
+                            )
+                        )
                     }
-
-                    else -> {
-                        when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
-                            is LinkDataExtractorResult.Failure.InvalidURL -> {
-                                _showToast.value = true to linkDataExtractor.failureMsg
-                            }
-
-                            is LinkDataExtractorResult.Failure.NoInternetConnection -> {
-                                LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
-                                    importantLinks = ImportantLinks(
-                                        title = "",
-                                        webURL = webURL,
-                                        baseURL = webURL,
-                                        imgURL = "",
-                                        infoForSaving = noteForSaving
-                                    )
-                                )
-                                _showToast.value = true to linkDataExtractor.failureMsg
-                            }
-
-                            is LinkDataExtractorResult.Success -> {
-                                _showToast.value = true to "added to Important Links"
-                                LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
-                                    importantLinks = ImportantLinks(
-                                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title,
-                                        webURL = webURL,
-                                        baseURL = webURL,
-                                        imgURL = linkDataExtractor.linkDataExtractor.imgURL,
-                                        infoForSaving = noteForSaving
-                                    )
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        } finally {
-            onTaskCompleted()
+                },
+                onTaskCompleted = { onTaskCompleted() },
+                context = context
+            )
         }
     }
 
@@ -100,78 +111,39 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         context: Context
     ) {
-        try {
-            viewModelScope.launch {
-                val doesThisLinkExists = withContext(Dispatchers.IO) {
-                    LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
-                        webURL
-                    )
-                }
-                when (doesThisLinkExists) {
-                    true -> {
-                        _showToast.value =
-                            true to "given link already exists in the \"Saved Links\""
+        viewModelScope.launch {
+            addANewLink(
+                webURL = webURL,
+                doesItExists = LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
+                    webURL
+                ),
+                onLinkAdd = {
+                    this.launch {
+                        LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+                            LinksTable(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) it?.title
+                                    ?: "" else title,
+                                webURL = webURL,
+                                baseURL = it?.baseURL ?: webURL,
+                                imgURL = it?.imgURL ?: "",
+                                infoForSaving = noteForSaving,
+                                isLinkedWithSavedLinks = true,
+                                isLinkedWithFolders = false,
+                                keyOfLinkedFolderV10 = 0,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false,
+                                keyOfArchiveLinkedFolderV10 = 0
+                            )
+                        )
                     }
-
-                    else -> {
-                        when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
-                            is LinkDataExtractorResult.Failure.InvalidURL -> {
-                                _showToast.value =
-                                    true to linkDataExtractor.failureMsg
-                            }
-
-                            is LinkDataExtractorResult.Failure.NoInternetConnection -> {
-                                LocalDataBase.localDB.createDao()
-                                    .addANewLinkToSavedLinksOrInFolders(
-                                        LinksTable(
-                                            title = "",
-                                            webURL = webURL,
-                                            baseURL = webURL,
-                                            imgURL = "",
-                                            infoForSaving = noteForSaving,
-                                            isLinkedWithSavedLinks = true,
-                                            isLinkedWithFolders = false,
-                                            keyOfLinkedFolderV10 = 0,
-                                            isLinkedWithImpFolder = false,
-                                            keyOfImpLinkedFolder = "",
-                                            isLinkedWithArchivedFolder = false,
-                                            keyOfArchiveLinkedFolderV10 = 0
-                                        )
-                                    )
-                                _showToast.value =
-                                    true to linkDataExtractor.failureMsg
-                            }
-
-                            is LinkDataExtractorResult.Success -> {
-                                _showToast.value = true to "added the link in Saved Links"
-                                if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title.let {
-                                    LocalDataBase.localDB.createDao()
-                                        .addANewLinkToSavedLinksOrInFolders(
-                                            LinksTable(
-                                                title = it,
-                                                webURL = webURL,
-                                                baseURL = it,
-                                                imgURL = it,
-                                                infoForSaving = noteForSaving,
-                                                isLinkedWithSavedLinks = true,
-                                                isLinkedWithFolders = false,
-                                                keyOfLinkedFolderV10 = 0,
-                                                isLinkedWithImpFolder = false,
-                                                keyOfImpLinkedFolder = "",
-                                                isLinkedWithArchivedFolder = false,
-                                                keyOfArchiveLinkedFolderV10 = 0
-                                            )
-                                        )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        } finally {
-            onTaskCompleted()
+                },
+                onTaskCompleted = { onTaskCompleted() },
+                context = context
+            )
         }
     }
+
 
     fun addANewLinkInAFolderV10(
         title: String,

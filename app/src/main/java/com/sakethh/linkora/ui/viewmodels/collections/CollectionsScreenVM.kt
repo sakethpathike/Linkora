@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 
 open class CollectionsScreenVM : ViewModel() {
     private val _showToast = mutableStateOf(Pair(false, ""))
-    val showToast = _showToast
+    open val showToast = _showToast
     private val _foldersData = MutableStateFlow(
         emptyList<FoldersTable>()
     )

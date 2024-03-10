@@ -1260,9 +1260,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onNoteDeleteCardClick = {
                     specificCollectionsScreenVM.onNoteDeleteCardClick(
                         selectedWebURL.value,
-                        context,
                         folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                        folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                         linkID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
@@ -1293,8 +1291,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                     } else {
                         specificCollectionsScreenVM.onDeleteClick(
                             folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                            selectedWebURL = selectedWebURL.value,
-                            context = context,
                             onTaskCompleted = {
                                 specificCollectionsScreenVM.changeRetrievedData(
                                     folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
@@ -1303,7 +1299,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     )
                                 )
                             },
-                            folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                             linkID = CollectionsScreenVM.selectedFolderData.value.id
                         )
                     }

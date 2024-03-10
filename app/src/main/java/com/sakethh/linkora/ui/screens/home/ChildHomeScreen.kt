@@ -545,9 +545,7 @@ fun ChildHomeScreen(
                         }
                         homeScreenVM.onNoteDeleteCardClick(
                             HomeScreenVM.tempImpLinkData.webURL,
-                            context,
                             folderID = 0,
-                            "",
                             selectedElementID.longValue
                         )
                     } else {
@@ -583,10 +581,7 @@ fun ChildHomeScreen(
                     }
                     homeScreenVM.onDeleteClick(
                         folderID = 0,
-                        selectedWebURL = "",
-                        context = context,
                         onTaskCompleted = {},
-                        folderName = "",
                         linkID = selectedElementID.longValue
                     )
                 } else {
