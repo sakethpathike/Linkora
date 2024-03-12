@@ -17,8 +17,6 @@ import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -320,62 +318,30 @@ open class SpecificCollectionsScreenVM(
     fun onArchiveClick(
         tempImpLinkData: ImportantLinks, context: Context, linkID: Long, onTaskCompleted: () -> Unit
     ) {
+        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+            title = tempImpLinkData.title,
+            webURL = tempImpLinkData.webURL,
+            baseURL = tempImpLinkData.baseURL,
+            imgURL = tempImpLinkData.imgURL,
+            infoForSaving = tempImpLinkData.infoForSaving
+        ), context = context, onTaskCompleted = {
+            onTaskCompleted()
+        })
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
-                    }, async {
-                        LocalDataBase.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromImpLinksBasedOnURL(tempImpLinkData.webURL)
-                    })
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
             }
 
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
-                    })
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            }
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
-                    }, async {
-                        LocalDataBase.localDB.deleteDao()
+                    LocalDataBase.localDB.deleteDao()
                             .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
-                    })
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -383,19 +349,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
-                    }, async {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
-                    })
+                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }
@@ -442,27 +396,7 @@ open class SpecificCollectionsScreenVM(
                 }
             }
 
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
-                    } else {
-                        deleteVM.onRegularFolderDeleteClick(folderID)
-                    }
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            }
-
-            SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
-                        .deleteALinkFromLinksTable(linkID = linkID)
-                }.invokeOnCompletion {
-                    onTaskCompleted()
-                }
-            }
-
+            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN, SpecificScreenType.SAVED_LINKS_SCREEN,
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
@@ -496,22 +430,6 @@ open class SpecificCollectionsScreenVM(
                 }
             }
 
-            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                viewModelScope.launch {
-                    if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkInfoOfFolders(
-                            linkID = linkID
-                        )
-                    } else {
-                        LocalDataBase.localDB.deleteDao().deleteAFolderNote(
-                            folderID = folderID
-                        )
-                    }
-                }.invokeOnCompletion {
-                    _showToast.value = true to "deleted the note"
-                }
-            }
-
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
@@ -521,6 +439,7 @@ open class SpecificCollectionsScreenVM(
                 }
             }
 
+            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN,
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
