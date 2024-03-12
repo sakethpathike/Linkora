@@ -36,7 +36,7 @@ data class MutableImportantLinks(
 open class SpecificCollectionsScreenVM(
     val updateVM: UpdateVM = UpdateVM(), private val deleteVM: DeleteVM = DeleteVM()
 ) : CollectionsScreenVM() {
-    private val _showToast = mutableStateOf(Pair(false, ""))
+    val _showToast = mutableStateOf(Pair(false, ""))
     override val showToast = _showToast
     private val _folderLinksData = MutableStateFlow(
         emptyList<LinksTable>()

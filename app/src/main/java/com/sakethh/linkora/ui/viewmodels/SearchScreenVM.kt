@@ -1,7 +1,6 @@
 package com.sakethh.linkora.ui.viewmodels
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,14 +14,12 @@ import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class SearchScreenVM : SpecificCollectionsScreenVM() {
     enum class SelectedLinkType {
@@ -78,6 +75,12 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 retrieveQueryData(query)
             }
         }
+        isSearchEnabled.value = false
+        changeHistoryRetrievedData(
+            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
+                SettingsScreenVM.Settings.selectedSortingType.value
+            )
+        )
     }
 
     fun deleteSelectedHistoryLinks() {
@@ -216,15 +219,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
         }
     }
 
-    init {
-        isSearchEnabled.value = false
-        changeHistoryRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                SettingsScreenVM.Settings.selectedSortingType.value
-            )
-        )
-    }
-
     fun changeHistoryRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
         when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
@@ -274,9 +268,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
@@ -284,9 +275,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
@@ -294,9 +282,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
                         .deleteALinkInfoOfFolders(linkID = selectedLinkID)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
@@ -304,9 +289,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
@@ -314,9 +296,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao()
                         .deleteANoteFromArchiveLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
 
@@ -327,12 +306,10 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                             folderID = folderID,
                             webURL = selectedWebURL
                         )
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
                 }
             }
         }
+        _showToast.value = true to "deleted the note"
     }
 
     fun onArchiveClick(
@@ -510,12 +487,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                 LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(
                     webURL = selectedWebURL
                 )
-                shouldDeleteBoxAppear.value = false
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context, "deleted the link successfully", Toast.LENGTH_SHORT
-                    ).show()
-                }
             }
 
             SelectedLinkType.SAVED_LINKS -> {
@@ -523,24 +494,12 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
-                    shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
                     LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(selectedLinkID)
-                    shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
 
@@ -549,12 +508,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
-                    shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
 
@@ -563,12 +516,6 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                     LocalDataBase.localDB.deleteDao().deleteALinkFromArchiveLinksV9(
                         webURL = selectedWebURL
                     )
-                    shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
 
@@ -578,14 +525,10 @@ class SearchScreenVM : SpecificCollectionsScreenVM() {
                         .deleteALinkFromArchiveFolderBasedLinksV10(
                             webURL = selectedWebURL, archiveFolderID = folderID
                         )
-                    shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
                 }
             }
         }
+        shouldDeleteBoxAppear.value = false
+        _showToast.value = true to "deleted the link successfully"
     }
 }
