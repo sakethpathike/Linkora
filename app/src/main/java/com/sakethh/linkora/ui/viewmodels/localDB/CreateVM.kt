@@ -155,88 +155,39 @@ class CreateVM : ViewModel() {
         onTaskCompleted: () -> Unit,
         folderName: String
     ) {
-            viewModelScope.launch {
-                val doesThisLinkExists = withContext(Dispatchers.IO) {
-                    LocalDataBase.localDB.readDao().doesThisLinkExistsInAFolderV10(
-                        webURL, parentFolderID
-                    )
-                }
-                if (doesThisLinkExists) {
-                    _showToast.value =
-                        true to "given link already exists in the \"${folderName}\""
-                } else {
-                    when (val linkDataExtractor = linkDataExtractor(context, webURL)) {
-                        is LinkDataExtractorResult.Failure.InvalidURL -> {
-                            _showToast.value =
-                                true to linkDataExtractor.failureMsg
-                        }
-
-                        is LinkDataExtractorResult.Success -> {
-                            LocalDataBase.localDB.createDao()
-                                .addANewLinkToSavedLinksOrInFolders(
-                                    LinksTable(
-                                        title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.linkDataExtractor.title else title,
-                                        webURL = webURL,
-                                        baseURL = linkDataExtractor.linkDataExtractor.baseURL,
-                                        imgURL = linkDataExtractor.linkDataExtractor.imgURL,
-                                        infoForSaving = noteForSaving,
-                                        isLinkedWithSavedLinks = false,
-                                        isLinkedWithFolders = true,
-                                        keyOfLinkedFolderV10 = parentFolderID,
-                                        keyOfLinkedFolder = folderName,
-                                        isLinkedWithImpFolder = false,
-                                        isLinkedWithArchivedFolder = false,
-                                        keyOfArchiveLinkedFolderV10 = 0,
-                                        keyOfImpLinkedFolder = ""
-                                    )
-                                )
-                            _showToast.value = true to "added the link"
-                        }
-
-                        LinkDataExtractorResult.Failure.NoInternetConnection -> {
-                            addLinkToAFolderWithoutFetchingData(
-                                title,
-                                webURL,
-                                noteForSaving,
-                                parentFolderID,
-                                folderName
+        viewModelScope.launch {
+            addANewLink(
+                webURL = webURL,
+                doesItExists = LocalDataBase.localDB.readDao()
+                    .doesThisLinkExistsInAFolderV10(webURL, parentFolderID),
+                onLinkAdd = {
+                    this.launch {
+                        LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+                            LinksTable(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) it?.title
+                                    ?: title else title,
+                                webURL = webURL,
+                                baseURL = it?.baseURL ?: "",
+                                imgURL = it?.imgURL ?: "",
+                                infoForSaving = noteForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = true,
+                                keyOfLinkedFolderV10 = parentFolderID,
+                                keyOfLinkedFolder = folderName,
+                                isLinkedWithImpFolder = false,
+                                isLinkedWithArchivedFolder = false,
+                                keyOfArchiveLinkedFolderV10 = 0,
+                                keyOfImpLinkedFolder = ""
                             )
-                            _showToast.value =
-                                true to LinkDataExtractorResult.Failure.NoInternetConnection.failureMsg
-                        }
+                        )
                     }
-                }
-            }.invokeOnCompletion {
-                onTaskCompleted()
-            }
+                },
+                onTaskCompleted = { onTaskCompleted() },
+                context = context
+            )
+        }
     }
 
-    private suspend fun addLinkToAFolderWithoutFetchingData(
-        title: String,
-        webURL: String,
-        noteForSaving: String,
-        parentFolderID: Long,
-        folderName: String
-    ) {
-        LocalDataBase.localDB.createDao()
-            .addANewLinkToSavedLinksOrInFolders(
-                LinksTable(
-                    title = title,
-                    webURL = webURL,
-                    baseURL = webURL,
-                    imgURL = "",
-                    infoForSaving = noteForSaving,
-                    isLinkedWithSavedLinks = false,
-                    isLinkedWithFolders = true,
-                    keyOfLinkedFolderV10 = parentFolderID,
-                    keyOfLinkedFolder = folderName,
-                    isLinkedWithImpFolder = false,
-                    isLinkedWithArchivedFolder = false,
-                    keyOfArchiveLinkedFolderV10 = 0,
-                    keyOfImpLinkedFolder = ""
-                )
-            )
-    }
     fun createANewFolder(
         infoForSaving: String,
         onTaskCompleted: () -> Unit,

@@ -7,7 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
 import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
 import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -277,12 +276,6 @@ class UpdateVM : ViewModel() {
                         }
                 }
             }
-        }
-    }
-
-    fun updateHomeListElement(homeScreenListTableElement: HomeScreenListTable) {
-        viewModelScope.launch {
-            LocalDataBase.localDB.shelfFolders().updateElement(homeScreenListTableElement)
         }
     }
 }
