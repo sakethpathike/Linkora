@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -16,7 +18,7 @@ data class LinkDataExtractor(
 )
 
 suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
-    var errorInGivenURL = false
+    var errorInGivenURL: Boolean
     val urlHost =
         try {
             errorInGivenURL = false
@@ -25,28 +27,40 @@ suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
             errorInGivenURL = true
             ""
         }
-    val imgURL = withContext(Dispatchers.IO) {
-        try {
-            return@withContext Jsoup.connect(webURL).get().head()
-                .select("link[href~=.*\\.ico]").first()
-                ?.attr("href").toString()
-        } catch (e: Exception) {
-            return@withContext ""
+    return withContext(Dispatchers.IO) {
+        val rawHTML = if (!errorInGivenURL) {
+            Jsoup.connect(webURL)
+                .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+                .referrer("http://www.google.com")
+                .followRedirects(true)
+                .header("Accept", "text/html")
+                .header("Accept-Encoding", "gzip,deflate")
+                .header(
+                    "Accept-Language",
+                    "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
+                )
+                .header("Connection", "keep-alive")
+                .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).get().toString()
+        } else {
+            ""
         }
+        val imgURL = rawHTML.substringAfter("og:image").substringAfter("content=\"")
+            .substringBefore("\">").trim().let {
+                if (SettingsScreenVM.Settings.ktorClient.get(it).status.value == 200) {
+                    it
+                } else {
+                    ""
+                }
+            }
+        val title =
+            rawHTML.substringAfter("<title").substringAfter(">").substringBefore("</title>").trim()
+        LinkDataExtractor(
+            baseURL = urlHost,
+            imgURL = imgURL,
+            title = title,
+            errorInGivenURL = errorInGivenURL
+        )
     }
-    val title = withContext(Dispatchers.IO) {
-        try {
-            Jsoup.connect(webURL).get().title()
-        } catch (e: Exception) {
-            "Couldn't fetch title"
-        }
-    }
-    return LinkDataExtractor(
-        baseURL = urlHost,
-        imgURL = imgURL,
-        title = title,
-        errorInGivenURL = errorInGivenURL
-    )
 }
 
 fun isNetworkAvailable(context: Context): Boolean {

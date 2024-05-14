@@ -110,18 +110,7 @@ fun LinkUIComponent(
                 overflow = TextOverflow.Ellipsis
             )
             if (!linkUIComponentParam.isItemSelected.value) {
-                if (linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
-                        ".webp"
-                    ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
-                        ".jpeg"
-                    ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
-                        ".jpg"
-                    ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
-                        ".png"
-                    ) || linkUIComponentParam.imgURL.startsWith("https://") && linkUIComponentParam.imgURL.endsWith(
-                        ".ico"
-                    )
-                ) {
+                if (linkUIComponentParam.imgURL.isNotEmpty()) {
                     CoilImage(
                         modifier = Modifier
                             .width(95.dp)
