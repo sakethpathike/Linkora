@@ -38,20 +38,22 @@ fun RegularSettingComponent(
 ) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
-    Row(modifier = Modifier
-        .combinedClickable(interactionSource = remember {
-            MutableInteractionSource()
-        }, indication = null,
-            onClick = {
-                settingsUIElement.onSwitchStateChange(!settingsUIElement.isSwitchEnabled.value)
-                settingsUIElement.onAcknowledgmentClick(uriHandler, context)
-            },
-            onLongClick = {
+    Row(
+        modifier = Modifier
+            .combinedClickable(interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null,
+                onClick = {
+                    settingsUIElement.onSwitchStateChange(!settingsUIElement.isSwitchEnabled.value)
+                    settingsUIElement.onAcknowledgmentClick(uriHandler, context)
+                },
+                onLongClick = {
 
-            })
-        .pulsateEffect()
-        .fillMaxWidth()
-        .animateContentSize(), verticalAlignment = Alignment.CenterVertically) {
+                })
+            .pulsateEffect()
+            .fillMaxWidth()
+            .animateContentSize(), verticalAlignment = Alignment.CenterVertically
+    ) {
         if (settingsUIElement.isIconNeeded.value && settingsUIElement.icon != null) {
             Spacer(modifier = Modifier.width(10.dp))
             IconButton(
@@ -62,33 +64,33 @@ fun RegularSettingComponent(
             Spacer(modifier = Modifier.width(10.dp))
         }
         Column {
+            Text(
+                text = settingsUIElement.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontSize = 16.sp,
+                modifier = Modifier
+                    .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
+                    .padding(
+                        start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
+                    ),
+                lineHeight = 20.sp
+            )
+            if (settingsUIElement.doesDescriptionExists) {
                 Text(
-                    text = settingsUIElement.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontSize = 16.sp,
+                    text = settingsUIElement.description.toString(),
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 14.sp,
+                    lineHeight = 18.sp,
+                    textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
                         .padding(
                             start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
-                        ),
-                    lineHeight = 20.sp
+                            top = 10.dp
+                        )
                 )
-                if (settingsUIElement.doesDescriptionExists) {
-                    Text(
-                        text = settingsUIElement.description.toString(),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 14.sp,
-                        lineHeight = 18.sp,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
-                            .padding(
-                                start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
-                                top = 10.dp
-                            )
-                    )
-                }
             }
+        }
         if (settingsUIElement.isSwitchNeeded) {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Switch(
@@ -99,7 +101,7 @@ fun RegularSettingComponent(
                         settingsUIElement.onSwitchStateChange(it)
                     })
             }
-            }
+        }
         if (settingsUIElement.shouldArrowIconBeAppear.value) {
             Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 IconButton(onClick = {

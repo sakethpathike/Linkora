@@ -181,16 +181,16 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                 }
             }
         }
-    BackHandler {
-        if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
-            navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
-                popUpTo(0)
-            }
-        } else {
-            navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
-                popUpTo(0)
+        BackHandler {
+            if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+                navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                    popUpTo(0)
+                }
+            } else {
+                navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
+                    popUpTo(0)
+                }
             }
         }
     }
-}
 }

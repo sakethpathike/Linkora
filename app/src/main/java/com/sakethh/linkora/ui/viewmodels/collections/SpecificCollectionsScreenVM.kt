@@ -7,17 +7,17 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
 import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.data.localDB.dto.LinksTable
 import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
+import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -684,18 +684,18 @@ open class SpecificCollectionsScreenVM(
         }
     }
 
-        fun onDeleteMultipleSelectedLinks() {
-            selectedBtmSheetType.value = OptionsBtmSheetType.LINK
-            when (screenType.value) {
-                SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                    viewModelScope.launch {
-                        selectedImpLinks.toList().forEach {
-                            LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
-                        }
+    fun onDeleteMultipleSelectedLinks() {
+        selectedBtmSheetType.value = OptionsBtmSheetType.LINK
+        when (screenType.value) {
+            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                viewModelScope.launch {
+                    selectedImpLinks.toList().forEach {
+                        LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
                     }
                 }
+            }
 
-                else -> {
+            else -> {
                 viewModelScope.launch {
                     selectedLinksID.toList().forEach {
                         LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)

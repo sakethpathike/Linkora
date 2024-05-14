@@ -215,42 +215,42 @@ fun ParentHomeScreen(navController: NavController) {
                                 imageVector = Icons.Default.Cancel, contentDescription = null
                             )
                         }
-                        }
-                    }, title = {
-                        if (homeScreenVM.isSelectionModeEnabled.value) {
-                            Row {
-                                AnimatedContent(
-                                    targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size,
-                                    label = "",
-                                    transitionSpec = {
-                                        ContentTransform(
-                                            initialContentExit = slideOutVertically(
-                                                animationSpec = tween(
-                                                    150
-                                                )
-                                            ) + fadeOut(
-                                                tween(150)
-                                            ), targetContentEnter = slideInVertically(
-                                                animationSpec = tween(durationMillis = 150)
-                                            ) + fadeIn(
-                                                tween(150)
+                    }
+                }, title = {
+                    if (homeScreenVM.isSelectionModeEnabled.value) {
+                        Row {
+                            AnimatedContent(
+                                targetState = homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size,
+                                label = "",
+                                transitionSpec = {
+                                    ContentTransform(
+                                        initialContentExit = slideOutVertically(
+                                            animationSpec = tween(
+                                                150
                                             )
+                                        ) + fadeOut(
+                                            tween(150)
+                                        ), targetContentEnter = slideInVertically(
+                                            animationSpec = tween(durationMillis = 150)
+                                        ) + fadeIn(
+                                            tween(150)
                                         )
-                                    }) {
-                                    Text(
-                                        text = it.toString(),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontSize = 18.sp
                                     )
-                                }
+                                }) {
                                 Text(
-                                    text = if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size == 1) " item" else " items selected",
+                                    text = it.toString(),
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp
                                 )
                             }
+                            Text(
+                                text = if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size == 1) " item" else " items selected",
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 18.sp
+                            )
+                        }
                     } else {
                         Text(
                             text = homeScreenVM.currentPhaseOfTheDay.value,
@@ -281,14 +281,14 @@ fun ParentHomeScreen(navController: NavController) {
                             )
                         }
                     } else {
-                            IconButton(
-                                modifier = Modifier.pulsateEffect(),
-                                onClick = { shouldSortingBottomSheetAppear.value = true }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                    contentDescription = null
-                                )
-                            }
+                        IconButton(
+                            modifier = Modifier.pulsateEffect(),
+                            onClick = { shouldSortingBottomSheetAppear.value = true }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                contentDescription = null
+                            )
+                        }
                     }
                 })
             }) {
@@ -389,15 +389,43 @@ fun ParentHomeScreen(navController: NavController) {
                 ) {
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
-                                Column(modifier = Modifier.animateContentSize()) {
-                                    if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
+                            Column(modifier = Modifier.animateContentSize()) {
+                                if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
+                                    ScrollableTabRow(
+                                        divider = {},
+                                        modifier = Modifier
+                                            .fillMaxWidth(),
+                                        selectedTabIndex = pagerState.currentPage
+                                    ) {
+                                        homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                            Tab(
+                                                selected = pagerState.currentPage == index,
+                                                onClick = {
+                                                    coroutineScope.launch {
+                                                        pagerState.animateScrollToPage(index)
+                                                    }.start()
+                                                }) {
+                                                Text(
+                                                    text = homeScreenListsElement.folderName,
+                                                    style = MaterialTheme.typography.titleLarge,
+                                                    fontSize = 18.sp,
+                                                    modifier = Modifier.padding(15.dp),
+                                                    color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
+                                                        0.70f
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+                                } else if (selectedShelfID.longValue == (-1).toLong()) {
+                                    Column {
                                         ScrollableTabRow(
                                             divider = {},
                                             modifier = Modifier
                                                 .fillMaxWidth(),
                                             selectedTabIndex = pagerState.currentPage
                                         ) {
-                                            homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                            homeScreenVM.defaultScreenData.forEachIndexed { index, archiveScreenModal ->
                                                 Tab(
                                                     selected = pagerState.currentPage == index,
                                                     onClick = {
@@ -406,7 +434,7 @@ fun ParentHomeScreen(navController: NavController) {
                                                         }.start()
                                                     }) {
                                                     Text(
-                                                        text = homeScreenListsElement.folderName,
+                                                        text = archiveScreenModal.name,
                                                         style = MaterialTheme.typography.titleLarge,
                                                         fontSize = 18.sp,
                                                         modifier = Modifier.padding(15.dp),
@@ -417,37 +445,9 @@ fun ParentHomeScreen(navController: NavController) {
                                                 }
                                             }
                                         }
-                                    } else if (selectedShelfID.longValue == (-1).toLong()) {
-                                        Column {
-                                            ScrollableTabRow(
-                                                divider = {},
-                                                modifier = Modifier
-                                                    .fillMaxWidth(),
-                                                selectedTabIndex = pagerState.currentPage
-                                            ) {
-                                                homeScreenVM.defaultScreenData.forEachIndexed { index, archiveScreenModal ->
-                                                    Tab(
-                                                        selected = pagerState.currentPage == index,
-                                                        onClick = {
-                                                            coroutineScope.launch {
-                                                                pagerState.animateScrollToPage(index)
-                                                            }.start()
-                                                        }) {
-                                                        Text(
-                                                            text = archiveScreenModal.name,
-                                                            style = MaterialTheme.typography.titleLarge,
-                                                            fontSize = 18.sp,
-                                                            modifier = Modifier.padding(15.dp),
-                                                            color = if (pagerState.currentPage == index) primaryContentColor else MaterialTheme.colorScheme.onSurface.copy(
-                                                                0.70f
-                                                            )
-                                                        )
-                                                    }
-                                                }
-                                            }
-                                        }
                                     }
                                 }
+                            }
                         }
                     }
                     if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
@@ -693,28 +693,28 @@ fun ParentHomeScreen(navController: NavController) {
                     }
                 }
             }
-                if (shouldScreenTransparencyDecreasedBoxVisible.value) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.background.copy(0.85f))
-                            .clickable {
-                                shouldScreenTransparencyDecreasedBoxVisible.value = false
-                                coroutineScope
-                                    .launch {
-                                        awaitAll(async {
-                                            rotationAnimation.animateTo(
-                                                -360f, animationSpec = tween(300)
-                                            )
-                                        }, async { isMainFabRotated.value = false })
+            if (shouldScreenTransparencyDecreasedBoxVisible.value) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                        .clickable {
+                            shouldScreenTransparencyDecreasedBoxVisible.value = false
+                            coroutineScope
+                                .launch {
+                                    awaitAll(async {
+                                        rotationAnimation.animateTo(
+                                            -360f, animationSpec = tween(300)
+                                        )
+                                    }, async { isMainFabRotated.value = false })
+                                }
+                                .invokeOnCompletion {
+                                    coroutineScope.launch {
+                                        rotationAnimation.snapTo(0f)
                                     }
-                                    .invokeOnCompletion {
-                                        coroutineScope.launch {
-                                            rotationAnimation.snapTo(0f)
-                                        }
-                                    }
-                            })
-                }
+                                }
+                        })
+            }
         }
         SortingBottomSheetUI(
             SortingBottomSheetUIParam(

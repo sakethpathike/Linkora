@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
@@ -43,12 +44,14 @@ import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashRe
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.ExportImpl
 import com.sakethh.linkora.utils.ImportImpl
+import com.sakethh.linkora.utils.linkDataExtractor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
@@ -79,6 +82,7 @@ class SettingsScreenVM(
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
+
     companion object {
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
         const val APP_VERSION_NAME = "v0.5.0-alpha03"
@@ -348,6 +352,7 @@ class SettingsScreenVM(
                 }
             })
     }
+    val dataRefreshState = mutableIntStateOf(1)
     val generalSection: (context: Context) -> List<SettingsUIElement> = { context ->
         listOf(
             SettingsUIElement(title = "Use in-app browser",
@@ -362,9 +367,7 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.CUSTOM_TABS.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.isInAppWebTabEnabled.value = Settings.readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
@@ -383,9 +386,7 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.HOME_SCREEN_VISIBILITY.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.isHomeScreenEnabled.value = Settings.readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
@@ -404,9 +405,7 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.isBtmSheetEnabledForSavingLinks.value =
                             Settings.readSettingPreferenceValue(
@@ -426,9 +425,7 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.isAutoDetectTitleForLinksEnabled.value =
                             Settings.readSettingPreferenceValue(
@@ -448,9 +445,7 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_CHECK_UPDATES.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.isAutoCheckUpdatesEnabled.value =
                             Settings.readSettingPreferenceValue(
@@ -470,15 +465,71 @@ class SettingsScreenVM(
                         Settings.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
-                            ),
-                            dataStore = context.dataStore,
-                            newValue = it
+                            ), dataStore = context.dataStore, newValue = it
                         )
                         Settings.showDescriptionForSettingsState.value =
                             Settings.readSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
                                 dataStore = context.dataStore
                             ) == true
+                    }
+                }), SettingsUIElement(title = "Refresh titles and images of all links",
+                doesDescriptionExists = false,
+                description = "",
+                isSwitchNeeded = false,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.Refresh,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
+                    dataRefreshState.intValue = 0
+                    viewModelScope.launch {
+                        awaitAll(async {
+                            LocalDataBase.localDB.readDao().getAllFromLinksTable().toList()
+                                .forEach {
+                                    val newMetaData = linkDataExtractor(it.webURL)
+                                    LocalDataBase.localDB.updateDao().updateALinkDataFromLinksTable(
+                                        it.copy(
+                                            title = newMetaData.title.replace("&amp;", "&"),
+                                            imgURL = newMetaData.imgURL
+                                        )
+                                    )
+                                }
+                        }, async {
+                            LocalDataBase.localDB.readDao().getAllImpLinks().toList().forEach {
+                                val newMetaData = linkDataExtractor(it.webURL)
+                                LocalDataBase.localDB.updateDao().updateALinkDataFromImpLinksTable(
+                                    it.copy(
+                                        title = newMetaData.title.replace("&amp;", "&"),
+                                        imgURL = newMetaData.imgURL
+                                    )
+                                )
+                            }
+                        }, async {
+                            LocalDataBase.localDB.readDao().getAllArchiveLinks().toList().forEach {
+                                val newMetaData = linkDataExtractor(it.webURL)
+                                LocalDataBase.localDB.updateDao()
+                                    .updateALinkDataFromArchivedLinksTable(
+                                        it.copy(
+                                            title = newMetaData.title.replace("&amp;", "&"),
+                                            imgURL = newMetaData.imgURL
+                                        )
+                                    )
+                            }
+                        }, async {
+                            LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks().toList()
+                                .forEach {
+                                    val newMetaData = linkDataExtractor(it.webURL)
+                                    LocalDataBase.localDB.updateDao()
+                                        .updateALinkDataFromRecentlyVisitedLinksTable(
+                                            it.copy(
+                                                title = newMetaData.title.replace("&amp;", "&"),
+                                                imgURL = newMetaData.imgURL
+                                            )
+                                        )
+                                }
+                        })
+                    }.invokeOnCompletion {
+                        dataRefreshState.intValue = 1
                     }
                 })
         )
@@ -610,10 +661,7 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE,
-        CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS,
-        HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS,
-        IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
+        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
     }
 
     enum class SortingPreferences {
@@ -678,6 +726,7 @@ class SettingsScreenVM(
                 }
             }
         }
+
         suspend fun changeSortingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<String>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,

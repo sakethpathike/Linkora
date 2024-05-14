@@ -1227,7 +1227,7 @@ fun SearchScreen(navController: NavController) {
                                         if (historyLinksData.isNotEmpty()) {
                                             shouldSortingBottomSheetAppear.value = true
                                         }
-                                }) {
+                                    }) {
                                     if (historyLinksData.isNotEmpty()) {
                                         Icon(
                                             imageVector = Icons.AutoMirrored.Outlined.Sort,

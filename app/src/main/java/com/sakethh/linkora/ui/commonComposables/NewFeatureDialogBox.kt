@@ -189,8 +189,8 @@ fun NewFeatureDialogBox(isDialogBoxVisible: MutableState<Boolean> = mutableState
                                 SettingsScreenVM.SettingsPreferences.SAVED_APP_CODE.name
                             ), context.dataStore, SettingsScreenVM.APP_VERSION_CODE
                         )
-                    isDialogBoxVisible.value = false
-                }) {
+                        isDialogBoxVisible.value = false
+                    }) {
                     Text(
                         text = "Ok", style = MaterialTheme.typography.titleSmall, fontSize = 16.sp
                     )

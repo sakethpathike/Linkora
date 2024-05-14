@@ -33,9 +33,11 @@ import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.UnfoldMore
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -167,11 +169,11 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                     }
                 }, scrollBehavior = topAppBarScrollState, title = {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                            Text(
-                                text = topAppBarText,
-                                style = MaterialTheme.typography.titleMedium,
-                                fontSize = 18.sp
-                            )
+                        Text(
+                            text = topAppBarText,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 18.sp
+                        )
                         if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
                             Text(
                                 text = "Beta",
@@ -241,13 +243,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         description = null,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowSystemTheme,
                                         onSwitchStateChange = {
-                                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                                    preferenceKey = booleanPreferencesKey(
-                                                        SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
-                                                    ),
-                                                    dataStore = context.dataStore,
-                                                    newValue = !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
-                                                )
+                                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
+                                                ),
+                                                dataStore = context.dataStore,
+                                                newValue = !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
+                                            )
                                             coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
@@ -271,13 +273,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         isSwitchNeeded = true,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldDarkThemeBeEnabled,
                                         onSwitchStateChange = {
-                                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                                    preferenceKey = booleanPreferencesKey(
-                                                        SettingsScreenVM.SettingsPreferences.DARK_THEME.name
-                                                    ),
-                                                    dataStore = context.dataStore,
-                                                    newValue = !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
-                                                )
+                                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.DARK_THEME.name
+                                                ),
+                                                dataStore = context.dataStore,
+                                                newValue = !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
+                                            )
                                             coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
@@ -301,13 +303,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                         isSwitchNeeded = true,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowDynamicTheming,
                                         onSwitchStateChange = {
-                                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                                    preferenceKey = booleanPreferencesKey(
-                                                        SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
-                                                    ),
-                                                    dataStore = context.dataStore,
-                                                    newValue = !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
-                                                )
+                                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                                preferenceKey = booleanPreferencesKey(
+                                                    SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
+                                                ),
+                                                dataStore = context.dataStore,
+                                                newValue = !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
+                                            )
                                             coroutineScope.launch {
                                                 SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
                                                     SettingsScreenVM.Settings.readSettingPreferenceValue(
@@ -564,13 +566,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                     isSwitchNeeded = true,
                                     isSwitchEnabled = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled,
                                     onSwitchStateChange = {
-                                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                                preferenceKey = booleanPreferencesKey(
-                                                    SettingsScreenVM.SettingsPreferences.AUTO_CHECK_UPDATES.name
-                                                ),
-                                                dataStore = context.dataStore,
-                                                newValue = it
-                                            )
+                                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                            preferenceKey = booleanPreferencesKey(
+                                                SettingsScreenVM.SettingsPreferences.AUTO_CHECK_UPDATES.name
+                                            ),
+                                            dataStore = context.dataStore,
+                                            newValue = it
+                                        )
                                         coroutineScope.launch {
                                             SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value =
                                                 SettingsScreenVM.Settings.readSettingPreferenceValue(
@@ -739,6 +741,24 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                 })
         )
         NewFeatureDialogBox(isNewFeatureDialogBoxVisible)
+        if (settingsScreenVM.dataRefreshState.intValue != 1) {
+            AlertDialog(onDismissRequest = { }, confirmButton = { }, text = {
+                Box(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
+                }
+            }, title = {
+                Text(
+                    text = "Refreshing Titles and Images",
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = 16.sp
+                )
+            })
+        }
     }
 }
 

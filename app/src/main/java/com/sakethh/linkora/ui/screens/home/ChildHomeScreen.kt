@@ -528,7 +528,8 @@ fun ChildHomeScreen(
                     } else {
                         updateVM.archiveAFolderV10(selectedElementID.longValue)
                     }
-                }, noteForSaving = selectedNote.value,
+                },
+                noteForSaving = selectedNote.value,
                 onNoteDeleteCardClick = {
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         when (homeScreenType) {

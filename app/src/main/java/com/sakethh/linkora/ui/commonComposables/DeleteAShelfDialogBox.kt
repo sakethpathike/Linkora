@@ -13,8 +13,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
 data class DeleteAShelfDialogBoxDTO(
     val isDialogBoxVisible: MutableState<Boolean>,
@@ -65,15 +65,15 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                         lineHeight = 27.sp,
                         textAlign = TextAlign.Start
                     )
-            }, text = {
-                Text(
-                    text = "This shelf deletion can't be undone.",
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 14.sp,
-                    lineHeight = 18.sp,
-                    textAlign = TextAlign.Start
-                )
-            },
+                }, text = {
+                    Text(
+                        text = "This shelf deletion can't be undone.",
+                        style = MaterialTheme.typography.titleSmall,
+                        fontSize = 14.sp,
+                        lineHeight = 18.sp,
+                        textAlign = TextAlign.Start
+                    )
+                },
                 onDismissRequest = {
                     deleteAShelfDialogBoxDTO.isDialogBoxVisible.value = false
                 })

@@ -51,7 +51,8 @@ fun SettingsAppInfoComponent(
         )
     }
 
-    Card(shape = RoundedCornerShape(10.dp),
+    Card(
+        shape = RoundedCornerShape(10.dp),
         modifier = Modifier
             .padding(
                 top = paddingValues?.calculateTopPadding() ?: 20.dp,
@@ -86,10 +87,10 @@ fun SettingsAppInfoComponent(
                 }
             }
             Text(
-                    text = title,
-                    style = MaterialTheme.typography.titleSmall,
+                text = title,
+                style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp, lineHeight = 20.sp
-                )
+            )
         }
     }
 }

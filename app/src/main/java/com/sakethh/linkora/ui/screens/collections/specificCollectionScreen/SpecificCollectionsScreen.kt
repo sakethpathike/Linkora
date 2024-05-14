@@ -442,11 +442,11 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                 childFoldersData
                                             )
                                         }) {
-                                                Icon(
-                                                    imageVector = Icons.Default.Archive,
-                                                    contentDescription = null
-                                                )
-                                            }
+                                            Icon(
+                                                imageVector = Icons.Default.Archive,
+                                                contentDescription = null
+                                            )
+                                        }
                                     }
                                 }
 

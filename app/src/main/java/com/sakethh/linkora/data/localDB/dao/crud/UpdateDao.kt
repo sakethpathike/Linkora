@@ -4,8 +4,11 @@ import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
+import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
 import com.sakethh.linkora.data.localDB.dto.FoldersTable
+import com.sakethh.linkora.data.localDB.dto.ImportantLinks
 import com.sakethh.linkora.data.localDB.dto.LinksTable
+import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
 
 @Dao
 interface UpdateDao {
@@ -44,6 +47,15 @@ interface UpdateDao {
 
     @Update
     suspend fun updateALinkDataFromLinksTable(linksTable: LinksTable)
+
+    @Update
+    suspend fun updateALinkDataFromImpLinksTable(importantLinks: ImportantLinks)
+
+    @Update
+    suspend fun updateALinkDataFromRecentlyVisitedLinksTable(recentlyVisited: RecentlyVisited)
+
+    @Update
+    suspend fun updateALinkDataFromArchivedLinksTable(archivedLinks: ArchivedLinks)
 
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
