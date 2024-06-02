@@ -142,7 +142,8 @@ class UpdateVM : ViewModel() {
                             linkDataExtractor(importantLinks.webURL)
                         val linksData = ImportantLinks(
                             title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else importantLinks.title,
-                            webURL = importantLinks.webURL,
+                            webURL = "http" + importantLinks.webURL.substringAfter("http")
+                                .substringBefore("?").trim(),
                             baseURL = linkDataExtractor.baseURL,
                             imgURL = linkDataExtractor.imgURL,
                             infoForSaving = importantLinks.infoForSaving

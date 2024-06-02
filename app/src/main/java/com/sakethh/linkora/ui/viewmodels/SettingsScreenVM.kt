@@ -44,6 +44,7 @@ import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashRe
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.ExportImpl
 import com.sakethh.linkora.utils.ImportImpl
+import com.sakethh.linkora.utils.isNetworkAvailable
 import com.sakethh.linkora.utils.linkDataExtractor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -482,6 +483,11 @@ class SettingsScreenVM(
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
                     dataRefreshState.intValue = 0
+                    if (!isNetworkAvailable(context)) {
+                        // Toast is not supposed to be implemented in the VM and will be removed during the rewrite of this app
+                        Toast.makeText(context, "Network not found", Toast.LENGTH_SHORT).show()
+                        return@SettingsUIElement
+                    }
                     viewModelScope.launch {
                         awaitAll(async {
                             LocalDataBase.localDB.readDao().getAllFromLinksTable().toList()

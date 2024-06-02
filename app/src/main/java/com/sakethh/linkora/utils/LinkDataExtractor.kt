@@ -4,8 +4,6 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import io.ktor.client.request.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -29,26 +27,54 @@ suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
         }
     return withContext(Dispatchers.IO) {
         val rawHTML = if (!errorInGivenURL) {
-            Jsoup.connect(webURL)
-                .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
-                .referrer("http://www.google.com")
-                .followRedirects(true)
-                .header("Accept", "text/html")
-                .header("Accept-Encoding", "gzip,deflate")
-                .header(
-                    "Accept-Language",
-                    "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
-                )
-                .header("Connection", "keep-alive")
-                .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).get().toString()
+            try {
+                Jsoup.connect("http" + webURL.substringAfter("http").substringBefore("?").trim())
+                    .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+                    .referrer("http://www.google.com")
+                    .followRedirects(true)
+                    .header("Accept", "text/html")
+                    .header("Accept-Encoding", "gzip,deflate")
+                    .header(
+                        "Accept-Language",
+                        "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
+                    )
+                    .header("Connection", "keep-alive")
+                    .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).get().toString()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                ""
+            }
         } else {
             ""
         }
-        val imgURL = rawHTML.substringAfter("og:image").substringAfter("content=\"")
-            .substringBefore("\">").trim().let {
-                if (SettingsScreenVM.Settings.ktorClient.get(it).status.value == 200) {
+        val imgURL = rawHTML.split("\n").firstOrNull() {
+            it.contains("og:image")
+        }.let {
+            "http" + it?.substringAfter("http")?.substringBefore("\"")
+        }.trim().let {
+            try {
+                val statusValue = withContext(Dispatchers.IO) {
+                    Jsoup.connect(it)
+                        .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+                        .referrer("http://www.google.com")
+                        .followRedirects(true)
+                        .header("Accept", "text/html")
+                        .header("Accept-Encoding", "gzip,deflate")
+                        .header(
+                            "Accept-Language",
+                            "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
+                        )
+                        .header("Connection", "keep-alive")
+                        .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).execute()
+                        .statusCode()
+                }
+                if (statusValue == 200) {
                     it
                 } else {
+                    ""
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
                     ""
                 }
             }

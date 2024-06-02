@@ -89,7 +89,8 @@ class CreateVM : ViewModel() {
                         LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
                             importantLinks = ImportantLinks(
                                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                                webURL = webURL,
+                                webURL = "http" + webURL.substringAfter("http").substringBefore("?")
+                                    .trim(),
                                 baseURL = webURL,
                                 imgURL = linkDataExtractor.imgURL,
                                 infoForSaving = noteForSaving
@@ -157,7 +158,7 @@ class CreateVM : ViewModel() {
                     }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
-                        webURL = webURL,
+                        webURL = "http" + webURL.substringAfter("http").substringBefore("?").trim(),
                         baseURL = _linkDataExtractor.baseURL,
                         imgURL = _linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
@@ -236,7 +237,7 @@ class CreateVM : ViewModel() {
                     }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                        webURL = webURL,
+                        webURL = "http" + webURL.substringAfter("http").substringBefore("?").trim(),
                         baseURL = linkDataExtractor.baseURL,
                         imgURL = linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
