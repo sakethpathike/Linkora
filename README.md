@@ -32,14 +32,14 @@ Linkora is an Android project that focuses on making link organization simpler. 
 
 ## Releases
 
-The latest release of Linkora (v0.5.0-alpha03) is available
-on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha03).
+The latest release of Linkora (v0.5.0-alpha04) is available
+on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha04).
 You can download the APK file from there;
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha03/Linkora-v0.5.0-alpha03.apk).
+or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha04/Linkora-v0.5.0-alpha04.apk).
 
-[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0-alpha03%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0-alpha03%2FLinkora-v0.5.0-alpha03.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha03/Linkora-v0.5.0-alpha03.apk)
+[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0-alpha04%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0-alpha04%2FLinkora-v0.5.0-alpha04.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0-alpha04/Linkora-v0.5.0-alpha04.apk)
 
-[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0-alpha03%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0-alpha03">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha03)
+[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0-alpha04%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0-alpha04">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0-alpha04)
 
 ## Screenshots
 
@@ -81,7 +81,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 |                                                       Settings Screen                                                        |                                                       Settings Screen                                                        |
 |:----------------------------------------------------------------------------------------------------------------------------:|:----------------------------------------------------------------------------------------------------------------------------:|
-| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/6ff81b34-a59b-41e3-8f17-588cc73ca894) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a8fe798b-8aba-43d3-b0b0-3afa341791fa) |
+| ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/e382febc-690c-453c-9434-570f16cf2f21) | ![Settings Screen in Linkora](https://github.com/sakethpathike/Linkora/assets/83284398/a8fe798b-8aba-43d3-b0b0-3afa341791fa) |
 
 ### Sharing from other apps
 
@@ -105,7 +105,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - [ ] Saving multiple links in a single click
 - [ ] UI Updates
 
-**Note:** This project is not in active development, which doesn't mean the project is dead or that I'm no longer going to work on it. It's just that I'm working on a few other things, so don't expect regular updates. I'll push minor updates now and then.
+**Note:** This project is not in active development, which doesn't mean it's dead or that I've stopped working on it. I'm focusing on a few other things at the moment, so updates will be less regular. I'll push minor updates from time to time.
 
 Additionally, this project will undergo a major rewrite, which will take at least a few weeks once I start it.
 

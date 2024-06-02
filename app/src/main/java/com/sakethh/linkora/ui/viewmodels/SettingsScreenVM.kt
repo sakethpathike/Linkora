@@ -86,8 +86,8 @@ class SettingsScreenVM(
 
     companion object {
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
-        const val APP_VERSION_NAME = "v0.5.0-alpha03"
-        const val APP_VERSION_CODE = 20
+        const val APP_VERSION_NAME = "v0.5.0-alpha04"
+        const val APP_VERSION_CODE = 21
         val latestAppInfoFromServer = MutableAppInfoDTO(
             isNonStableVersion = mutableStateOf(false),
             isStableVersion = mutableStateOf(false),
