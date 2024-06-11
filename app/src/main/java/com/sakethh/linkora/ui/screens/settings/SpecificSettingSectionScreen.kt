@@ -28,6 +28,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
@@ -39,12 +42,16 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.FilledTonalIconToggleButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -58,10 +65,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign
@@ -70,6 +80,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
@@ -88,6 +99,7 @@ import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoCompon
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.theme.fonts
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.viewmodels.SettingsSections
@@ -155,6 +167,11 @@ fun SpecificSettingSectionScreen(navController: NavController) {
         SettingsSections.ABOUT -> "About"
         SettingsSections.ACKNOWLEDGMENT -> "Acknowledgments"
     }
+    val jsoupStringAgent = SettingsScreenVM.Settings.jsoupUserAgent
+    val isReadOnlyTextFieldForUserAgent = rememberSaveable {
+        mutableStateOf(true)
+    }
+    val focusRequester = remember { FocusRequester() }
     LinkoraTheme {
         Scaffold(topBar = {
             Column {
@@ -250,14 +267,8 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                 dataStore = context.dataStore,
                                                 newValue = !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
                                             )
-                                            coroutineScope.launch {
-                                                SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
-                                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
-                                                        preferenceKey = booleanPreferencesKey(
-                                                            SettingsScreenVM.SettingsPreferences.FOLLOW_SYSTEM_THEME.name
-                                                        ), dataStore = context.dataStore
-                                                    ) == true
-                                            }
+                                            SettingsScreenVM.Settings.shouldFollowSystemTheme.value =
+                                                !SettingsScreenVM.Settings.shouldFollowSystemTheme.value
                                         }, isIconNeeded = remember {
                                             mutableStateOf(false)
                                         })
@@ -280,14 +291,8 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                 dataStore = context.dataStore,
                                                 newValue = !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
                                             )
-                                            coroutineScope.launch {
-                                                SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
-                                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
-                                                        preferenceKey = booleanPreferencesKey(
-                                                            SettingsScreenVM.SettingsPreferences.DARK_THEME.name
-                                                        ), dataStore = context.dataStore
-                                                    ) == true
-                                            }
+                                            SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value =
+                                                !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value
                                         }, isIconNeeded = remember {
                                             mutableStateOf(false)
                                         })
@@ -310,14 +315,8 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                                 dataStore = context.dataStore,
                                                 newValue = !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
                                             )
-                                            coroutineScope.launch {
-                                                SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
-                                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
-                                                        preferenceKey = booleanPreferencesKey(
-                                                            SettingsScreenVM.SettingsPreferences.DYNAMIC_THEMING.name
-                                                        ), dataStore = context.dataStore
-                                                    ) == true
-                                            }
+                                            SettingsScreenVM.Settings.shouldFollowDynamicTheming.value =
+                                                !SettingsScreenVM.Settings.shouldFollowDynamicTheming.value
                                         }, isIconNeeded = remember {
                                             mutableStateOf(false)
                                         })
@@ -613,6 +612,89 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                             RegularSettingComponent(
                                 settingsUIElement = it
                             )
+                        }
+                        if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.GENERAL) {
+                            item(key = "JsoupUserAgent") {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 25.dp, end = 15.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    ProvideTextStyle(value = TextStyle(fontFamily = fonts)) {
+                                        OutlinedTextField(
+                                            supportingText = {
+                                                Text(
+                                                    text = "Helps detect images and titles from web page meta tags; different agent strings can change the detected data.",
+                                                    style = MaterialTheme.typography.titleSmall,
+                                                    lineHeight = 18.sp,
+                                                    modifier = Modifier.padding(
+                                                        top = 5.dp,
+                                                        bottom = 5.dp
+                                                    )
+                                                )
+                                            },
+                                            value = jsoupStringAgent.value,
+                                            onValueChange = {
+                                                jsoupStringAgent.value = it
+                                            },
+                                            readOnly = isReadOnlyTextFieldForUserAgent.value,
+                                            modifier = Modifier
+                                                .fillMaxWidth(0.8f)
+                                                .focusRequester(focusRequester),
+                                            label = {
+                                                Text(
+                                                    text = "User Agent",
+                                                    style = MaterialTheme.typography.titleSmall
+                                                )
+                                            }
+                                        )
+                                    }
+                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                                        FilledTonalIconToggleButton(
+                                            checked = !isReadOnlyTextFieldForUserAgent.value,
+                                            onCheckedChange = {
+                                                isReadOnlyTextFieldForUserAgent.value =
+                                                    !isReadOnlyTextFieldForUserAgent.value
+                                                if (!isReadOnlyTextFieldForUserAgent.value) {
+                                                    focusRequester.requestFocus()
+                                                } else {
+                                                    focusRequester.freeFocus()
+                                                }
+                                                if (isReadOnlyTextFieldForUserAgent.value) {
+                                                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                                        stringPreferencesKey(SettingsScreenVM.SettingsPreferences.JSOUP_USER_AGENT.name),
+                                                        context.dataStore,
+                                                        jsoupStringAgent.value
+                                                    )
+                                                    SettingsScreenVM.Settings.jsoupUserAgent.value =
+                                                        jsoupStringAgent.value
+                                                }
+                                            }) {
+                                            Icon(
+                                                imageVector = if (isReadOnlyTextFieldForUserAgent.value) Icons.Default.Edit else Icons.Default.Check,
+                                                contentDescription = ""
+                                            )
+                                        }
+                                        Spacer(modifier = Modifier.height(15.dp))
+                                        FilledTonalIconButton(onClick = {
+                                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                                stringPreferencesKey(SettingsScreenVM.SettingsPreferences.JSOUP_USER_AGENT.name),
+                                                context.dataStore,
+                                                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                                            )
+                                            SettingsScreenVM.Settings.jsoupUserAgent.value =
+                                                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Default.Restore,
+                                                contentDescription = ""
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

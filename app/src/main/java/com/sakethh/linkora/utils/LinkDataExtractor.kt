@@ -4,6 +4,7 @@ import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -28,8 +29,8 @@ suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
     return withContext(Dispatchers.IO) {
         val rawHTML = if (!errorInGivenURL) {
             try {
-                Jsoup.connect("http" + webURL.substringAfter("http").substringBefore("?").trim())
-                    .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+                Jsoup.connect("http" + webURL.substringAfter("http").substringBefore(" ").trim())
+                    .userAgent(SettingsScreenVM.Settings.jsoupUserAgent.value)
                     .referrer("http://www.google.com")
                     .followRedirects(true)
                     .header("Accept", "text/html")
@@ -55,7 +56,7 @@ suspend fun linkDataExtractor(webURL: String): LinkDataExtractor {
             try {
                 val statusValue = withContext(Dispatchers.IO) {
                     Jsoup.connect(it)
-                        .userAgent("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+                        .userAgent(SettingsScreenVM.Settings.jsoupUserAgent.value)
                         .referrer("http://www.google.com")
                         .followRedirects(true)
                         .header("Accept", "text/html")

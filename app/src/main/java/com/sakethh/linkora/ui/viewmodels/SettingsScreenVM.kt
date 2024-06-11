@@ -86,8 +86,8 @@ class SettingsScreenVM(
 
     companion object {
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
-        const val APP_VERSION_NAME = "v0.5.0-alpha04"
-        const val APP_VERSION_CODE = 21
+        const val APP_VERSION_NAME = "v0.5.0-alpha05"
+        const val APP_VERSION_CODE = 22
         val latestAppInfoFromServer = MutableAppInfoDTO(
             isNonStableVersion = mutableStateOf(false),
             isStableVersion = mutableStateOf(false),
@@ -343,10 +343,7 @@ class SettingsScreenVM(
                         dataStore = context.dataStore,
                         newValue = !isSendCrashReportsEnabled.value
                     )
-                    isSendCrashReportsEnabled.value = Settings.readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                        dataStore = context.dataStore
-                    ) == true
+                    isSendCrashReportsEnabled.value = !isSendCrashReportsEnabled.value
                 }.invokeOnCompletion {
                     val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
                     firebaseCrashlytics.setCrashlyticsCollectionEnabled(isSendCrashReportsEnabled.value)
@@ -370,10 +367,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.CUSTOM_TABS.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isInAppWebTabEnabled.value = Settings.readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
-                            dataStore = context.dataStore
-                        ) == true
+                        Settings.isInAppWebTabEnabled.value = it
                     }
                 }), SettingsUIElement(title = "Enable Home Screen",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
@@ -389,10 +383,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.HOME_SCREEN_VISIBILITY.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isHomeScreenEnabled.value = Settings.readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = context.dataStore
-                        ) == true
+                        Settings.isHomeScreenEnabled.value =  it
                     }
                 }), SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
@@ -408,11 +399,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isBtmSheetEnabledForSavingLinks.value =
-                            Settings.readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                                dataStore = context.dataStore
-                            ) == true
+                        Settings.isBtmSheetEnabledForSavingLinks.value = it
                     }
                 }), SettingsUIElement(title = "Auto-Detect Title",
                 doesDescriptionExists = true,
@@ -428,11 +415,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isAutoDetectTitleForLinksEnabled.value =
-                            Settings.readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                                dataStore = context.dataStore
-                            ) == true
+                        Settings.isAutoDetectTitleForLinksEnabled.value = it
                     }
                 }), SettingsUIElement(title = "Auto-Check for Updates",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
@@ -448,11 +431,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.AUTO_CHECK_UPDATES.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isAutoCheckUpdatesEnabled.value =
-                            Settings.readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
-                                dataStore = context.dataStore
-                            ) == true
+                        Settings.isAutoCheckUpdatesEnabled.value = it
                     }
                 }), SettingsUIElement(title = "Show description for Settings",
                 doesDescriptionExists = true,
@@ -468,11 +447,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.showDescriptionForSettingsState.value =
-                            Settings.readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
-                                dataStore = context.dataStore
-                            ) == true
+                        Settings.showDescriptionForSettingsState.value = it
                     }
                 }), SettingsUIElement(title = "Refresh titles and images of all links",
                 doesDescriptionExists = false,
@@ -667,7 +642,7 @@ class SettingsScreenVM(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
+        DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
     }
 
     enum class SortingPreferences {
@@ -691,9 +666,10 @@ class SettingsScreenVM(
         val showDescriptionForSettingsState = mutableStateOf(true)
         val isOnLatestUpdate = mutableStateOf(false)
         val didServerTimeOutErrorOccurred = mutableStateOf(false)
-        val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
+        private val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
         val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
-
+        val jsoupUserAgent =
+            mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
         suspend fun <T> readSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
@@ -760,6 +736,12 @@ class SettingsScreenVM(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
                         dataStore = context.dataStore
                     ) ?: false
+                }, async {
+                    jsoupUserAgent.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                        dataStore = context.dataStore
+                    )
+                        ?: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
                 }, async {
                     showDescriptionForSettingsState.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
