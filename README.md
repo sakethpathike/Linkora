@@ -37,10 +37,6 @@ on [GitHub Releases](https://github.com/sakethpathike/Linkora/releases/tag/relea
 You can download the APK file from there;
 or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0/Linkora-v0.5.0.apk).
 
-[<img  src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=Download%20v0.5.0%20APK&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Fdownload%2Frelease-v0.5.0%2FLinkora-v0.5.0.apk"/>](https://github.com/sakethpathike/Linkora/releases/download/release-v0.5.0/Linkora-v0.5.0.apk)
-
-[<img src="https://img.shields.io/github/downloads/sakethpathike/linkora/latest/total?style=for-the-badge&logo=github&label=v0.5.0%20release%20notes&link=https%3A%2F%2Fgithub.com%2Fsakethpathike%2FLinkora%2Freleases%2Ftag%2Frelease-v0.5.0">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.5.0)
-
 ## Screenshots
 
 ### Home Screen
