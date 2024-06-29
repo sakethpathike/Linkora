@@ -1,5 +1,9 @@
 ![Linkora Header](https://github.com/sakethpathike/Linkora/assets/83284398/08e63d01-c767-4e85-a7d2-1e605697e76d)
 Linkora is an Android project that focuses on making link organization simpler. From saving a single link individually to saving links in a folder for respective use cases, Linkora has almost all of them with a simpler UI and will be updated in further releases with a few other helpful and useful features that you would expect from a link utility app.
+## Join Discord
+<div align="">
+  <a href="https://discord.gg/ZDBXNtv8MD"><img src="https://discord.com/api/guilds/1214971383352664104/widget.png?style=banner2"/></a>
+</div>
 
 ## Features
 
