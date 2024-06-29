@@ -7,9 +7,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.Shelf
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.navigation.NavigationVM
 import com.sakethh.linkora.ui.screens.home.ChildHomeScreen

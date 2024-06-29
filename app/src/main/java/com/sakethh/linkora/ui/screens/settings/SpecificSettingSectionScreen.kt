@@ -84,7 +84,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam

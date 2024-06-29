@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
-import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.data.localDB.models.Shelf
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -3,7 +3,7 @@ package com.sakethh.linkora.ui.viewmodels.localDB
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.data.localDB.models.Shelf
 import com.sakethh.linkora.utils.DeleteAFolderFromShelf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

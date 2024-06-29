@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
+import com.sakethh.linkora.data.localDB.models.FoldersTable
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme

@@ -2,7 +2,7 @@ package com.sakethh.linkora.data.localDB.dao.sorting.folders
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
+import com.sakethh.linkora.data.localDB.models.FoldersTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao

@@ -1,16 +1,16 @@
-package com.sakethh.linkora.data.localDB.dto.exportImportDTOs
+package com.sakethh.linkora.data.localDB.models.exportImport
 
-import com.sakethh.linkora.data.localDB.dto.ArchivedFolders
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.LinksTable
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.ArchivedFolders
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.LinksTable
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ExportDTO(
+data class Export(
     @SerialName("appVersion")
     val schemaVersion: Int,
     @SerialName("savedLinks")

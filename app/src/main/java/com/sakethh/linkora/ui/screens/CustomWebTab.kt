@@ -11,7 +11,7 @@ import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.UriHandler
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

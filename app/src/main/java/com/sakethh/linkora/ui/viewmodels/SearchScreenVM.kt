@@ -8,11 +8,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.LinksTable
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.LinksTable
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
 import kotlinx.coroutines.Dispatchers

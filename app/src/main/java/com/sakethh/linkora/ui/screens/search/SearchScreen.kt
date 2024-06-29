@@ -61,7 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
 import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
 import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI

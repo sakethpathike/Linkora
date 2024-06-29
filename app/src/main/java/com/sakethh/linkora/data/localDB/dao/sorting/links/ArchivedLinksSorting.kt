@@ -2,7 +2,7 @@ package com.sakethh.linkora.data.localDB.dao.sorting.links
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
 import kotlinx.coroutines.flow.Flow
 
 @Dao

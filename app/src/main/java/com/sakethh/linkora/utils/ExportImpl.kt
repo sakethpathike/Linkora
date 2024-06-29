@@ -3,7 +3,7 @@ package com.sakethh.linkora.utils
 import android.os.Build
 import android.os.Environment
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.exportImportDTOs.ExportDTO
+import com.sakethh.linkora.data.localDB.models.exportImport.Export
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
@@ -60,7 +60,7 @@ class ExportImpl {
         val exportHistoryLinks = _exportHistoryLinks.await()
         file.writeText(
             Json.encodeToString(
-                ExportDTO(
+                Export(
                     schemaVersion = 10,
                     linksTable = exportAllLinks,
                     importantLinksTable = exportImpLinks,

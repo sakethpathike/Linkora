@@ -57,8 +57,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam

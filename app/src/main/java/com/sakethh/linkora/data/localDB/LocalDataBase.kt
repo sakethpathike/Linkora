@@ -24,15 +24,15 @@ import com.sakethh.linkora.data.localDB.dao.sorting.links.HistoryLinksSorting
 import com.sakethh.linkora.data.localDB.dao.sorting.links.ImportantLinksSorting
 import com.sakethh.linkora.data.localDB.dao.sorting.links.RegularFolderLinksSorting
 import com.sakethh.linkora.data.localDB.dao.sorting.links.SavedLinksSorting
-import com.sakethh.linkora.data.localDB.dto.ArchivedFolders
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
-import com.sakethh.linkora.data.localDB.dto.ImportantFolders
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.LinksTable
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
-import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.data.localDB.models.ArchivedFolders
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
+import com.sakethh.linkora.data.localDB.models.ImportantFolders
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.LinksTable
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.Shelf
 import com.sakethh.linkora.data.localDB.typeConverters.LongToStringConverter
 
 @Database(

@@ -10,10 +10,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.ArchivedFolders
-import com.sakethh.linkora.data.localDB.dto.ArchivedLinks
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.LinksTable
+import com.sakethh.linkora.data.localDB.models.ArchivedFolders
+import com.sakethh.linkora.data.localDB.models.ArchivedLinks
+import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.localDB.models.LinksTable
 import com.sakethh.linkora.ui.screens.collections.archiveScreen.ChildArchiveScreen
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM

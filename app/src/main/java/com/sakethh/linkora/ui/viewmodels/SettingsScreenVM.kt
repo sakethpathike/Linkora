@@ -10,7 +10,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShortText
 import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Home
@@ -35,7 +34,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.RecentlyVisited
+import com.sakethh.linkora.data.localDB.models.RecentlyVisited
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
@@ -385,7 +384,7 @@ class SettingsScreenVM(
                         )
                         Settings.isHomeScreenEnabled.value =  it
                     }
-                }), SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
+                })/*, SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
                 description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
                 isSwitchNeeded = true,
@@ -401,7 +400,7 @@ class SettingsScreenVM(
                         )
                         Settings.isBtmSheetEnabledForSavingLinks.value = it
                     }
-                }), SettingsUIElement(title = "Auto-Detect Title",
+                })*/, SettingsUIElement(title = "Auto-Detect Title",
                 doesDescriptionExists = true,
                 description = "Note: This may not detect every website.",
                 isSwitchNeeded = true,
@@ -776,10 +775,10 @@ class SettingsScreenVM(
                         ) == true
                     }
                 }, async {
-                    isBtmSheetEnabledForSavingLinks.value = readSettingPreferenceValue(
+                    isBtmSheetEnabledForSavingLinks.value =/* readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                         dataStore = context.dataStore
-                    ) ?: false
+                    ) ?:*/ false
                 }, async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),

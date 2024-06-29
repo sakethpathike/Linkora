@@ -3,7 +3,7 @@ package com.sakethh.linkora.ui.viewmodels.localDB
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
+import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest

@@ -5,11 +5,11 @@ import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.dto.FoldersTable
-import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
-import com.sakethh.linkora.data.localDB.dto.ImportantLinks
-import com.sakethh.linkora.data.localDB.dto.LinksTable
-import com.sakethh.linkora.data.localDB.dto.Shelf
+import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
+import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.localDB.models.LinksTable
+import com.sakethh.linkora.data.localDB.models.Shelf
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.utils.LinkDataExtractor
 import com.sakethh.linkora.utils.isNetworkAvailable
@@ -89,8 +89,7 @@ class CreateVM : ViewModel() {
                         LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
                             importantLinks = ImportantLinks(
                                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                                webURL = "http" + webURL.substringAfter("http").substringBefore("?")
-                                    .trim(),
+                                webURL = "http" + webURL.substringAfter("http").substringBefore(" ").trim(),
                                 baseURL = webURL,
                                 imgURL = linkDataExtractor.imgURL,
                                 infoForSaving = noteForSaving
@@ -158,7 +157,7 @@ class CreateVM : ViewModel() {
                     }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) _linkDataExtractor.title else title,
-                        webURL = "http" + webURL.substringAfter("http").substringBefore("?").trim(),
+                        webURL = "http" + webURL.substringAfter("http").substringBefore(" ").trim(),
                         baseURL = _linkDataExtractor.baseURL,
                         imgURL = _linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,
@@ -237,7 +236,7 @@ class CreateVM : ViewModel() {
                     }
                     val linkData = LinksTable(
                         title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                        webURL = "http" + webURL.substringAfter("http").substringBefore("?").trim(),
+                        webURL = "http" + webURL.substringAfter("http").substringBefore(" ").trim(),
                         baseURL = linkDataExtractor.baseURL,
                         imgURL = linkDataExtractor.imgURL,
                         infoForSaving = noteForSaving,

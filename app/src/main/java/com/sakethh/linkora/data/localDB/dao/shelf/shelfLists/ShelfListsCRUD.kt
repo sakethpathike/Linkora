@@ -4,7 +4,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.sakethh.linkora.data.localDB.dto.HomeScreenListTable
+import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao

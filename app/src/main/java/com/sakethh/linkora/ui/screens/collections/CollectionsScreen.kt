@@ -885,28 +885,34 @@ fun FolderIndividualComponent(
                     )
                 }
             }
-            if (showMoreIcon) {
-                IconButton(onClick = { onMoreIconClick() }) {
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null
-                    )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 15.dp), contentAlignment = Alignment.CenterEnd
+            ) {
+                if (showMoreIcon) {
+                    IconButton(onClick = { onMoreIconClick() }) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = null
+                        )
+                    }
                 }
-            }
-            if (showCheckBox.value && inSelectionMode) {
-                Checkbox(
-                    checked = isCheckBoxChecked.value,
-                    onCheckedChange = {
-                        checkBoxState(it)
-                        isCheckBoxChecked.value = it
-                    })
-            } else if (showCheckBox.value && !inSelectionMode) {
-                Checkbox(
-                    checked = isCheckBoxChecked.value,
-                    onCheckedChange = {
-                        checkBoxState(it)
-                        isCheckBoxChecked.value = it
-                    })
+                if (showCheckBox.value && inSelectionMode) {
+                    Checkbox(
+                        checked = isCheckBoxChecked.value,
+                        onCheckedChange = {
+                            checkBoxState(it)
+                            isCheckBoxChecked.value = it
+                        })
+                } else if (showCheckBox.value && !inSelectionMode) {
+                    Checkbox(
+                        checked = isCheckBoxChecked.value,
+                        onCheckedChange = {
+                            checkBoxState(it)
+                            isCheckBoxChecked.value = it
+                        })
+                }
             }
         }
         HorizontalDivider(
