@@ -4,12 +4,12 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.FoldersTable
-import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
-import com.sakethh.linkora.data.localDB.models.ImportantLinks
-import com.sakethh.linkora.data.localDB.models.LinksTable
-import com.sakethh.linkora.data.localDB.models.Shelf
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.HomeScreenListTable
+import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.utils.LinkDataExtractor
 import com.sakethh.linkora.utils.isNetworkAvailable
@@ -23,7 +23,7 @@ class CreateVM : ViewModel() {
 
     fun addANewShelf(shelf: Shelf, context: Context) {
         viewModelScope.launch {
-            if (LocalDataBase.localDB.shelfCrud().doesThisShelfExists(shelf.shelfName)) {
+            if (LocalDatabase.localDB.shelfCrud().doesThisShelfExists(shelf.shelfName)) {
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context,
@@ -32,7 +32,7 @@ class CreateVM : ViewModel() {
                     ).show()
                 }
             } else {
-                LocalDataBase.localDB.shelfCrud().addANewShelf(shelf)
+                LocalDatabase.localDB.shelfCrud().addANewShelf(shelf)
             }
         }
     }
@@ -47,7 +47,7 @@ class CreateVM : ViewModel() {
     ) {
         viewModelScope.launch {
             val doesThisLinkExists = async {
-                LocalDataBase.localDB.readDao().doesThisExistsInImpLinks(
+                LocalDatabase.localDB.readDao().doesThisExistsInImpLinks(
                     webURL
                 )
             }.await()
@@ -86,7 +86,7 @@ class CreateVM : ViewModel() {
                                 LinkDataExtractor(baseURL = webURL, imgURL = "", title = "", false)
                             }
                         }.await()
-                        LocalDataBase.localDB.createDao().addANewLinkToImpLinks(
+                        LocalDatabase.localDB.createDao().addANewLinkToImpLinks(
                             importantLinks = ImportantLinks(
                                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
                                 webURL = "http" + webURL.substringAfter("http").substringBefore(" ").trim(),
@@ -113,7 +113,7 @@ class CreateVM : ViewModel() {
     ) {
         var doesThisLinkExists = false
         viewModelScope.launch {
-            doesThisLinkExists = LocalDataBase.localDB.readDao().doesThisExistsInSavedLinks(
+            doesThisLinkExists = LocalDatabase.localDB.readDao().doesThisExistsInSavedLinks(
                 webURL
             )
         }.invokeOnCompletion {
@@ -169,7 +169,7 @@ class CreateVM : ViewModel() {
                         isLinkedWithArchivedFolder = false,
                         keyOfArchiveLinkedFolderV10 = 0
                     )
-                    LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                    LocalDatabase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "added the link", Toast.LENGTH_SHORT).show()
                     }
@@ -192,7 +192,7 @@ class CreateVM : ViewModel() {
     ) {
         viewModelScope.launch {
             val doesThisLinkExists = async {
-                LocalDataBase.localDB.readDao().doesThisLinkExistsInAFolderV10(
+                LocalDatabase.localDB.readDao().doesThisLinkExistsInAFolderV10(
                     webURL, parentFolderID
                 )
             }.await()
@@ -249,7 +249,7 @@ class CreateVM : ViewModel() {
                         keyOfArchiveLinkedFolderV10 = 0,
                         keyOfImpLinkedFolder = ""
                     )
-                    LocalDataBase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                    LocalDatabase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(linkData)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "added the url", Toast.LENGTH_SHORT).show()
                     }
@@ -272,9 +272,9 @@ class CreateVM : ViewModel() {
         var doesThisFolderExists = false
         viewModelScope.launch {
             doesThisFolderExists = if (!inAChildFolderScreen) {
-                LocalDataBase.localDB.readDao().doesThisRootFolderExists(folderName = folderName)
+                LocalDatabase.localDB.readDao().doesThisRootFolderExists(folderName = folderName)
             } else {
-                LocalDataBase.localDB.readDao().doesThisChildFolderExists(
+                LocalDatabase.localDB.readDao().doesThisChildFolderExists(
                     folderName = folderName, parentFolderID = parentFolderID
                 ) >= 1
             }
@@ -298,13 +298,13 @@ class CreateVM : ViewModel() {
                         parentFolderID = parentFolderID,
                     )
                     foldersTable.childFolderIDs = emptyList()
-                    LocalDataBase.localDB.createDao().addANewFolder(
+                    LocalDatabase.localDB.createDao().addANewFolder(
                         foldersTable
                     )
                     if (parentFolderID != null) {
-                        LocalDataBase.localDB.createDao().addANewChildIdToARootAndParentFolders(
+                        LocalDatabase.localDB.createDao().addANewChildIdToARootAndParentFolders(
                             rootParentID = rootParentID,
-                            currentID = LocalDataBase.localDB.readDao().getLatestAddedFolder().id,
+                            currentID = LocalDatabase.localDB.readDao().getLatestAddedFolder().id,
                             parentID = parentFolderID
                         )
                     }
@@ -327,12 +327,12 @@ class CreateVM : ViewModel() {
             val homeScreenListTable =
                 HomeScreenListTable(id = folderID, position = withContext(Dispatchers.IO) {
                     try {
-                        ++LocalDataBase.localDB.shelfFolders().getLastInsertedElement().position
+                        ++LocalDatabase.localDB.shelfFolders().getLastInsertedElement().position
                     } catch (_: NullPointerException) {
                         1
                     }
                 }, folderName = folderName, parentShelfID = parentShelfID)
-            LocalDataBase.localDB.shelfFolders().addAHomeScreenListFolder(homeScreenListTable)
+            LocalDatabase.localDB.shelfFolders().addAHomeScreenListFolder(homeScreenListTable)
         }
     }
 }

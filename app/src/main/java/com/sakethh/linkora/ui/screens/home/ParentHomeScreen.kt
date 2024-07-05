@@ -93,7 +93,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
 import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam
@@ -464,7 +464,7 @@ fun ParentHomeScreen(navController: NavController) {
                                 navController = navController,
                                 folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                        LocalDatabase.localDB.regularFolderLinksSorting()
                                             .sortByAToZV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -472,7 +472,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                        LocalDatabase.localDB.regularFolderLinksSorting()
                                             .sortByZToAV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -480,7 +480,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                        LocalDatabase.localDB.regularFolderLinksSorting()
                                             .sortByLatestToOldestV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -488,7 +488,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                        LocalDataBase.localDB.regularFolderLinksSorting()
+                                        LocalDatabase.localDB.regularFolderLinksSorting()
                                             .sortByOldestToLatestV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -496,7 +496,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     else -> {
-                                        LocalDataBase.localDB.readDao()
+                                        LocalDatabase.localDB.readDao()
                                             .getLinksOfThisFolderV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -505,7 +505,7 @@ fun ParentHomeScreen(navController: NavController) {
                                 },
                                 childFoldersData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                        LocalDatabase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByAToZ(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -513,7 +513,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                        LocalDatabase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByZToA(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -521,7 +521,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                        LocalDatabase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -529,7 +529,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                        LocalDataBase.localDB.subFoldersSortingDao()
+                                        LocalDatabase.localDB.subFoldersSortingDao()
                                             .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -537,7 +537,7 @@ fun ParentHomeScreen(navController: NavController) {
                                     }
 
                                     else -> {
-                                        LocalDataBase.localDB.readDao()
+                                        LocalDatabase.localDB.readDao()
                                             .getChildFoldersOfThisParentID(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()

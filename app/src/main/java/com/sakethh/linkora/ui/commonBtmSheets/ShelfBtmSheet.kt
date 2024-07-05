@@ -58,7 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.data.localDB.models.Shelf
+import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfDTO
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfDialogBox

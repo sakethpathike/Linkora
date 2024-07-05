@@ -27,7 +27,7 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.data.localDB.models.RecentlyVisited
+import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM

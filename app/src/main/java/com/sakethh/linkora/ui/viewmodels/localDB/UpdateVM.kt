@@ -4,11 +4,11 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.ArchivedLinks
-import com.sakethh.linkora.data.localDB.models.FoldersTable
-import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
-import com.sakethh.linkora.data.localDB.models.ImportantLinks
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.HomeScreenListTable
+import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.utils.isNetworkAvailable
@@ -22,47 +22,47 @@ class UpdateVM : ViewModel() {
 
     fun updateFolderName(folderID: Long, newFolderName: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameAFolderName(folderID, newFolderName)
+            LocalDatabase.localDB.updateDao().renameAFolderName(folderID, newFolderName)
         }
     }
 
     fun updateAShelfName(newShelfName: String, shelfID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfCrud().updateAShelfName(newShelfName, shelfID)
+            LocalDatabase.localDB.shelfCrud().updateAShelfName(newShelfName, shelfID)
         }
     }
 
     fun updateRegularLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
             async {
-                LocalDataBase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
+                LocalDatabase.localDB.updateDao().renameALinkTitle(linkID, newTitle)
             }.await()
         }
     }
 
     fun updateImpLinkTitle(linkID: Long, newTitle: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameALinkTitleFromImpLinks(linkID, newTitle)
+            LocalDatabase.localDB.updateDao().renameALinkTitleFromImpLinks(linkID, newTitle)
         }
     }
 
     fun updateRegularLinkNote(linkID: Long, newNote: String) {
         viewModelScope.launch {
             async {
-                LocalDataBase.localDB.updateDao().renameALinkInfo(linkID, newNote)
+                LocalDatabase.localDB.updateDao().renameALinkInfo(linkID, newNote)
             }.await()
         }
     }
 
     fun updateImpLinkNote(linkID: Long, newNote: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameALinkInfoFromImpLinks(linkID, newNote)
+            LocalDatabase.localDB.updateDao().renameALinkInfoFromImpLinks(linkID, newNote)
         }
     }
 
     fun updateFolderNote(folderID: Long, newFolderNote: String) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().renameAFolderNoteV10(folderID, newFolderNote)
+            LocalDatabase.localDB.updateDao().renameAFolderNoteV10(folderID, newFolderNote)
         }
     }
 
@@ -76,7 +76,7 @@ class UpdateVM : ViewModel() {
         var doesLinkExists = false
         viewModelScope.launch {
             doesLinkExists =
-                LocalDataBase.localDB.readDao()
+                LocalDatabase.localDB.readDao()
                     .doesThisExistsInImpLinks(webURL = importantLinks.webURL)
         }.invokeOnCompletion {
             if (doesLinkExists) {
@@ -95,7 +95,7 @@ class UpdateVM : ViewModel() {
                     }
                 } else {
                     viewModelScope.launch {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteALinkFromImpLinksBasedOnURL(importantLinks.webURL)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
@@ -148,7 +148,7 @@ class UpdateVM : ViewModel() {
                             imgURL = linkDataExtractor.imgURL,
                             infoForSaving = importantLinks.infoForSaving
                         )
-                        LocalDataBase.localDB.createDao()
+                        LocalDatabase.localDB.createDao()
                             .addANewLinkToImpLinks(importantLinks = linksData)
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
@@ -174,12 +174,12 @@ class UpdateVM : ViewModel() {
         var doesArchiveLinkExists = false
         viewModelScope.launch {
             doesArchiveLinkExists =
-                LocalDataBase.localDB.readDao()
+                LocalDatabase.localDB.readDao()
                     .doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)
         }.invokeOnCompletion {
             if (doesArchiveLinkExists) {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkFromArchiveLinksV9(webURL = archivedLinks.webURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
@@ -194,7 +194,7 @@ class UpdateVM : ViewModel() {
                 }
             } else {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.createDao()
+                    LocalDatabase.localDB.createDao()
                         .addANewLinkToArchiveLink(archivedLinks = archivedLinks)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "moved the link to archive(s)", Toast.LENGTH_SHORT)
@@ -210,13 +210,13 @@ class UpdateVM : ViewModel() {
 
     fun archiveAFolderV10(folderID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao().moveAFolderToArchivesV10(folderID)
+            LocalDatabase.localDB.updateDao().moveAFolderToArchivesV10(folderID)
         }
     }
 
 
     fun migrateRegularFoldersLinksDataFromV9toV10() {
-        val localDataBase = LocalDataBase.localDB
+        val localDataBase = LocalDatabase.localDB
         viewModelScope.launch {
             localDataBase.readDao().getAllRootFolders().collect { rootFolders ->
                 rootFolders.forEach { currentFolder ->
@@ -240,7 +240,7 @@ class UpdateVM : ViewModel() {
     }
 
     fun migrateArchiveFoldersV9toV10() {
-        val localDataBase = LocalDataBase.localDB
+        val localDataBase = LocalDatabase.localDB
         viewModelScope.launch {
             localDataBase.readDao().getAllArchiveFoldersV9().collect { archiveFolders ->
                 archiveFolders.forEach { currentFolder ->
@@ -283,7 +283,7 @@ class UpdateVM : ViewModel() {
 
     fun updateHomeListElement(homeScreenListTableElement: HomeScreenListTable) {
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfFolders().updateElement(homeScreenListTableElement)
+            LocalDatabase.localDB.shelfFolders().updateElement(homeScreenListTableElement)
         }
     }
 }

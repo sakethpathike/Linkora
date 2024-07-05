@@ -10,6 +10,7 @@
         android:maxSdkVersion="32" />
 
     <application
+        android:name=".di.LinkoraApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="true"

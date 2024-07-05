@@ -23,7 +23,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -33,12 +33,14 @@ import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.isNetworkAvailable
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -98,7 +100,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LocalDataBase.localDB = LocalDataBase.getLocalDB(context = context)
+                LocalDatabase.localDB = LocalDatabase.getLocalDB(context = context)
                 LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                     async {
                         if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
@@ -124,7 +126,7 @@ class MainActivity : ComponentActivity() {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 this.launch {
-                                    if (LocalDataBase.localDB.readDao().getAllArchiveFoldersV9List()
+                                    if (LocalDatabase.localDB.readDao().getAllArchiveFoldersV9List()
                                             .isNotEmpty()
                                     ) {
                                         UpdateVM().migrateArchiveFoldersV9toV10()
@@ -138,7 +140,7 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                if (LocalDataBase.localDB.readDao().getAllRootFoldersList()
+                                if (LocalDatabase.localDB.readDao().getAllRootFoldersList()
                                         .isNotEmpty()
                                 ) {
                                     UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()

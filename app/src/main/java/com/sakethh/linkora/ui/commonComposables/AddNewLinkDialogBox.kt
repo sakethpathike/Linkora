@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -66,7 +65,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.ui.commonBtmSheets.SelectableFolderUIComponent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
@@ -397,7 +396,7 @@ fun AddNewLinkDialogBox(
                                     .pulsateEffect(),
                                 onClick = {
                                     if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
-                                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
+                                        LocalDatabase.localDB = LocalDatabase.getLocalDB(context)
                                     }
                                     onSaveClick(
                                         isAutoDetectTitleEnabled.value,
@@ -431,11 +430,11 @@ fun AddNewLinkDialogBox(
                 }
                 if (isDropDownMenuIconClicked.value) {
                     val foldersTableData = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
-                        LocalDataBase.localDB = LocalDataBase.getLocalDB(context)
-                        LocalDataBase.localDB.readDao().getAllRootFolders()
+                        LocalDatabase.localDB = LocalDatabase.getLocalDB(context)
+                        LocalDatabase.localDB.readDao().getAllRootFolders()
                             .collectAsStateWithLifecycle(initialValue = emptyList()).value
                     } else {
-                        LocalDataBase.localDB.readDao().getAllRootFolders()
+                        LocalDatabase.localDB.readDao().getAllRootFolders()
                             .collectAsStateWithLifecycle(initialValue = emptyList()).value
                     }
                     ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {

@@ -26,7 +26,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.data.localDB.LocalDataBase
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
@@ -105,7 +105,7 @@ fun AddNewFolderDialogBox(
                                             async {
                                                 addNewFolderDialogBoxParam.newFolderData(
                                                     folderNameTextFieldValue.value,
-                                                    LocalDataBase.localDB.readDao()
+                                                    LocalDatabase.localDB.readDao()
                                                         .getLatestAddedFolder().id
                                                 )
                                             }.await()

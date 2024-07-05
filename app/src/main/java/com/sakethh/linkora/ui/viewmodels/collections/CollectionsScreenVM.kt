@@ -7,8 +7,8 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.FoldersTable
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.viewmodels.SearchScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
@@ -56,25 +56,25 @@ open class CollectionsScreenVM : ViewModel() {
             }, async {
                 selectedFoldersData.toList().forEach { folder ->
                     folder.childFolderIDs?.toTypedArray()
-                        ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
+                        ?.let { LocalDatabase.localDB.deleteDao().deleteMultipleFolders(it) }
                     folder.childFolderIDs?.toTypedArray()
                         ?.let {
-                            LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
+                            LocalDatabase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
                         }
-                    LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
-                    LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
+                    LocalDatabase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
+                    LocalDatabase.localDB.deleteDao().deleteAFolder(folder.id)
                     DeleteAFolderFromShelf.execute(folder.id)
                 }
             }, async {
                 SearchScreenVM.selectedArchiveFoldersData.toList().forEach { folder ->
                     folder.childFolderIDs?.toTypedArray()
-                        ?.let { LocalDataBase.localDB.deleteDao().deleteMultipleFolders(it) }
+                        ?.let { LocalDatabase.localDB.deleteDao().deleteMultipleFolders(it) }
                     folder.childFolderIDs?.toTypedArray()
                         ?.let {
-                            LocalDataBase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
+                            LocalDatabase.localDB.deleteDao().deleteMultipleLinksFromLinksTable(it)
                         }
-                    LocalDataBase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
-                    LocalDataBase.localDB.deleteDao().deleteAFolder(folder.id)
+                    LocalDatabase.localDB.deleteDao().deleteThisFolderLinksV10(folder.id)
+                    LocalDatabase.localDB.deleteDao().deleteAFolder(folder.id)
                     DeleteAFolderFromShelf.execute(folder.id)
                 }
             })
@@ -84,7 +84,7 @@ open class CollectionsScreenVM : ViewModel() {
 
     fun archiveSelectedMultipleFolders() {
         viewModelScope.launch {
-            LocalDataBase.localDB.updateDao()
+            LocalDatabase.localDB.updateDao()
                 .moveAMultipleFoldersToArchivesV10(selectedFoldersData.toList().map { it.id }
                     .toTypedArray())
         }
@@ -120,7 +120,7 @@ open class CollectionsScreenVM : ViewModel() {
         when (sortingPreferences) {
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.regularFolderSorting().sortByAToZ()
+                    LocalDatabase.localDB.regularFolderSorting().sortByAToZ()
                         .collect {
                             val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                             List(it.size) { index ->
@@ -135,7 +135,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.regularFolderSorting().sortByZToA()
+                    LocalDatabase.localDB.regularFolderSorting().sortByZToA()
                         .collect {
                             val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                             List(it.size) { index ->
@@ -150,7 +150,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.regularFolderSorting()
+                    LocalDatabase.localDB.regularFolderSorting()
                         .sortByLatestToOldest()
                         .collect {
                             val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
@@ -166,7 +166,7 @@ open class CollectionsScreenVM : ViewModel() {
 
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.regularFolderSorting()
+                    LocalDatabase.localDB.regularFolderSorting()
                         .sortByOldestToLatest()
                         .collect {
                             val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
@@ -184,7 +184,7 @@ open class CollectionsScreenVM : ViewModel() {
 
     fun onNoteDeleteClick(context: Context, clickedFolderID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.deleteDao()
+            LocalDatabase.localDB.deleteDao()
                 .deleteAFolderNote(folderID = clickedFolderID)
             withContext(Dispatchers.Main) {
                 Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()

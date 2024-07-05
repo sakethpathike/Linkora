@@ -1,0 +1,224 @@
+package com.sakethh.linkora.data.local.links
+
+import androidx.room.Transaction
+import androidx.room.Update
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.RecentlyVisited
+import kotlinx.coroutines.flow.Flow
+
+interface LinksRepo {
+
+    suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
+
+
+    suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
+
+    suspend fun deleteANoteFromArchiveLinks(webURL: String)
+
+    suspend fun deleteALinkNoteFromArchiveBasedFolderLinksV10(
+        webURL: String,
+        folderID: Long,
+    )
+
+    suspend fun deleteALinkNoteFromArchiveBasedFolderLinksV9(
+        webURL: String,
+        folderName: String,
+    )
+
+    suspend fun deleteANoteFromImportantLinks(webURL: String)
+
+
+    suspend fun deleteANoteFromRecentlyVisited(webURL: String)
+
+
+    suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
+
+    suspend fun deleteALinkInfoOfFolders(linkID: Long)
+
+    suspend fun deleteALinkFromSavedLinksBasedOnURL(webURL: String)
+
+
+    suspend fun deleteALinkFromImpLinks(linkID: Long)
+
+    suspend fun deleteALinkFromImpLinksBasedOnURL(webURL: String)
+
+    suspend fun deleteALinkFromArchiveLinksV9(webURL: String)
+
+    suspend fun deleteALinkFromArchiveLinks(id: Long)
+
+    suspend fun deleteALinkFromArchiveFolderBasedLinksV10(webURL: String, archiveFolderID: Long)
+
+    suspend fun deleteALinkFromArchiveFolderBasedLinksV9(webURL: String, folderName: String)
+
+    suspend fun deleteALinkFromLinksTable(linkID: Long)
+
+
+    suspend fun deleteALinkFromSpecificFolderV10(webURL: String, folderID: Long)
+
+    suspend fun deleteALinkFromSpecificFolderV9(webURL: String, folderName: String)
+
+    suspend fun deleteARecentlyVisitedLink(webURL: String)
+
+    suspend fun deleteARecentlyVisitedLink(linkID: Long)
+
+    suspend fun deleteThisFolderLinksV10(folderID: Long)
+
+    suspend fun deleteMultipleLinksFromLinksTable(links: Array<Long>)
+
+    suspend fun deleteThisFolderLinksV9(folderName: String)
+
+    suspend fun deleteThisArchiveFolderDataV9(folderID: String)
+
+
+    suspend fun addANewLinkToImpLinks(importantLinks: ImportantLinks)
+
+
+    suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)
+
+    fun getAllSavedLinks(): Flow<List<LinksTable>>
+
+    suspend fun getAllFromLinksTable(): List<LinksTable>
+
+    suspend fun getAllRecentlyVisitedLinks(): List<RecentlyVisited>
+
+    suspend fun getAllImpLinks(): List<ImportantLinks>
+
+    suspend fun getAllArchiveLinks(): List<ArchivedLinks>
+
+
+    fun getAllArchiveFoldersLinks(): Flow<List<LinksTable>>
+
+
+    fun getLinksOfThisFolderV10(folderID: Long): Flow<List<LinksTable>>
+
+
+    fun getLinksOfThisFolderV9(folderName: String): Flow<List<LinksTable>>
+
+
+    fun getThisArchiveFolderLinksV10(folderID: Long): Flow<List<LinksTable>>
+
+    fun getThisArchiveFolderLinksV9(folderName: String): Flow<List<LinksTable>>
+
+    suspend fun doesThisExistsInImpLinks(webURL: String): Boolean
+
+    suspend fun doesThisExistsInSavedLinks(webURL: String): Boolean
+
+    suspend fun doesThisLinkExistsInAFolderV10(webURL: String, folderID: Long): Boolean
+
+
+    suspend fun getLastIDOfHistoryTable(): Long
+
+    suspend fun getLastIDOfLinksTable(): Long
+
+    suspend fun getLastIDOfImpLinksTable(): Long
+
+    suspend fun getLastIDOfArchivedLinksTable(): Long
+
+    suspend fun doesThisLinkExistsInAFolderV9(webURL: String, folderName: String): Boolean
+
+    suspend fun doesThisExistsInArchiveLinks(webURL: String): Boolean
+
+    suspend fun doesThisExistsInRecentlyVisitedLinks(webURL: String): Boolean
+
+
+    suspend fun isLinksTableEmpty(): Boolean
+
+
+    suspend fun isArchivedLinksTableEmpty(): Boolean
+
+    suspend fun isArchivedFoldersTableEmpty(): Boolean
+
+    suspend fun isImpLinksTableEmpty(): Boolean
+
+    suspend fun isHistoryLinksTableEmpty(): Boolean
+
+
+    suspend fun copyLinkFromLinksTableToArchiveLinks(id: Long)
+
+
+    suspend fun copyLinkFromImpLinksTableToArchiveLinks(id: Long)
+
+    suspend fun copyLinkFromImpTableToArchiveLinks(link: String)
+
+
+    suspend fun updateALinkDataFromLinksTable(linksTable: LinksTable)
+
+    suspend fun updateALinkDataFromImpLinksTable(importantLinks: ImportantLinks)
+
+    suspend fun updateALinkDataFromRecentlyVisitedLinksTable(recentlyVisited: RecentlyVisited)
+
+    suspend fun updateALinkDataFromArchivedLinksTable(archivedLinks: ArchivedLinks)
+
+    suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
+
+    suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
+
+    suspend fun renameALinkTitleFromImpLinks(id: Long, newTitle: String)
+
+    suspend fun renameALinkInfoFromImpLinks(id: Long, newInfo: String)
+
+    suspend fun renameALinkInfo(linkID: Long, newInfo: String)
+
+    suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
+
+    suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
+
+    suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
+
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinksV10(
+        webURL: String,
+        newInfo: String,
+        folderID: Long,
+    )
+
+    suspend fun renameALinkInfoFromArchiveBasedFolderLinksV9(
+        webURL: String,
+        newInfo: String,
+        folderName: String,
+    )
+
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV10(
+        webURL: String,
+        newTitle: String,
+        folderID: Long,
+    )
+
+    suspend fun renameALinkTitleFromArchiveBasedFolderLinksV9(
+        webURL: String,
+        newTitle: String,
+        folderName: String,
+    )
+
+
+    suspend fun renameFolderNameForExistingArchivedFolderDataV9(
+        currentFolderName: String, newFolderName: String
+    )
+
+    suspend fun renameFolderNameForExistingFolderDataV9(
+        currentFolderName: String, newFolderName: String
+    )
+
+    suspend fun moveFolderLinksDataToArchiveV9(
+        folderName: String,
+    )
+
+
+    suspend fun moveArchiveFolderBackToRootFolderV10(
+        folderID: Long,
+    )
+
+    suspend fun moveArchiveFolderBackToRootFolderV9(
+        folderName: String,
+    )
+
+    suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)
+
+    suspend fun renameALinkTitle(linkID: Long, newTitle: String)
+
+    suspend fun renameALinkTitleFromFoldersV9(webURL: String, newTitle: String, folderName: String)
+
+
+    suspend fun addANewLinkInRecentlyVisited(recentlyVisited: RecentlyVisited)
+}

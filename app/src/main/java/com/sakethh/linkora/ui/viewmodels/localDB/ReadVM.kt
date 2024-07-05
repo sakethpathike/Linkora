@@ -2,8 +2,8 @@ package com.sakethh.linkora.ui.viewmodels.localDB
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.HomeScreenListTable
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.HomeScreenListTable
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -20,7 +20,7 @@ class ReadVM : ViewModel() {
 
     fun changeSelectedShelfFoldersDataForShelfBtmSheet(shelfID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
+            LocalDatabase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
                 .collectLatest {
                     _selectedShelfFoldersForShelfBtmSheet.emit(it)
                 }
@@ -29,7 +29,7 @@ class ReadVM : ViewModel() {
 
     fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long) {
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
+            LocalDatabase.localDB.shelfFolders().getAllFoldersOfThisShelf(shelfID)
                 .collectLatest {
                     _selectedShelfFoldersForSelectedShelf.emit(it)
                 }

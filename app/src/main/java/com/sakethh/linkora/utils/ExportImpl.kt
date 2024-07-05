@@ -2,8 +2,8 @@ package com.sakethh.linkora.utils
 
 import android.os.Build
 import android.os.Environment
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.exportImport.Export
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.models.Export
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
@@ -17,19 +17,19 @@ class ExportImpl {
 
     suspend fun exportToAFile() = coroutineScope {
         val _exportAllLinks = async {
-            LocalDataBase.localDB.readDao().getAllFromLinksTable()
+            LocalDatabase.localDB.readDao().getAllFromLinksTable()
         }
         val _exportImpLinks = async {
-            LocalDataBase.localDB.readDao().getAllImpLinks()
+            LocalDatabase.localDB.readDao().getAllImpLinks()
         }
         val _exportAllFolders = async {
-            LocalDataBase.localDB.readDao().getAllFolders()
+            LocalDatabase.localDB.readDao().getAllFolders()
         }
         val _exportArchiveLinks = async {
-            LocalDataBase.localDB.readDao().getAllArchiveLinks()
+            LocalDatabase.localDB.readDao().getAllArchiveLinks()
         }
         val _exportHistoryLinks = async {
-            LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks()
+            LocalDatabase.localDB.readDao().getAllRecentlyVisitedLinks()
         }
 
         val defaultFolder = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {

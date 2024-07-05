@@ -33,8 +33,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.RecentlyVisited
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
@@ -464,10 +464,10 @@ class SettingsScreenVM(
                     }
                     viewModelScope.launch {
                         awaitAll(async {
-                            LocalDataBase.localDB.readDao().getAllFromLinksTable().toList()
+                            LocalDatabase.localDB.readDao().getAllFromLinksTable().toList()
                                 .forEach {
                                     val newMetaData = linkDataExtractor(it.webURL)
-                                    LocalDataBase.localDB.updateDao().updateALinkDataFromLinksTable(
+                                    LocalDatabase.localDB.updateDao().updateALinkDataFromLinksTable(
                                         it.copy(
                                             title = newMetaData.title.replace("&amp;", "&"),
                                             imgURL = newMetaData.imgURL
@@ -475,9 +475,9 @@ class SettingsScreenVM(
                                     )
                                 }
                         }, async {
-                            LocalDataBase.localDB.readDao().getAllImpLinks().toList().forEach {
+                            LocalDatabase.localDB.readDao().getAllImpLinks().toList().forEach {
                                 val newMetaData = linkDataExtractor(it.webURL)
-                                LocalDataBase.localDB.updateDao().updateALinkDataFromImpLinksTable(
+                                LocalDatabase.localDB.updateDao().updateALinkDataFromImpLinksTable(
                                     it.copy(
                                         title = newMetaData.title.replace("&amp;", "&"),
                                         imgURL = newMetaData.imgURL
@@ -485,9 +485,9 @@ class SettingsScreenVM(
                                 )
                             }
                         }, async {
-                            LocalDataBase.localDB.readDao().getAllArchiveLinks().toList().forEach {
+                            LocalDatabase.localDB.readDao().getAllArchiveLinks().toList().forEach {
                                 val newMetaData = linkDataExtractor(it.webURL)
-                                LocalDataBase.localDB.updateDao()
+                                LocalDatabase.localDB.updateDao()
                                     .updateALinkDataFromArchivedLinksTable(
                                         it.copy(
                                             title = newMetaData.title.replace("&amp;", "&"),
@@ -496,10 +496,10 @@ class SettingsScreenVM(
                                     )
                             }
                         }, async {
-                            LocalDataBase.localDB.readDao().getAllRecentlyVisitedLinks().toList()
+                            LocalDatabase.localDB.readDao().getAllRecentlyVisitedLinks().toList()
                                 .forEach {
                                     val newMetaData = linkDataExtractor(it.webURL)
-                                    LocalDataBase.localDB.updateDao()
+                                    LocalDatabase.localDB.updateDao()
                                         .updateALinkDataFromRecentlyVisitedLinksTable(
                                             it.copy(
                                                 title = newMetaData.title.replace("&amp;", "&"),
@@ -594,12 +594,12 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        if (LocalDataBase.localDB.readDao()
-                                .isHistoryLinksTableEmpty() && LocalDataBase.localDB.readDao()
-                                .isImpLinksTableEmpty() && LocalDataBase.localDB.readDao()
-                                .isLinksTableEmpty() && LocalDataBase.localDB.readDao()
-                                .isArchivedFoldersTableEmpty() && LocalDataBase.localDB.readDao()
-                                .isFoldersTableEmpty() && LocalDataBase.localDB.readDao()
+                        if (LocalDatabase.localDB.readDao()
+                                .isHistoryLinksTableEmpty() && LocalDatabase.localDB.readDao()
+                                .isImpLinksTableEmpty() && LocalDatabase.localDB.readDao()
+                                .isLinksTableEmpty() && LocalDatabase.localDB.readDao()
+                                .isArchivedFoldersTableEmpty() && LocalDatabase.localDB.readDao()
+                                .isFoldersTableEmpty() && LocalDatabase.localDB.readDao()
                                 .isArchivedLinksTableEmpty()
                         ) {
                             activityResultLauncher.launch("text/*")
@@ -805,7 +805,12 @@ class SettingsScreenVM(
 
         val ktorClient = HttpClient()
         suspend fun latestAppVersionRetriever(context: Context) {
-            val serverConnection = ktorClient.get(VERSION_CHECK_URL)
+            val serverConnection = try {
+                ktorClient.get(VERSION_CHECK_URL)
+            } catch (_: Exception) {
+                Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
+                return
+            }
             val rawData = try {
                 didServerTimeOutErrorOccurred.value = false
                 withContext(Dispatchers.Default) {

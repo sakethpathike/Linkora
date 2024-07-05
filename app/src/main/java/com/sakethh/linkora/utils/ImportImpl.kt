@@ -3,8 +3,8 @@ package com.sakethh.linkora.utils
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.exportImport.Export
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.models.Export
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,7 +22,7 @@ class ImportImpl {
         shouldErrorDialogBeVisible: MutableState<Boolean>,
         updateVM: UpdateVM
     ) = coroutineScope {
-        val localDataBase = LocalDataBase.localDB
+        val localDataBase = LocalDatabase.localDB
         try {
             val json = Json {
                 ignoreUnknownKeys = true

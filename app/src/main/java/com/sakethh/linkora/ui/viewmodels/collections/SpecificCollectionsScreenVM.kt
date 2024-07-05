@@ -7,12 +7,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.ArchivedLinks
-import com.sakethh.linkora.data.localDB.models.FoldersTable
-import com.sakethh.linkora.data.localDB.models.ImportantLinks
-import com.sakethh.linkora.data.localDB.models.LinksTable
-import com.sakethh.linkora.data.localDB.models.RecentlyVisited
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
@@ -106,7 +106,7 @@ open class SpecificCollectionsScreenVM(
 
     private fun retrieveChildFoldersData() {
         viewModelScope.launch {
-            LocalDataBase.localDB.readDao().getChildFoldersOfThisParentID(
+            LocalDatabase.localDB.readDao().getChildFoldersOfThisParentID(
                 currentClickedFolderData.value.id
             ).collectLatest { it ->
                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
@@ -123,9 +123,9 @@ open class SpecificCollectionsScreenVM(
     fun moveMultipleLinksFromImpLinksToArchive() {
         viewModelScope.launch {
             selectedImpLinks.toList().forEach {
-                LocalDataBase.localDB.updateDao()
+                LocalDatabase.localDB.updateDao()
                     .copyLinkFromImpTableToArchiveLinks(it)
-                LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
+                LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
             }
         }
     }
@@ -133,9 +133,9 @@ open class SpecificCollectionsScreenVM(
     fun moveMultipleLinksFromLinksTableToArchive() {
         viewModelScope.launch {
             selectedLinksID.toList().forEach {
-                LocalDataBase.localDB.updateDao()
+                LocalDatabase.localDB.updateDao()
                     .copyLinkFromLinksTableToArchiveLinks(it)
-                LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
             }
         }
     }
@@ -143,7 +143,7 @@ open class SpecificCollectionsScreenVM(
     fun updateFolderData(folderID: Long) {
         viewModelScope.launch {
             currentClickedFolderData.value =
-                LocalDataBase.localDB.readDao().getThisFolderData(folderID)
+                LocalDatabase.localDB.readDao().getThisFolderData(folderID)
         }
     }
 
@@ -171,7 +171,7 @@ open class SpecificCollectionsScreenVM(
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByAToZ().collectLatest {
+                            LocalDatabase.localDB.savedLinksSorting().sortByAToZ().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
@@ -185,7 +185,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByZToA().collectLatest {
+                            LocalDatabase.localDB.savedLinksSorting().sortByZToA().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
@@ -199,7 +199,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByLatestToOldest()
+                            LocalDatabase.localDB.savedLinksSorting().sortByLatestToOldest()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -214,7 +214,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.savedLinksSorting().sortByOldestToLatest()
+                            LocalDatabase.localDB.savedLinksSorting().sortByOldestToLatest()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -233,7 +233,7 @@ open class SpecificCollectionsScreenVM(
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByAToZ()
+                            LocalDatabase.localDB.importantLinksSorting().sortByAToZ()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -248,7 +248,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByZToA()
+                            LocalDatabase.localDB.importantLinksSorting().sortByZToA()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -263,7 +263,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByLatestToOldest()
+                            LocalDatabase.localDB.importantLinksSorting().sortByLatestToOldest()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -278,7 +278,7 @@ open class SpecificCollectionsScreenVM(
 
                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
-                            LocalDataBase.localDB.importantLinksSorting().sortByOldestToLatest()
+                            LocalDatabase.localDB.importantLinksSorting().sortByOldestToLatest()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -299,7 +299,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    LocalDatabase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByAToZV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -313,7 +313,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByAToZ(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -334,7 +334,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    LocalDatabase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByZToAV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -348,7 +348,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByZToA(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -370,7 +370,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    LocalDatabase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByLatestToOldestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -385,7 +385,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByLatestToOldest(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -406,7 +406,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.archivedFolderLinksSorting()
+                                    LocalDatabase.localDB.archivedFolderLinksSorting()
                                         .sortLinksByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -421,7 +421,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByOldestToLatest(parentFolderID = currentClickedFolderData.value.id)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -446,7 +446,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                    LocalDatabase.localDB.regularFolderLinksSorting()
                                         .sortByAToZV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -460,7 +460,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByAToZ(parentFolderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -481,7 +481,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                    LocalDatabase.localDB.regularFolderLinksSorting()
                                         .sortByZToAV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -495,7 +495,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByZToA(parentFolderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -516,7 +516,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                    LocalDatabase.localDB.regularFolderLinksSorting()
                                         .sortByLatestToOldestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -531,7 +531,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByLatestToOldest(parentFolderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -552,7 +552,7 @@ open class SpecificCollectionsScreenVM(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                    LocalDataBase.localDB.regularFolderLinksSorting()
+                                    LocalDatabase.localDB.regularFolderLinksSorting()
                                         .sortByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -567,7 +567,7 @@ open class SpecificCollectionsScreenVM(
                                 }
                             }, async {
                                 if (isFoldersSortingSelected) {
-                                    LocalDataBase.localDB.subFoldersSortingDao()
+                                    LocalDatabase.localDB.subFoldersSortingDao()
                                         .sortSubFoldersByOldestToLatest(parentFolderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -613,7 +613,7 @@ open class SpecificCollectionsScreenVM(
                             onTaskCompleted()
                         })
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteALinkFromImpLinksBasedOnURL(tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -652,7 +652,7 @@ open class SpecificCollectionsScreenVM(
                             onTaskCompleted()
                         })
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -673,7 +673,7 @@ open class SpecificCollectionsScreenVM(
                             onTaskCompleted()
                         })
                     }, async {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
+                        LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -690,7 +690,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     selectedImpLinks.toList().forEach {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
+                        LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinksBasedOnURL(it)
                     }
                 }
             }
@@ -698,7 +698,7 @@ open class SpecificCollectionsScreenVM(
             else -> {
                 viewModelScope.launch {
                     selectedLinksID.toList().forEach {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                        LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
                     }
                 }
             }
@@ -717,7 +717,7 @@ open class SpecificCollectionsScreenVM(
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkFromImpLinks(linkID = linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -727,7 +727,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
+                        LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     } else {
                         deleteVM.onRegularFolderDeleteClick(folderID)
                     }
@@ -738,7 +738,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkFromLinksTable(linkID = linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -748,7 +748,7 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
+                        LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(linkID)
                     } else {
                         deleteVM.onRegularFolderDeleteClick(folderID)
                     }
@@ -773,7 +773,7 @@ open class SpecificCollectionsScreenVM(
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -783,11 +783,11 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkInfoOfFolders(
+                        LocalDatabase.localDB.deleteDao().deleteALinkInfoOfFolders(
                             linkID = linkID
                         )
                     } else {
-                        LocalDataBase.localDB.deleteDao().deleteAFolderNote(
+                        LocalDatabase.localDB.deleteDao().deleteAFolderNote(
                             folderID = folderID
                         )
                     }
@@ -798,7 +798,7 @@ open class SpecificCollectionsScreenVM(
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -808,11 +808,11 @@ open class SpecificCollectionsScreenVM(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                        LocalDataBase.localDB.deleteDao().deleteALinkInfoOfFolders(
+                        LocalDatabase.localDB.deleteDao().deleteALinkInfoOfFolders(
                             linkID = linkID
                         )
                     } else {
-                        LocalDataBase.localDB.deleteDao().deleteAFolderNote(
+                        LocalDatabase.localDB.deleteDao().deleteAFolderNote(
                             folderID = folderID
                         )
                     }

@@ -6,10 +6,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.localDB.LocalDataBase
-import com.sakethh.linkora.data.localDB.models.ArchivedLinks
-import com.sakethh.linkora.data.localDB.models.ImportantLinks
-import com.sakethh.linkora.data.localDB.models.Shelf
+import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.navigation.NavigationVM
 import com.sakethh.linkora.ui.screens.home.ChildHomeScreen
@@ -46,15 +46,15 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 selectedSavedLinkIds.toList().forEach {
-                    LocalDataBase.localDB.updateDao()
+                    LocalDatabase.localDB.updateDao()
                         .copyLinkFromLinksTableToArchiveLinks(it)
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                    LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
                 }
             }, async {
                 selectedImpLinkIds.toList().forEach {
-                    LocalDataBase.localDB.updateDao()
+                    LocalDatabase.localDB.updateDao()
                         .copyLinkFromImpLinksTableToArchiveLinks(it)
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                    LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinks(it)
                 }
             })
         }
@@ -64,11 +64,11 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 selectedSavedLinkIds.toList().forEach {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                    LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
                 }
             }, async {
                 selectedImpLinkIds.toList().forEach {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                    LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinks(it)
                 }
             })
         }
@@ -126,7 +126,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
             })
         }
         viewModelScope.launch {
-            LocalDataBase.localDB.shelfCrud().getAllShelfItems().collectLatest {
+            LocalDatabase.localDB.shelfCrud().getAllShelfItems().collectLatest {
                 _shelfData.emit(it)
             }
         }
@@ -142,7 +142,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkTitleFromSavedLinks(
+                    LocalDatabase.localDB.updateDao().renameALinkTitleFromSavedLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }.invokeOnCompletion {
@@ -164,7 +164,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
+                    LocalDatabase.localDB.updateDao()
                         .renameALinkTitleFromImpLinks(linkID, newTitle = newTitle)
                 }.invokeOnCompletion {
                     changeRetrievedData(
@@ -189,7 +189,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao().renameALinkInfoFromSavedLinks(
+                    LocalDatabase.localDB.updateDao().renameALinkInfoFromSavedLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -198,7 +198,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
+                    LocalDatabase.localDB.updateDao()
                         .renameALinkInfoFromRecentlyVisitedLinks(
                             webURL = webURL, newInfo = newNote
                         )
@@ -208,7 +208,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.updateDao()
+                    LocalDatabase.localDB.updateDao()
                         .renameALinkInfoFromImpLinks(linkID, newInfo = newNote)
                 }
                 Unit
@@ -225,7 +225,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
+                    LocalDatabase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -248,7 +248,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao().deleteARecentlyVisitedLink(
+                    LocalDatabase.localDB.deleteDao().deleteARecentlyVisitedLink(
                         webURL = selectedWebURL
                     )
                 }
@@ -257,7 +257,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                 }.invokeOnCompletion {
                     changeRetrievedData(
@@ -281,7 +281,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -292,7 +292,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -303,7 +303,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDataBase.localDB.deleteDao()
+                    LocalDatabase.localDB.deleteDao()
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -328,7 +328,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, onTaskCompleted = {})
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -356,7 +356,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
                         })
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
                     })
                 }
@@ -374,7 +374,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, {})
                     }, async {
-                        LocalDataBase.localDB.deleteDao()
+                        LocalDatabase.localDB.deleteDao()
                             .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                     })
                 }.invokeOnCompletion {
