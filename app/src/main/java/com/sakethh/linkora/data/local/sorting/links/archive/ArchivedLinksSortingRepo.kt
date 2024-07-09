@@ -1,7 +1,5 @@
 package com.sakethh.linkora.data.local.sorting.links.archive
 
-import androidx.room.Dao
-import androidx.room.Query
 import com.sakethh.linkora.data.local.ArchivedLinks
 import kotlinx.coroutines.flow.Flow
 

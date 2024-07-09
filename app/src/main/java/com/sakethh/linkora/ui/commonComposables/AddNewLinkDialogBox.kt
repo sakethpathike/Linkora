@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -63,10 +64,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.ui.commonBtmSheets.SelectableFolderUIComponent
+import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
@@ -81,8 +80,8 @@ fun AddNewLinkDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean>,
     screenType: SpecificScreenType,
     onSaveClick: (isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolder: String?, selectedNonDefaultFolderID: Long?) -> Unit,
-    parentFolderID: Long?,
-    isDataExtractingForTheLink: Boolean
+    isDataExtractingForTheLink: Boolean,
+    onFolderCreateClick: (folderName: String, folderNote: String) -> Unit
 ) {
     val isDropDownMenuIconClicked = rememberSaveable {
         mutableStateOf(false)
@@ -396,7 +395,7 @@ fun AddNewLinkDialogBox(
                                     .pulsateEffect(),
                                 onClick = {
                                     if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
-                                        LocalDatabase.localDB = LocalDatabase.getLocalDB(context)
+                                        //LocalDatabase.localDB = LocalDatabase.getLocalDB(context)
                                     }
                                     onSaveClick(
                                         isAutoDetectTitleEnabled.value,
@@ -429,14 +428,7 @@ fun AddNewLinkDialogBox(
                     }
                 }
                 if (isDropDownMenuIconClicked.value) {
-                    val foldersTableData = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
-                        LocalDatabase.localDB = LocalDatabase.getLocalDB(context)
-                        LocalDatabase.localDB.readDao().getAllRootFolders()
-                            .collectAsStateWithLifecycle(initialValue = emptyList()).value
-                    } else {
-                        LocalDatabase.localDB.readDao().getAllRootFolders()
-                            .collectAsStateWithLifecycle(initialValue = emptyList()).value
-                    }
+                    val foldersTableData = emptyList<FoldersTable>()
                     ModalBottomSheet(sheetState = btmModalSheetState, onDismissRequest = {
                         coroutineScope.launch {
                             if (btmModalSheetState.isVisible) {
@@ -570,8 +562,10 @@ fun AddNewLinkDialogBox(
                             isDropDownMenuIconClicked.value = false
                         }
                     },
-                    parentFolderID = parentFolderID,
-                    inAChildFolderScreen = screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                    inAChildFolderScreen = screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                    onFolderCreateClick = { folderName, folderNote ->
+                        onFolderCreateClick(folderName, folderNote)
+                    }
                 )
             )
         }

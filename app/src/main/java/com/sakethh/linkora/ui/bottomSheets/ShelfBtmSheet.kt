@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.commonBtmSheets
+package com.sakethh.linkora.ui.bottomSheets
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -40,7 +40,6 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -60,10 +59,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.commonComposables.AddANewShelfDTO
+import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfDialogBox
+import com.sakethh.linkora.ui.commonComposables.AddANewShelfParam
 import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBox
-import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxDTO
+import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
@@ -140,7 +140,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     }
                     if (!isTuneIconClicked.value) {
                         items(shelfData) {
-                            OptionsBtmSheetIndividualComponent(
+                            IndividualMenuComponent(
                                 onRenameIconClick = {
                                     ShelfBtmSheetVM.selectedShelfData = it
                                     isRenameAShelfDialogBoxVisible.value = true
@@ -268,7 +268,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     }
     val localContext = LocalContext.current
     AddANewShelfDialogBox(
-        addANewShelfDTO = AddANewShelfDTO(
+        addANewShelfParam = AddANewShelfParam(
             isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
             onCreateClick = { shelfName, shelfIconName ->
                 createVM.addANewShelf(
@@ -282,7 +282,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     )
 
     DeleteAShelfDialogBox(
-        deleteAShelfDialogBoxDTO = DeleteAShelfDialogBoxDTO(
+        deleteAShelfDialogBoxParam = DeleteAShelfDialogBoxParam(
             isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
             onDeleteClick = { ->
                 deleteVM.deleteAShelf(ShelfBtmSheetVM.selectedShelfData)

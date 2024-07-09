@@ -1,8 +1,5 @@
 package com.sakethh.linkora.data.local.shelf.shelfLists
 
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import kotlinx.coroutines.flow.Flow
 

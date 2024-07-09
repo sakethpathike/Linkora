@@ -382,7 +382,7 @@ class SettingsScreenVM(
                                 SettingsPreferences.HOME_SCREEN_VISIBILITY.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isHomeScreenEnabled.value =  it
+                        Settings.isHomeScreenEnabled.value = it
                     }
                 })/*, SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
                 doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
@@ -669,6 +669,7 @@ class SettingsScreenVM(
         val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
         val jsoupUserAgent =
             mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+
         suspend fun <T> readSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
             dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,

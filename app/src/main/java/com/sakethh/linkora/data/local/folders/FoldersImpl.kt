@@ -1,8 +1,8 @@
 package com.sakethh.linkora.data.local.folders
 
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.LocalDatabase
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import okhttp3.internal.toImmutableList
@@ -59,6 +59,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
             tempCurrentID = currentParentFolderData.id
         }
     }
+
     override suspend fun deleteArchiveFolderNote(folderID: Long) {
         localDatabase.foldersDao().deleteArchiveFolderNote(folderID)
     }
@@ -179,6 +180,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         deleteAllChildFoldersAndLinksOfASpecificFolder(folderID)
         return localDatabase.foldersDao().deleteAFolder(folderID)
     }
+
     private suspend fun deleteAllChildFoldersAndLinksOfASpecificFolder(folderID: Long) {
         val childFolders = getThisFolderData(folderID)
         coroutineScope {
@@ -192,6 +194,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
             }
         }
     }
+
     override suspend fun deleteMultipleFolders(folderIDs: Array<Long>) {
         return localDatabase.foldersDao().deleteMultipleFolders(folderIDs)
     }

@@ -1,7 +1,5 @@
 package com.sakethh.linkora.data.local.sorting.folders.regular
 
-import androidx.room.Dao
-import androidx.room.Query
 import com.sakethh.linkora.data.local.FoldersTable
 import kotlinx.coroutines.flow.Flow
 

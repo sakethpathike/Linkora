@@ -62,11 +62,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBtmSheetType
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -1362,7 +1362,7 @@ fun SearchScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            SortingBottomSheetUIParam(
+            SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
                 onSelectedAComponent = { sortingPreferences, _, _ ->
                     searchScreenVM.changeHistoryRetrievedData(sortingPreferences = sortingPreferences)
@@ -1374,8 +1374,8 @@ fun SearchScreen(navController: NavController) {
             )
         )
         val updateVM: UpdateVM = viewModel()
-        OptionsBtmSheetUI(
-            OptionsBtmSheetUIParam(
+        MenuBtmSheetUI(
+            MenuBtmSheetParam(
                 btmModalSheetState = optionsBtmSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,

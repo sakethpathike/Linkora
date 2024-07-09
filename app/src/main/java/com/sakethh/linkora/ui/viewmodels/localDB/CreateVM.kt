@@ -4,11 +4,11 @@ import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.utils.LinkDataExtractor
@@ -89,7 +89,8 @@ class CreateVM : ViewModel() {
                         LocalDatabase.localDB.createDao().addANewLinkToImpLinks(
                             importantLinks = ImportantLinks(
                                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.title else title,
-                                webURL = "http" + webURL.substringAfter("http").substringBefore(" ").trim(),
+                                webURL = "http" + webURL.substringAfter("http").substringBefore(" ")
+                                    .trim(),
                                 baseURL = webURL,
                                 imgURL = linkDataExtractor.imgURL,
                                 infoForSaving = noteForSaving

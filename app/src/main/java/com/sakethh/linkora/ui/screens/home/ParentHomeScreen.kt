@@ -95,12 +95,12 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
-import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.ShelfBtmSheet
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBtmSheetType
+import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheet
+import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheetUIParam
+import com.sakethh.linkora.ui.bottomSheets.ShelfBtmSheet
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
@@ -717,7 +717,7 @@ fun ParentHomeScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            SortingBottomSheetUIParam(
+            SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
                 onSelectedAComponent = { sortingPreferences, _, _ ->
                     specificCollectionsScreenVM.changeRetrievedData(

@@ -74,13 +74,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheet
-import com.sakethh.linkora.ui.commonBtmSheets.NewLinkBtmSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBtmSheetType
+import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheet
+import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheetUIParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
@@ -541,8 +541,8 @@ fun CollectionsScreen(navController: NavController) {
                     })
             }
         }
-        OptionsBtmSheetUI(
-            OptionsBtmSheetUIParam(
+        MenuBtmSheetUI(
+            MenuBtmSheetParam(
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = OptionsBtmSheetType.FOLDER,
@@ -756,7 +756,7 @@ fun CollectionsScreen(navController: NavController) {
             )
         )
         SortingBottomSheetUI(
-            SortingBottomSheetUIParam(
+            SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
                 onSelectedAComponent = { sortingPreferences, _, _ ->
                     collectionsScreenVM.changeRetrievedFoldersData(sortingPreferences = sortingPreferences)

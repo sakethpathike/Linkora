@@ -115,6 +115,7 @@ interface FoldersDao {
 
     @Query("DELETE from archived_folders_table WHERE id= :folderID")
     suspend fun deleteAnArchiveFolderV9(folderID: Long)
+
     @Query("SELECT (SELECT COUNT(*) FROM folders_table) == 0")
     suspend fun isFoldersTableEmpty(): Boolean
 }

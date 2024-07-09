@@ -1,7 +1,5 @@
 package com.sakethh.linkora.data.local.links
 
-import androidx.room.Transaction
-import androidx.room.Update
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable

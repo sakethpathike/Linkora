@@ -16,14 +16,14 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
-data class DeleteAShelfDialogBoxDTO(
+data class DeleteAShelfDialogBoxParam(
     val isDialogBoxVisible: MutableState<Boolean>,
     val onDeleteClick: () -> Unit
 )
 
 @Composable
-fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
-    if (deleteAShelfDialogBoxDTO.isDialogBoxVisible.value) {
+fun DeleteAShelfDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam) {
+    if (deleteAShelfDialogBoxParam.isDialogBoxVisible.value) {
         val title = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
             mutableStateOf("Are you sure you want to delete ${ShelfBtmSheetVM.selectedShelfData.shelfName}?")
         }
@@ -35,8 +35,8 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                             .fillMaxWidth()
                             .pulsateEffect(),
                         onClick = {
-                            deleteAShelfDialogBoxDTO.onDeleteClick()
-                            deleteAShelfDialogBoxDTO.isDialogBoxVisible.value = false
+                            deleteAShelfDialogBoxParam.onDeleteClick()
+                            deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                         }) {
                         Text(
                             text = "Delete it",
@@ -50,7 +50,7 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                             .fillMaxWidth()
                             .pulsateEffect(),
                         onClick = {
-                            deleteAShelfDialogBoxDTO.isDialogBoxVisible.value = false
+                            deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                         }) {
                         Text(
                             text = "Cancel",
@@ -75,7 +75,7 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxDTO: DeleteAShelfDialogBoxDTO) {
                     )
                 },
                 onDismissRequest = {
-                    deleteAShelfDialogBoxDTO.isDialogBoxVisible.value = false
+                    deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                 })
         }
     }

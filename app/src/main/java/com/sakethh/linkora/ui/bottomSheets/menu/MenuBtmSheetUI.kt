@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.commonBtmSheets
+package com.sakethh.linkora.ui.bottomSheets.menu
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -35,10 +35,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -54,61 +52,40 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.launch
 
-data class OptionsBtmSheetUIParam @OptIn(ExperimentalMaterial3Api::class) constructor(
-    val btmModalSheetState: SheetState,
-    val shouldBtmModalSheetBeVisible: MutableState<Boolean>,
-    val btmSheetFor: OptionsBtmSheetType,
-    val onDeleteCardClick: () -> Unit,
-    val onNoteDeleteCardClick: () -> Unit,
-    val onRenameClick: () -> Unit,
-    val onArchiveClick: () -> Unit,
-    val onUnarchiveClick: () -> Unit = {},
-    val onImportantLinkAdditionInTheTable: (() -> Unit?)? = null,
-    val importantLinks: ImportantLinks?,
-    val inArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
-    val inSpecificArchiveScreen: MutableState<Boolean> = mutableStateOf(false),
-    val noteForSaving: String,
-    val folderName: String,
-    val linkTitle: String,
-    val forAChildFolder: MutableState<Boolean> = mutableStateOf(false)
-)
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun OptionsBtmSheetUI(
-    optionsBtmSheetUIParam: OptionsBtmSheetUIParam
+fun MenuBtmSheetUI(
+    menuBtmSheetParam: MenuBtmSheetParam
 ) {
     val context = LocalContext.current
     val mutableStateNote =
-        rememberSaveable(inputs = arrayOf(optionsBtmSheetUIParam.noteForSaving)) {
-            mutableStateOf(optionsBtmSheetUIParam.noteForSaving)
+        rememberSaveable(inputs = arrayOf(menuBtmSheetParam.noteForSaving)) {
+            mutableStateOf(menuBtmSheetParam.noteForSaving)
         }
     val isNoteBtnSelected = rememberSaveable {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val updateDBVM: UpdateVM = viewModel()
     val localClipBoardManager = LocalClipboardManager.current
-    if (optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value) {
+    if (menuBtmSheetParam.shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(
             dragHandle = {},
-            sheetState = optionsBtmSheetUIParam.btmModalSheetState,
+            sheetState = menuBtmSheetParam.btmModalSheetState,
             onDismissRequest = {
                 coroutineScope.launch {
-                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                        menuBtmSheetParam.btmModalSheetState.hide()
                     }
                 }.invokeOnCompletion {
-                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value = false
+                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
                     isNoteBtnSelected.value = false
                 }
             }) {
@@ -118,70 +95,60 @@ fun OptionsBtmSheetUI(
                     .verticalScroll(rememberScrollState())
             ) {
                 FolderIndividualComponent(
-                    folderName = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) optionsBtmSheetUIParam.folderName else optionsBtmSheetUIParam.linkTitle,
+                    folderName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle,
                     folderNote = "",
                     onMoreIconClick = {
-                        localClipBoardManager.setText(AnnotatedString(if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) optionsBtmSheetUIParam.folderName else optionsBtmSheetUIParam.linkTitle))
+                        localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
                         Toast.makeText(context, "Title copied to clipboard", Toast.LENGTH_SHORT)
                             .show()
                     },
                     onFolderClick = { },
                     maxLines = 2,
                     showMoreIcon = false,
-                    folderIcon = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
+                    folderIcon = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
                 )
                 Spacer(modifier = Modifier.height(5.dp))
                 if (!isNoteBtnSelected.value) {
-                    OptionsBtmSheetIndividualComponent(
+                    IndividualMenuComponent(
                         onOptionClick = {
                             coroutineScope.launch {
-                                if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                    optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                    menuBtmSheetParam.btmModalSheetState.hide()
                                 }
                             }.invokeOnCompletion {
                                 isNoteBtnSelected.value = true
                                 coroutineScope.launch {
-                                    optionsBtmSheetUIParam.btmModalSheetState.show()
+                                    menuBtmSheetParam.btmModalSheetState.show()
                                 }
                             }
                         },
                         elementName = "View Note",
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
-                    OptionsBtmSheetIndividualComponent(
+                    IndividualMenuComponent(
                         onOptionClick = {
                             coroutineScope.launch {
-                                if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                    optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                    menuBtmSheetParam.btmModalSheetState.hide()
                                 }
                             }.invokeOnCompletion {
-                                optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value = false
+                                menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
                             }
-                            optionsBtmSheetUIParam.onRenameClick()
+                            menuBtmSheetParam.onRenameClick()
                         },
                         elementName = "Rename",
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
 
-                    if ((optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.LINK || optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !optionsBtmSheetUIParam.inArchiveScreen.value) {
-                        OptionsBtmSheetIndividualComponent(
+                    if ((menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !menuBtmSheetParam.inArchiveScreen.value) {
+                        IndividualMenuComponent(
                             onOptionClick = {
-                                optionsBtmSheetUIParam.importantLinks?.let {
-                                    updateDBVM.importantLinkTableUpdater(
-                                        importantLinks = it,
-                                        context = context, onTaskCompleted = {
-
-                                        }
-                                    )
-                                }
-                                if (optionsBtmSheetUIParam.importantLinks != null) {
-                                    optionsBtmSheetUIParam.onImportantLinkAdditionInTheTable?.let { it() }
-                                }
+                                menuBtmSheetParam.onImportantLinkClick?.let { it() }
                                 coroutineScope.launch {
-                                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
                                     }
-                                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value =
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value =
                                         false
                                 }
                             },
@@ -189,72 +156,72 @@ fun OptionsBtmSheetUI(
                             elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                         )
                     }
-                    if (!optionsBtmSheetUIParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !optionsBtmSheetUIParam.inArchiveScreen.value) {
-                        OptionsBtmSheetIndividualComponent(
+                    if (!menuBtmSheetParam.inSpecificArchiveScreen.value && optionsBtmSheetVM.archiveCardIcon.value != Icons.Outlined.Unarchive && !menuBtmSheetParam.inArchiveScreen.value) {
+                        IndividualMenuComponent(
                             onOptionClick = {
+                                menuBtmSheetParam.onArchiveClick()
                                 coroutineScope.launch {
-                                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
                                     }
                                 }.invokeOnCompletion {
-                                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value =
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value =
                                         false
                                 }
-                                optionsBtmSheetUIParam.onArchiveClick()
                             },
                             elementName = optionsBtmSheetVM.archiveCardText.value,
                             elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
                         )
                     }
-                    if (optionsBtmSheetUIParam.inArchiveScreen.value && !optionsBtmSheetUIParam.inSpecificArchiveScreen.value) {
-                        OptionsBtmSheetIndividualComponent(
+                    if (menuBtmSheetParam.inArchiveScreen.value && !menuBtmSheetParam.inSpecificArchiveScreen.value) {
+                        IndividualMenuComponent(
                             onOptionClick = {
+                                menuBtmSheetParam.onUnarchiveClick()
                                 coroutineScope.launch {
-                                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
                                     }
                                 }.invokeOnCompletion {
-                                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value =
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value =
                                         false
                                 }
-                                optionsBtmSheetUIParam.onUnarchiveClick()
                             },
                             elementName = "Unarchive",
                             elementImageVector = Icons.Outlined.Unarchive
                         )
                     }
                     if (mutableStateNote.value.isNotEmpty()) {
-                        OptionsBtmSheetIndividualComponent(
+                        IndividualMenuComponent(
                             onOptionClick = {
+                                menuBtmSheetParam.onNoteDeleteCardClick()
                                 coroutineScope.launch {
-                                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
                                     }
                                 }.invokeOnCompletion {
-                                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value =
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value =
                                         false
                                 }
-                                optionsBtmSheetUIParam.onNoteDeleteCardClick()
                             },
                             elementName = "Delete the note",
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
-                    if (optionsBtmSheetUIParam.inSpecificArchiveScreen.value || optionsBtmSheetUIParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                        OptionsBtmSheetIndividualComponent(
+                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                        IndividualMenuComponent(
                             onOptionClick = {
+                                menuBtmSheetParam.onDeleteCardClick()
                                 coroutineScope.launch {
-                                    if (optionsBtmSheetUIParam.btmModalSheetState.isVisible) {
-                                        optionsBtmSheetUIParam.btmModalSheetState.hide()
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
                                     }
                                 }.invokeOnCompletion {
-                                    optionsBtmSheetUIParam.shouldBtmModalSheetBeVisible.value =
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value =
                                         false
                                 }
-                                optionsBtmSheetUIParam.onDeleteCardClick()
                             },
-                            elementName = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
-                            elementImageVector = if (optionsBtmSheetUIParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Delete Folder" else "Delete Link",
+                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
                         )
                     }
                 } else {
@@ -311,7 +278,7 @@ fun OptionsBtmSheetUI(
         }
         BackHandler {
             coroutineScope.launch {
-                optionsBtmSheetUIParam.btmModalSheetState.hide()
+                menuBtmSheetParam.btmModalSheetState.hide()
             }
         }
     }
@@ -319,7 +286,7 @@ fun OptionsBtmSheetUI(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OptionsBtmSheetIndividualComponent(
+fun IndividualMenuComponent(
     onOptionClick: () -> Unit,
     elementName: String,
     elementImageVector: ImageVector,

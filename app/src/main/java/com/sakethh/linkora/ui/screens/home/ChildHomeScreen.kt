@@ -28,8 +28,8 @@ import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -485,8 +485,8 @@ fun ChildHomeScreen(
             }
         }
         val updateVM: UpdateVM = viewModel()
-        OptionsBtmSheetUI(
-            OptionsBtmSheetUIParam(
+        MenuBtmSheetUI(
+            MenuBtmSheetParam(
                 importantLinks = ImportantLinks(
                     title = HomeScreenVM.tempImpLinkData.title,
                     webURL = HomeScreenVM.tempImpLinkData.webURL,

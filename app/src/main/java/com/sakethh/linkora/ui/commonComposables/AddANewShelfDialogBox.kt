@@ -15,14 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.sp
 
 
-data class AddANewShelfDTO(
+data class AddANewShelfParam(
     val isDialogBoxVisible: MutableState<Boolean>,
     val onCreateClick: (shelfName: String, shelfIconName: String) -> Unit
 )
 
 @Composable
-fun AddANewShelfDialogBox(addANewShelfDTO: AddANewShelfDTO) {
-    if (addANewShelfDTO.isDialogBoxVisible.value) {
+fun AddANewShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
+    if (addANewShelfParam.isDialogBoxVisible.value) {
         val customShelfName = rememberSaveable {
             mutableStateOf("")
         }
@@ -37,7 +37,7 @@ fun AddANewShelfDialogBox(addANewShelfDTO: AddANewShelfDTO) {
                 lineHeight = 28.sp
             )
         }, onDismissRequest = {
-            addANewShelfDTO.isDialogBoxVisible.value = false
+            addANewShelfParam.isDialogBoxVisible.value = false
         }, text = {
             Column {
                 OutlinedTextField(
@@ -61,8 +61,11 @@ fun AddANewShelfDialogBox(addANewShelfDTO: AddANewShelfDTO) {
             Button(modifier = Modifier
                 .fillMaxWidth()
                 .pulsateEffect(), onClick = {
-                addANewShelfDTO.onCreateClick(customShelfName.value, customShelfIconName.value)
-                addANewShelfDTO.isDialogBoxVisible.value = false
+                addANewShelfParam.onCreateClick(
+                    customShelfName.value,
+                    customShelfIconName.value
+                )
+                addANewShelfParam.isDialogBoxVisible.value = false
             }) {
                 Text(
                     text = "Create",
@@ -75,7 +78,7 @@ fun AddANewShelfDialogBox(addANewShelfDTO: AddANewShelfDTO) {
                 .fillMaxWidth()
                 .pulsateEffect(),
                 onClick = {
-                    addANewShelfDTO.isDialogBoxVisible.value = false
+                    addANewShelfParam.isDialogBoxVisible.value = false
                 }) {
                 Text(
                     text = "Cancel",

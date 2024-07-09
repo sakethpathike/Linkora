@@ -21,8 +21,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.OptionsBtmSheetUIParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -289,8 +289,8 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                 }
             }
         }
-        OptionsBtmSheetUI(
-            OptionsBtmSheetUIParam(
+        MenuBtmSheetUI(
+            MenuBtmSheetParam(
                 inArchiveScreen = mutableStateOf(true),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,

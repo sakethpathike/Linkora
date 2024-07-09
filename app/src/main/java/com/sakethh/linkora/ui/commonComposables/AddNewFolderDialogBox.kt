@@ -19,27 +19,21 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
 
 
 data class AddNewFolderDialogBoxParam(
     val shouldDialogBoxAppear: MutableState<Boolean>,
     val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
-    val parentFolderID: Long?,
-    val inAChildFolderScreen: Boolean
+    val inAChildFolderScreen: Boolean,
+    val onFolderCreateClick: (folderName: String, folderNote: String) -> Unit
 )
 
 @Composable
@@ -48,8 +42,6 @@ fun AddNewFolderDialogBox(
 ) {
     val scrollState = rememberScrollState()
     val context = LocalContext.current
-    val createDBVM: CreateVM = viewModel()
-    val coroutineScope = rememberCoroutineScope()
     val isFolderCreationInProgress = rememberSaveable {
         mutableStateOf(false)
     }
@@ -88,37 +80,15 @@ fun AddNewFolderDialogBox(
                                     context, "folder name can't be empty", Toast.LENGTH_SHORT
                                 ).show()
                                 isFolderCreationInProgress.value = false
-                            } else if (folderNameTextFieldValue.value == "Saved Links") {
-                                Toast.makeText(
-                                    context,
-                                    "\"Saved Links\" already exists by default, choose another name :)",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                                isFolderCreationInProgress.value = false
                             } else {
-                                createDBVM.createANewFolder(
-                                    context = context,
-                                    folderName = folderNameTextFieldValue.value,
-                                    infoForSaving = noteTextFieldValue.value,
-                                    onTaskCompleted = {
-                                        coroutineScope.launch {
-                                            async {
-                                                addNewFolderDialogBoxParam.newFolderData(
-                                                    folderNameTextFieldValue.value,
-                                                    LocalDatabase.localDB.readDao()
-                                                        .getLatestAddedFolder().id
-                                                )
-                                            }.await()
-                                        }
-                                        addNewFolderDialogBoxParam.onCreated()
-                                        addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
-                                            false
-                                        isFolderCreationInProgress.value = false
-                                    },
-                                    parentFolderID = addNewFolderDialogBoxParam.parentFolderID,
-                                    inAChildFolderScreen = addNewFolderDialogBoxParam.inAChildFolderScreen,
-                                    rootParentID = CollectionsScreenVM.rootFolderID
+                                addNewFolderDialogBoxParam.onFolderCreateClick(
+                                    folderNameTextFieldValue.value,
+                                    noteTextFieldValue.value
                                 )
+                                addNewFolderDialogBoxParam.onCreated()
+                                addNewFolderDialogBoxParam.shouldDialogBoxAppear.value =
+                                    false
+                                isFolderCreationInProgress.value = false
                             }
                         }) {
                             Text(

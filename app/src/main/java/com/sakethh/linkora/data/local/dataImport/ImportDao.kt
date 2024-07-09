@@ -21,15 +21,15 @@ interface ImportDao {
     @Insert
     suspend fun addAllArchivedLinks(archivedLinks: List<ArchivedLinks>)
 
-    
+
     @Insert
     suspend fun addAllHistoryLinks(historyLinks: List<RecentlyVisited>)
 
-    
+
     @Insert
     suspend fun addAllRegularFolders(foldersData: List<FoldersTable>)
 
-    
+
     @Insert
     suspend fun addAllArchivedFolders(foldersData: List<ArchivedFolders>)
 

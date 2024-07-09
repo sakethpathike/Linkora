@@ -45,9 +45,9 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUI
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBottomSheetUIParam
-import com.sakethh.linkora.ui.commonBtmSheets.SortingBtmSheetType
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
+import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -193,7 +193,7 @@ fun ParentArchiveScreen(navController: NavController) {
             }
         }
         SortingBottomSheetUI(
-            SortingBottomSheetUIParam(
+            SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
                 onSelectedAComponent = { sortingPreferences, _, _ ->
                     archiveScreenVM.changeRetrievedData(sortingPreferences = sortingPreferences)
