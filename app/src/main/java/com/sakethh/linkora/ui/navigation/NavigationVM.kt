@@ -45,7 +45,6 @@ class NavigationVM : ViewModel() {
     )
 
     companion object {
-        val btmNavBarContainerColor = mutableStateOf(Color(Color.Transparent.value))
         val startDestination =
             mutableStateOf(NavigationRoutes.HOME_SCREEN.name)
     }

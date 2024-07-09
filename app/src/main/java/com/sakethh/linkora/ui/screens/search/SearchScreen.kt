@@ -83,9 +83,9 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SearchScreenVM
 import com.sakethh.linkora.ui.viewmodels.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM

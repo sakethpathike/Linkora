@@ -68,8 +68,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -495,7 +495,7 @@ fun AddNewLinkDialogBox(
                                     },
                                     folderName = "Saved Links",
                                     imageVector = Icons.Outlined.Link,
-                                    _isComponentSelected = selectedFolderName.value == "Saved Links"
+                                    isComponentSelected = selectedFolderName.value == "Saved Links"
                                 )
                             }
                             item {
@@ -518,7 +518,7 @@ fun AddNewLinkDialogBox(
                                     },
                                     folderName = "Important Links",
                                     imageVector = Icons.Outlined.StarOutline,
-                                    _isComponentSelected = selectedFolderName.value == "Important Links"
+                                    isComponentSelected = selectedFolderName.value == "Important Links"
                                 )
                             }
                             items(foldersTableData) {
@@ -536,7 +536,7 @@ fun AddNewLinkDialogBox(
                                     },
                                     folderName = it.folderName,
                                     imageVector = Icons.Outlined.Folder,
-                                    _isComponentSelected = selectedFolderName.value == it.folderName
+                                    isComponentSelected = selectedFolderName.value == it.folderName
                                 )
                             }
                             item {

@@ -5,8 +5,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
-import com.sakethh.linkora.ui.screens.collections.archiveScreen.ParentArchiveScreen
-import com.sakethh.linkora.ui.screens.collections.specificCollectionScreen.SpecificCollectionScreen
+import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen

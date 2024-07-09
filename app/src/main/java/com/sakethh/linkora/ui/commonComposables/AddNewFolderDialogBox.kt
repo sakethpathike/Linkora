@@ -25,7 +25,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 
 
 data class AddNewFolderDialogBoxParam(

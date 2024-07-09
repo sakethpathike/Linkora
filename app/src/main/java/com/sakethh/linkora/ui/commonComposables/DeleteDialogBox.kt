@@ -17,7 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 
 enum class DataDialogBoxType {
     LINK, FOLDER, REMOVE_ENTIRE_DATA, SELECTED_DATA

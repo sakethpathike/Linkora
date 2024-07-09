@@ -11,7 +11,7 @@ import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 
 class IntentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

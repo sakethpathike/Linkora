@@ -33,14 +33,14 @@ fun SelectableFolderUIComponent(
     onClick: () -> Unit,
     folderName: String,
     imageVector: ImageVector,
-    _isComponentSelected: Boolean,
-    _forBtmSheetUI: Boolean = false,
+    isComponentSelected: Boolean,
+    forBtmSheetUI: Boolean = false,
 ) {
-    val isComponentSelected = rememberSaveable(inputs = arrayOf(_isComponentSelected)) {
-        mutableStateOf(_isComponentSelected)
+    val componentSelectedState = rememberSaveable(inputs = arrayOf(isComponentSelected)) {
+        mutableStateOf(isComponentSelected)
     }
-    val forBtmSheetUI = rememberSaveable(inputs = arrayOf(_forBtmSheetUI)) {
-        mutableStateOf(_forBtmSheetUI)
+    val forBtmSheetUIState = rememberSaveable(inputs = arrayOf(forBtmSheetUI)) {
+        mutableStateOf(forBtmSheetUI)
     }
     Column {
         Row(modifier = Modifier
@@ -53,7 +53,7 @@ fun SelectableFolderUIComponent(
                 modifier = Modifier.fillMaxHeight(), contentAlignment = Alignment.CenterStart
             ) {
                 Icon(
-                    tint = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                    tint = if (componentSelectedState.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                     imageVector = imageVector,
                     contentDescription = null,
                     modifier = Modifier
@@ -61,7 +61,7 @@ fun SelectableFolderUIComponent(
                             start = 20.dp,
                             bottom = 20.dp,
                             end = 20.dp,
-                            top = if (forBtmSheetUI.value) 0.dp else 20.dp
+                            top = if (forBtmSheetUIState.value) 0.dp else 20.dp
                         )
                         .size(28.dp)
                 )
@@ -74,15 +74,15 @@ fun SelectableFolderUIComponent(
             ) {
                 Text(
                     text = folderName,
-                    color = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
+                    color = if (componentSelectedState.value) MaterialTheme.colorScheme.primary else LocalContentColor.current,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     lineHeight = 20.sp,
-                    maxLines = if (forBtmSheetUI.value) 6 else 1,
+                    maxLines = if (forBtmSheetUIState.value) 6 else 1,
                     overflow = TextOverflow.Ellipsis
                 )
             }
-            if (isComponentSelected.value) {
+            if (componentSelectedState.value) {
                 Box(
                     modifier = Modifier
                         .requiredHeight(75.dp)
@@ -94,7 +94,7 @@ fun SelectableFolderUIComponent(
                             imageVector = Icons.Filled.CheckCircle,
                             contentDescription = null,
                             modifier = Modifier.size(26.dp),
-                            tint = if (isComponentSelected.value) MaterialTheme.colorScheme.primary else LocalContentColor.current
+                            tint = if (componentSelectedState.value) MaterialTheme.colorScheme.primary else LocalContentColor.current
                         )
                         Spacer(modifier = Modifier.width(20.dp))
                     }

@@ -112,8 +112,8 @@ import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
 import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
 import kotlinx.coroutines.async

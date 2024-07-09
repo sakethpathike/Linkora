@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.collections.archiveScreen
+package com.sakethh.linkora.ui.screens.collections.archive
 
 import android.annotation.SuppressLint
 import androidx.activity.compose.BackHandler
@@ -53,7 +53,6 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenVM
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")

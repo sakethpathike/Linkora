@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.collections.specificCollectionScreen
+package com.sakethh.linkora.ui.screens.collections.specific
 
 import android.annotation.SuppressLint
 import android.util.Log
@@ -86,9 +86,7 @@ import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
@@ -103,7 +101,6 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpecificCollectionScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
-    val createVM: CreateVM = viewModel()
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }

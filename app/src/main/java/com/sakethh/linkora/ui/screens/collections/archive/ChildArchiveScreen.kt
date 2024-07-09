@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.collections.archiveScreen
+package com.sakethh.linkora.ui.screens.collections.archive
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
@@ -36,11 +37,9 @@ import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenType
-import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import kotlinx.coroutines.launch
@@ -49,7 +48,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavController) {
-    val archiveScreenVM: ArchiveScreenVM = viewModel()
+    val archiveScreenVM: ArchiveScreenVM = hiltViewModel()
     val archiveLinksData = archiveScreenVM.archiveLinksData.collectAsStateWithLifecycle().value
     val archiveFoldersDataV9 =
         archiveScreenVM.archiveFoldersDataV9.collectAsStateWithLifecycle().value
@@ -311,7 +310,6 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                     shouldRenameDialogBoxAppear.value = true
                 },
                 onArchiveClick = {},
-                importantLinks = null,
                 noteForSaving = selectedFolderNote.value,
                 onNoteDeleteCardClick = {
                     archiveScreenVM.onNoteDeleteCardClick(

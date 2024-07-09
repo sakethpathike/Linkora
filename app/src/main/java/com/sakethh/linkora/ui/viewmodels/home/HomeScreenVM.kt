@@ -15,9 +15,9 @@ import com.sakethh.linkora.ui.navigation.NavigationVM
 import com.sakethh.linkora.ui.screens.home.ChildHomeScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.ArchiveScreenModal
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.collections.SpecificScreenType
+import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

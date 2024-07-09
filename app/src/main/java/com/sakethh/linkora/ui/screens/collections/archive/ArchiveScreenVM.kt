@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.viewmodels.collections
+package com.sakethh.linkora.ui.screens.collections.archive
 
 import android.content.Context
 import android.widget.Toast
@@ -13,10 +13,13 @@ import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LinksTable
-import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.ui.screens.collections.archiveScreen.ChildArchiveScreen
+import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -24,6 +27,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 data class ArchiveScreenModal(
     val name: String,
@@ -34,8 +38,12 @@ enum class ArchiveScreenType {
     LINKS, FOLDERS
 }
 
-class ArchiveScreenVM(
-    private val deleteVM: DeleteVM = DeleteVM()
+@HiltViewModel
+class ArchiveScreenVM @Inject constructor(
+    private val linksRepo: LinksRepo,
+    private val foldersRepo: FoldersRepo,
+    private val archivedLinksSortingRepo: ArchivedLinksSortingRepo,
+    private val archivedFoldersSortingRepo: ParentArchivedFoldersSortingRepo
 ) : ViewModel() {
     val selectedArchivedLinkData = mutableStateOf(
         ArchivedLinks(
@@ -89,7 +97,7 @@ class ArchiveScreenVM(
     fun unArchiveMultipleFolders() {
         viewModelScope.launch {
             selectedFoldersID.toList().forEach {
-                LocalDatabase.localDB.updateDao().moveArchivedFolderToRegularFolderV10(it)
+                foldersRepo.moveArchivedFolderToRegularFolderV10(it)
             }
         }
     }
@@ -97,7 +105,7 @@ class ArchiveScreenVM(
     fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
             selectedLinksData.toList().forEach {
-                LocalDatabase.localDB.deleteDao().deleteALinkFromArchiveLinks(it.id)
+                linksRepo.deleteALinkFromArchiveLinks(it.id)
             }
         }.invokeOnCompletion {
             selectedLinksData.clear()
@@ -107,7 +115,7 @@ class ArchiveScreenVM(
     fun deleteMultipleSelectedFolders() {
         viewModelScope.launch {
             selectedFoldersID.toList().forEach {
-                LocalDatabase.localDB.deleteDao().deleteAFolder(it)
+                foldersRepo.deleteAFolder(it)
             }
         }.invokeOnCompletion {
             selectedFoldersID.clear()
@@ -117,7 +125,7 @@ class ArchiveScreenVM(
     fun unArchiveMultipleSelectedLinks() {
         viewModelScope.launch {
             selectedLinksData.toList().forEach { archivedLink ->
-                LocalDatabase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+                linksRepo.addANewLinkToSavedLinksOrInFolders(
                     LinksTable(
                         title = archivedLink.title,
                         webURL = archivedLink.webURL,
@@ -131,7 +139,7 @@ class ArchiveScreenVM(
                         isLinkedWithArchivedFolder = false
                     )
                 )
-                LocalDatabase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
+                linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
             }
         }.invokeOnCompletion {
             selectedLinksData.clear()
@@ -140,7 +148,7 @@ class ArchiveScreenVM(
 
     fun onUnArchiveLinkClick(archivedLink: ArchivedLinks) {
         viewModelScope.launch {
-            LocalDatabase.localDB.createDao().addANewLinkToSavedLinksOrInFolders(
+            linksRepo.addANewLinkToSavedLinksOrInFolders(
                 LinksTable(
                     title = archivedLink.title,
                     webURL = archivedLink.webURL,
@@ -154,7 +162,7 @@ class ArchiveScreenVM(
                     isLinkedWithArchivedFolder = false
                 )
             )
-            LocalDatabase.localDB.deleteDao().deleteALinkFromArchiveLinks(archivedLink.id)
+            linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
         }.invokeOnCompletion {
             selectedLinksData.clear()
         }
@@ -170,14 +178,14 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                LocalDatabase.localDB.updateDao()
+                linksRepo
                     .renameALinkInfoFromArchiveLinks(webURL, newNote)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                LocalDatabase.localDB.updateDao().renameAFolderNoteV10(folderID, newNote)
+                foldersRepo.renameAFolderNoteV10(folderID, newNote)
             }
         }
     }
@@ -191,14 +199,14 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                LocalDatabase.localDB.updateDao()
+                linksRepo
                     .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
-                LocalDatabase.localDB.updateDao().renameAFolderName(folderID, newTitle)
+                foldersRepo.renameAFolderName(folderID, newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -210,7 +218,7 @@ class ArchiveScreenVM(
             SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        LocalDatabase.localDB.archivedLinksSorting().sortByAToZ()
+                        archivedLinksSortingRepo.sortByAToZ()
                             .collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -221,7 +229,7 @@ class ArchiveScreenVM(
                                 )
                             }
                     }, async {
-                        LocalDatabase.localDB.archivedFolderSorting().sortByAToZV10()
+                        archivedFoldersSortingRepo.sortByAToZV10()
                             .collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -236,7 +244,7 @@ class ArchiveScreenVM(
             SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        LocalDatabase.localDB.archivedLinksSorting().sortByZToA()
+                        archivedLinksSortingRepo.sortByZToA()
                             .collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -247,7 +255,7 @@ class ArchiveScreenVM(
                                 )
                             }
                     }, async {
-                        LocalDatabase.localDB.archivedFolderSorting().sortByZToAV10()
+                        archivedFoldersSortingRepo.sortByZToAV10()
                             .collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -262,7 +270,7 @@ class ArchiveScreenVM(
             SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        LocalDatabase.localDB.archivedLinksSorting()
+                        archivedLinksSortingRepo
                             .sortByLatestToOldest().collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -273,7 +281,7 @@ class ArchiveScreenVM(
                                 )
                             }
                     }, async {
-                        LocalDatabase.localDB.archivedFolderSorting()
+                        archivedFoldersSortingRepo
                             .sortByLatestToOldestV10().collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -288,7 +296,7 @@ class ArchiveScreenVM(
             SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        LocalDatabase.localDB.archivedLinksSorting()
+                        archivedLinksSortingRepo
                             .sortByOldestToLatest().collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -299,7 +307,7 @@ class ArchiveScreenVM(
                                 )
                             }
                     }, async {
-                        LocalDatabase.localDB.archivedFolderSorting()
+                        archivedFoldersSortingRepo
                             .sortByOldestToLatestV10().collect {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
@@ -321,7 +329,7 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             viewModelScope.launch {
-                LocalDatabase.localDB.deleteDao()
+                linksRepo
                     .deleteALinkFromArchiveLinksV9(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
@@ -332,10 +340,11 @@ class ArchiveScreenVM(
                 onTaskCompleted()
             }
         } else {
-
-            deleteVM.onRegularFolderDeleteClick(
-                CollectionsScreenVM.selectedFolderData.value.id
-            )
+            viewModelScope.launch {
+                foldersRepo.deleteAFolder(
+                    CollectionsScreenVM.selectedFolderData.value.id
+                )
+            }
         }
 
     }
@@ -349,7 +358,7 @@ class ArchiveScreenVM(
     ) {
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
-                LocalDatabase.localDB.deleteDao().deleteAFolderNote(folderID)
+                foldersRepo.deleteAFolderNote(folderID)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                 }
@@ -358,7 +367,7 @@ class ArchiveScreenVM(
             }
         } else {
             viewModelScope.launch {
-                LocalDatabase.localDB.deleteDao()
+                linksRepo
                     .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName)
                 withContext(Dispatchers.Main) {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -371,7 +380,7 @@ class ArchiveScreenVM(
 
     fun onUnArchiveClickV10(folderID: Long) {
         viewModelScope.launch {
-            LocalDatabase.localDB.updateDao()
+            foldersRepo
                 .moveArchivedFolderToRegularFolderV10(folderID)
         }.invokeOnCompletion {
             selectedFoldersID.clear()

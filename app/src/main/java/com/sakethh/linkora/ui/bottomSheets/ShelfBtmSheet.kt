@@ -66,7 +66,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.viewmodels.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
