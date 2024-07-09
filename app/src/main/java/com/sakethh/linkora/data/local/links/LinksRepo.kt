@@ -1,5 +1,6 @@
 package com.sakethh.linkora.data.local.links
 
+import android.content.Context
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -45,6 +46,10 @@ interface LinksRepo {
     suspend fun deleteALinkFromArchiveLinksV9(webURL: String)
 
     suspend fun deleteALinkFromArchiveLinks(id: Long)
+    suspend fun archiveLinkTableUpdater(
+        archivedLinks: ArchivedLinks, context: Context,
+        onTaskCompleted: () -> Unit,
+    )
 
     suspend fun deleteALinkFromArchiveFolderBasedLinksV10(webURL: String, archiveFolderID: Long)
 

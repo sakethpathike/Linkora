@@ -58,7 +58,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.data.local.Shelf
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfParam
@@ -68,9 +67,6 @@ import com.sakethh.linkora.ui.commonComposables.RenameAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -83,8 +79,6 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val isAddANewShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val createVM: CreateVM = viewModel()
-    val deleteVM: DeleteVM = viewModel()
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -95,7 +89,6 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         mutableStateOf(ShelfBtmSheetVM.selectedShelfData.shelfName)
     }
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
-    val readVM: ReadVM = viewModel()
     val selectedShelfFolders =
         readVM.selectedShelfFoldersForShelfBtmSheet.collectAsStateWithLifecycle().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value

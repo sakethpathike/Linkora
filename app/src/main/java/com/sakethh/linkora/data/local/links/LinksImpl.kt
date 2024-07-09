@@ -1,14 +1,23 @@
 package com.sakethh.linkora.data.local.links
 
+import android.content.Context
+import android.widget.Toast
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class LinksImpl @Inject constructor(private val localDatabase: LocalDatabase) : LinksRepo {
+class LinksImpl @Inject constructor(
+    private val localDatabase: LocalDatabase,
+    private val linksRepo: LinksRepo, private val foldersRepo: FoldersRepo
+) : LinksRepo {
     override suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable) {
         return localDatabase.linksDao().addANewLinkToSavedLinksOrInFolders(linksTable)
     }
@@ -75,6 +84,36 @@ class LinksImpl @Inject constructor(private val localDatabase: LocalDatabase) : 
 
     override suspend fun deleteALinkFromArchiveLinks(id: Long) {
         return localDatabase.linksDao().deleteALinkFromArchiveLinks(id)
+    }
+
+    override suspend fun archiveLinkTableUpdater(
+        archivedLinks: ArchivedLinks,
+        context: Context,
+        onTaskCompleted: () -> Unit
+    ) {
+        if (doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
+            deleteALinkFromArchiveLinksV9(webURL = archivedLinks.webURL)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(
+                    context,
+                    "removed the link from archive(s)",
+                    Toast.LENGTH_SHORT
+                )
+                    .show()
+            }
+            onTaskCompleted()
+        } else {
+            addANewLinkToArchiveLink(archivedLinks = archivedLinks)
+            withContext(Dispatchers.Main) {
+                Toast.makeText(context, "moved the link to archive(s)", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            onTaskCompleted()
+        }
+        OptionsBtmSheetVM(
+            linksRepo,
+            foldersRepo
+        ).updateArchiveLinkCardData(url = archivedLinks.webURL)
     }
 
     override suspend fun deleteALinkFromArchiveFolderBasedLinksV10(

@@ -59,9 +59,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheet
-import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
@@ -82,15 +79,13 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -196,8 +191,6 @@ fun SpecificCollectionScreen(navController: NavController) {
     val areElementsSelectable = rememberSaveable {
         mutableStateOf(false)
     }
-    val updateVM: UpdateVM = viewModel()
-    val deleteVM: DeleteVM = viewModel()
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
@@ -1114,77 +1107,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                     })
             }
         }
-        NewLinkBtmSheet(
-            NewLinkBtmSheetUIParam(
-                btmSheetState = btmModalSheetStateForSavingLink,
-                inIntentActivity = false,
-                screenType = SpecificCollectionsScreenVM.screenType.value,
-                shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                currentFolder = CollectionsScreenVM.currentClickedFolderData.value.folderName,
-                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
-                    isDataExtractingForTheLink.value = true
-                    when (SpecificCollectionsScreenVM.screenType.value) {
-                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                            createVM.addANewLinkInAFolderV10(
-                                autoDetectTitle = isAutoDetectSelected,
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                context = context,
-                                onTaskCompleted = {
-                                    coroutineScope.launch {
-                                        btmModalSheetStateForSavingLinks.hide()
-                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                        isDataExtractingForTheLink.value = false
-                                    }
-                                },
-                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
-                            )
-                        }
-
-                        SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                            createVM.addANewLinkInImpLinks(
-                                autoDetectTitle = isAutoDetectSelected,
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                context = context,
-                                onTaskCompleted = {
-                                    coroutineScope.launch {
-                                        btmModalSheetStateForSavingLinks.hide()
-                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                        isDataExtractingForTheLink.value = false
-                                    }
-                                },
-                            )
-                        }
-
-                        SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                            createVM.addANewLinkInSavedLinks(
-                                autoDetectTitle = isAutoDetectSelected,
-                                title = title,
-                                webURL = webURL,
-                                noteForSaving = note,
-                                context = context,
-                                onTaskCompleted = {
-                                    coroutineScope.launch {
-                                        btmModalSheetStateForSavingLinks.hide()
-                                        shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                        isDataExtractingForTheLink.value = false
-                                    }
-                                },
-                            )
-                        }
-
-                        else -> {}
-                    }
-                },
-                onFolderCreated = {},
-                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                isDataExtractingForTheLink = isDataExtractingForTheLink
-            )
-        )
         MenuBtmSheetUI(
             MenuBtmSheetParam(
                 inSpecificArchiveScreen = mutableStateOf(SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
@@ -1206,13 +1128,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onRenameClick = {
                     shouldRenameDialogBeVisible.value = true
                 },
-                importantLinks = ImportantLinks(
-                    title = tempImpLinkData.title.value,
-                    webURL = tempImpLinkData.webURL.value,
-                    baseURL = tempImpLinkData.baseURL.value,
-                    imgURL = tempImpLinkData.imgURL.value,
-                    infoForSaving = tempImpLinkData.infoForSaving.value
-                ),
                 forAChildFolder = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) mutableStateOf(
                     false
                 ) else mutableStateOf(true),
@@ -1278,7 +1193,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                     } else {
                         specificCollectionsScreenVM.onDeleteClick(
                             folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                            selectedWebURL = selectedWebURL.value,
                             context = context,
                             onTaskCompleted = {
                                 specificCollectionsScreenVM.changeRetrievedData(
@@ -1288,7 +1202,6 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     )
                                 )
                             },
-                            folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                             linkID = CollectionsScreenVM.selectedFolderData.value.id
                         )
                     }
@@ -1388,14 +1301,12 @@ fun SpecificCollectionScreen(navController: NavController) {
                         )
                     )
                 },
-                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                 inAChildFolderScreen = true
             )
         )
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             screenType = SpecificCollectionsScreenVM.screenType.value,
-            parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
                 isDataExtractingForTheLink.value = true
                 when (SpecificCollectionsScreenVM.screenType.value) {

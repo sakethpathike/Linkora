@@ -8,21 +8,26 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.local.links.LinksRepo
+import javax.inject.Inject
 
 
 enum class OptionsBtmSheetType {
     LINK, FOLDER, IMPORTANT_LINKS_SCREEN,
 }
 
-class OptionsBtmSheetVM : ViewModel() {
+class OptionsBtmSheetVM @Inject constructor(
+    private val linksRepo: LinksRepo,
+    private val foldersRepo: FoldersRepo
+) : ViewModel() {
     val importantCardIcon = mutableStateOf(Icons.Outlined.Favorite)
     val importantCardText = mutableStateOf("")
 
     val archiveCardIcon = mutableStateOf(Icons.Outlined.Archive)
     val archiveCardText = mutableStateOf("")
     suspend fun updateImportantCardData(url: String) {
-        if (LocalDatabase.localDB.readDao()
+        if (linksRepo
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
@@ -34,7 +39,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveLinkCardData(url: String) {
-        if (LocalDatabase.localDB.readDao()
+        if (linksRepo
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
@@ -46,7 +51,7 @@ class OptionsBtmSheetVM : ViewModel() {
     }
 
     suspend fun updateArchiveFolderCardData(folderID: Long) {
-        if (LocalDatabase.localDB.readDao()
+        if (foldersRepo
                 .doesThisArchiveFolderExistsV10(folderID)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive

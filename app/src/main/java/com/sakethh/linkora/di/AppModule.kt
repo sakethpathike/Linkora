@@ -121,7 +121,11 @@ object AppModule {
     @Provides
     @Singleton
     fun provideLinksRepo(localDatabase: LocalDatabase): LinksRepo {
-        return LinksImpl(localDatabase)
+        return LinksImpl(
+            localDatabase,
+            provideLinksRepo(localDatabase),
+            provideFoldersRepo(localDatabase)
+        )
     }
 
     @Provides
@@ -141,31 +145,37 @@ object AppModule {
     fun parentFoldersSorting(localDatabase: LocalDatabase): ParentRegularFoldersSortingRepo {
         return ParentRegularFoldersSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun subFoldersSorting(localDatabase: LocalDatabase): SubFoldersSortingRepo {
         return SubFoldersSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun savedLinksSorting(localDatabase: LocalDatabase): SavedLinksSortingRepo {
         return SavedLinksSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun importantLinksSorting(localDatabase: LocalDatabase): ImportantLinksSortingRepo {
         return ImportantLinksSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun folderLinksSorting(localDatabase: LocalDatabase): RegularFolderLinksSortingRepo {
         return RegularFolderLinksSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun archiveFolderLinksSorting(localDatabase: LocalDatabase): ArchivedFolderLinksSortingRepo {
         return ArchivedFolderLinksSortingImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun archiveFoldersSorting(localDatabase: LocalDatabase): ParentArchivedFoldersSortingRepo {

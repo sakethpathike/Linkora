@@ -187,7 +187,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                           savedLinksSortingRepo.sortByAToZ().collectLatest {
+                            savedLinksSortingRepo.sortByAToZ().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
@@ -201,7 +201,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 
                     SettingsScreenVM.SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
-                           savedLinksSortingRepo.sortByZToA().collectLatest {
+                            savedLinksSortingRepo.sortByZToA().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                 List(it.size) { index ->
                                     mutableBooleanList.add(index, mutableStateOf(false))
@@ -249,7 +249,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                 when (sortingPreferences) {
                     SettingsScreenVM.SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
-                           importantLinksSortingRepo.sortByAToZ()
+                            importantLinksSortingRepo.sortByAToZ()
                                 .collectLatest {
                                     val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
                                     List(it.size) { index ->
@@ -315,7 +315,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                   archiveFolderLinksSortingRepo
+                                    archiveFolderLinksSortingRepo
                                         .sortLinksByAToZV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -422,7 +422,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                 archiveFolderLinksSortingRepo
+                                    archiveFolderLinksSortingRepo
                                         .sortLinksByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -462,7 +462,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                  folderLinksSortingRepo
+                                    folderLinksSortingRepo
                                         .sortByAToZV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -497,7 +497,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                   folderLinksSortingRepo
+                                    folderLinksSortingRepo
                                         .sortByZToAV10(folderID = folderID).collectLatest {
                                             val mutableBooleanList =
                                                 mutableListOf<MutableState<Boolean>>()
@@ -532,7 +532,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                   folderLinksSortingRepo
+                                    folderLinksSortingRepo
                                         .sortByLatestToOldestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -568,7 +568,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
-                                   folderLinksSortingRepo
+                                    folderLinksSortingRepo
                                         .sortByOldestToLatestV10(folderID = folderID)
                                         .collectLatest {
                                             val mutableBooleanList =
@@ -619,7 +619,8 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -629,7 +630,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                             onTaskCompleted()
                         })
                     }, async {
-                        LocalDatabase.localDB.deleteDao()
+                        linksRepo
                             .deleteALinkFromImpLinksBasedOnURL(tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -640,7 +641,8 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -658,7 +660,8 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -668,7 +671,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                             onTaskCompleted()
                         })
                     }, async {
-                      linksRepo
+                        linksRepo
                             .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
@@ -679,7 +682,8 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -731,7 +735,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                  linksRepo
+                    linksRepo
                         .deleteALinkFromImpLinks(linkID = linkID)
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -741,7 +745,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                       linksRepo.deleteALinkFromLinksTable(linkID)
+                        linksRepo.deleteALinkFromLinksTable(linkID)
                     } else {
                         foldersRepo.deleteAFolder(folderID)
                     }
@@ -762,7 +766,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                       linksRepo.deleteALinkFromLinksTable(linkID)
+                        linksRepo.deleteALinkFromLinksTable(linkID)
                     } else {
                         foldersRepo.deleteAFolder(folderID)
                     }
@@ -797,11 +801,11 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                      linksRepo.deleteALinkInfoOfFolders(
+                        linksRepo.deleteALinkInfoOfFolders(
                             linkID = linkID
                         )
                     } else {
-                       foldersRepo.deleteAFolderNote(
+                        foldersRepo.deleteAFolderNote(
                             folderID = folderID
                         )
                     }
@@ -812,7 +816,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 viewModelScope.launch {
-                  linksRepo
+                    linksRepo
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
@@ -822,11 +826,11 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     if (selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                       linksRepo.deleteALinkInfoOfFolders(
+                        linksRepo.deleteALinkInfoOfFolders(
                             linkID = linkID
                         )
                     } else {
-                      foldersRepo.deleteAFolderNote(
+                        foldersRepo.deleteAFolderNote(
                             folderID = folderID
                         )
                     }
@@ -838,6 +842,50 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             else -> {}
         }
 
+    }
+
+    fun onUiEvent(specificCollectionsScreenUIEvent: SpecificCollectionsScreenUIEvent) {
+        when (specificCollectionsScreenUIEvent) {
+            is SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.ArchiveAFolder -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateFolderName -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateFolderNote -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateImpLinkNote -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateImpLinkTitle -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote -> {
+
+            }
+
+            is SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle -> {
+
+            }
+        }
     }
 
     fun onLinkClick(
