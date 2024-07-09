@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.typeConverters
+package com.sakethh.linkora.data.local
 
 import androidx.room.TypeConverter
 import kotlinx.serialization.encodeToString

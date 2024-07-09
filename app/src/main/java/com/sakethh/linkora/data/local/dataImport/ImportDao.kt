@@ -1,9 +1,14 @@
-package com.sakethh.linkora.data.local
+package com.sakethh.linkora.data.local.dataImport
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import androidx.room.Transaction
+import com.sakethh.linkora.data.local.ArchivedFolders
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.RecentlyVisited
 
 @Dao
 interface ImportDao {

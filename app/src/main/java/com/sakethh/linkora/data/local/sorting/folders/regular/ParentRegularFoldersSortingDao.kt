@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.sorting.folders
+package com.sakethh.linkora.data.local.sorting.folders.regular
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,7 @@ import com.sakethh.linkora.data.local.FoldersTable
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ParentRegularFoldersSorting {
+interface ParentRegularFoldersSortingDao {
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0 ORDER BY folderName COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<FoldersTable>>

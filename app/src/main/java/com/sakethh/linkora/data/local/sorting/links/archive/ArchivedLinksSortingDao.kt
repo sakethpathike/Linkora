@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.sorting.links
+package com.sakethh.linkora.data.local.sorting.links.archive
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,7 @@ import com.sakethh.linkora.data.local.ArchivedLinks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ArchivedLinksSorting {
+interface ArchivedLinksSortingDao {
 
     @Query("SELECT * FROM archived_links_table ORDER BY title COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<ArchivedLinks>>

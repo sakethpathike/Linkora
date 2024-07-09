@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.sorting.links
+package com.sakethh.linkora.data.local.sorting.links.important
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,7 @@ import com.sakethh.linkora.data.local.ImportantLinks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ImportantLinksSorting {
+interface ImportantLinksSortingDao {
 
     @Query("SELECT * FROM important_links_table ORDER BY title COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<ImportantLinks>>

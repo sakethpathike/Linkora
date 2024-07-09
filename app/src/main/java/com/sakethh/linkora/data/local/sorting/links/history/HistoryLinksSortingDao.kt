@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.sorting.links
+package com.sakethh.linkora.data.local.sorting.links.history
 
 import androidx.room.Dao
 import androidx.room.Query
@@ -6,7 +6,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface HistoryLinksSorting {
+interface HistoryLinksSortingDao {
 
     @Query("SELECT * FROM recently_visited_table ORDER BY title COLLATE NOCASE ASC")
     fun sortByAToZ(): Flow<List<RecentlyVisited>>
