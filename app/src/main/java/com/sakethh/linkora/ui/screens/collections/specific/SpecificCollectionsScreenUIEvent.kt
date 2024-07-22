@@ -1,5 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
+import com.sakethh.linkora.data.local.FoldersTable
+
 sealed class SpecificCollectionsScreenUIEvent {
     data class ArchiveAFolder(val folderId: Long) : SpecificCollectionsScreenUIEvent()
     data class UpdateFolderNote(val folderId: Long, val newFolderNote: String) :
@@ -49,4 +51,5 @@ sealed class SpecificCollectionsScreenUIEvent {
     ) :
         SpecificCollectionsScreenUIEvent()
 
+    data class CreateANewFolder(val foldersTable: FoldersTable) : SpecificCollectionsScreenUIEvent()
 }

@@ -55,18 +55,18 @@ interface FoldersRepo {
         folderName: String,
     )
 
-    suspend fun renameAFolderName(folderID: Long, newFolderName: String)
+    suspend fun updateAFolderName(folderID: Long, newFolderName: String)
 
     suspend fun renameAFolderArchiveNameV9(folderID: Long, newFolderName: String)
 
-    suspend fun moveAFolderToArchivesV10(folderID: Long)
+    suspend fun moveAFolderToArchive(folderID: Long)
 
     suspend fun moveAMultipleFoldersToArchivesV10(folderIDs: Array<Long>)
 
     suspend fun moveArchivedFolderToRegularFolderV10(folderID: Long)
 
 
-    suspend fun renameAFolderNoteV10(folderID: Long, newNote: String)
+    suspend fun updateAFolderNote(folderID: Long, newNote: String)
 
     suspend fun renameArchivedFolderNoteV9(folderID: Long, newNote: String)
 

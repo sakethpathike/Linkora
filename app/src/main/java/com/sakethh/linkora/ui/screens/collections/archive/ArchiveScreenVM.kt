@@ -185,7 +185,7 @@ class ArchiveScreenVM @Inject constructor(
             }
         } else {
             viewModelScope.launch {
-                foldersRepo.renameAFolderNoteV10(folderID, newNote)
+                foldersRepo.updateAFolderNote(folderID, newNote)
             }
         }
     }
@@ -206,7 +206,7 @@ class ArchiveScreenVM @Inject constructor(
             }
         } else {
             viewModelScope.launch {
-                foldersRepo.renameAFolderName(folderID, newTitle)
+                foldersRepo.updateAFolderName(folderID, newTitle)
             }.invokeOnCompletion {
                 onTaskCompleted()
             }

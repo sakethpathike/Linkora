@@ -5,12 +5,22 @@ import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvents
 import kotlinx.coroutines.flow.Flow
 
 interface LinksRepo {
 
-    suspend fun addANewLinkToSavedLinksOrInFolders(linksTable: LinksTable)
+    suspend fun addANewLinkToSavedLinks(
+        linksTable: LinksTable,
+        onTaskCompleted: () -> Unit,
+        autoDetectTitle: Boolean,
+    ): CommonUiEvents
 
+    suspend fun addANewLinkInAFolder(
+        linksTable: LinksTable,
+        onTaskCompleted: () -> Unit,
+        autoDetectTitle: Boolean
+    ): CommonUiEvents
 
     suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
 
@@ -75,7 +85,11 @@ interface LinksRepo {
     suspend fun deleteThisArchiveFolderDataV9(folderID: String)
 
 
-    suspend fun addANewLinkToImpLinks(importantLinks: ImportantLinks)
+    suspend fun addANewLinkToImpLinks(
+        importantLink: ImportantLinks,
+        onTaskCompleted: () -> Unit,
+        autoDetectTitle: Boolean
+    ): CommonUiEvents
 
 
     suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)
@@ -158,11 +172,11 @@ interface LinksRepo {
 
     suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
 
-    suspend fun renameALinkTitleFromImpLinks(id: Long, newTitle: String)
+    suspend fun updateImpLinkTitle(id: Long, newTitle: String)
 
-    suspend fun renameALinkInfoFromImpLinks(id: Long, newInfo: String)
+    suspend fun updateImpLinkNote(id: Long, newInfo: String)
 
-    suspend fun renameALinkInfo(linkID: Long, newInfo: String)
+    suspend fun updateLinkInfoFromLinksTable(linkID: Long, newInfo: String)
 
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
 
@@ -218,7 +232,7 @@ interface LinksRepo {
 
     suspend fun renameALinkTitleFromSavedLinks(webURL: String, newTitle: String)
 
-    suspend fun renameALinkTitle(linkID: Long, newTitle: String)
+    suspend fun updateLinkTitleFromLinksTable(linkID: Long, newTitle: String)
 
     suspend fun renameALinkTitleFromFoldersV9(webURL: String, newTitle: String, folderName: String)
 

@@ -140,7 +140,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().renameInfoOfArchiveFoldersV9(newInfo, folderName)
     }
 
-    override suspend fun renameAFolderName(folderID: Long, newFolderName: String) {
+    override suspend fun updateAFolderName(folderID: Long, newFolderName: String) {
         return localDatabase.foldersDao().renameAFolderName(folderID, newFolderName)
     }
 
@@ -148,7 +148,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().renameAFolderArchiveNameV9(folderID, newFolderName)
     }
 
-    override suspend fun moveAFolderToArchivesV10(folderID: Long) {
+    override suspend fun moveAFolderToArchive(folderID: Long) {
         return localDatabase.foldersDao().moveAFolderToArchivesV10(folderID)
     }
 
@@ -160,7 +160,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().moveArchivedFolderToRegularFolderV10(folderID)
     }
 
-    override suspend fun renameAFolderNoteV10(folderID: Long, newNote: String) {
+    override suspend fun updateAFolderNote(folderID: Long, newNote: String) {
         return localDatabase.foldersDao().renameAFolderNoteV10(folderID, newNote)
     }
 

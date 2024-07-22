@@ -57,6 +57,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -1153,7 +1154,11 @@ fun SpecificCollectionScreen(navController: NavController) {
                             },
                         )
                     } else {
-                        updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
+                        specificCollectionsScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.ArchiveAFolder(
+                                CollectionsScreenVM.selectedFolderData.value.id
+                            )
+                        )
                     }
                 },
                 noteForSaving = selectedURLOrFolderNote.value,
@@ -1224,30 +1229,26 @@ fun SpecificCollectionScreen(navController: NavController) {
                 renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onNoteChangeClick = { newNote: String ->
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) {
-                        updateVM.updateFolderNote(
-                            CollectionsScreenVM.selectedFolderData.value.id,
-                            newNote
+                        specificCollectionsScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateFolderNote(
+                                CollectionsScreenVM.selectedFolderData.value.id,
+                                newNote
+                            )
                         )
                     } else {
                         when (SpecificCollectionsScreenVM.screenType.value) {
-                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkNote(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newNote
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> specificCollectionsScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateImpLinkNote(
+                                    CollectionsScreenVM.selectedFolderData.value.id,
+                                    newNote
+                                )
                             )
 
-                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newNote
-                            )
-
-                            SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newNote
-                            )
-
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkNote(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newNote
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN, SpecificScreenType.SAVED_LINKS_SCREEN, SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> specificCollectionsScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote(
+                                    CollectionsScreenVM.selectedFolderData.value.id,
+                                    newNote
+                                )
                             )
 
                             else -> {}
@@ -1257,30 +1258,26 @@ fun SpecificCollectionScreen(navController: NavController) {
                 },
                 onTitleChangeClick = { newTitle: String ->
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) {
-                        updateVM.updateFolderName(
-                            CollectionsScreenVM.selectedFolderData.value.id,
-                            newTitle
+                        specificCollectionsScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateFolderName(
+                                newTitle,
+                                CollectionsScreenVM.selectedFolderData.value.id
+                            )
                         )
                     } else {
                         when (SpecificCollectionsScreenVM.screenType.value) {
-                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> updateVM.updateImpLinkTitle(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newTitle
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> specificCollectionsScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateImpLinkTitle(
+                                    newTitle,
+                                    CollectionsScreenVM.selectedFolderData.value.id
+                                )
                             )
 
-                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newTitle
-                            )
-
-                            SpecificScreenType.SAVED_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newTitle
-                            )
-
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> updateVM.updateRegularLinkTitle(
-                                CollectionsScreenVM.selectedFolderData.value.id,
-                                newTitle
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN, SpecificScreenType.SAVED_LINKS_SCREEN, SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> specificCollectionsScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle(
+                                    newTitle,
+                                    CollectionsScreenVM.selectedFolderData.value.id
+                                )
                             )
 
                             else -> {}
@@ -1301,7 +1298,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                         )
                     )
                 },
-                inAChildFolderScreen = true
+                inAChildFolderScreen = true,
+                onFolderCreateClick = { folderName, folderNote ->
+                    specificCollectionsScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.CreateANewFolder(
+                            FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                        )
+                    )
+                }
             )
         )
         AddNewLinkDialogBox(
@@ -1311,54 +1315,61 @@ fun SpecificCollectionScreen(navController: NavController) {
                 isDataExtractingForTheLink.value = true
                 when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        createVM.addANewLinkInAFolderV10(
+                        specificCollectionsScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
                             autoDetectTitle = isAutoDetectSelected,
                             title = title,
                             webURL = webURL,
                             noteForSaving = note,
                             parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                            context = context,
                             onTaskCompleted = {
                                 shouldNewLinkDialogBoxBeVisible.value = false
                                 isDataExtractingForTheLink.value = false
                             },
                             folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                            )
                         )
                     }
 
                     SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        createVM.addANewLinkInImpLinks(
+                        specificCollectionsScreenVM.onUiEvent(SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
                             autoDetectTitle = isAutoDetectSelected,
                             title = title,
                             webURL = webURL,
                             noteForSaving = note,
-                            context = context,
                             onTaskCompleted = {
                                 shouldNewLinkDialogBoxBeVisible.value = false
                                 isDataExtractingForTheLink.value = false
-                            },
-                        )
+                            }
+                        ))
                     }
 
                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        createVM.addANewLinkInSavedLinks(
+                        specificCollectionsScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
                             autoDetectTitle = isAutoDetectSelected,
                             title = title,
                             webURL = webURL,
                             noteForSaving = note,
-                            context = context,
                             onTaskCompleted = {
                                 shouldNewLinkDialogBoxBeVisible.value = false
                                 isDataExtractingForTheLink.value = false
                             },
+                            )
                         )
                     }
 
                     else -> {}
                 }
             },
-            isDataExtractingForTheLink = isDataExtractingForTheLink.value
-        )
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value,
+            onFolderCreateClick = { folderName, folderNote ->
+                specificCollectionsScreenVM.onUiEvent(
+                    SpecificCollectionsScreenUIEvent.CreateANewFolder(
+                        FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                    )
+                )
+            })
         SortingBottomSheetUI(
             SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,

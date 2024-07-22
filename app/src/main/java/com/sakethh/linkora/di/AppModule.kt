@@ -25,6 +25,8 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperImpl
+import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -124,7 +126,8 @@ object AppModule {
         return LinksImpl(
             localDatabase,
             provideLinksRepo(localDatabase),
-            provideFoldersRepo(localDatabase)
+            provideFoldersRepo(localDatabase),
+            linkMetaDataScrapperService()
         )
     }
 
@@ -180,5 +183,11 @@ object AppModule {
     @Singleton
     fun archiveFoldersSorting(localDatabase: LocalDatabase): ParentArchivedFoldersSortingRepo {
         return ParentArchivedFoldersSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun linkMetaDataScrapperService(): LinkMetaDataScrapperService {
+        return LinkMetaDataScrapperImpl()
     }
 }

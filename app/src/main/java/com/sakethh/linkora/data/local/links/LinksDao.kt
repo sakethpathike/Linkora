@@ -238,7 +238,7 @@ interface LinksDao {
     suspend fun renameALinkInfoFromImpLinks(id: Long, newInfo: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE id = :linkID")
-    suspend fun renameALinkInfo(linkID: Long, newInfo: String)
+    suspend fun renameALinkInfoFromLinksTable(linkID: Long, newInfo: String)
 
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
@@ -309,7 +309,7 @@ interface LinksDao {
 
     @Transaction
     @Query("UPDATE links_table SET title = :newTitle WHERE id = :linkID")
-    suspend fun renameALinkTitle(linkID: Long, newTitle: String)
+    suspend fun updateLinkInfoFromLinksTable(linkID: Long, newTitle: String)
 
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
     suspend fun renameALinkTitleFromFoldersV9(webURL: String, newTitle: String, folderName: String)

@@ -11,12 +11,10 @@ import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
-import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingImpl
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
@@ -847,43 +845,131 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     fun onUiEvent(specificCollectionsScreenUIEvent: SpecificCollectionsScreenUIEvent) {
         when (specificCollectionsScreenUIEvent) {
             is SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder -> {
-
+                viewModelScope.launch {
+                    linksRepo.addANewLinkInAFolder(
+                        linksTable = LinksTable(
+                            title = specificCollectionsScreenUIEvent.title,
+                            webURL = specificCollectionsScreenUIEvent.webURL,
+                            baseURL = specificCollectionsScreenUIEvent.webURL,
+                            imgURL = "",
+                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving,
+                            isLinkedWithSavedLinks = false,
+                            isLinkedWithFolders = true,
+                            isLinkedWithImpFolder = false,
+                            isLinkedWithArchivedFolder = false,
+                            keyOfLinkedFolder = specificCollectionsScreenUIEvent.folderName,
+                            keyOfImpLinkedFolderV10 = specificCollectionsScreenUIEvent.parentFolderID,
+                            keyOfImpLinkedFolder = ""
+                        ),
+                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
+                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks -> {
-
+                viewModelScope.launch {
+                    linksRepo.addANewLinkToImpLinks(
+                        importantLink = ImportantLinks(
+                            title = specificCollectionsScreenUIEvent.title,
+                            webURL = specificCollectionsScreenUIEvent.webURL,
+                            baseURL = specificCollectionsScreenUIEvent.webURL,
+                            imgURL = "",
+                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving
+                        ),
+                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle,
+                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks -> {
-
+                viewModelScope.launch {
+                    linksRepo.addANewLinkToSavedLinks(
+                        linksTable = LinksTable(
+                            title = specificCollectionsScreenUIEvent.title,
+                            webURL = specificCollectionsScreenUIEvent.webURL,
+                            baseURL = specificCollectionsScreenUIEvent.webURL,
+                            imgURL = "",
+                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving,
+                            isLinkedWithSavedLinks = true,
+                            isLinkedWithFolders = false,
+                            isLinkedWithImpFolder = false,
+                            isLinkedWithArchivedFolder = false,
+                            keyOfLinkedFolder = null,
+                            keyOfImpLinkedFolderV10 = null,
+                            keyOfImpLinkedFolder = ""
+                        ),
+                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
+                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.ArchiveAFolder -> {
-
+                viewModelScope.launch {
+                    foldersRepo.moveAFolderToArchive(specificCollectionsScreenUIEvent.folderId)
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateFolderName -> {
-
+                viewModelScope.launch {
+                    foldersRepo.updateAFolderName(
+                        specificCollectionsScreenUIEvent.folderId,
+                        specificCollectionsScreenUIEvent.folderName
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateFolderNote -> {
-
+                viewModelScope.launch {
+                    foldersRepo.updateAFolderNote(
+                        specificCollectionsScreenUIEvent.folderId,
+                        specificCollectionsScreenUIEvent.newFolderNote
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateImpLinkNote -> {
-
+                viewModelScope.launch {
+                    linksRepo.updateImpLinkNote(
+                        specificCollectionsScreenUIEvent.linkId,
+                        specificCollectionsScreenUIEvent.newNote
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateImpLinkTitle -> {
-
+                viewModelScope.launch {
+                    linksRepo.updateImpLinkTitle(
+                        specificCollectionsScreenUIEvent.linkId,
+                        specificCollectionsScreenUIEvent.title
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote -> {
-
+                viewModelScope.launch {
+                    linksRepo.updateLinkInfoFromLinksTable(
+                        specificCollectionsScreenUIEvent.linkId,
+                        specificCollectionsScreenUIEvent.newNote
+                    )
+                }
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle -> {
+                viewModelScope.launch {
+                    linksRepo.updateLinkTitleFromLinksTable(
+                        specificCollectionsScreenUIEvent.linkId,
+                        specificCollectionsScreenUIEvent.title
+                    )
+                }
+            }
 
+            is SpecificCollectionsScreenUIEvent.CreateANewFolder -> {
+                viewModelScope.launch {
+                    foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
+                }
             }
         }
     }
