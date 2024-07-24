@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.viewmodels.commonBtmSheets
+package com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets
 
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey

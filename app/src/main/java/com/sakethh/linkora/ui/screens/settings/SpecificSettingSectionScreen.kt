@@ -88,7 +88,6 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.NewFeatureDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
@@ -101,7 +100,6 @@ import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionChe
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.theme.fonts
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.launch
 
@@ -733,14 +731,14 @@ fun SpecificSettingSectionScreen(navController: NavController) {
             onClick = { activityResultLauncher.launch("text/*") },
             exceptionType = settingsScreenVM.exceptionType
         )
-        val deleteVM: DeleteVM = viewModel()
+
         ImportConflictBtmSheet(isUIVisible = isImportConflictBoxVisible,
             modalBottomSheetState = importModalBottomSheetState,
             onMergeClick = {
                 activityResultLauncher.launch("text/*")
             },
             onDeleteExistingDataClick = {
-                deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                     activityResultLauncher.launch("text/*")
                 })
             },
@@ -785,7 +783,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                     Toast.makeText(
                         context, "Successfully Exported", Toast.LENGTH_SHORT
                     ).show()
-                    deleteVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
+                    settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                         activityResultLauncher.launch("text/*")
                     })
                 }
@@ -812,13 +810,13 @@ fun SpecificSettingSectionScreen(navController: NavController) {
             DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
                 onDeleteClick = {
-                    deleteVM.deleteEntireLinksAndFoldersData()
+                    settingsScreenVM.deleteEntireLinksAndFoldersData()
                     Toast.makeText(
                         context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
                     ).show()
                 })
         )
-        NewFeatureDialogBox(isNewFeatureDialogBoxVisible)
+
         if (settingsScreenVM.dataRefreshState.intValue != 1) {
             AlertDialog(onDismissRequest = { }, confirmButton = { }, text = {
                 Box(

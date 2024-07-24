@@ -33,6 +33,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
+import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.dataImport.ImportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
@@ -81,7 +82,8 @@ class SettingsScreenVM @Inject constructor(
     private val exportImpl: ExportImpl = ExportImpl(),
     private val linksRepo: LinksRepo,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
-    private val importRepo: ImportRepo
+    private val importRepo: ImportRepo,
+    private val localDatabase: LocalDatabase
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
@@ -916,5 +918,10 @@ class SettingsScreenVM @Inject constructor(
                 this.releaseNotes.value = retrievedData.releaseNotes
             }
         }
+    }
+
+    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
+        localDatabase.clearAllTables()
+        onTaskCompleted()
     }
 }

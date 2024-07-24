@@ -196,7 +196,7 @@ class ImportImpl @Inject constructor(
         }
     }
 
-    private suspend fun migrateRegularFoldersLinksDataFromV9toV10() = coroutineScope {
+    override suspend fun migrateRegularFoldersLinksDataFromV9toV10() = coroutineScope {
         foldersRepo.getAllRootFolders().collect { rootFolders ->
             rootFolders.forEach { currentFolder ->
                 async {
@@ -217,7 +217,7 @@ class ImportImpl @Inject constructor(
         }
     }
 
-    private suspend fun migrateArchiveFoldersV9toV10() = coroutineScope {
+    override suspend fun migrateArchiveFoldersV9toV10() = coroutineScope {
         foldersRepo.getAllArchiveFoldersV9().collect { archiveFolders ->
             archiveFolders.forEach { currentFolder ->
                 async {

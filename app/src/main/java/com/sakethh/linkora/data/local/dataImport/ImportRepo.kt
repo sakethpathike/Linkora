@@ -8,4 +8,8 @@ interface ImportRepo {
         jsonString: String,
         shouldErrorDialogBeVisible: MutableState<Boolean>
     )
+
+    suspend fun migrateArchiveFoldersV9toV10()
+
+    suspend fun migrateRegularFoldersLinksDataFromV9toV10()
 }

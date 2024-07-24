@@ -23,7 +23,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.dataImport.ImportRepo
+import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -31,7 +32,6 @@ import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -39,9 +39,13 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity : ComponentActivity() {
+class MainActivity @Inject constructor(
+    private val foldersRepo: FoldersRepo,
+    private val importRepo: ImportRepo
+) : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -100,7 +104,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LocalDatabase.localDB = LocalDatabase.getLocalDB(context = context)
                 LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                     async {
                         if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
@@ -126,10 +129,10 @@ class MainActivity : ComponentActivity() {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 this.launch {
-                                    if (LocalDatabase.localDB.readDao().getAllArchiveFoldersV9List()
+                                    if (foldersRepo.getAllArchiveFoldersV9List()
                                             .isNotEmpty()
                                     ) {
-                                        UpdateVM().migrateArchiveFoldersV9toV10()
+                                        importRepo.migrateArchiveFoldersV9toV10()
                                         withContext(Dispatchers.Main) {
                                             Toast.makeText(
                                                 context,
@@ -140,10 +143,10 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
 
-                                if (LocalDatabase.localDB.readDao().getAllRootFoldersList()
+                                if (foldersRepo.getAllRootFoldersList()
                                         .isNotEmpty()
                                 ) {
-                                    UpdateVM().migrateRegularFoldersLinksDataFromV9toV10()
+                                    importRepo.migrateRegularFoldersLinksDataFromV9toV10()
                                     withContext(Dispatchers.Main) {
                                         Toast.makeText(
                                             context,

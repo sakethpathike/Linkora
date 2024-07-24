@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.viewmodels.commonBtmSheets
+package com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Archive

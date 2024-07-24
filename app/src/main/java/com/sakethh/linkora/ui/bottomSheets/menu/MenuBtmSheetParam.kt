@@ -4,7 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 
 data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor(
     val btmModalSheetState: SheetState,

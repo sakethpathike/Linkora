@@ -65,8 +65,8 @@ import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +90,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     }
     val collectionsScreenVM: CollectionsScreenVM = viewModel()
     val selectedShelfFolders =
-        readVM.selectedShelfFoldersForShelfBtmSheet.collectAsStateWithLifecycle().value
+        shelfBtmSheetVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value
     val isRenameAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
@@ -139,7 +139,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     isRenameAShelfDialogBoxVisible.value = true
                                 },
                                 onOptionClick = {
-                                    readVM.changeSelectedShelfFoldersDataForShelfBtmSheet(it.id)
+                                    shelfBtmSheetVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                                        it.id
+                                    )
                                     ShelfBtmSheetVM.selectedShelfData = it
                                     selectedShelfName.value = it.shelfName
                                     isTuneIconClicked.value = true
@@ -154,7 +156,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 onTuneIconClick = {
                                     selectedShelfName.value = it.shelfName
                                     ShelfBtmSheetVM.selectedShelfData = it
-                                    readVM.changeSelectedShelfFoldersDataForShelfBtmSheet(it.id)
+                                    shelfBtmSheetVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                                        it.id
+                                    )
                                     isTuneIconClicked.value = true
                                 }
                             )
