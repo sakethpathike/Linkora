@@ -125,7 +125,7 @@ class ArchiveScreenVM @Inject constructor(
     fun unArchiveMultipleSelectedLinks() {
         viewModelScope.launch {
             selectedLinksData.toList().forEach { archivedLink ->
-                linksRepo.addANewLinkToSavedLinksOrInFolders(
+                linksRepo.addANewLinkToSavedLinks(
                     LinksTable(
                         title = archivedLink.title,
                         webURL = archivedLink.webURL,
@@ -137,7 +137,7 @@ class ArchiveScreenVM @Inject constructor(
                         isLinkedWithImpFolder = false,
                         keyOfImpLinkedFolder = "",
                         isLinkedWithArchivedFolder = false
-                    )
+                    ), onTaskCompleted = {}, autoDetectTitle = false
                 )
                 linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
             }
@@ -148,7 +148,7 @@ class ArchiveScreenVM @Inject constructor(
 
     fun onUnArchiveLinkClick(archivedLink: ArchivedLinks) {
         viewModelScope.launch {
-            linksRepo.addANewLinkToSavedLinksOrInFolders(
+            linksRepo.addANewLinkToSavedLinks(
                 LinksTable(
                     title = archivedLink.title,
                     webURL = archivedLink.webURL,
@@ -160,7 +160,7 @@ class ArchiveScreenVM @Inject constructor(
                     isLinkedWithImpFolder = false,
                     keyOfImpLinkedFolder = "",
                     isLinkedWithArchivedFolder = false
-                )
+                ), onTaskCompleted = {}, autoDetectTitle = false
             )
             linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
         }.invokeOnCompletion {

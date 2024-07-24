@@ -25,7 +25,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
-import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -39,18 +38,16 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
@@ -484,16 +481,8 @@ fun ChildHomeScreen(
                 Spacer(modifier = Modifier.height(225.dp))
             }
         }
-        val updateVM: UpdateVM = viewModel()
         MenuBtmSheetUI(
             MenuBtmSheetParam(
-                importantLinks = ImportantLinks(
-                    title = HomeScreenVM.tempImpLinkData.title,
-                    webURL = HomeScreenVM.tempImpLinkData.webURL,
-                    baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                    imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                    infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                ),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
@@ -526,7 +515,11 @@ fun ChildHomeScreen(
                             selectedElementID.longValue,
                             {})
                     } else {
-                        updateVM.archiveAFolderV10(selectedElementID.longValue)
+                        homeScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.ArchiveAFolder(
+                                selectedElementID.longValue
+                            )
+                        )
                     }
                 },
                 noteForSaving = selectedNote.value,
@@ -563,7 +556,6 @@ fun ChildHomeScreen(
             )
         )
     }
-    val deleteVM: DeleteVM = viewModel()
     DeleteDialogBox(
         DeleteDialogBoxParam(
             folderName = selectedURLTitle,
@@ -585,18 +577,19 @@ fun ChildHomeScreen(
                     }
                     homeScreenVM.onDeleteClick(
                         folderID = 0,
-                        selectedWebURL = "",
                         context = context,
                         onTaskCompleted = {},
-                        folderName = "",
                         linkID = selectedElementID.longValue
                     )
                 } else {
-                    deleteVM.onRegularFolderDeleteClick(selectedElementID.longValue)
+                    homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.DeleteAFolder(
+                            selectedElementID.longValue
+                        )
+                    )
                 }
             })
     )
-    val updateVM: UpdateVM = viewModel()
     RenameDialogBox(
         RenameDialogBoxParam(
             shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
@@ -605,19 +598,34 @@ fun ChildHomeScreen(
             onNoteChangeClick = { newNote: String ->
                 when (homeScreenType) {
                     HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
-                        updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
+                        homeScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote(
+                                selectedElementID.longValue,
+                                newNote
+                            )
+                        )
                     }
 
-                    HomeScreenVM.HomeScreenType.IMP_LINKS -> updateVM.updateImpLinkNote(
+                    HomeScreenVM.HomeScreenType.IMP_LINKS -> homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.UpdateImpLinkNote(
                         selectedElementID.longValue,
                         newNote
+                        )
                     )
 
                     else -> {
                         if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                            updateVM.updateRegularLinkNote(selectedElementID.longValue, newNote)
+                            homeScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote(
+                                    selectedElementID.longValue, newNote
+                                )
+                            )
                         } else {
-                            updateVM.updateFolderNote(selectedElementID.longValue, newNote)
+                            homeScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateFolderNote(
+                                    selectedElementID.longValue, newNote
+                                )
+                            )
                         }
                     }
                 }
@@ -626,19 +634,32 @@ fun ChildHomeScreen(
             onTitleChangeClick = { newTitle: String ->
                 when (homeScreenType) {
                     HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
-                        updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
+                        homeScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle(
+                                newTitle, selectedElementID.longValue
+                            )
+                        )
                     }
 
-                    HomeScreenVM.HomeScreenType.IMP_LINKS -> updateVM.updateImpLinkTitle(
-                        selectedElementID.longValue,
-                        newTitle
+                    HomeScreenVM.HomeScreenType.IMP_LINKS -> homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.UpdateImpLinkTitle(
+                            newTitle, selectedElementID.longValue
+                        )
                     )
 
                     else -> {
                         if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                            updateVM.updateRegularLinkTitle(selectedElementID.longValue, newTitle)
+                            homeScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle(
+                                    newTitle, selectedElementID.longValue
+                                )
+                            )
                         } else {
-                            updateVM.updateFolderName(selectedElementID.longValue, newTitle)
+                            homeScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.UpdateFolderName(
+                                    newTitle, selectedElementID.longValue
+                                )
+                            )
                         }
                     }
                 }

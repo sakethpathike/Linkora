@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.viewmodels.home
+package com.sakethh.linkora.ui.screens.home
 
 import android.content.Context
 import android.widget.Toast
@@ -8,27 +8,52 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.Shelf
+import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
+import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.navigation.NavigationVM
-import com.sakethh.linkora.ui.screens.home.ChildHomeScreen
-import com.sakethh.linkora.ui.screens.home.HomeScreenBtmSheetType
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
+import javax.inject.Inject
 
-open class HomeScreenVM : SpecificCollectionsScreenVM() {
+open class HomeScreenVM @Inject constructor(
+    private val linksRepo: LinksRepo,
+    foldersRepo: FoldersRepo,
+    savedLinksSortingRepo: SavedLinksSortingRepo,
+    importantLinksSortingRepo: ImportantLinksSortingRepo,
+    folderLinksSortingRepo: RegularFolderLinksSortingRepo,
+    archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
+    subFoldersSortingRepo: SubFoldersSortingRepo,
+    regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
+) : SpecificCollectionsScreenVM(
+    linksRepo,
+    foldersRepo,
+    savedLinksSortingRepo,
+    importantLinksSortingRepo,
+    folderLinksSortingRepo,
+    archiveFolderLinksSortingRepo,
+    subFoldersSortingRepo,
+    regularFoldersSortingRepo,
+    parentRegularFoldersSortingRepo
+) {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     val isSelectionModeEnabled = mutableStateOf(false)
@@ -46,15 +71,14 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 selectedSavedLinkIds.toList().forEach {
-                    LocalDatabase.localDB.updateDao()
+                    linksRepo
                         .copyLinkFromLinksTableToArchiveLinks(it)
-                    LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                    linksRepo.deleteALinkFromLinksTable(it)
                 }
             }, async {
                 selectedImpLinkIds.toList().forEach {
-                    LocalDatabase.localDB.updateDao()
-                        .copyLinkFromImpLinksTableToArchiveLinks(it)
-                    LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                    linksRepo.copyLinkFromImpLinksTableToArchiveLinks(it)
+                    linksRepo.deleteALinkFromImpLinks(it)
                 }
             })
         }
@@ -64,11 +88,11 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         viewModelScope.launch {
             awaitAll(async {
                 selectedSavedLinkIds.toList().forEach {
-                    LocalDatabase.localDB.deleteDao().deleteALinkFromLinksTable(it)
+                    linksRepo.deleteALinkFromLinksTable(it)
                 }
             }, async {
                 selectedImpLinkIds.toList().forEach {
-                    LocalDatabase.localDB.deleteDao().deleteALinkFromImpLinks(it)
+                    linksRepo.deleteALinkFromImpLinks(it)
                 }
             })
         }
@@ -125,11 +149,12 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
                 }
             })
         }
-        viewModelScope.launch {
-            LocalDatabase.localDB.shelfCrud().getAllShelfItems().collectLatest {
-                _shelfData.emit(it)
-            }
-        }
+        TODO()
+        /* viewModelScope.launch {
+             LocalDatabase.localDB.shelfCrud().getAllShelfItems().collectLatest {
+                 _shelfData.emit(it)
+             }
+         }*/
     }
 
 
@@ -142,7 +167,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.updateDao().renameALinkTitleFromSavedLinks(
+                    linksRepo.renameALinkTitleFromSavedLinks(
                         webURL = webURL, newTitle = newTitle
                     )
                 }.invokeOnCompletion {
@@ -164,8 +189,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.updateDao()
-                        .renameALinkTitleFromImpLinks(linkID, newTitle = newTitle)
+                    linksRepo.updateImpLinkTitle(linkID, newTitle = newTitle)
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -189,7 +213,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.updateDao().renameALinkInfoFromSavedLinks(
+                    linksRepo.renameALinkInfoFromSavedLinks(
                         webURL = webURL, newInfo = newNote
                     )
                 }
@@ -198,8 +222,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.updateDao()
-                        .renameALinkInfoFromRecentlyVisitedLinks(
+
+                    linksRepo.renameALinkInfoFromRecentlyVisitedLinks(
                             webURL = webURL, newInfo = newNote
                         )
                 }
@@ -208,8 +232,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.updateDao()
-                        .renameALinkInfoFromImpLinks(linkID, newInfo = newNote)
+
+                    linksRepo.updateImpLinkNote(linkID, newInfo = newNote)
                 }
                 Unit
             }
@@ -225,7 +249,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao().deleteALinkFromSavedLinksBasedOnURL(
+                    linksRepo.deleteALinkFromSavedLinksBasedOnURL(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
@@ -248,7 +272,7 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao().deleteARecentlyVisitedLink(
+                    linksRepo.deleteARecentlyVisitedLink(
                         webURL = selectedWebURL
                     )
                 }
@@ -257,8 +281,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao()
-                        .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
+
+                    linksRepo.deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
@@ -281,8 +305,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
         when (selectedCardType) {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao()
-                        .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
+
+                    linksRepo.deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
@@ -292,8 +316,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao()
-                        .deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
+
+                    linksRepo.deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
@@ -303,8 +327,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
-                    LocalDatabase.localDB.deleteDao()
-                        .deleteANoteFromImportantLinks(webURL = selectedWebURL)
+
+                    linksRepo.deleteANoteFromImportantLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
@@ -320,7 +344,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -328,8 +353,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, onTaskCompleted = {})
                     }, async {
-                        LocalDatabase.localDB.deleteDao()
-                            .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
+
+                        linksRepo.deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(
@@ -346,7 +371,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_VISITS -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -356,8 +382,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
 
                         })
                     }, async {
-                        LocalDatabase.localDB.deleteDao()
-                            .deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
+
+                        linksRepo.deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
                     })
                 }
                 Unit
@@ -366,7 +392,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
             HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
                 viewModelScope.launch {
                     awaitAll(async {
-                        updateVM.archiveLinkTableUpdater(archivedLinks = ArchivedLinks(
+                        linksRepo.archiveLinkTableUpdater(
+                            archivedLinks = ArchivedLinks(
                             title = tempImpLinkData.title,
                             webURL = tempImpLinkData.webURL,
                             baseURL = tempImpLinkData.baseURL,
@@ -374,8 +401,8 @@ open class HomeScreenVM : SpecificCollectionsScreenVM() {
                             infoForSaving = tempImpLinkData.infoForSaving
                         ), context = context, {})
                     }, async {
-                        LocalDatabase.localDB.deleteDao()
-                            .deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
+
+                        linksRepo.deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(

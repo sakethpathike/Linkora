@@ -1,7 +1,7 @@
 package com.sakethh.linkora.ui.viewmodels.commonBtmSheets
 
 import com.sakethh.linkora.data.local.Shelf
-import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 class ShelfBtmSheetVM : HomeScreenVM() {
     companion object {

@@ -52,4 +52,6 @@ sealed class SpecificCollectionsScreenUIEvent {
         SpecificCollectionsScreenUIEvent()
 
     data class CreateANewFolder(val foldersTable: FoldersTable) : SpecificCollectionsScreenUIEvent()
+
+    data class DeleteAFolder(val folderId: Long) : SpecificCollectionsScreenUIEvent()
 }

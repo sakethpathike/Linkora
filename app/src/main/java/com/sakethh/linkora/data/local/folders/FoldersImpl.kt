@@ -187,7 +187,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
             try {
                 childFolders.childFolderIDs?.forEach {
                     deleteAFolder(it)
-                    deleteThisFolderLinksV10(it)
+                    localDatabase.linksDao().deleteThisFolderLinks(it)
                 }
             } catch (e: NullPointerException) {
                 e.printStackTrace()

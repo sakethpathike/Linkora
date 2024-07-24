@@ -314,6 +314,9 @@ interface LinksDao {
     @Query("UPDATE links_table SET title = :newTitle WHERE webURL = :webURL AND keyOfLinkedFolder = :folderName AND isLinkedWithFolders=1")
     suspend fun renameALinkTitleFromFoldersV9(webURL: String, newTitle: String, folderName: String)
 
+    @Query("DELETE FROM links_table WHERE keyOfLinkedFolderV10 = :folderID")
+    suspend fun deleteThisFolderLinks(folderID: Long)
+
     @Insert
     suspend fun addANewLinkInRecentlyVisited(recentlyVisited: RecentlyVisited)
 }

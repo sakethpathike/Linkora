@@ -50,7 +50,8 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     private val archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
     private val subFoldersSortingRepo: SubFoldersSortingRepo,
     private val regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-) : CollectionsScreenVM() {
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
+) : CollectionsScreenVM(foldersRepo, linksRepo, parentRegularFoldersSortingRepo) {
 
 
     private val _folderLinksData = MutableStateFlow(
@@ -841,139 +842,6 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         }
 
     }
-
-    fun onUiEvent(specificCollectionsScreenUIEvent: SpecificCollectionsScreenUIEvent) {
-        when (specificCollectionsScreenUIEvent) {
-            is SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder -> {
-                viewModelScope.launch {
-                    linksRepo.addANewLinkInAFolder(
-                        linksTable = LinksTable(
-                            title = specificCollectionsScreenUIEvent.title,
-                            webURL = specificCollectionsScreenUIEvent.webURL,
-                            baseURL = specificCollectionsScreenUIEvent.webURL,
-                            imgURL = "",
-                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving,
-                            isLinkedWithSavedLinks = false,
-                            isLinkedWithFolders = true,
-                            isLinkedWithImpFolder = false,
-                            isLinkedWithArchivedFolder = false,
-                            keyOfLinkedFolder = specificCollectionsScreenUIEvent.folderName,
-                            keyOfImpLinkedFolderV10 = specificCollectionsScreenUIEvent.parentFolderID,
-                            keyOfImpLinkedFolder = ""
-                        ),
-                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
-                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks -> {
-                viewModelScope.launch {
-                    linksRepo.addANewLinkToImpLinks(
-                        importantLink = ImportantLinks(
-                            title = specificCollectionsScreenUIEvent.title,
-                            webURL = specificCollectionsScreenUIEvent.webURL,
-                            baseURL = specificCollectionsScreenUIEvent.webURL,
-                            imgURL = "",
-                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving
-                        ),
-                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle,
-                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks -> {
-                viewModelScope.launch {
-                    linksRepo.addANewLinkToSavedLinks(
-                        linksTable = LinksTable(
-                            title = specificCollectionsScreenUIEvent.title,
-                            webURL = specificCollectionsScreenUIEvent.webURL,
-                            baseURL = specificCollectionsScreenUIEvent.webURL,
-                            imgURL = "",
-                            infoForSaving = specificCollectionsScreenUIEvent.noteForSaving,
-                            isLinkedWithSavedLinks = true,
-                            isLinkedWithFolders = false,
-                            isLinkedWithImpFolder = false,
-                            isLinkedWithArchivedFolder = false,
-                            keyOfLinkedFolder = null,
-                            keyOfImpLinkedFolderV10 = null,
-                            keyOfImpLinkedFolder = ""
-                        ),
-                        onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
-                        autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.ArchiveAFolder -> {
-                viewModelScope.launch {
-                    foldersRepo.moveAFolderToArchive(specificCollectionsScreenUIEvent.folderId)
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateFolderName -> {
-                viewModelScope.launch {
-                    foldersRepo.updateAFolderName(
-                        specificCollectionsScreenUIEvent.folderId,
-                        specificCollectionsScreenUIEvent.folderName
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateFolderNote -> {
-                viewModelScope.launch {
-                    foldersRepo.updateAFolderNote(
-                        specificCollectionsScreenUIEvent.folderId,
-                        specificCollectionsScreenUIEvent.newFolderNote
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateImpLinkNote -> {
-                viewModelScope.launch {
-                    linksRepo.updateImpLinkNote(
-                        specificCollectionsScreenUIEvent.linkId,
-                        specificCollectionsScreenUIEvent.newNote
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateImpLinkTitle -> {
-                viewModelScope.launch {
-                    linksRepo.updateImpLinkTitle(
-                        specificCollectionsScreenUIEvent.linkId,
-                        specificCollectionsScreenUIEvent.title
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateRegularLinkNote -> {
-                viewModelScope.launch {
-                    linksRepo.updateLinkInfoFromLinksTable(
-                        specificCollectionsScreenUIEvent.linkId,
-                        specificCollectionsScreenUIEvent.newNote
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.UpdateRegularLinkTitle -> {
-                viewModelScope.launch {
-                    linksRepo.updateLinkTitleFromLinksTable(
-                        specificCollectionsScreenUIEvent.linkId,
-                        specificCollectionsScreenUIEvent.title
-                    )
-                }
-            }
-
-            is SpecificCollectionsScreenUIEvent.CreateANewFolder -> {
-                viewModelScope.launch {
-                    foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
-                }
-            }
-        }
-    }
-
     fun onLinkClick(
         recentlyVisited: RecentlyVisited,
         onTaskCompleted: () -> Unit,

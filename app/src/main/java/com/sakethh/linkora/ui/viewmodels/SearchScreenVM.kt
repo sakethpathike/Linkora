@@ -14,7 +14,7 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

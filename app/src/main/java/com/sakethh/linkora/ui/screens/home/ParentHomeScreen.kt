@@ -94,9 +94,6 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.localDB.commonVMs.CreateVM
-import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheet
-import com.sakethh.linkora.ui.bottomSheets.NewLinkBtmSheetUIParam
 import com.sakethh.linkora.ui.bottomSheets.ShelfBtmSheet
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
@@ -110,12 +107,11 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.viewmodels.home.HomeScreenVM
-import com.sakethh.linkora.ui.viewmodels.localDB.ReadVM
+import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -130,7 +126,6 @@ fun ParentHomeScreen(navController: NavController) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = viewModel()
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
-    val createVM: CreateVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -160,7 +155,6 @@ fun ParentHomeScreen(navController: NavController) {
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val readVM: ReadVM = viewModel()
     val homeScreenList =
         readVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
@@ -748,11 +742,10 @@ fun ParentHomeScreen(navController: NavController) {
         AddNewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
-            parentFolderID = null,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
                 isDataExtractingForTheLink.value = true
                 if (selectedDefaultFolderName == "Saved Links") {
-                    createVM.addANewLinkInSavedLinks(
+                    homeScreenVM.onUiEvent(SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
                         title = title,
                         webURL = webURL,
                         noteForSaving = note,
@@ -760,13 +753,12 @@ fun ParentHomeScreen(navController: NavController) {
                         onTaskCompleted = {
                             shouldDialogForNewLinkAppear.value = false
                             isDataExtractingForTheLink.value = false
-                        },
-                        context = context
-                    )
+                        }
+                    ))
                 }
                 if (selectedDefaultFolderName == "Important Links") {
-                    createVM.addANewLinkInImpLinks(
-                        context = context,
+                    homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
                         onTaskCompleted = {
                             shouldDialogForNewLinkAppear.value = false
                             isDataExtractingForTheLink.value = false
@@ -775,107 +767,41 @@ fun ParentHomeScreen(navController: NavController) {
                         webURL = webURL,
                         noteForSaving = note,
                         autoDetectTitle = isAutoDetectSelected
+                        )
                     )
                 }
                 when {
                     selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
                         if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
-                            createVM.addANewLinkInAFolderV10(
+                            homeScreenVM.onUiEvent(SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
                                 parentFolderID = selectedNonDefaultFolderID,
-                                context = context,
                                 folderName = selectedDefaultFolderName,
                                 autoDetectTitle = isAutoDetectSelected,
                                 onTaskCompleted = {
                                     shouldDialogForNewLinkAppear.value = false
                                     isDataExtractingForTheLink.value = false
-                                })
+                                }
+                            ))
                         }
                     }
                 }
             },
-            isDataExtractingForTheLink = isDataExtractingForTheLink.value
+            isDataExtractingForTheLink = isDataExtractingForTheLink.value,
+            onFolderCreateClick = { folderName, folderNote -> }
         )
 
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
-                parentFolderID = null, inAChildFolderScreen = false
+                inAChildFolderScreen = false,
+                onFolderCreateClick = { folderName, folderNote -> }
             )
         )
 
         ShelfBtmSheet(isBtmSheetVisible = shouldShelfBottomSheetAppear)
-
-        NewLinkBtmSheet(
-            NewLinkBtmSheetUIParam(
-                btmSheetState = btmModalSheetStateForSavingLinks,
-                inIntentActivity = false,
-                screenType = SpecificScreenType.ROOT_SCREEN,
-                shouldUIBeVisible = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                onLinkSaveClick = { isAutoDetectSelected, webURL, title, note, selectedDefaultFolder, selectedNonDefaultFolderID ->
-                    isDataExtractingForTheLink.value = true
-                    if (selectedDefaultFolder == "Saved Links") {
-                        createVM.addANewLinkInSavedLinks(
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
-                            autoDetectTitle = isAutoDetectSelected,
-                            onTaskCompleted = {
-                                coroutineScope.launch {
-                                    btmModalSheetStateForSavingLinks.hide()
-                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                    isDataExtractingForTheLink.value = false
-                                }
-                            },
-                            context = context
-                        )
-                    }
-                    if (selectedDefaultFolder == "Important Links") {
-                        createVM.addANewLinkInImpLinks(
-                            context = context,
-                            onTaskCompleted = {
-                                coroutineScope.launch {
-                                    btmModalSheetStateForSavingLinks.hide()
-                                    shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                    isDataExtractingForTheLink.value = false
-                                }
-                            },
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
-                            autoDetectTitle = isAutoDetectSelected
-                        )
-                    }
-                    when {
-                        selectedDefaultFolder != "Important Links" && selectedDefaultFolder != "Saved Links" -> {
-                            if (selectedNonDefaultFolderID != null && selectedDefaultFolder != null) {
-                                createVM.addANewLinkInAFolderV10(
-                                    title = title,
-                                    webURL = webURL,
-                                    noteForSaving = note,
-                                    parentFolderID = selectedNonDefaultFolderID,
-                                    context = context,
-                                    folderName = selectedDefaultFolder,
-                                    autoDetectTitle = isAutoDetectSelected,
-                                    onTaskCompleted = {
-                                        coroutineScope.launch {
-                                            btmModalSheetStateForSavingLinks.hide()
-                                            shouldBtmSheetForNewLinkAdditionBeEnabled.value = false
-                                            isDataExtractingForTheLink.value = false
-                                        }
-                                    })
-                            }
-                        }
-                    }
-                },
-                onFolderCreated = {},
-                parentFolderID = null,
-                isDataExtractingForTheLink = isDataExtractingForTheLink
-            )
-        )
-
         DeleteDialogBox(
             deleteDialogBoxParam = DeleteDialogBoxParam(
                 areFoldersSelectable = true,
