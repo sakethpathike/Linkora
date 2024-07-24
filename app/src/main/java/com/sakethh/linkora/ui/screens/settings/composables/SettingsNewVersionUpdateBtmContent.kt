@@ -30,7 +30,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)

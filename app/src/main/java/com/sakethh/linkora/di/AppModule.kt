@@ -9,6 +9,8 @@ import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.search.SearchImpl
+import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingImpl
@@ -21,6 +23,8 @@ import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolde
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
+import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingImpl
+import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingImpl
@@ -183,6 +187,18 @@ object AppModule {
     @Singleton
     fun archiveFoldersSorting(localDatabase: LocalDatabase): ParentArchivedFoldersSortingRepo {
         return ParentArchivedFoldersSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSearchRepo(localDatabase: LocalDatabase): SearchRepo {
+        return SearchImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideHistoryLinksSortingRepo(localDatabase: LocalDatabase): HistoryLinksSortingRepo {
+        return HistoryLinksSortingImpl(localDatabase)
     }
 
     @Provides

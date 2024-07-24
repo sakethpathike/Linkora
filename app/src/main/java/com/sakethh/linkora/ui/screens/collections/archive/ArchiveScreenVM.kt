@@ -18,7 +18,7 @@ import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async

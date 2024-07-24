@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.viewmodels.SettingsUIElement
+import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable

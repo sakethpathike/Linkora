@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.viewmodels
+package com.sakethh.linkora.ui.screens.settings
 
 import android.content.Context
 import android.content.pm.PackageManager
@@ -33,18 +33,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
+import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.openInWeb
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isSendCrashReportsEnabled
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.ExportImpl
 import com.sakethh.linkora.utils.ImportImpl
 import com.sakethh.linkora.utils.isNetworkAvailable
-import com.sakethh.linkora.utils.linkDataExtractor
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -57,6 +57,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
+import javax.inject.Inject
 
 data class SettingsUIElement(
     val title: String,
@@ -76,8 +77,10 @@ enum class SettingsSections {
     THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT
 }
 
-class SettingsScreenVM(
-    private val exportImpl: ExportImpl = ExportImpl(), private val updateVM: UpdateVM = UpdateVM()
+class SettingsScreenVM @Inject constructor(
+    private val exportImpl: ExportImpl = ExportImpl(),
+    private val linksRepo: LinksRepo,
+    private val linkMetaDataScrapperService: LinkMetaDataScrapperService
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
@@ -464,48 +467,91 @@ class SettingsScreenVM(
                     }
                     viewModelScope.launch {
                         awaitAll(async {
-                            LocalDatabase.localDB.readDao().getAllFromLinksTable().toList()
+                            linksRepo.getAllFromLinksTable().toList()
                                 .forEach {
-                                    val newMetaData = linkDataExtractor(it.webURL)
-                                    LocalDatabase.localDB.updateDao().updateALinkDataFromLinksTable(
-                                        it.copy(
-                                            title = newMetaData.title.replace("&amp;", "&"),
-                                            imgURL = newMetaData.imgURL
-                                        )
-                                    )
+                                    when (val newMetaData =
+                                        linkMetaDataScrapperService.scrapeLinkData(it.webURL)) {
+                                        is LinkMetaDataScrapperResult.Failure -> {
+
+                                        }
+
+                                        is LinkMetaDataScrapperResult.Success -> {
+                                            linksRepo.updateALinkDataFromLinksTable(
+                                                it.copy(
+                                                    title = newMetaData.data.title.replace(
+                                                        "&amp;",
+                                                        "&"
+                                                    ),
+                                                    imgURL = newMetaData.data.imgURL
+                                                )
+                                            )
+                                        }
+                                    }
+
                                 }
                         }, async {
-                            LocalDatabase.localDB.readDao().getAllImpLinks().toList().forEach {
-                                val newMetaData = linkDataExtractor(it.webURL)
-                                LocalDatabase.localDB.updateDao().updateALinkDataFromImpLinksTable(
-                                    it.copy(
-                                        title = newMetaData.title.replace("&amp;", "&"),
-                                        imgURL = newMetaData.imgURL
-                                    )
-                                )
-                            }
-                        }, async {
-                            LocalDatabase.localDB.readDao().getAllArchiveLinks().toList().forEach {
-                                val newMetaData = linkDataExtractor(it.webURL)
-                                LocalDatabase.localDB.updateDao()
-                                    .updateALinkDataFromArchivedLinksTable(
-                                        it.copy(
-                                            title = newMetaData.title.replace("&amp;", "&"),
-                                            imgURL = newMetaData.imgURL
-                                        )
-                                    )
-                            }
-                        }, async {
-                            LocalDatabase.localDB.readDao().getAllRecentlyVisitedLinks().toList()
-                                .forEach {
-                                    val newMetaData = linkDataExtractor(it.webURL)
-                                    LocalDatabase.localDB.updateDao()
-                                        .updateALinkDataFromRecentlyVisitedLinksTable(
+                            linksRepo.getAllImpLinks().toList().forEach {
+                                val newMetaData =
+                                    linkMetaDataScrapperService.scrapeLinkData(it.webURL)
+                                when (newMetaData) {
+                                    is LinkMetaDataScrapperResult.Failure -> TODO()
+                                    is LinkMetaDataScrapperResult.Success -> {
+                                        linksRepo.updateALinkDataFromImpLinksTable(
                                             it.copy(
-                                                title = newMetaData.title.replace("&amp;", "&"),
-                                                imgURL = newMetaData.imgURL
+                                                title = newMetaData.data.title.replace(
+                                                    "&amp;",
+                                                    "&"
+                                                ),
+                                                imgURL = newMetaData.data.imgURL
                                             )
                                         )
+                                    }
+                                }
+
+                            }
+                        }, async {
+                            linksRepo.getAllArchiveLinks().toList().forEach {
+                                val newMetaData =
+                                    linkMetaDataScrapperService.scrapeLinkData(it.webURL)
+                                when (newMetaData) {
+                                    is LinkMetaDataScrapperResult.Failure -> TODO()
+                                    is LinkMetaDataScrapperResult.Success -> {
+                                        linksRepo
+                                            .updateALinkDataFromArchivedLinksTable(
+                                                it.copy(
+                                                    title = newMetaData.data.title.replace(
+                                                        "&amp;",
+                                                        "&"
+                                                    ),
+                                                    imgURL = newMetaData.data.imgURL
+                                                )
+                                            )
+                                    }
+                                }
+
+                            }
+                        }, async {
+                            linksRepo.getAllRecentlyVisitedLinks().toList()
+                                .forEach {
+                                    val newMetaData =
+                                        linkMetaDataScrapperService.scrapeLinkData(it.webURL)
+
+                                    when (newMetaData) {
+                                        is LinkMetaDataScrapperResult.Failure -> TODO()
+                                        is LinkMetaDataScrapperResult.Success -> {
+                                            linksRepo
+                                                .updateALinkDataFromRecentlyVisitedLinksTable(
+                                                    it.copy(
+                                                        title = newMetaData.data.title.replace(
+                                                            "&amp;",
+                                                            "&"
+                                                        ),
+                                                        imgURL = newMetaData.data.imgURL
+                                                    )
+                                                )
+                                        }
+                                    }
+
                                 }
                         })
                     }.invokeOnCompletion {
@@ -526,8 +572,7 @@ class SettingsScreenVM(
                 exceptionType = exceptionType,
                 jsonString = json,
                 context = context,
-                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible,
-                updateVM = updateVM
+                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
             )
         }
     }
@@ -594,12 +639,12 @@ class SettingsScreenVM(
                 isSwitchEnabled = Settings.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        if (LocalDatabase.localDB.readDao()
-                                .isHistoryLinksTableEmpty() && LocalDatabase.localDB.readDao()
-                                .isImpLinksTableEmpty() && LocalDatabase.localDB.readDao()
-                                .isLinksTableEmpty() && LocalDatabase.localDB.readDao()
-                                .isArchivedFoldersTableEmpty() && LocalDatabase.localDB.readDao()
-                                .isFoldersTableEmpty() && LocalDatabase.localDB.readDao()
+                        if (linksRepo
+                                .isHistoryLinksTableEmpty() && linksRepo
+                                .isImpLinksTableEmpty() && linksRepo
+                                .isLinksTableEmpty() && linksRepo
+                                .isArchivedFoldersTableEmpty() && linksRepo
+                                .isFoldersTableEmpty() && linksRepo
                                 .isArchivedLinksTableEmpty()
                         ) {
                             activityResultLauncher.launch("text/*")

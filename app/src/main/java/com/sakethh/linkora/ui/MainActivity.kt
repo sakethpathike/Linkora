@@ -27,10 +27,10 @@ import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.search.SearchScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.SearchScreenVM
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint

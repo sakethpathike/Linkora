@@ -79,18 +79,16 @@ import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.openInWeb
+import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.SearchScreenVM
-import com.sakethh.linkora.ui.viewmodels.SearchScreenVM.Companion.selectedFolderID
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
-import com.sakethh.linkora.ui.viewmodels.localDB.UpdateVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -1373,7 +1371,6 @@ fun SearchScreen(navController: NavController) {
                 shouldLinksSelectionBeVisible = mutableStateOf(false)
             )
         )
-        val updateVM: UpdateVM = viewModel()
         MenuBtmSheetUI(
             MenuBtmSheetParam(
                 btmModalSheetState = optionsBtmSheetState,
@@ -1408,10 +1405,13 @@ fun SearchScreen(navController: NavController) {
                             folderID = selectedFolderID
                         )
                     } else {
-                        updateVM.archiveAFolderV10(CollectionsScreenVM.selectedFolderData.value.id)
+                        searchScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.ArchiveAFolder(
+                                CollectionsScreenVM.selectedFolderData.value.id
+                            )
+                        )
                     }
                 },
-                importantLinks = HomeScreenVM.tempImpLinkData,
                 noteForSaving = selectedURLNote.value,
                 folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 linkTitle = selectedLinkTitle.value
@@ -1430,9 +1430,11 @@ fun SearchScreen(navController: NavController) {
                             folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
                         )
                     } else {
-                        updateVM.updateFolderNote(
+                        searchScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateFolderNote(
                             CollectionsScreenVM.selectedFolderData.value.id,
                             newNote
+                            )
                         )
                     }
                     shouldRenameDialogBoxAppear.value = false
@@ -1447,16 +1449,17 @@ fun SearchScreen(navController: NavController) {
                             folderID = selectedFolderID, linkID = SearchScreenVM.selectedLinkID
                         )
                     } else {
-                        updateVM.updateFolderName(
-                            CollectionsScreenVM.selectedFolderData.value.id,
-                            newTitle
+                        searchScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.UpdateFolderName(
+                                newTitle,
+                                CollectionsScreenVM.selectedFolderData.value.id
+                            )
                         )
                     }
                     shouldRenameDialogBoxAppear.value = false
                 }
             )
         )
-        val deleteVM: DeleteVM = viewModel()
         DeleteDialogBox(
             DeleteDialogBoxParam(
                 folderName = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName),
@@ -1474,7 +1477,11 @@ fun SearchScreen(navController: NavController) {
                                 folderID = selectedFolderID
                             )
                         } else {
-                            deleteVM.onRegularFolderDeleteClick(CollectionsScreenVM.selectedFolderData.value.id)
+                            searchScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.DeleteAFolder(
+                                    CollectionsScreenVM.selectedFolderData.value.id
+                                )
+                            )
                         }
                     } else {
                         searchScreenVM.deleteSelectedHistoryLinks()

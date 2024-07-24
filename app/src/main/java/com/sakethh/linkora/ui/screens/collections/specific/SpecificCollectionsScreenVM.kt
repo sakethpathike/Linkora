@@ -22,7 +22,7 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.openInWeb
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll

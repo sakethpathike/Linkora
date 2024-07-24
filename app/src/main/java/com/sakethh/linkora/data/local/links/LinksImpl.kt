@@ -11,7 +11,7 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvents
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.utils.isAValidURL
 import kotlinx.coroutines.Dispatchers
@@ -444,6 +444,10 @@ class LinksImpl @Inject constructor(
 
     override suspend fun isArchivedFoldersTableEmpty(): Boolean {
         return localDatabase.linksDao().isArchivedFoldersTableEmpty()
+    }
+
+    override suspend fun isFoldersTableEmpty(): Boolean {
+        return localDatabase.foldersDao().isFoldersTableEmpty()
     }
 
     override suspend fun isImpLinksTableEmpty(): Boolean {

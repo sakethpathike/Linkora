@@ -147,6 +147,8 @@ interface LinksRepo {
 
     suspend fun isArchivedFoldersTableEmpty(): Boolean
 
+    suspend fun isFoldersTableEmpty(): Boolean
+
     suspend fun isImpLinksTableEmpty(): Boolean
 
     suspend fun isHistoryLinksTableEmpty(): Boolean

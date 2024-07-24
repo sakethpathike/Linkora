@@ -18,10 +18,10 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isOnLatestUpdate
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.isOnLatestUpdate
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {

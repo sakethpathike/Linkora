@@ -19,11 +19,10 @@ class ImportImpl {
         context: Context,
         exceptionType: MutableState<String?>,
         jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>,
-        updateVM: UpdateVM
+        shouldErrorDialogBeVisible: MutableState<Boolean>
     ) = coroutineScope {
-        val localDataBase = LocalDatabase.localDB
-        try {
+
+    try {
             val json = Json {
                 ignoreUnknownKeys = true
             }

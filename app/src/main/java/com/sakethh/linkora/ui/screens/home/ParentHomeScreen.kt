@@ -93,7 +93,6 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.ui.bottomSheets.ShelfBtmSheet
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
@@ -110,8 +109,8 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -156,7 +155,7 @@ fun ParentHomeScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val homeScreenList =
-        readVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
+        homeScreenVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
         mutableStateOf(false)
@@ -303,7 +302,9 @@ fun ParentHomeScreen(navController: NavController) {
                                     selected = it.id == selectedShelfID.longValue,
                                     onClick = {
                                         selectedShelfID.longValue = it.id
-                                        readVM.changeSelectedShelfFoldersDataForSelectedShelf(it.id)
+                                        homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                                            it.id
+                                        )
                                     },
                                     icon = {
                                         Column {
@@ -453,7 +454,8 @@ fun ParentHomeScreen(navController: NavController) {
                             count = homeScreenList.size,
                             state = pagerState
                         ) {
-                            ChildHomeScreen(
+                            TODO()
+                            /*ChildHomeScreen(
                                 homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                                 navController = navController,
                                 folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
@@ -538,7 +540,7 @@ fun ParentHomeScreen(navController: NavController) {
                                             ).value
                                     }
                                 },
-                            )
+                            )*/
                         }
                     } else if (selectedShelfID.longValue == (-1).toLong()) {
                         HorizontalPager(

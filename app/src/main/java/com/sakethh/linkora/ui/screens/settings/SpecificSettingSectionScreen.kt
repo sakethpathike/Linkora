@@ -91,6 +91,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.NewFeatureDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.openInWeb
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.composables.ImportConflictBtmSheet
 import com.sakethh.linkora.ui.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.PermissionDialog
@@ -100,10 +101,6 @@ import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionChe
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.theme.fonts
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.ui.viewmodels.SettingsSections
-import com.sakethh.linkora.ui.viewmodels.SettingsUIElement
 import com.sakethh.linkora.ui.viewmodels.localDB.DeleteVM
 import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.launch

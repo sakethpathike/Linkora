@@ -1,7 +1,7 @@
 package com.sakethh.linkora.data.remote.scrape
 
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup

@@ -3,7 +3,7 @@ package com.sakethh.linkora.ui.bottomSheets.sorting
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.MutableState
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 
 data class SortingBottomSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor(
     val shouldBottomSheetVisible: MutableState<Boolean>,

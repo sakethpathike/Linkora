@@ -7,10 +7,12 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -22,12 +24,13 @@ import com.sakethh.linkora.ui.navigation.NavigationVM
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.viewmodels.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -42,7 +45,8 @@ open class HomeScreenVM @Inject constructor(
     archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
     subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    private val shelfListsRepo: ShelfListsRepo
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -61,6 +65,19 @@ open class HomeScreenVM @Inject constructor(
     private val _shelfData = MutableStateFlow(emptyList<Shelf>())
     val shelfData = _shelfData.asStateFlow()
 
+    private val _selectedShelfFoldersForSelectedShelf =
+        MutableStateFlow(emptyList<HomeScreenListTable>())
+
+    val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
+
+    fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long) {
+        viewModelScope.launch {
+            shelfListsRepo.getAllFoldersOfThisShelf(shelfID)
+                .collectLatest {
+                    _selectedShelfFoldersForSelectedShelf.emit(it)
+                }
+        }
+    }
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
     }
