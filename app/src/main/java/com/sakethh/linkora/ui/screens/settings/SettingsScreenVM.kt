@@ -34,6 +34,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.data.local.dataImport.ImportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
@@ -43,7 +44,6 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendC
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
 import com.sakethh.linkora.utils.ExportImpl
-import com.sakethh.linkora.utils.ImportImpl
 import com.sakethh.linkora.utils.isNetworkAvailable
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -80,7 +80,8 @@ enum class SettingsSections {
 class SettingsScreenVM @Inject constructor(
     private val exportImpl: ExportImpl = ExportImpl(),
     private val linksRepo: LinksRepo,
-    private val linkMetaDataScrapperService: LinkMetaDataScrapperService
+    private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
+    private val importRepo: ImportRepo
 ) : ViewModel() {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
@@ -564,14 +565,12 @@ class SettingsScreenVM @Inject constructor(
     fun importData(
         exceptionType: MutableState<String?>,
         json: String,
-        context: Context,
         shouldErrorDialogBeVisible: MutableState<Boolean>
     ) {
         viewModelScope.launch {
-            ImportImpl().importToLocalDB(
+            importRepo.importToLocalDB(
                 exceptionType = exceptionType,
                 jsonString = json,
-                context = context,
                 shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
             )
         }

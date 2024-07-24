@@ -135,7 +135,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
             settingsScreenVM.importData(
                 settingsScreenVM.exceptionType,
                 file.readText(),
-                context,
                 isImportExceptionBoxVisible
             )
             file.delete()

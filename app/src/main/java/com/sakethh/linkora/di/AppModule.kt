@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.dataImport.ImportImpl
+import com.sakethh.linkora.data.local.dataImport.ImportRepo
 import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
@@ -131,7 +133,7 @@ object AppModule {
             localDatabase,
             provideLinksRepo(localDatabase),
             provideFoldersRepo(localDatabase),
-            linkMetaDataScrapperService()
+            provideLinkMetaDataScrapperService()
         )
     }
 
@@ -203,7 +205,17 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun linkMetaDataScrapperService(): LinkMetaDataScrapperService {
+    fun provideLinkMetaDataScrapperService(): LinkMetaDataScrapperService {
         return LinkMetaDataScrapperImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideImportRepo(
+        localDatabase: LocalDatabase,
+        foldersRepo: FoldersRepo,
+        linksRepo: LinksRepo
+    ): ImportRepo {
+        return ImportImpl(localDatabase, foldersRepo, linksRepo)
     }
 }
