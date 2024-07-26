@@ -6,6 +6,7 @@ import kotlinx.coroutines.flow.Flow
 interface ShelfRepo {
     suspend fun addANewShelf(shelf: Shelf)
 
+    suspend fun deleteAFolderFromShelf(folderID: Long)
     fun getAllShelfItems(): Flow<List<Shelf>>
 
     suspend fun deleteAShelf(shelf: Shelf)

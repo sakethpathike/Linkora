@@ -35,8 +35,8 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.data.local.dataImport.ImportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.openInWeb

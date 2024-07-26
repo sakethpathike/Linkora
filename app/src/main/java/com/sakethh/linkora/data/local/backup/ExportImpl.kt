@@ -1,35 +1,38 @@
-package com.sakethh.linkora.utils
+package com.sakethh.linkora.data.local.backup
 
 import android.os.Build
 import android.os.Environment
-import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.models.Export
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
-import java.text.DateFormat.getDateTimeInstance
+import java.text.DateFormat
 import java.util.Date
+import javax.inject.Inject
 
-
-class ExportImpl {
-
-    suspend fun exportToAFile() = coroutineScope {
-        val _exportAllLinks = async {
-            LocalDatabase.localDB.readDao().getAllFromLinksTable()
+class ExportImpl @Inject constructor(
+    private val linksRepo: LinksRepo,
+    private val foldersRepo: FoldersRepo
+) : ExportRepo {
+    override suspend fun exportToAFile() = coroutineScope {
+        val linksTableData = async {
+            linksRepo.getAllFromLinksTable()
         }
-        val _exportImpLinks = async {
-            LocalDatabase.localDB.readDao().getAllImpLinks()
+        val impLinksTableData = async {
+            linksRepo.getAllImpLinks()
         }
-        val _exportAllFolders = async {
-            LocalDatabase.localDB.readDao().getAllFolders()
+        val foldersData = async {
+            foldersRepo.getAllFolders()
         }
-        val _exportArchiveLinks = async {
-            LocalDatabase.localDB.readDao().getAllArchiveLinks()
+        val archiveLinksData = async {
+            linksRepo.getAllArchiveLinks()
         }
-        val _exportHistoryLinks = async {
-            LocalDatabase.localDB.readDao().getAllRecentlyVisitedLinks()
+        val historyLinksData = async {
+            linksRepo.getAllRecentlyVisitedLinks()
         }
 
         val defaultFolder = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -50,14 +53,14 @@ class ExportImpl {
         }
         val file = File(
             defaultFolder, "LinkoraExport-${
-                getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
+                DateFormat.getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
             }.txt"
         )
-        val exportAllLinks = _exportAllLinks.await()
-        val exportImpLinks = _exportImpLinks.await()
-        val exportAllFolders = _exportAllFolders.await()
-        val exportArchiveLinks = _exportArchiveLinks.await()
-        val exportHistoryLinks = _exportHistoryLinks.await()
+        val exportAllLinks = linksTableData.await()
+        val exportImpLinks = impLinksTableData.await()
+        val exportAllFolders = foldersData.await()
+        val exportArchiveLinks = archiveLinksData.await()
+        val exportHistoryLinks = historyLinksData.await()
         file.writeText(
             Json.encodeToString(
                 Export(
@@ -71,5 +74,6 @@ class ExportImpl {
                 )
             )
         )
+
     }
 }

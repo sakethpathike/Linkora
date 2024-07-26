@@ -89,7 +89,7 @@ import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.openInWeb
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.composables.ImportConflictBtmSheet
 import com.sakethh.linkora.ui.screens.settings.composables.ImportExceptionDialogBox
@@ -105,7 +105,7 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpecificSettingSectionScreen(navController: NavController) {
+fun SpecificSettingSectionScreen(navController: NavController, customWebTab: CustomWebTab) {
     val importModalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val topAppBarScrollState = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     val context = LocalContext.current
@@ -478,8 +478,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                 title = "Github",
                                 localIcon = R.drawable.github_logo,
                                 onClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
+                                    customWebTab.openInWeb(
                                             recentlyVisitedData = RecentlyVisited(
                                                 title = "Linkora on Github",
                                                 webURL = "https://www.github.com/sakethpathike/Linkora",
@@ -491,7 +490,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                             uriHandler = uriHandler,
                                             forceOpenInExternalBrowser = false
                                         )
-                                    }
                                 })
 
                             HorizontalDivider(
@@ -521,8 +519,7 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                 localIcon = R.drawable.twitter_logo,
                                 title = "Twitter",
                                 onClick = {
-                                    coroutineScope.launch {
-                                        openInWeb(
+                                    customWebTab.openInWeb(
                                             recentlyVisitedData = RecentlyVisited(
                                                 title = "Linkora on Twitter",
                                                 webURL = "https://www.twitter.com/LinkoraApp",
@@ -534,7 +531,6 @@ fun SpecificSettingSectionScreen(navController: NavController) {
                                             uriHandler = uriHandler,
                                             forceOpenInExternalBrowser = false
                                         )
-                                    }
                                 })
                             HorizontalDivider(
                                 modifier = Modifier.padding(

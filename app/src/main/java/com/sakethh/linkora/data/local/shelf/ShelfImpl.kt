@@ -10,6 +10,17 @@ class ShelfImpl @Inject constructor(private val localDatabase: LocalDatabase) : 
         addANewShelf(shelf)
     }
 
+    override suspend fun deleteAFolderFromShelf(folderID: Long) {
+        getShelvesOfThisFolder(folderID).forEach { shelf ->
+            val newFolderIdsList = shelf.folderIds.toMutableList()
+            newFolderIdsList.removeAll {
+                it == folderID
+            }
+            updateFoldersOfThisShelf(folderIds = newFolderIdsList.toList(), shelf.id)
+        }
+        localDatabase.shelfListDao().deleteAShelfFolder(folderID)
+    }
+
     override fun getAllShelfItems(): Flow<List<Shelf>> {
         return localDatabase.shelfDao().getAllShelfItems()
     }

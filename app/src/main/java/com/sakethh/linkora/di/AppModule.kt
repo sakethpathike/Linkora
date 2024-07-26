@@ -5,12 +5,12 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.data.local.dataImport.ImportImpl
-import com.sakethh.linkora.data.local.dataImport.ImportRepo
 import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.restore.ImportImpl
+import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl

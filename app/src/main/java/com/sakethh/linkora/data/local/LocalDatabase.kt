@@ -3,9 +3,9 @@ package com.sakethh.linkora.data.local
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.sakethh.linkora.data.local.dataImport.ImportDao
 import com.sakethh.linkora.data.local.folders.FoldersDao
 import com.sakethh.linkora.data.local.links.LinksDao
+import com.sakethh.linkora.data.local.restore.ImportDao
 import com.sakethh.linkora.data.local.search.SearchDao
 import com.sakethh.linkora.data.local.shelf.ShelfDao
 import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsDao

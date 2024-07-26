@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.bottomSheets
+package com.sakethh.linkora.ui.bottomSheets.shelf
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -183,8 +183,10 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 {},
                                 {},
                                 onRemoveClick = {
-                                    deleteVM.deleteAFolderFromShelf(
-                                        folderID = selectedShelfFolder.id,
+                                    shelfBtmSheetVM.onShelfUiEvent(
+                                        ShelfUIEvent.DeleteAShelfFolder(
+                                            selectedShelfFolder.id
+                                        )
                                     )
                                 },
                                 onAddClick = { },
@@ -219,10 +221,12 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 {},
                                 {},
                                 onAddClick = {
-                                    createVM.insertANewElementInHomeScreenList(
+                                    shelfBtmSheetVM.onShelfUiEvent(
+                                        ShelfUIEvent.InsertANewElementInHomeScreenList(
                                         folderName = rootFolderElement.folderName,
                                         folderID = rootFolderElement.id,
                                         parentShelfID = ShelfBtmSheetVM.selectedShelfData.id
+                                        )
                                     )
                                 },
                                 shouldAddIconBeVisible = true,
@@ -268,12 +272,14 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         addANewShelfParam = AddANewShelfParam(
             isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
             onCreateClick = { shelfName, shelfIconName ->
-                createVM.addANewShelf(
-                    shelf = Shelf(
-                        shelfName = shelfName,
-                        shelfIconName = shelfIconName,
-                        folderIds = emptyList()
-                    ), context = localContext
+                shelfBtmSheetVM.onShelfUiEvent(
+                    ShelfUIEvent.AddANewShelf(
+                        Shelf(
+                            shelfName = shelfName,
+                            shelfIconName = shelfIconName,
+                            folderIds = emptyList()
+                        )
+                    )
                 )
             })
     )
@@ -282,13 +288,20 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         deleteAShelfDialogBoxParam = DeleteAShelfDialogBoxParam(
             isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
             onDeleteClick = { ->
-                deleteVM.deleteAShelf(ShelfBtmSheetVM.selectedShelfData)
+                shelfBtmSheetVM.onShelfUiEvent(
+                    ShelfUIEvent.DeleteAShelf(
+                        ShelfBtmSheetVM.selectedShelfData
+                    )
+                )
             },
         )
     )
-    val updateVM: UpdateVM = viewModel()
     RenameAShelfDialogBox(isDialogBoxVisible = isRenameAShelfDialogBoxVisible, onRenameClick = {
-        updateVM.updateAShelfName(it, ShelfBtmSheetVM.selectedShelfData.id)
+        shelfBtmSheetVM.onShelfUiEvent(
+            ShelfUIEvent.UpdateAShelfName(
+                it, ShelfBtmSheetVM.selectedShelfData.id
+            )
+        )
     })
 }
 

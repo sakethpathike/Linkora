@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.dataImport
+package com.sakethh.linkora.data.local.restore
 
 import androidx.room.Dao
 import androidx.room.Insert

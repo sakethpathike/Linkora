@@ -10,33 +10,35 @@ import android.os.Build
 import android.widget.Toast
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.UriHandler
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) {
-    suspend fun openInWeb(
+class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : ViewModel() {
+    fun openInWeb(
         recentlyVisitedData: RecentlyVisited,
         uriHandler: UriHandler,
         context: Context,
         forceOpenInExternalBrowser: Boolean
     ) {
-        val launchCustomWeb: () -> Unit = {
-            val _customTabBuilder = CustomTabsIntent.Builder()
-            _customTabBuilder.setInstantAppsEnabled(true)
-            _customTabBuilder.setShowTitle(true)
-            val customTabBuilder = _customTabBuilder.build()
-            customTabBuilder.intent.setPackage("com.android.chrome")
-            customTabBuilder.launchUrl(context, Uri.parse(recentlyVisitedData.webURL))
+        fun launchCustomWeb() {
+            CustomTabsIntent.Builder().apply {
+                setInstantAppsEnabled(true)
+                setShowTitle(true)
+                val customTabBuilder = build()
+                customTabBuilder.intent.setPackage("com.android.chrome")
+                customTabBuilder.launchUrl(context, Uri.parse(recentlyVisitedData.webURL))
+            }
         }
-        coroutineScope {
+        viewModelScope.launch {
             awaitAll(async {
                 if (!linksRepo
                         .doesThisExistsInRecentlyVisitedLinks(webURL = recentlyVisitedData.webURL)
