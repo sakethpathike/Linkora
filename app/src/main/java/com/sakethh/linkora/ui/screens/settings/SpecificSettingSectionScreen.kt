@@ -698,7 +698,8 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
             }) {
                 SettingsNewVersionUpdateBtmContent(
                     shouldBtmModalSheetBeVisible = shouldBtmModalSheetBeVisible,
-                    modalBtmSheetState = btmModalSheetState
+                    modalBtmSheetState = btmModalSheetState,
+                    settingsScreenVM = settingsScreenVM
                 )
             }
         }
