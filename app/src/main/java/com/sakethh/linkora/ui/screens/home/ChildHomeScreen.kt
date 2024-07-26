@@ -39,13 +39,13 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -60,7 +60,8 @@ fun ChildHomeScreen(
     homeScreenType: HomeScreenVM.HomeScreenType,
     navController: NavController,
     folderLinksData: List<LinksTable>,
-    childFoldersData: List<FoldersTable>
+    childFoldersData: List<FoldersTable>,
+    customWebTab: CustomWebTab
 ) {
     val homeScreenVM: HomeScreenVM = viewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
@@ -184,8 +185,7 @@ fun ChildHomeScreen(
                                             )
                                         }
                                     } else {
-                                        coroutineScope.launch {
-                                            openInWeb(
+                                        customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -195,7 +195,6 @@ fun ChildHomeScreen(
                                                 ), context = context, uriHandler = uriHandler,
                                                 forceOpenInExternalBrowser = false
                                             )
-                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -283,8 +282,7 @@ fun ChildHomeScreen(
                                             )
                                         }
                                     } else {
-                                        coroutineScope.launch {
-                                            openInWeb(
+                                        customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -294,7 +292,6 @@ fun ChildHomeScreen(
                                                 ), context = context, uriHandler = uriHandler,
                                                 forceOpenInExternalBrowser = false
                                             )
-                                        }
                                     }
                                 },
                                 webURL = it.webURL,
@@ -441,8 +438,7 @@ fun ChildHomeScreen(
                                             )
                                         }
                                     } else {
-                                        coroutineScope.launch {
-                                            openInWeb(
+                                        customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -452,7 +448,6 @@ fun ChildHomeScreen(
                                                 ), context = context, uriHandler = uriHandler,
                                                 forceOpenInExternalBrowser = false
                                             )
-                                        }
                                     }
                                 },
                                 webURL = it.webURL,

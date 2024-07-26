@@ -17,6 +17,7 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -31,7 +32,7 @@ import javax.inject.Inject
 
 data class ArchiveScreenModal(
     val name: String,
-    val screen: @Composable (navController: NavController) -> Unit,
+    val screen: @Composable (navController: NavController, customWebTab: CustomWebTab) -> Unit,
 )
 
 enum class ArchiveScreenType {
@@ -55,16 +56,18 @@ class ArchiveScreenVM @Inject constructor(
         )
     )
     val parentArchiveScreenData = listOf(
-        ArchiveScreenModal(name = "Links", screen = { navController ->
+        ArchiveScreenModal(name = "Links", screen = { navController, customWebTab ->
             ChildArchiveScreen(
                 archiveScreenType = ArchiveScreenType.LINKS,
-                navController = navController
+                navController = navController,
+                customWebTab = customWebTab
             )
         }), ArchiveScreenModal(name = "Folders",
-            screen = { navController ->
+            screen = { navController, customWebTab ->
                 ChildArchiveScreen(
                     archiveScreenType = ArchiveScreenType.FOLDERS,
-                    navController = navController
+                    navController = navController,
+                    customWebTab
                 )
             })
     )

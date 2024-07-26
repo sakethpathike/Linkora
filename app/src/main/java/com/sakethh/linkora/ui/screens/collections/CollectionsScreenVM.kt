@@ -12,13 +12,13 @@ import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.utils.DeleteAFolderFromShelf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -33,7 +33,8 @@ import javax.inject.Inject
 open class CollectionsScreenVM @Inject constructor(
     private val foldersRepo: FoldersRepo,
     private val linksRepo: LinksRepo,
-    private val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
+    private val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    private val shelfRepo: ShelfRepo
 ) : ViewModel() {
     private val _foldersData = MutableStateFlow(
         emptyList<FoldersTable>()
@@ -64,7 +65,7 @@ open class CollectionsScreenVM @Inject constructor(
         viewModelScope.launch {
             awaitAll(async {
                 selectedFoldersData.toList().forEach {
-                    DeleteAFolderFromShelf.execute(it.id)
+                    shelfRepo.deleteAFolderFromShelf(it.id)
                 }
             }, async {
                 selectedFoldersData.toList().forEach { folder ->
@@ -78,7 +79,7 @@ open class CollectionsScreenVM @Inject constructor(
                         }
                     linksRepo.deleteThisFolderLinksV10(folder.id)
                     foldersRepo.deleteAFolder(folder.id)
-                    DeleteAFolderFromShelf.execute(folder.id)
+                    shelfRepo.deleteAFolderFromShelf(folder.id)
                 }
             }, async {
                 SearchScreenVM.selectedArchiveFoldersData.toList().forEach { folder ->
@@ -90,7 +91,7 @@ open class CollectionsScreenVM @Inject constructor(
                         }
                     linksRepo.deleteThisFolderLinksV10(folder.id)
                     foldersRepo.deleteAFolder(folder.id)
-                    DeleteAFolderFromShelf.execute(folder.id)
+                    shelfRepo.deleteAFolderFromShelf(folder.id)
                 }
             })
 

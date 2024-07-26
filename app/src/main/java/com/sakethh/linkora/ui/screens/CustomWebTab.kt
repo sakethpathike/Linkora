@@ -22,7 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : ViewModel() {
+open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : ViewModel() {
     fun openInWeb(
         recentlyVisitedData: RecentlyVisited,
         uriHandler: UriHandler,

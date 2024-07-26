@@ -52,6 +52,7 @@ import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -60,7 +61,7 @@ import kotlinx.coroutines.launch
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
-fun ParentArchiveScreen(navController: NavController) {
+fun ParentArchiveScreen(navController: NavController, customWebTab: CustomWebTab) {
     val pagerState = rememberPagerState()
     val archiveScreenVM: ArchiveScreenVM = viewModel()
     val coroutineScope = rememberCoroutineScope()
@@ -187,7 +188,10 @@ fun ParentArchiveScreen(navController: NavController) {
                 HorizontalPager(
                     count = archiveScreenVM.parentArchiveScreenData.size, state = pagerState
                 ) {
-                    archiveScreenVM.parentArchiveScreenData[it].screen(navController = navController)
+                    archiveScreenVM.parentArchiveScreenData[it].screen(
+                        navController = navController,
+                        customWebTab
+                    )
                 }
             }
         }

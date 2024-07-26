@@ -34,12 +34,12 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
@@ -47,7 +47,11 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavController) {
+fun ChildArchiveScreen(
+    archiveScreenType: ArchiveScreenType,
+    navController: NavController,
+    customWebTab: CustomWebTab
+) {
     val archiveScreenVM: ArchiveScreenVM = hiltViewModel()
     val archiveLinksData = archiveScreenVM.archiveLinksData.collectAsStateWithLifecycle().value
     val archiveFoldersDataV9 =
@@ -128,7 +132,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
 
                                     } else {
                                         coroutineScope.launch {
-                                            openInWeb(
+                                            customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -144,7 +148,7 @@ fun ChildArchiveScreen(archiveScreenType: ArchiveScreenType, navController: NavC
                                 webURL = it.webURL,
                                 onForceOpenInExternalBrowserClicked = {
                                     coroutineScope.launch {
-                                        openInWeb(
+                                        customWebTab.openInWeb(
                                             recentlyVisitedData = RecentlyVisited(
                                                 title = it.title,
                                                 webURL = it.webURL,

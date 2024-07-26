@@ -14,6 +14,7 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -21,8 +22,8 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -50,8 +51,10 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     private val archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
     private val subFoldersSortingRepo: SubFoldersSortingRepo,
     private val regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
-) : CollectionsScreenVM(foldersRepo, linksRepo, parentRegularFoldersSortingRepo) {
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    shelfRepo: ShelfRepo,
+    private val customWebTab: CustomWebTab
+) : CollectionsScreenVM(foldersRepo, linksRepo, parentRegularFoldersSortingRepo, shelfRepo) {
 
 
     private val _folderLinksData = MutableStateFlow(
@@ -849,8 +852,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         uriHandler: UriHandler,
         forceOpenInExternalBrowser: Boolean,
     ) {
-        viewModelScope.launch {
-            openInWeb(
+        customWebTab.openInWeb(
                 recentlyVisitedData = RecentlyVisited(
                     title = recentlyVisited.title,
                     webURL = recentlyVisited.webURL,
@@ -862,9 +864,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                 uriHandler = uriHandler,
                 forceOpenInExternalBrowser = forceOpenInExternalBrowser
             )
-        }.invokeOnCompletion {
             onTaskCompleted()
-        }
     }
 }
 

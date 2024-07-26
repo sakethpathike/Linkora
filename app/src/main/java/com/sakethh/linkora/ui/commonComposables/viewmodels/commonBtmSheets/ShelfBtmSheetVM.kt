@@ -14,6 +14,7 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.bottomSheets.shelf.ShelfUIEvent
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,7 +32,8 @@ class ShelfBtmSheetVM @Inject constructor(
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     private val shelfListsRepo: ShelfListsRepo,
-    private val shelfRepo: ShelfRepo
+    private val shelfRepo: ShelfRepo,
+    customWebTab: CustomWebTab
 ) : HomeScreenVM(
     linksRepo,
     foldersRepo,
@@ -42,7 +44,9 @@ class ShelfBtmSheetVM @Inject constructor(
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
     parentRegularFoldersSortingRepo,
-    shelfListsRepo
+    shelfListsRepo,
+    shelfRepo,
+    customWebTab
 ) {
     companion object {
         var selectedShelfData =

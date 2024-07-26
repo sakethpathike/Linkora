@@ -12,6 +12,7 @@ import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
@@ -21,6 +22,7 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.navigation.NavigationVM
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -46,7 +48,9 @@ open class HomeScreenVM @Inject constructor(
     subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    private val shelfListsRepo: ShelfListsRepo
+    private val shelfListsRepo: ShelfListsRepo,
+    shelfRepo: ShelfRepo,
+    customWebTab: CustomWebTab
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -56,7 +60,9 @@ open class HomeScreenVM @Inject constructor(
     archiveFolderLinksSortingRepo,
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
-    parentRegularFoldersSortingRepo
+    parentRegularFoldersSortingRepo,
+    shelfRepo = shelfRepo,
+    customWebTab = customWebTab
 ) {
     val currentPhaseOfTheDay = mutableStateOf("")
 
@@ -115,15 +121,22 @@ open class HomeScreenVM @Inject constructor(
         }
     }
 
-    val defaultScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = {
+    val defaultScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = { it, _ ->
         ChildHomeScreen(
             homeScreenType = HomeScreenType.SAVED_LINKS,
             navController = it,
             folderLinksData = emptyList(),
-            childFoldersData = emptyList()
+            childFoldersData = emptyList(),
+            customWebTab
         )
-    }), ArchiveScreenModal(name = "Important Links", screen = {
-        ChildHomeScreen(homeScreenType = HomeScreenType.IMP_LINKS, it, emptyList(), emptyList())
+    }), ArchiveScreenModal(name = "Important Links", screen = { it, _ ->
+        ChildHomeScreen(
+            homeScreenType = HomeScreenType.IMP_LINKS,
+            it,
+            emptyList(),
+            emptyList(),
+            customWebTab
+        )
     }))
 
     companion object {

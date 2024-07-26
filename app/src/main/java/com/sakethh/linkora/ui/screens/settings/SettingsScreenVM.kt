@@ -35,16 +35,16 @@ import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
-import com.sakethh.linkora.ui.screens.openInWeb
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
-import com.sakethh.linkora.utils.ExportImpl
 import com.sakethh.linkora.utils.isNetworkAvailable
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -79,12 +79,12 @@ enum class SettingsSections {
 }
 
 class SettingsScreenVM @Inject constructor(
-    private val exportImpl: ExportImpl = ExportImpl(),
     private val linksRepo: LinksRepo,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
     private val importRepo: ImportRepo,
-    private val localDatabase: LocalDatabase
-) : ViewModel() {
+    private val localDatabase: LocalDatabase,
+    private val exportRepo: ExportRepo
+) : CustomWebTab(linksRepo) {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
@@ -585,7 +585,7 @@ class SettingsScreenVM @Inject constructor(
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModelScope.launch {
-                exportImpl.exportToAFile()
+                exportRepo.exportToAFile()
                 withContext(Dispatchers.Main) {
                     Toast.makeText(
                         context, "Successfully Exported", Toast.LENGTH_SHORT
@@ -598,7 +598,7 @@ class SettingsScreenVM @Inject constructor(
             )) {
                 PackageManager.PERMISSION_GRANTED -> {
                     viewModelScope.launch {
-                        exportImpl.exportToAFile()
+                        exportRepo.exportToAFile()
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context, "Successfully Exported", Toast.LENGTH_SHORT

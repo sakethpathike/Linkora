@@ -78,6 +78,7 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
@@ -85,7 +86,6 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -99,7 +99,7 @@ import java.util.UUID
     ExperimentalFoundationApi::class, ExperimentalMaterialApi::class
 )
 @Composable
-fun SearchScreen(navController: NavController) {
+fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     val searchScreenVM: SearchScreenVM = viewModel()
     val isSelectionModeEnabled = rememberSaveable {
         mutableStateOf(false)
@@ -545,8 +545,7 @@ fun SearchScreen(navController: NavController) {
                                                             )
                                                         }
                                                     } else {
-                                                        coroutineScope.launch {
-                                                            openInWeb(
+                                                        customWebTab.openInWeb(
                                                                 recentlyVisitedData = RecentlyVisited(
                                                                     title = it.title,
                                                                     webURL = it.webURL,
@@ -558,7 +557,6 @@ fun SearchScreen(navController: NavController) {
                                                                 uriHandler = uriHandler,
                                                                 forceOpenInExternalBrowser = false
                                                             )
-                                                        }
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -663,8 +661,7 @@ fun SearchScreen(navController: NavController) {
                                                             )
                                                         }
                                                     } else {
-                                                        coroutineScope.launch {
-                                                            openInWeb(
+                                                        customWebTab.openInWeb(
                                                                 recentlyVisitedData = RecentlyVisited(
                                                                     title = it.title,
                                                                     webURL = it.webURL,
@@ -676,7 +673,6 @@ fun SearchScreen(navController: NavController) {
                                                                 uriHandler = uriHandler,
                                                                 forceOpenInExternalBrowser = false
                                                             )
-                                                        }
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -778,8 +774,7 @@ fun SearchScreen(navController: NavController) {
                                                             )
                                                         }
                                                     } else {
-                                                        coroutineScope.launch {
-                                                            openInWeb(
+                                                        customWebTab.openInWeb(
                                                                 recentlyVisitedData = RecentlyVisited(
                                                                     title = it.title,
                                                                     webURL = it.webURL,
@@ -791,7 +786,6 @@ fun SearchScreen(navController: NavController) {
                                                                 uriHandler = uriHandler,
                                                                 forceOpenInExternalBrowser = false
                                                             )
-                                                        }
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -895,8 +889,7 @@ fun SearchScreen(navController: NavController) {
                                                             )
                                                         }
                                                     } else {
-                                                        coroutineScope.launch {
-                                                            openInWeb(
+                                                        customWebTab.openInWeb(
                                                                 recentlyVisitedData = RecentlyVisited(
                                                                     title = it.title,
                                                                     webURL = it.webURL,
@@ -908,7 +901,6 @@ fun SearchScreen(navController: NavController) {
                                                                 uriHandler = uriHandler,
                                                                 forceOpenInExternalBrowser = false
                                                             )
-                                                        }
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -1012,8 +1004,7 @@ fun SearchScreen(navController: NavController) {
                                                             )
                                                         }
                                                     } else {
-                                                        coroutineScope.launch {
-                                                            openInWeb(
+                                                        customWebTab.openInWeb(
                                                                 recentlyVisitedData = RecentlyVisited(
                                                                     title = it.title,
                                                                     webURL = it.webURL,
@@ -1025,7 +1016,6 @@ fun SearchScreen(navController: NavController) {
                                                                 uriHandler = uriHandler,
                                                                 forceOpenInExternalBrowser = false
                                                             )
-                                                        }
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -1303,8 +1293,7 @@ fun SearchScreen(navController: NavController) {
                                 },
                                 onLinkClick = {
                                     if (!isSelectionModeEnabled.value) {
-                                        coroutineScope.launch {
-                                            openInWeb(
+                                        customWebTab.openInWeb(
                                                 recentlyVisitedData = RecentlyVisited(
                                                     title = it.title,
                                                     webURL = it.webURL,
@@ -1316,7 +1305,6 @@ fun SearchScreen(navController: NavController) {
                                                 uriHandler = uriHandler,
                                                 forceOpenInExternalBrowser = false
                                             )
-                                        }
                                     } else {
                                         if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
                                             searchScreenVM.selectedHistoryLinksData.add(it)

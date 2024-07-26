@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.backup.ExportImpl
+import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
@@ -13,6 +15,8 @@ import com.sakethh.linkora.data.local.restore.ImportImpl
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
+import com.sakethh.linkora.data.local.shelf.ShelfImpl
+import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingImpl
@@ -139,8 +143,75 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideArchivedLinksSortingRepo(localDatabase: LocalDatabase): ArchivedLinksSortingRepo {
+        return ArchivedLinksSortingImpl(
+            localDatabase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideArchivedFoldersSortingRepo(localDatabase: LocalDatabase): ParentArchivedFoldersSortingRepo {
+        return ParentArchivedFoldersSortingImpl(
+            localDatabase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideExportRepo(localDatabase: LocalDatabase): ExportRepo {
+        return ExportImpl(
+            provideLinksRepo(localDatabase),
+            provideFoldersRepo(localDatabase)
+        )
+    }
+
+    @Provides
+    @Singleton
     fun provideFoldersRepo(localDatabase: LocalDatabase): FoldersRepo {
         return FoldersImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSavedLinksSortingRepo(localDatabase: LocalDatabase): SavedLinksSortingRepo {
+        return SavedLinksSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImportantLinksSortingRepo(localDatabase: LocalDatabase): ImportantLinksSortingRepo {
+        return ImportantLinksSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFolderLinksSortingRepo(localDatabase: LocalDatabase): RegularFolderLinksSortingRepo {
+        return RegularFolderLinksSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideArchivedFolderLinksSortingRepo(localDatabase: LocalDatabase): ArchivedFolderLinksSortingRepo {
+        return ArchivedFolderLinksSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSubFoldersSortingRepo(localDatabase: LocalDatabase): SubFoldersSortingRepo {
+        return SubFoldersSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideParentRegularFoldersSortingRepo(localDatabase: LocalDatabase): ParentRegularFoldersSortingRepo {
+        return ParentRegularFoldersSortingImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShelfRepo(localDatabase: LocalDatabase): ShelfRepo {
+        return ShelfImpl(localDatabase)
     }
 
     @Provides

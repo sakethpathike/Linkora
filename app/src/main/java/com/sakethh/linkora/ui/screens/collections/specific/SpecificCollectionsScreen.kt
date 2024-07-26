@@ -84,7 +84,6 @@ import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.ui.screens.openInWeb
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -648,22 +647,20 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                         linkData.id
                                                     )
                                                 }
-
                                             } else {
-                                                coroutineScope.launch {
-                                                    openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
-                                                            title = linkData.title,
-                                                            webURL = linkData.webURL,
-                                                            baseURL = linkData.baseURL,
-                                                            imgURL = linkData.imgURL,
-                                                            infoForSaving = linkData.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
-                                                    )
-                                                }
+                                                specificCollectionsScreenVM.onLinkClick(
+                                                    recentlyVisited = RecentlyVisited(
+                                                        title = linkData.title,
+                                                        webURL = linkData.webURL,
+                                                        baseURL = linkData.baseURL,
+                                                        imgURL = linkData.imgURL,
+                                                        infoForSaving = linkData.infoForSaving
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
+                                                    forceOpenInExternalBrowser = false,
+                                                    onTaskCompleted = {}
+                                                )
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -760,9 +757,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     )
                                                 }
                                             } else {
-                                                coroutineScope.launch {
-                                                    openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
+                                                specificCollectionsScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                             title = linkData.title,
                                                             webURL = linkData.webURL,
                                                             baseURL = linkData.baseURL,
@@ -771,9 +767,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                         ),
                                                         context = context,
                                                         uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
+                                                    forceOpenInExternalBrowser = false,
+                                                    onTaskCompleted = {}
                                                     )
-                                                }
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -874,9 +870,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     )
                                                 }
                                             } else {
-                                                coroutineScope.launch {
-                                                    openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
+                                                specificCollectionsScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                             title = linkData.title,
                                                             webURL = linkData.webURL,
                                                             baseURL = linkData.baseURL,
@@ -885,9 +880,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                         ),
                                                         context = context,
                                                         uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false,
+                                                    forceOpenInExternalBrowser = false,
+                                                    onTaskCompleted = {}
                                                     )
-                                                }
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -1033,9 +1028,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     )
                                                 }
                                             } else {
-                                                coroutineScope.launch {
-                                                    openInWeb(
-                                                        recentlyVisitedData = RecentlyVisited(
+                                                specificCollectionsScreenVM.onLinkClick(
+                                                    RecentlyVisited(
                                                             title = linkData.title,
                                                             webURL = linkData.webURL,
                                                             baseURL = linkData.baseURL,
@@ -1044,9 +1038,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                         ),
                                                         context = context,
                                                         uriHandler = uriHandler,
-                                                        forceOpenInExternalBrowser = false
+                                                    forceOpenInExternalBrowser = false,
+                                                    onTaskCompleted = {}
                                                     )
-                                                }
                                             }
                                         },
                                         webURL = linkData.webURL,

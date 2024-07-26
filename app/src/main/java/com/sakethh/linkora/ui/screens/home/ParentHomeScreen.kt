@@ -106,6 +106,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -121,7 +122,7 @@ import kotlin.math.roundToInt
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
-fun ParentHomeScreen(navController: NavController) {
+fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = viewModel()
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
@@ -551,7 +552,7 @@ fun ParentHomeScreen(navController: NavController) {
                             count = homeScreenVM.defaultScreenData.size,
                             state = pagerState
                         ) {
-                            homeScreenVM.defaultScreenData[it].screen(navController)
+                            homeScreenVM.defaultScreenData[it].screen(navController, customWebTab)
                         }
                     } else {
                         Box(

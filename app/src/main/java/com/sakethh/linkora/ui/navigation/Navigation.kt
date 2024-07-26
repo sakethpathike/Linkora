@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
@@ -13,14 +14,14 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SpecificSettingSectionScreen
 
 @Composable
-fun MainNavigation(navController: NavHostController) {
+fun MainNavigation(navController: NavHostController, customWebTab: CustomWebTab) {
 
     NavHost(
         navController = navController,
         startDestination = NavigationVM.startDestination.value
     ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
-            ParentHomeScreen(navController = navController)
+            ParentHomeScreen(navController = navController, customWebTab)
         }
         composable(route = NavigationRoutes.COLLECTIONS_SCREEN.name) {
             CollectionsScreen(navController = navController)
@@ -32,13 +33,13 @@ fun MainNavigation(navController: NavHostController) {
             SpecificCollectionScreen(navController = navController)
         }
         composable(route = NavigationRoutes.ARCHIVE_SCREEN.name) {
-            ParentArchiveScreen(navController = navController)
+            ParentArchiveScreen(navController = navController, customWebTab)
         }
         composable(route = NavigationRoutes.SEARCH_SCREEN.name) {
-            SearchScreen(navController = navController)
+            SearchScreen(navController = navController, customWebTab)
         }
         composable(route = NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name) {
-            SpecificSettingSectionScreen(navController = navController)
+            SpecificSettingSectionScreen(navController = navController, customWebTab)
         }
     }
 

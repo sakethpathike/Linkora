@@ -15,6 +15,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.search.SearchRepo
+import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -22,6 +23,7 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
@@ -46,7 +48,9 @@ class SearchScreenVM @Inject constructor(
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     private val searchRepo: SearchRepo,
     private val historyLinksSortingRepo: HistoryLinksSortingRepo,
-    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    customWebTab: CustomWebTab,
+    shelfRepo: ShelfRepo
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -56,7 +60,9 @@ class SearchScreenVM @Inject constructor(
     archiveFolderLinksSortingRepo,
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
-    parentRegularFoldersSortingRepo
+    parentRegularFoldersSortingRepo,
+    shelfRepo,
+    customWebTab
 ) {
     enum class SelectedLinkType {
         HISTORY_LINKS, SAVED_LINKS, FOLDER_BASED_LINKS, IMP_LINKS, ARCHIVE_LINKS, ARCHIVE_FOLDER_BASED_LINKS

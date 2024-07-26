@@ -18,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -28,6 +29,7 @@ import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
@@ -92,6 +94,7 @@ class MainActivity @Inject constructor(
                         }
                     }
                 }
+                val customWebTab: CustomWebTab = hiltViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
@@ -100,7 +103,7 @@ class MainActivity @Inject constructor(
                             BottomNavigationBar(navController = navController)
                         }) {
                         Scaffold {
-                            MainNavigation(navController = navController)
+                            MainNavigation(navController = navController, customWebTab)
                         }
                     }
                 }
