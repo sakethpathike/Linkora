@@ -102,17 +102,18 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+                val settingsScreenVM: SettingsScreenVM = hiltViewModel()
                 LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                     async {
                         if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
-                            SettingsScreenVM.Settings.latestAppVersionRetriever(context)
+                            settingsScreenVM.latestAppVersionRetriever { }
                         }
                     }.await()
                     if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                         SettingsScreenVM.Settings.isOnLatestUpdate.value =
-                            !(SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value)
+                            SettingsScreenVM.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
                         withContext(Dispatchers.Main) {
-                            if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                            if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                 Toast.makeText(
                                     context,
                                     "A new update is available; check out the latest update from settings screen",

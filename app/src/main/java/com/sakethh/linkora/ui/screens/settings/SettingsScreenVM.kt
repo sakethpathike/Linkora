@@ -32,33 +32,30 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.VERSION_CHECK_URL
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
+import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
+import com.sakethh.linkora.data.remote.releases.GitHubReleasesResult
+import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
-import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
-import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.ktor.client.HttpClient
-import io.ktor.client.request.get
-import io.ktor.client.statement.bodyAsText
-import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 data class SettingsUIElement(
@@ -85,7 +82,8 @@ class SettingsScreenVM @Inject constructor(
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
     private val importRepo: ImportRepo,
     private val localDatabase: LocalDatabase,
-    private val exportRepo: ExportRepo
+    private val exportRepo: ExportRepo,
+    private val gitHubReleasesRepo: GitHubReleasesRepo
 ) : CustomWebTab(linksRepo) {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
@@ -95,17 +93,16 @@ class SettingsScreenVM @Inject constructor(
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
         const val APP_VERSION_NAME = "v0.5.0"
         const val APP_VERSION_CODE = 23
-        val latestAppInfoFromServer = MutableAppInfoDTO(
-            isNonStableVersion = mutableStateOf(false),
-            isStableVersion = mutableStateOf(false),
-            nonStableVersionValue = mutableStateOf(""),
-            stableVersionValue = mutableStateOf(""),
-            stableVersionGithubReleaseNotesURL = mutableStateOf(""),
-            nonStableVersionGithubReleaseNotesURL = mutableStateOf(""),
-            nonStableVersionCode = mutableIntStateOf(0),
-            stableVersionCode = mutableIntStateOf(0),
-            releaseNotes = mutableStateOf(emptyList()),
+        private val _latestReleaseInfoFromGitHubReleases = MutableStateFlow(
+            GitHubReleaseDTOItem(
+                assets = listOf(),
+                body = "",
+                createdAt = "",
+                releasePageURL = "",
+                releaseName = ""
+            )
         )
+        val latestReleaseInfoFromGitHubReleases = _latestReleaseInfoFromGitHubReleases.asStateFlow()
     }
 
     val acknowledgmentsSection = listOf(
@@ -823,77 +820,23 @@ class SettingsScreenVM @Inject constructor(
                 })
             }
         }
-
-        val ktorClient = HttpClient()
-        suspend fun latestAppVersionRetriever(context: Context) {
-            val serverConnection = try {
-                ktorClient.get(VERSION_CHECK_URL)
-            } catch (_: Exception) {
-                Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
-                return
-            }
-            val rawData = try {
-                didServerTimeOutErrorOccurred.value = false
-                withContext(Dispatchers.Default) {
-                    this.launch(Dispatchers.Main) {
-                        Toast.makeText(context, "checking for new updates", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    if (serverConnection.status == HttpStatusCode.OK) {
-                        serverConnection.bodyAsText()
-                    } else {
-                        didServerTimeOutErrorOccurred.value = true
-                        ""
-                    }
-                }
-            } catch (_: Exception) {
-                didServerTimeOutErrorOccurred.value = true
-                Toast.makeText(context, "couldn't reach server", Toast.LENGTH_SHORT).show()
-                ""
-            }
-            ktorClient.close()
-            val retrievedData = try {
-                Json.decodeFromString(rawData)
-            } catch (_: Exception) {
-                AppInfoDTO(
-                    isNonStableVersion = false,
-                    isStableVersion = false,
-                    nonStableVersionValue = "",
-                    stableVersionValue = "",
-                    nonStableVersionCode = 0,
-                    stableVersionCode = 0,
-                    stableVersionGithubReleaseNotesURL = "",
-                    nonStableVersionGithubReleaseNotesURL = "",
-                    releaseNotes = listOf()
-                )
-            }
-            latestAppInfoFromServer.apply {
-
-                this.isNonStableVersion.value = retrievedData.isNonStableVersion
-
-                this.isStableVersion.value = retrievedData.isStableVersion
-
-                this.nonStableVersionValue.value = retrievedData.nonStableVersionValue
-
-                this.stableVersionValue.value = retrievedData.stableVersionValue
-
-                this.nonStableVersionCode.value = retrievedData.nonStableVersionCode
-
-                this.stableVersionCode.value = retrievedData.stableVersionCode
-
-                this.stableVersionGithubReleaseNotesURL.value =
-                    retrievedData.stableVersionGithubReleaseNotesURL
-
-                this.nonStableVersionGithubReleaseNotesURL.value =
-                    retrievedData.nonStableVersionGithubReleaseNotesURL
-
-                this.releaseNotes.value = retrievedData.releaseNotes
-
-                this.releaseNotes.value = retrievedData.releaseNotes
-            }
-        }
     }
 
+    fun latestAppVersionRetriever(onTaskCompleted: () -> Unit) {
+        viewModelScope.launch {
+            when (val latestReleaseData = gitHubReleasesRepo.getLatestVersionData()) {
+                is GitHubReleasesResult.Failure -> {
+
+                }
+
+                is GitHubReleasesResult.Success -> {
+                    _latestReleaseInfoFromGitHubReleases.emit(latestReleaseData.data)
+                }
+            }
+        }.invokeOnCompletion {
+            onTaskCompleted()
+        }
+    }
     fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
         localDatabase.clearAllTables()
         onTaskCompleted()

@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.ktorClient
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -71,7 +70,6 @@ fun SettingsNewVersionCheckerDialogBox(
                             .fillMaxWidth()
                             .pulsateEffect(),
                         onClick = {
-                            ktorClient.close()
                             shouldDialogBoxAppear.value = false
                         }) {
                         Text(

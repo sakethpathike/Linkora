@@ -81,6 +81,7 @@ import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
@@ -347,13 +348,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                     onClick = {
                                         shouldVersionCheckerDialogAppear.value = true
                                         if (isNetworkAvailable(context)) {
-                                            coroutineScope.launch {
-                                                SettingsScreenVM.Settings.latestAppVersionRetriever(
-                                                    context
-                                                )
-                                            }.invokeOnCompletion {
+                                            settingsScreenVM.latestAppVersionRetriever {
                                                 shouldVersionCheckerDialogAppear.value = false
-                                                if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
+                                                if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                                     shouldBtmModalSheetBeVisible.value = true
                                                     SettingsScreenVM.Settings.isOnLatestUpdate.value =
                                                         false
@@ -375,38 +372,29 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                     context
                                 )
                             ) {
-                                if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) LaunchedEffect(
+                                if (SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName == "") LaunchedEffect(
                                     key1 = Unit
                                 ) {
-                                    SettingsScreenVM.Settings.latestAppVersionRetriever(context)
+                                    settingsScreenVM.latestAppVersionRetriever { }
                                 }
                                 SettingsAppInfoComponent(hasDescription = false,
                                     description = "",
                                     icon = Icons.Outlined.GetApp,
-                                    title = if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
-                                        "Linkora ${SettingsScreenVM.latestAppInfoFromServer.nonStableVersionValue.value} is now available. Check it out and download it."
-                                    } else {
-                                        "Linkora ${SettingsScreenVM.latestAppInfoFromServer.stableVersionValue.value} is now available. Check it out and download it."
-                                    },
+                                    title = "${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName} is now available.",
                                     onClick = {
                                         shouldVersionCheckerDialogAppear.value = true
                                         if (isNetworkAvailable(context)) {
-                                            coroutineScope.launch {
-                                                if (SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value == 0) {
-                                                    SettingsScreenVM.Settings.latestAppVersionRetriever(
-                                                        context
-                                                    )
+                                            if (SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName == "") {
+                                                settingsScreenVM.latestAppVersionRetriever { }
                                                 }
-                                            }.invokeOnCompletion {
-                                                shouldVersionCheckerDialogAppear.value = false
-                                                if (SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.stableVersionCode.value || SettingsScreenVM.APP_VERSION_CODE < SettingsScreenVM.latestAppInfoFromServer.nonStableVersionCode.value) {
-                                                    shouldBtmModalSheetBeVisible.value = true
-                                                    SettingsScreenVM.Settings.isOnLatestUpdate.value =
-                                                        false
-                                                } else {
-                                                    SettingsScreenVM.Settings.isOnLatestUpdate.value =
-                                                        true
-                                                }
+                                            shouldVersionCheckerDialogAppear.value = false
+                                            if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                                                shouldBtmModalSheetBeVisible.value = true
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    false
+                                            } else {
+                                                SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                                    true
                                             }
                                         } else {
                                             shouldVersionCheckerDialogAppear.value = false
