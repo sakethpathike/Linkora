@@ -70,8 +70,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -120,8 +120,8 @@ fun CollectionsScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val activity = LocalContext.current as? Activity
-    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
-    val collectionsScreenVM: CollectionsScreenVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
+    val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()
     val foldersData = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

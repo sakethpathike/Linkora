@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui
+package com.sakethh.linkora
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

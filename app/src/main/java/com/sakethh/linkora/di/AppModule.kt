@@ -37,12 +37,19 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.data.remote.releases.GitHubReleasesImpl
+import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperImpl
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
+import com.sakethh.linkora.ui.screens.CustomWebTab
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.ktor.client.HttpClient
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.serialization.kotlinx.json.json
+import kotlinx.serialization.json.Json
 import javax.inject.Singleton
 
 @Module
@@ -134,13 +141,37 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideCustomWebTab(localDatabase: LocalDatabase): CustomWebTab {
+        return CustomWebTab(provideLinksRepo(localDatabase))
+    }
+
+    @Provides
+    @Singleton
     fun provideLinksRepo(localDatabase: LocalDatabase): LinksRepo {
         return LinksImpl(
             localDatabase,
-            provideLinksRepo(localDatabase),
             provideFoldersRepo(localDatabase),
             provideLinkMetaDataScrapperService()
         )
+    }
+
+    @Provides
+    @Singleton
+    fun provideKtorClient(): HttpClient {
+        return HttpClient {
+            install(ContentNegotiation) {
+                json(Json {
+                    isLenient = true
+                    ignoreUnknownKeys = true
+                })
+            }
+        }
+    }
+
+    @Provides
+    @Singleton
+    fun provideGitHubReleasesRepo(ktorClient: HttpClient): GitHubReleasesRepo {
+        return GitHubReleasesImpl(ktorClient)
     }
 
     @Provides

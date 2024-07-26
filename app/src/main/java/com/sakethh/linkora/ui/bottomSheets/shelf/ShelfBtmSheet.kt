@@ -55,8 +55,8 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfDialogBox
@@ -74,7 +74,7 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val modalBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val lazyListState = rememberLazyListState()
-    val shelfBtmSheetVM: ShelfBtmSheetVM = viewModel()
+    val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
     val shelfData = shelfBtmSheetVM.shelfData.collectAsStateWithLifecycle().value
     val isAddANewShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
@@ -88,7 +88,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val selectedShelfName = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
         mutableStateOf(ShelfBtmSheetVM.selectedShelfData.shelfName)
     }
-    val collectionsScreenVM: CollectionsScreenVM = viewModel()
+    val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()
     val selectedShelfFolders =
         shelfBtmSheetVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
     val rootFolders = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value

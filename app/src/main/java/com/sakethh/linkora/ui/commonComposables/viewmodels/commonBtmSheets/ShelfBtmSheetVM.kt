@@ -16,11 +16,13 @@ import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.bottomSheets.shelf.ShelfUIEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@HiltViewModel
 class ShelfBtmSheetVM @Inject constructor(
     linksRepo: LinksRepo,
     foldersRepo: FoldersRepo,
@@ -83,7 +85,7 @@ class ShelfBtmSheetVM @Inject constructor(
             is ShelfUIEvent.AddANewShelf -> {
                 viewModelScope.launch {
                     if (shelfRepo.doesThisShelfExists(shelfUIEvent.shelf.shelfName)) {
-                        // TODO()
+                        // // // // TODO()
                     } else {
                         shelfRepo.addANewShelf(shelfUIEvent.shelf)
                     }

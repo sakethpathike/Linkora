@@ -16,13 +16,13 @@ interface FoldersRepo {
 
     fun getAllArchiveFoldersV9(): Flow<List<ArchivedFolders>>
 
-    fun getAllArchiveFoldersV9List(): List<ArchivedFolders>
+    suspend fun getAllArchiveFoldersV9List(): List<ArchivedFolders>
 
     fun getAllArchiveFoldersV10(): Flow<List<FoldersTable>>
 
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 
-    fun getAllRootFoldersList(): List<FoldersTable>
+    suspend fun getAllRootFoldersList(): List<FoldersTable>
 
     suspend fun getAllFolders(): List<FoldersTable>
 

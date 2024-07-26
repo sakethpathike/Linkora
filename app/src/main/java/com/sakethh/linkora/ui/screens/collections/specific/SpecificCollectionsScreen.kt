@@ -54,8 +54,8 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -95,7 +95,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpecificCollectionScreen(navController: NavController) {
-    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
+    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
@@ -139,7 +139,7 @@ fun SpecificCollectionScreen(navController: NavController) {
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val topBarText = when (SpecificCollectionsScreenVM.screenType.value) {
         SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
             "Important Links"
@@ -1281,7 +1281,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 }
             )
         )
-        val collectionsScreenVM: CollectionsScreenVM = viewModel()
+        val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,

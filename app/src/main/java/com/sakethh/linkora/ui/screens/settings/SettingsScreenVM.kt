@@ -392,23 +392,8 @@ class SettingsScreenVM @Inject constructor(
                         )
                         Settings.isHomeScreenEnabled.value = it
                     }
-                })/*, SettingsUIElement(title = "Use Bottom Sheet UI for saving links",
-                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
-                description = "If this is enabled, Bottom sheet will pop-up while saving a link; if this setting is not enabled, a full screen dialog box will be shown instead of bottom sheet.",
-                isSwitchNeeded = true,
-                isSwitchEnabled = Settings.isBtmSheetEnabledForSavingLinks,
-                isIconNeeded = mutableStateOf(true),
-                icon = Icons.Default.ExpandMore,
-                onSwitchStateChange = {
-                    viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name
-                            ), dataStore = context.dataStore, newValue = it
-                        )
-                        Settings.isBtmSheetEnabledForSavingLinks.value = it
-                    }
-                })*/, SettingsUIElement(title = "Auto-Detect Title",
+                }), SettingsUIElement(
+                title = "Auto-Detect Title",
                 doesDescriptionExists = true,
                 description = "Note: This may not detect every website.",
                 isSwitchNeeded = true,
@@ -499,7 +484,7 @@ class SettingsScreenVM @Inject constructor(
                                 val newMetaData =
                                     linkMetaDataScrapperService.scrapeLinkData(it.webURL)
                                 when (newMetaData) {
-                                    is LinkMetaDataScrapperResult.Failure -> TODO()
+                                    is LinkMetaDataScrapperResult.Failure -> {}
                                     is LinkMetaDataScrapperResult.Success -> {
                                         linksRepo.updateALinkDataFromImpLinksTable(
                                             it.copy(
@@ -519,7 +504,7 @@ class SettingsScreenVM @Inject constructor(
                                 val newMetaData =
                                     linkMetaDataScrapperService.scrapeLinkData(it.webURL)
                                 when (newMetaData) {
-                                    is LinkMetaDataScrapperResult.Failure -> TODO()
+                                    is LinkMetaDataScrapperResult.Failure -> {}
                                     is LinkMetaDataScrapperResult.Success -> {
                                         linksRepo
                                             .updateALinkDataFromArchivedLinksTable(
@@ -542,7 +527,7 @@ class SettingsScreenVM @Inject constructor(
                                         linkMetaDataScrapperService.scrapeLinkData(it.webURL)
 
                                     when (newMetaData) {
-                                        is LinkMetaDataScrapperResult.Failure -> TODO()
+                                        is LinkMetaDataScrapperResult.Failure -> {}
                                         is LinkMetaDataScrapperResult.Success -> {
                                             linksRepo
                                                 .updateALinkDataFromRecentlyVisitedLinksTable(
@@ -740,19 +725,6 @@ class SettingsScreenVM @Inject constructor(
             viewModelScope.launch {
                 dataStore.edit {
                     it[preferenceKey] = newValue
-                }
-            }
-        }
-
-        suspend fun <T> deleteASettingPreference(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
-            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-        ) {
-            dataStore.edit {
-                try {
-                    it.remove(preferenceKey)
-                } catch (_: Exception) {
-
                 }
             }
         }

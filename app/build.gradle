@@ -29,7 +29,14 @@ android {
             androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
         }
     }
-
+    buildTypes {
+        debug {
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
+        }
+        release {
+            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
+        }
+    }
     buildTypes {
         release {
             shrinkResources true

@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -22,6 +23,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
+@HiltViewModel
 open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : ViewModel() {
     fun openInWeb(
         recentlyVisitedData: RecentlyVisited,

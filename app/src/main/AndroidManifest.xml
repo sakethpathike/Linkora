@@ -24,8 +24,11 @@
         android:usesCleartextTraffic="true"
         android:largeHeap="true"
         tools:targetApi="31">
+        <meta-data
+            android:name="firebase_analytics_collection_deactivated"
+            android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED"/>
         <activity
-            android:name=".ui.MainActivity"
+            android:name=".MainActivity"
             android:exported="true"
             android:theme="@style/Theme.Linkora">
 
@@ -38,7 +41,7 @@
         </activity>
 
         <activity
-            android:name=".ui.IntentActivity"
+            android:name=".IntentActivity"
             android:excludeFromRecents="true"
             android:exported="true"
             android:theme="@style/Theme.IntentActivity">

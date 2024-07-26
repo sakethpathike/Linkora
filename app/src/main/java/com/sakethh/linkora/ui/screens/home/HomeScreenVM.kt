@@ -181,8 +181,8 @@ open class HomeScreenVM @Inject constructor(
                 }
             })
         }
-        TODO()
-        /* viewModelScope.launch {
+
+        /*// // TODO() viewModelScope.launch {
              LocalDatabase.localDB.shelfCrud().getAllShelfItems().collectLatest {
                  _shelfData.emit(it)
              }

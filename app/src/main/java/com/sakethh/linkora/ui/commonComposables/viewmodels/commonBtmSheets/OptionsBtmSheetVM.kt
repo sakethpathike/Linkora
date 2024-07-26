@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 
@@ -17,6 +18,7 @@ enum class OptionsBtmSheetType {
     LINK, FOLDER, IMPORTANT_LINKS_SCREEN,
 }
 
+@HiltViewModel
 class OptionsBtmSheetVM @Inject constructor(
     private val linksRepo: LinksRepo,
     private val foldersRepo: FoldersRepo

@@ -68,7 +68,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().getAllArchiveFoldersV9()
     }
 
-    override fun getAllArchiveFoldersV9List(): List<ArchivedFolders> {
+    override suspend fun getAllArchiveFoldersV9List(): List<ArchivedFolders> {
         return localDatabase.foldersDao().getAllArchiveFoldersV9List()
     }
 
@@ -80,7 +80,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().getAllRootFolders()
     }
 
-    override fun getAllRootFoldersList(): List<FoldersTable> {
+    override suspend fun getAllRootFoldersList(): List<FoldersTable> {
         return localDatabase.foldersDao().getAllRootFoldersList()
     }
 

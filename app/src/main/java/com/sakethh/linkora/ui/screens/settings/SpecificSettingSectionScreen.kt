@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material.icons.outlined.UnfoldMore
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -81,7 +80,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
@@ -121,7 +120,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
     val isNewFeatureDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val settingsScreenVM: SettingsScreenVM = viewModel()
+    val settingsScreenVM: SettingsScreenVM = hiltViewModel()
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             val file = createTempFile()
@@ -460,13 +459,6 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                     }
                                 }
                             }
-                            SettingsAppInfoComponent(hasDescription = false,
-                                description = "",
-                                icon = Icons.Outlined.UnfoldMore,
-                                title = "What's New",
-                                onClick = {
-                                    isNewFeatureDialogBoxVisible.value = true
-                                })
                             HorizontalDivider(
                                 modifier = Modifier.padding(20.dp),
                                 thickness = 0.5.dp,

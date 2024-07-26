@@ -87,8 +87,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -124,8 +124,8 @@ import kotlin.math.roundToInt
 @Composable
 fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
     val pagerState = rememberPagerState()
-    val homeScreenVM: HomeScreenVM = viewModel()
-    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
+    val homeScreenVM: HomeScreenVM = hiltViewModel()
+    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
     val coroutineScope = rememberCoroutineScope()
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -455,7 +455,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                             count = homeScreenList.size,
                             state = pagerState
                         ) {
-                            TODO()
+                            // // TODO()
                             /*ChildHomeScreen(
                                 homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                                 navController = navController,

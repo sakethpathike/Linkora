@@ -19,7 +19,6 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -81,7 +80,7 @@ fun ChildArchiveScreen(
     val selectedFolderNote = rememberSaveable {
         mutableStateOf("")
     }
-    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier

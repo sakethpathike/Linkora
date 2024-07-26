@@ -51,7 +51,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -73,7 +73,7 @@ fun MenuBtmSheetUI(
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
-    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val localClipBoardManager = LocalClipboardManager.current
     if (menuBtmSheetParam.shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(

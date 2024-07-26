@@ -20,8 +20,7 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class LinksImpl @Inject constructor(
-    private val localDatabase: LocalDatabase,
-    private val linksRepo: LinksRepo, private val foldersRepo: FoldersRepo,
+    private val localDatabase: LocalDatabase, private val foldersRepo: FoldersRepo,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService
 ) : LinksRepo {
     override suspend fun addANewLinkToSavedLinks(
@@ -247,7 +246,7 @@ class LinksImpl @Inject constructor(
             onTaskCompleted()
         }
         OptionsBtmSheetVM(
-            linksRepo,
+            this,
             foldersRepo
         ).updateArchiveLinkCardData(url = archivedLinks.webURL)
     }

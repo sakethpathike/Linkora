@@ -58,8 +58,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -100,7 +100,7 @@ import java.util.UUID
 )
 @Composable
 fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
-    val searchScreenVM: SearchScreenVM = viewModel()
+    val searchScreenVM: SearchScreenVM = hiltViewModel()
     val isSelectionModeEnabled = rememberSaveable {
         mutableStateOf(false)
     }
@@ -136,7 +136,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
         MutableInteractionSource()
     }
     val coroutineScope = rememberCoroutineScope()
-    val optionsBtmSheetVM = viewModel<OptionsBtmSheetVM>()
+    val optionsBtmSheetVM = hiltViewModel<OptionsBtmSheetVM>()
     val searchTextField = searchScreenVM.searchQuery.collectAsStateWithLifecycle().value
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val optionsBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)

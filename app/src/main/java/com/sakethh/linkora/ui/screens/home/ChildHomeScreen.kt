@@ -21,8 +21,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LinksTable
@@ -63,9 +63,9 @@ fun ChildHomeScreen(
     childFoldersData: List<FoldersTable>,
     customWebTab: CustomWebTab
 ) {
-    val homeScreenVM: HomeScreenVM = viewModel()
+    val homeScreenVM: HomeScreenVM = hiltViewModel()
     HomeScreenVM.currentHomeScreenType = homeScreenType
-    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = viewModel()
+    val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
     LaunchedEffect(key1 = Unit) {
         awaitAll(async {
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
@@ -117,7 +117,7 @@ fun ChildHomeScreen(
     val selectedNote = rememberSaveable {
         mutableStateOf("")
     }
-    val optionsBtmSheetVM: OptionsBtmSheetVM = viewModel()
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     LinkoraTheme {
         LazyColumn(
             modifier = Modifier

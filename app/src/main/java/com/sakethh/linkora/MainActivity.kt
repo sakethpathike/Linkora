@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui
+package com.sakethh.linkora
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -24,8 +24,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.data.local.folders.FoldersRepo
-import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -41,13 +39,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import javax.inject.Inject
 
 @AndroidEntryPoint
-class MainActivity @Inject constructor(
-    private val foldersRepo: FoldersRepo,
-    private val importRepo: ImportRepo
-) : ComponentActivity() {
+class MainActivity : ComponentActivity() {
     @OptIn(ExperimentalMaterialApi::class)
     @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -95,6 +89,7 @@ class MainActivity @Inject constructor(
                     }
                 }
                 val customWebTab: CustomWebTab = hiltViewModel()
+                val mainActivityVM: MainActivityVM = hiltViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
@@ -131,33 +126,8 @@ class MainActivity @Inject constructor(
                     if (!SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
-                                this.launch {
-                                    if (foldersRepo.getAllArchiveFoldersV9List()
-                                            .isNotEmpty()
-                                    ) {
-                                        importRepo.migrateArchiveFoldersV9toV10()
-                                        withContext(Dispatchers.Main) {
-                                            Toast.makeText(
-                                                context,
-                                                "Archived folders Data Migrated successfully",
-                                                Toast.LENGTH_SHORT
-                                            ).show()
-                                        }
-                                    }
-                                }
-
-                                if (foldersRepo.getAllRootFoldersList()
-                                        .isNotEmpty()
-                                ) {
-                                    importRepo.migrateRegularFoldersLinksDataFromV9toV10()
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(
-                                            context,
-                                            "Root folders Data Migrated successfully",
-                                            Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                }
+                                mainActivityVM.migrateArchiveFoldersV9toV10()
+                                mainActivityVM.migrateRegularFoldersLinksDataFromV9toV10()
                             } finally {
                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
