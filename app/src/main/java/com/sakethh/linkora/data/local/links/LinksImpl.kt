@@ -8,12 +8,15 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvents
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.isAValidURL
+import com.sakethh.linkora.utils.sanitizeLink
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -21,7 +24,8 @@ import javax.inject.Inject
 
 class LinksImpl @Inject constructor(
     private val localDatabase: LocalDatabase, private val foldersRepo: FoldersRepo,
-    private val linkMetaDataScrapperService: LinkMetaDataScrapperService
+    private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
+    private val twitterMetaDataRepo: TwitterMetaDataRepo
 ) : LinksRepo {
     override suspend fun addANewLinkToSavedLinks(
         linksTable: LinksTable,
@@ -41,28 +45,82 @@ class LinksImpl @Inject constructor(
             onTaskCompleted()
             return CommonUiEvents.ShowToast("given link already exists")
         } else {
+
+            suspend fun saveWithGivenData(): CommonUiEvents {
+                val linkData = LinksTable(
+                    title = linksTable.title,
+                    webURL = sanitizeLink(
+                        "http" + linksTable.webURL.substringAfter("http")
+                            .substringBefore(" ").trim()
+                    ),
+                    baseURL = linksTable.baseURL,
+                    imgURL = linksTable.imgURL,
+                    infoForSaving = linksTable.infoForSaving,
+                    isLinkedWithSavedLinks = true,
+                    isLinkedWithFolders = false,
+                    keyOfLinkedFolderV10 = null,
+                    keyOfLinkedFolder = null,
+                    isLinkedWithImpFolder = false,
+                    isLinkedWithArchivedFolder = false,
+                    keyOfArchiveLinkedFolderV10 = 0,
+                    keyOfImpLinkedFolder = ""
+                )
+                localDatabase.linksDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                onTaskCompleted()
+                return CommonUiEvents.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
+            }
+            if (linksTable.webURL.trim()
+                    .startsWith("https://x.com/") || linksTable.webURL.trim()
+                    .startsWith("http://x.com/") || linksTable.webURL.trim()
+                    .startsWith("https://twitter.com/") || linksTable.webURL.trim()
+                    .startsWith("http://twitter.com/")
+            ) {
+                when (val tweetMetaData =
+                    twitterMetaDataRepo.retrieveMetaData(linksTable.webURL.trim())) {
+                    is TwitterMetaDataResult.Failure -> {
+                        return saveWithGivenData()
+                    }
+
+                    is TwitterMetaDataResult.Success -> {
+                        val linkData = LinksTable(
+                            title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                    "https://t.co/"
+                                )
+                            ) tweetMetaData.data.text else linksTable.title,
+                            webURL = tweetMetaData.data.tweetURL,
+                            baseURL = "twitter.com",
+                            imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                it.contains(
+                                    "jpg"
+                                )
+                            }
+                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                            infoForSaving = linksTable.infoForSaving,
+                            isLinkedWithSavedLinks = true,
+                            isLinkedWithFolders = false,
+                            keyOfLinkedFolderV10 = null,
+                            keyOfLinkedFolder = null,
+                            isLinkedWithImpFolder = false,
+                            isLinkedWithArchivedFolder = false,
+                            keyOfArchiveLinkedFolderV10 = 0,
+                            keyOfImpLinkedFolder = ""
+                        )
+                        localDatabase.linksDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                        onTaskCompleted()
+                        return CommonUiEvents.ShowToast("added the url")
+                    }
+                }
+            }
+
             when (val linkDataExtractor =
-                linkMetaDataScrapperService.scrapeLinkData(linksTable.webURL)) {
-                is LinkMetaDataScrapperResult.Failure -> {
-                    val linkData = LinksTable(
-                        title = linksTable.title,
-                        webURL = "http" + linksTable.webURL.substringAfter("http")
-                            .substringBefore(" ").trim(),
-                        baseURL = linksTable.baseURL,
-                        imgURL = linksTable.imgURL,
-                        infoForSaving = linksTable.infoForSaving,
-                        isLinkedWithSavedLinks = true,
-                        isLinkedWithFolders = false,
-                        keyOfLinkedFolderV10 = null,
-                        keyOfLinkedFolder = null,
-                        isLinkedWithImpFolder = false,
-                        isLinkedWithArchivedFolder = false,
-                        keyOfArchiveLinkedFolderV10 = 0,
-                        keyOfImpLinkedFolder = ""
+                linkMetaDataScrapperService.scrapeLinkData(
+                    sanitizeLink(
+                        "http" + linksTable.webURL.substringAfter("http")
+                            .substringBefore(" ").trim()
                     )
-                    localDatabase.linksDao().addANewLinkToSavedLinksOrInFolders(linkData)
-                    onTaskCompleted()
-                    return CommonUiEvents.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
+                )) {
+                is LinkMetaDataScrapperResult.Failure -> {
+                    return saveWithGivenData()
                 }
 
                 is LinkMetaDataScrapperResult.Success -> {
@@ -109,12 +167,19 @@ class LinksImpl @Inject constructor(
             return CommonUiEvents.ShowToast("given link already exists")
         } else {
             when (val linkDataExtractor =
-                linkMetaDataScrapperService.scrapeLinkData(linksTable.webURL)) {
+                linkMetaDataScrapperService.scrapeLinkData(
+                    sanitizeLink(
+                        "http" + linksTable.webURL.substringAfter("http")
+                            .substringBefore(" ").trim()
+                    )
+                )) {
                 is LinkMetaDataScrapperResult.Failure -> {
                     val linkData = LinksTable(
                         title = linksTable.title,
-                        webURL = "http" + linksTable.webURL.substringAfter("http")
-                            .substringBefore(" ").trim(),
+                        webURL = sanitizeLink(
+                            "http" + linksTable.webURL.substringAfter("http")
+                                .substringBefore(" ").trim()
+                        ),
                         baseURL = linksTable.baseURL,
                         imgURL = linksTable.imgURL,
                         infoForSaving = linksTable.infoForSaving,
@@ -321,7 +386,7 @@ class LinksImpl @Inject constructor(
             return CommonUiEvents.ShowToast("given link already exists")
         } else {
             when (val linkDataExtractor =
-                linkMetaDataScrapperService.scrapeLinkData(importantLink.webURL)) {
+                linkMetaDataScrapperService.scrapeLinkData(sanitizeLink(importantLink.webURL))) {
                 is LinkMetaDataScrapperResult.Failure -> {
                     localDatabase.linksDao()
                         .addANewLinkToImpLinks(importantLink)
@@ -332,7 +397,7 @@ class LinksImpl @Inject constructor(
                 is LinkMetaDataScrapperResult.Success -> {
                     val importantLinkScrappedData = ImportantLinks(
                         title = linkDataExtractor.data.title,
-                        webURL = importantLink.webURL,
+                        webURL = sanitizeLink(importantLink.webURL),
                         baseURL = linkDataExtractor.data.baseURL,
                         imgURL = linkDataExtractor.data.imgURL,
                         infoForSaving = importantLink.infoForSaving

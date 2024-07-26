@@ -37,6 +37,8 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataImpl
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesImpl
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperImpl
@@ -141,17 +143,18 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCustomWebTab(localDatabase: LocalDatabase): CustomWebTab {
-        return CustomWebTab(provideLinksRepo(localDatabase))
+    fun provideCustomWebTab(localDatabase: LocalDatabase, ktorClient: HttpClient): CustomWebTab {
+        return CustomWebTab(provideLinksRepo(localDatabase, ktorClient))
     }
 
     @Provides
     @Singleton
-    fun provideLinksRepo(localDatabase: LocalDatabase): LinksRepo {
+    fun provideLinksRepo(localDatabase: LocalDatabase, ktorClient: HttpClient): LinksRepo {
         return LinksImpl(
             localDatabase,
             provideFoldersRepo(localDatabase),
-            provideLinkMetaDataScrapperService()
+            provideLinkMetaDataScrapperService(),
+            provideTwitterMetaDataRepo(ktorClient)
         )
     }
 
@@ -176,6 +179,12 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideTwitterMetaDataRepo(ktorClient: HttpClient): TwitterMetaDataRepo {
+        return TwitterMetaDataImpl(ktorClient)
+    }
+
+    @Provides
+    @Singleton
     fun provideArchivedLinksSortingRepo(localDatabase: LocalDatabase): ArchivedLinksSortingRepo {
         return ArchivedLinksSortingImpl(
             localDatabase
@@ -192,9 +201,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideExportRepo(localDatabase: LocalDatabase): ExportRepo {
+    fun provideExportRepo(localDatabase: LocalDatabase, ktorClient: HttpClient): ExportRepo {
         return ExportImpl(
-            provideLinksRepo(localDatabase),
+            provideLinksRepo(localDatabase, ktorClient),
             provideFoldersRepo(localDatabase)
         )
     }
