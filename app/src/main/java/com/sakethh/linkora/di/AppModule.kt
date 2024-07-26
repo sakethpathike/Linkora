@@ -17,6 +17,8 @@ import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.shelf.ShelfImpl
 import com.sakethh.linkora.data.local.shelf.ShelfRepo
+import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsImpl
+import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingImpl
@@ -213,59 +215,16 @@ object AppModule {
     fun provideShelfRepo(localDatabase: LocalDatabase): ShelfRepo {
         return ShelfImpl(localDatabase)
     }
-
-    @Provides
-    @Singleton
-    fun archiveLinksSorting(localDatabase: LocalDatabase): ArchivedLinksSortingRepo {
-        return ArchivedLinksSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun parentFoldersSorting(localDatabase: LocalDatabase): ParentRegularFoldersSortingRepo {
-        return ParentRegularFoldersSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun subFoldersSorting(localDatabase: LocalDatabase): SubFoldersSortingRepo {
-        return SubFoldersSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun savedLinksSorting(localDatabase: LocalDatabase): SavedLinksSortingRepo {
-        return SavedLinksSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun importantLinksSorting(localDatabase: LocalDatabase): ImportantLinksSortingRepo {
-        return ImportantLinksSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun folderLinksSorting(localDatabase: LocalDatabase): RegularFolderLinksSortingRepo {
-        return RegularFolderLinksSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun archiveFolderLinksSorting(localDatabase: LocalDatabase): ArchivedFolderLinksSortingRepo {
-        return ArchivedFolderLinksSortingImpl(localDatabase)
-    }
-
-    @Provides
-    @Singleton
-    fun archiveFoldersSorting(localDatabase: LocalDatabase): ParentArchivedFoldersSortingRepo {
-        return ParentArchivedFoldersSortingImpl(localDatabase)
-    }
-
     @Provides
     @Singleton
     fun provideSearchRepo(localDatabase: LocalDatabase): SearchRepo {
         return SearchImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideShelfListsRepo(localDatabase: LocalDatabase): ShelfListsRepo {
+        return ShelfListsImpl(localDatabase)
     }
 
     @Provides

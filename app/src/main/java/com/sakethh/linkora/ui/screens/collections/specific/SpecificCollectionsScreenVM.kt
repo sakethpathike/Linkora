@@ -25,6 +25,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,6 +43,7 @@ data class MutableImportantLinks(
     var id: Long = 0,
 )
 
+@HiltViewModel
 open class SpecificCollectionsScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
     private val foldersRepo: FoldersRepo,

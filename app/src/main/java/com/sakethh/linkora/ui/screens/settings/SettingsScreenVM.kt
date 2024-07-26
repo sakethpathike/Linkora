@@ -46,6 +46,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendC
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.AppInfoDTO
 import com.sakethh.linkora.ui.screens.settings.appInfo.dto.MutableAppInfoDTO
 import com.sakethh.linkora.utils.isNetworkAvailable
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
@@ -78,6 +79,7 @@ enum class SettingsSections {
     THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT
 }
 
+@HiltViewModel
 class SettingsScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,

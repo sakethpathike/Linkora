@@ -27,6 +27,7 @@ import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -38,6 +39,7 @@ import kotlinx.coroutines.withContext
 import java.util.Calendar
 import javax.inject.Inject
 
+@HiltViewModel
 open class HomeScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
     foldersRepo: FoldersRepo,
