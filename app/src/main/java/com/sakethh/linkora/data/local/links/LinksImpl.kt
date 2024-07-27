@@ -78,9 +78,9 @@ class LinksImpl @Inject constructor(
                         .startsWith("http://twitter.com/")
 
                     LinkType.IMP_LINK -> importantLink!!.webURL.trim()
-                        .startsWith("https://x.com/") || linksTable!!.webURL.trim()
-                        .startsWith("http://x.com/") || linksTable.webURL.trim()
-                        .startsWith("https://twitter.com/") || linksTable.webURL.trim()
+                        .startsWith("https://x.com/") || importantLink!!.webURL.trim()
+                        .startsWith("http://x.com/") || importantLink.webURL.trim()
+                        .startsWith("https://twitter.com/") || importantLink.webURL.trim()
                         .startsWith("http://twitter.com/")
                 }
             ) {

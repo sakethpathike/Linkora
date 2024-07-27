@@ -3,6 +3,7 @@ package com.sakethh.linkora.data.local.folders
 import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import okhttp3.internal.toImmutableList
@@ -19,44 +20,48 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
 
     override suspend fun createANewFolder(foldersTable: FoldersTable) {
         localDatabase.foldersDao().createANewFolder(foldersTable)
-    }
+        if (foldersTable.parentFolderID != null) {
 
-    suspend fun addANewChildIdToARootAndParentFolders(
-        rootParentID: Long, parentID: Long, currentID: Long
-    ) {
-        val rootFolder = getThisFolderData(rootParentID)
-        updateAFolderData(rootFolder)
-        addIdsIntoParentHierarchy(currentID)
+            // add folder id into root parent folder
+            val rootFolder = getThisFolderData(CollectionsScreenVM.rootFolderID)
+            updateAFolderData(
+                rootFolder.apply {
+                    val modifiedChildIdsList = childFolderIDs?.toMutableList() ?: mutableListOf()
+                    modifiedChildIdsList.add(getLatestAddedFolder().id)
+                    childFolderIDs = modifiedChildIdsList
+                }
+            )
+
+            // add folder id into hierarchy except root folder
+            addIdsIntoParentHierarchy(getLatestAddedFolder().id)
+        }
     }
 
     private suspend fun addIdsIntoParentHierarchy(currentID: Long) {
 
-        var tempCurrentID = currentID
+        var currentFolderIteratorID = currentID
 
         while (true) {
 
-            val currentFolderData = getThisFolderData(tempCurrentID)
+            val currentFolder = getThisFolderData(currentFolderIteratorID)
+            val parentFolderOfCurrentFolder =
+                getThisFolderData(currentFolder.parentFolderID ?: break)
 
-            val currentParentFolderData =
-                getThisFolderData(currentFolderData.parentFolderID ?: break)
+            val parentFolderOfCurrentFolderChildIds =
+                parentFolderOfCurrentFolder.childFolderIDs?.toMutableList() ?: mutableListOf()
 
-            val currentParentFolderIdChildData =
-                currentParentFolderData.childFolderIDs?.toMutableList()
+            parentFolderOfCurrentFolderChildIds.add(currentFolderIteratorID)
 
-            currentParentFolderIdChildData?.add(tempCurrentID)
-
-            if (currentParentFolderIdChildData?.contains(currentID) == false) {
-                currentParentFolderIdChildData.add(currentID)
-
+            if (!parentFolderOfCurrentFolderChildIds.contains(currentID)) {
+                parentFolderOfCurrentFolderChildIds.add(currentID)
             }
 
+            parentFolderOfCurrentFolder.childFolderIDs =
+                parentFolderOfCurrentFolderChildIds.toImmutableList().distinct()
 
-            currentParentFolderData.childFolderIDs =
-                currentParentFolderIdChildData?.toImmutableList()?.distinct()
+            updateAFolderData(parentFolderOfCurrentFolder)
 
-            updateAFolderData(currentParentFolderData)
-
-            tempCurrentID = currentParentFolderData.id
+            currentFolderIteratorID = parentFolderOfCurrentFolder.id
         }
     }
 

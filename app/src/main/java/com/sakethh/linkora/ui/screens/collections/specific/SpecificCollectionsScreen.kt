@@ -1296,7 +1296,11 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onFolderCreateClick = { folderName, folderNote ->
                     specificCollectionsScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.CreateANewFolder(
-                            FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                            FoldersTable(
+                                folderName = folderName,
+                                infoForSaving = folderNote,
+                                parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id
+                            )
                         )
                     )
                 }
