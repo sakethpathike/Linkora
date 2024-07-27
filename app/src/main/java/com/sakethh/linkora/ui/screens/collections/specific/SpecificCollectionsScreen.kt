@@ -1319,7 +1319,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             title = title,
                             webURL = webURL,
                             noteForSaving = note,
-                            parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                                folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                             onTaskCompleted = {
                                 shouldNewLinkDialogBoxBeVisible.value = false
                                 isDataExtractingForTheLink.value = false

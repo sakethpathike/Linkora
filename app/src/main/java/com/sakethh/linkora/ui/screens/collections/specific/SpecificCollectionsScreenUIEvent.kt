@@ -26,7 +26,7 @@ sealed class SpecificCollectionsScreenUIEvent {
         val title: String,
         val webURL: String,
         val noteForSaving: String,
-        val parentFolderID: Long,
+        val folderID: Long,
         val autoDetectTitle: Boolean,
         val onTaskCompleted: () -> Unit,
         val folderName: String

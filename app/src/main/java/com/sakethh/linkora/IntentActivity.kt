@@ -64,7 +64,7 @@ class IntentActivity : ComponentActivity() {
                                             title = title,
                                             webURL = webURL,
                                             noteForSaving = note,
-                                            parentFolderID = selectedNonDefaultFolderID,
+                                            folderID = selectedNonDefaultFolderID,
                                             folderName = selectedDefaultFolderName,
                                             autoDetectTitle = isAutoDetectSelected,
                                             onTaskCompleted = {
