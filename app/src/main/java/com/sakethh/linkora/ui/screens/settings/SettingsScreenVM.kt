@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
@@ -14,7 +15,6 @@ import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.OpenInBrowser
-import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
@@ -31,6 +31,8 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
@@ -40,19 +42,17 @@ import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesResult
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
-import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
-import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
-import com.sakethh.linkora.utils.isNetworkAvailable
+import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -79,17 +79,40 @@ enum class SettingsSections {
 @HiltViewModel
 class SettingsScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
-    private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
     private val importRepo: ImportRepo,
     private val localDatabase: LocalDatabase,
     private val exportRepo: ExportRepo,
-    private val gitHubReleasesRepo: GitHubReleasesRepo
+    private val gitHubReleasesRepo: GitHubReleasesRepo,
+    private val refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
+    private val workManager: WorkManager
 ) : CustomWebTab(linksRepo) {
 
     val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
+    init {
+        viewModelScope.launch {
+            workManager.getWorkInfoByIdFlow(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG)
+                .collectLatest {
+                    Log.d("Linkora Log", it.state.toString())
+                    if (it != null) {
+                        isAnyRefreshingTaskGoingOn.value = it.state == WorkInfo.State.RUNNING
+                    } else {
+                        Log.d("Linkora Log", "null")
+                    }
+                }
+        }
+    }
+
+    fun refreshAllLinksImagesAndTitles() {
+        refreshLinksWorkerRequestBuilder.request()
+    }
+
+    fun cancelRefreshAllLinksImagesAndTitlesWork() {
+        workManager.cancelWorkById(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG)
+    }
     companion object {
+        val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
         const val APP_VERSION_NAME = "v0.5.0"
         const val APP_VERSION_CODE = 23
@@ -438,112 +461,6 @@ class SettingsScreenVM @Inject constructor(
                         )
                         Settings.showDescriptionForSettingsState.value = it
                     }
-                }), SettingsUIElement(title = "Refresh titles and images of all links",
-                doesDescriptionExists = false,
-                description = "",
-                isSwitchNeeded = false,
-                isIconNeeded = mutableStateOf(true),
-                icon = Icons.Default.Refresh,
-                isSwitchEnabled = mutableStateOf(false),
-                onSwitchStateChange = {
-                    dataRefreshState.intValue = 0
-                    if (!isNetworkAvailable(context)) {
-                        // Toast is not supposed to be implemented in the VM and will be removed during the rewrite of this app
-                        Toast.makeText(context, "Network not found", Toast.LENGTH_SHORT).show()
-                        return@SettingsUIElement
-                    }
-                    viewModelScope.launch {
-                        awaitAll(async {
-                            linksRepo.getAllFromLinksTable().toList()
-                                .forEach {
-                                    when (val newMetaData =
-                                        linkMetaDataScrapperService.scrapeLinkData(it.webURL)) {
-                                        is LinkMetaDataScrapperResult.Failure -> {
-
-                                        }
-
-                                        is LinkMetaDataScrapperResult.Success -> {
-                                            linksRepo.updateALinkDataFromLinksTable(
-                                                it.copy(
-                                                    title = newMetaData.data.title.replace(
-                                                        "&amp;",
-                                                        "&"
-                                                    ),
-                                                    imgURL = newMetaData.data.imgURL
-                                                )
-                                            )
-                                        }
-                                    }
-
-                                }
-                        }, async {
-                            linksRepo.getAllImpLinks().toList().forEach {
-                                val newMetaData =
-                                    linkMetaDataScrapperService.scrapeLinkData(it.webURL)
-                                when (newMetaData) {
-                                    is LinkMetaDataScrapperResult.Failure -> {}
-                                    is LinkMetaDataScrapperResult.Success -> {
-                                        linksRepo.updateALinkDataFromImpLinksTable(
-                                            it.copy(
-                                                title = newMetaData.data.title.replace(
-                                                    "&amp;",
-                                                    "&"
-                                                ),
-                                                imgURL = newMetaData.data.imgURL
-                                            )
-                                        )
-                                    }
-                                }
-
-                            }
-                        }, async {
-                            linksRepo.getAllArchiveLinks().toList().forEach {
-                                val newMetaData =
-                                    linkMetaDataScrapperService.scrapeLinkData(it.webURL)
-                                when (newMetaData) {
-                                    is LinkMetaDataScrapperResult.Failure -> {}
-                                    is LinkMetaDataScrapperResult.Success -> {
-                                        linksRepo
-                                            .updateALinkDataFromArchivedLinksTable(
-                                                it.copy(
-                                                    title = newMetaData.data.title.replace(
-                                                        "&amp;",
-                                                        "&"
-                                                    ),
-                                                    imgURL = newMetaData.data.imgURL
-                                                )
-                                            )
-                                    }
-                                }
-
-                            }
-                        }, async {
-                            linksRepo.getAllRecentlyVisitedLinks().toList()
-                                .forEach {
-                                    val newMetaData =
-                                        linkMetaDataScrapperService.scrapeLinkData(it.webURL)
-
-                                    when (newMetaData) {
-                                        is LinkMetaDataScrapperResult.Failure -> {}
-                                        is LinkMetaDataScrapperResult.Success -> {
-                                            linksRepo
-                                                .updateALinkDataFromRecentlyVisitedLinksTable(
-                                                    it.copy(
-                                                        title = newMetaData.data.title.replace(
-                                                            "&amp;",
-                                                            "&"
-                                                        ),
-                                                        imgURL = newMetaData.data.imgURL
-                                                    )
-                                                )
-                                        }
-                                    }
-
-                                }
-                        })
-                    }.invokeOnCompletion {
-                        dataRefreshState.intValue = 1
-                    }
                 })
         )
     }
@@ -838,7 +755,12 @@ class SettingsScreenVM @Inject constructor(
         }
     }
     fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
-        localDatabase.clearAllTables()
-        onTaskCompleted()
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                localDatabase.clearAllTables()
+            }
+        }.invokeOnCompletion {
+            onTaskCompleted()
+        }
     }
 }

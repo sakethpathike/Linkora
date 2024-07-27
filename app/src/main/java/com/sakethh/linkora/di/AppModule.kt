@@ -1,9 +1,11 @@
 package com.sakethh.linkora.di
 
 import android.app.Application
+import android.content.Context
 import androidx.room.Room
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import androidx.work.WorkManager
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.backup.ExportImpl
 import com.sakethh.linkora.data.local.backup.ExportRepo
@@ -44,9 +46,11 @@ import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperImpl
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -277,6 +281,18 @@ object AppModule {
     @Singleton
     fun provideLinkMetaDataScrapperService(): LinkMetaDataScrapperService {
         return LinkMetaDataScrapperImpl()
+    }
+
+    @Provides
+    @Singleton
+    fun provideWorkManager(@ApplicationContext context: Context): WorkManager {
+        return WorkManager.getInstance(context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideRefreshLinksWorkerRequestBuilder(workManager: WorkManager): RefreshLinksWorkerRequestBuilder {
+        return RefreshLinksWorkerRequestBuilder(workManager)
     }
 
     @Provides

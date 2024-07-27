@@ -28,8 +28,10 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Restore
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -47,6 +49,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
@@ -101,6 +104,7 @@ import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpd
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.theme.fonts
 import com.sakethh.linkora.utils.isNetworkAvailable
+import com.sakethh.linkora.worker.RefreshLinksWorker
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -583,6 +587,58 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 settingsUIElement = it
                             )
                         }
+                        item {
+                            if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
+                                RegularSettingComponent(
+                                    settingsUIElement = SettingsUIElement(title = "Refresh All Links' Titles and Images",
+                                        doesDescriptionExists = true,
+                                        description = "Manually entered titles will be replaced with detected titles.",
+                                        isSwitchNeeded = false,
+                                        isIconNeeded = rememberSaveable {
+                                            mutableStateOf(true)
+                                        },
+                                        icon = Icons.Default.Refresh,
+                                        isSwitchEnabled = rememberSaveable {
+                                            mutableStateOf(false)
+                                        },
+                                        onSwitchStateChange = {
+                                            settingsScreenVM.refreshAllLinksImagesAndTitles()
+                                        })
+                                )
+                            } else {
+                                Text(
+                                    text = "Refreshing links...",
+                                    style = MaterialTheme.typography.titleMedium,
+                                    modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                                )
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(start = 15.dp, end = 15.dp),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    LinearProgressIndicator(
+                                        modifier = Modifier
+                                            .fillMaxWidth(0.85f)
+                                    )
+                                    IconButton(onClick = {
+                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork()
+                                    }) {
+                                        Icon(
+                                            imageVector = Icons.Default.Cancel,
+                                            contentDescription = ""
+                                        )
+                                    }
+                                }
+
+                                Text(
+                                    text = "${RefreshLinksWorker.successfulRefreshLinksCount.intValue} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                                )
+                            }
+                        }
                         if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.GENERAL) {
                             item(key = "JsoupUserAgent") {
                                 Row(
@@ -806,9 +862,8 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                 }
             }, title = {
                 Text(
-                    text = "Refreshing Titles and Images",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 16.sp
+                    text = "Refreshing",
+                    style = MaterialTheme.typography.titleSmall,
                 )
             })
         }
