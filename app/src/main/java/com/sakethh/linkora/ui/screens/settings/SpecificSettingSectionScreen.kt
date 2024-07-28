@@ -125,6 +125,8 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
     val isNewFeatureDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val successfulRefreshLinkCount =
+        RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
     val settingsScreenVM: SettingsScreenVM = hiltViewModel()
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -623,7 +625,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                             .fillMaxWidth(0.85f)
                                     )
                                     IconButton(onClick = {
-                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork()
+                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork(
+                                            context
+                                        )
                                     }) {
                                         Icon(
                                             imageVector = Icons.Default.Cancel,
@@ -633,7 +637,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 }
 
                                 Text(
-                                    text = "${RefreshLinksWorker.successfulRefreshLinksCount.intValue} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
+                                    text = "${successfulRefreshLinkCount.value} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
                                     style = MaterialTheme.typography.titleSmall,
                                     modifier = Modifier.padding(start = 15.dp, end = 15.dp)
                                 )

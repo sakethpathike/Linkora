@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
@@ -45,6 +44,7 @@ import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
+import com.sakethh.linkora.worker.RefreshLinksWorker
 import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +56,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.UUID
 import javax.inject.Inject
 
 data class SettingsUIElement(
@@ -92,24 +93,31 @@ class SettingsScreenVM @Inject constructor(
 
     init {
         viewModelScope.launch {
-            workManager.getWorkInfoByIdFlow(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG)
-                .collectLatest {
-                    Log.d("Linkora Log", it.state.toString())
+            RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.collectLatest { uuid ->
+                workManager.getWorkInfoByIdFlow(uuid).collectLatest {
                     if (it != null) {
-                        isAnyRefreshingTaskGoingOn.value = it.state == WorkInfo.State.RUNNING
-                    } else {
-                        Log.d("Linkora Log", "null")
+                        isAnyRefreshingTaskGoingOn.value =
+                            it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED
                     }
-                }
+                    }
+            }
         }
     }
 
     fun refreshAllLinksImagesAndTitles() {
-        refreshLinksWorkerRequestBuilder.request()
+        viewModelScope.launch {
+            refreshLinksWorkerRequestBuilder.request()
+        }
     }
 
-    fun cancelRefreshAllLinksImagesAndTitlesWork() {
-        workManager.cancelWorkById(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG)
+    fun cancelRefreshAllLinksImagesAndTitlesWork(context: Context) {
+        Settings.changeSettingPreferenceValue(
+            intPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+            context.dataStore,
+            0
+        )
+        RefreshLinksWorker.superVisorJob?.cancel()
+        workManager.cancelAllWork()
     }
     companion object {
         val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
@@ -588,7 +596,8 @@ class SettingsScreenVM @Inject constructor(
     }
 
     enum class SettingsPreferences {
-        DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE
+        DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE, CURRENT_WORK_MANAGER_WORK_UUID,
+        CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT
     }
 
     enum class SortingPreferences {
@@ -655,86 +664,119 @@ class SettingsScreenVM @Inject constructor(
 
         suspend fun readAllPreferencesValues(context: Context) {
             coroutineScope {
-                kotlinx.coroutines.awaitAll(async {
-                    shouldFollowSystemTheme.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
-                        dataStore = context.dataStore
-                    ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                }, async {
-                    shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
-                        dataStore = context.dataStore
-                    ) ?: (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-                }, async {
-                    shouldFollowDynamicTheming.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
-                        dataStore = context.dataStore
-                    ) ?: false
-                }, async {
-                    jsoupUserAgent.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
-                        dataStore = context.dataStore
-                    )
-                        ?: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
-                }, async {
-                    showDescriptionForSettingsState.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
-                        dataStore = context.dataStore
-                    ) ?: true
-                }, async {
-                    isInAppWebTabEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
-                        dataStore = context.dataStore
-                    ) ?: false
-                }, async {
-                    didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
-                        dataStore = context.dataStore
-                    ) ?: false
-                }, async {
-                    isAutoDetectTitleForLinksEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                        dataStore = context.dataStore
-                    ) ?: false
-                }, async {
-                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                kotlinx.coroutines.awaitAll(
+                    async {
+                        shouldFollowSystemTheme.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                             dataStore = context.dataStore
-                        ) == null
-                    ) {
-                        true
-                    } else {
-                        readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                        ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                    },
+                    async {
+                        shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
                             dataStore = context.dataStore
-                        ) == true
-                    }
-                }, async {
-                    isBtmSheetEnabledForSavingLinks.value =/* readSettingPreferenceValue(
+                        ) ?: (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
+                    },
+                    async {
+                        shouldFollowDynamicTheming.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
+                            dataStore = context.dataStore
+                        ) ?: false
+                    },
+                    async {
+                        jsoupUserAgent.value = readSettingPreferenceValue(
+                            preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                            dataStore = context.dataStore
+                        )
+                            ?: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                    },
+                    async {
+                        showDescriptionForSettingsState.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                            dataStore = context.dataStore
+                        ) ?: true
+                    },
+                    async {
+                        isInAppWebTabEnabled.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                            dataStore = context.dataStore
+                        ) ?: false
+                    },
+                    async {
+                        didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
+                            dataStore = context.dataStore
+                        ) ?: false
+                    },
+                    async {
+                        isAutoDetectTitleForLinksEnabled.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                            dataStore = context.dataStore
+                        ) ?: false
+                    },
+                    async {
+                        isHomeScreenEnabled.value = if (readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                                dataStore = context.dataStore
+                            ) == null
+                        ) {
+                            true
+                        } else {
+                            readSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                                dataStore = context.dataStore
+                            ) == true
+                        }
+                    },
+                    async {
+                        isBtmSheetEnabledForSavingLinks.value =/* readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
                         dataStore = context.dataStore
                     ) ?:*/ false
-                }, async {
-                    isSendCrashReportsEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                        dataStore = context.dataStore
-                    ) ?: true
-                }, async {
-                    isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
-                        dataStore = context.dataStore
-                    ) ?: true
-                }, async {
-                    selectedSortingType.value = readSortingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
-                        dataStore = context.dataStore
-                    ) ?: SortingPreferences.NEW_TO_OLD.name
-                }, async {
-                    savedAppCode.intValue = readSettingPreferenceValue(
-                        preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
-                        dataStore = context.dataStore
-                    ) ?: (APP_VERSION_CODE - 1)
-                })
+                    },
+                    async {
+                        isSendCrashReportsEnabled.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                            dataStore = context.dataStore
+                        ) ?: true
+                    },
+                    async {
+                        isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
+                            dataStore = context.dataStore
+                        ) ?: true
+                    },
+                    async {
+                        selectedSortingType.value = readSortingPreferenceValue(
+                            preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
+                            dataStore = context.dataStore
+                        ) ?: SortingPreferences.NEW_TO_OLD.name
+                    },
+                    async {
+                        savedAppCode.intValue = readSettingPreferenceValue(
+                            preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
+                            dataStore = context.dataStore
+                        ) ?: (APP_VERSION_CODE - 1)
+                    },
+                    async {
+                        RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(
+                            UUID.fromString(
+                                readSettingPreferenceValue(
+                                    preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
+                                    dataStore = context.dataStore
+                                ) ?: "d267865d-e1c9-42b7-be38-1ab6db0e312b"
+                            )
+                        )
+                    },
+                    async {
+                        RefreshLinksWorker.successfulRefreshLinksCount.emit(
+                            readSettingPreferenceValue(
+                                preferenceKey = intPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                dataStore = context.dataStore
+                            ) ?: 0
+                        )
+                    },
+                )
             }
         }
     }

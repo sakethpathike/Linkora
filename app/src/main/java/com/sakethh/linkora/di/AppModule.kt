@@ -291,8 +291,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideRefreshLinksWorkerRequestBuilder(workManager: WorkManager): RefreshLinksWorkerRequestBuilder {
-        return RefreshLinksWorkerRequestBuilder(workManager)
+    fun provideRefreshLinksWorkerRequestBuilder(
+        workManager: WorkManager,
+        app: Application
+    ): RefreshLinksWorkerRequestBuilder {
+        return RefreshLinksWorkerRequestBuilder(workManager, app.applicationContext)
     }
 
     @Provides

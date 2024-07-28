@@ -1,7 +1,6 @@
 package com.sakethh.linkora.ui.screens.collections
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
@@ -203,7 +202,6 @@ open class CollectionsScreenVM @Inject constructor(
         when (specificCollectionsScreenUIEvent) {
             is SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder -> {
                 viewModelScope.launch {
-                    Log.d("Linkora Log", specificCollectionsScreenUIEvent.folderID.toString())
                     linksRepo.addANewLinkInAFolder(
                         linksTable = LinksTable(
                             title = specificCollectionsScreenUIEvent.title,

@@ -1,7 +1,6 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
 import android.annotation.SuppressLint
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -298,10 +297,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp,
                                     modifier = Modifier.clickable {
-                                        Log.d(
-                                            "selected folders LINKORA",
-                                            specificCollectionsScreenVM.selectedLinksID.toString()
-                                        )
+
                                     })
                             }
                         } else {

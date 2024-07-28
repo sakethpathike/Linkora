@@ -1,40 +1,48 @@
 package com.sakethh.linkora.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-class RefreshLinksWorker @Inject constructor(
-    appContext: Context,
-    params: WorkerParameters,
+@HiltWorker
+class RefreshLinksWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
     private val localDatabase: LocalDatabase,
-    private val linkMetaDataScrapperService: LinkMetaDataScrapperService
+    private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
+    private val workManager: WorkManager
 ) : CoroutineWorker(appContext, params) {
 
     companion object {
-        val successfulRefreshLinksCount = mutableIntStateOf(0)
+        val successfulRefreshLinksCount = MutableStateFlow(0)
         val unSuccessfulRefreshLinksCount = mutableIntStateOf(0)
         val totalLinksCount = mutableIntStateOf(0)
+        var superVisorJob: Job? = null
     }
 
     override suspend fun doWork(): Result {
-        Log.d("Linkora Log", "doWork1")
-        successfulRefreshLinksCount.intValue = 0
         unSuccessfulRefreshLinksCount.intValue = 0
         totalLinksCount.intValue = 0
-        Log.d("Linkora Log", "doWork2")
         val linksTable = localDatabase.linksDao().getAllFromLinksTable()
         val impLinksTable = localDatabase.linksDao().getAllImpLinks()
         val archiveLinksTable = localDatabase.linksDao().getAllArchiveLinks()
@@ -42,8 +50,8 @@ class RefreshLinksWorker @Inject constructor(
 
         totalLinksCount.intValue =
             linksTable.size + impLinksTable.size + archiveLinksTable.size + recentlyVisitedTable.size
-        Log.d("Linkora Log", "doWork3")
-        CoroutineScope(Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { coroutineContext, throwable -> }).launch {
+        superVisorJob =
+            CoroutineScope(Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { coroutineContext, throwable -> }).launch {
             val linksTableDeferred = async {
                 linksTable.forEach { link ->
                     when (val scrappedData =
@@ -59,8 +67,12 @@ class RefreshLinksWorker @Inject constructor(
                                     imgURL = scrappedData.data.imgURL
                                 )
                             )
-                            successfulRefreshLinksCount.intValue++
-                            Log.d("Linkora Log", successfulRefreshLinksCount.intValue.toString())
+                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                applicationContext.dataStore,
+                                successfulRefreshLinksCount.value++
+                            )
+                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
                         }
                     }
                 }
@@ -80,7 +92,12 @@ class RefreshLinksWorker @Inject constructor(
                                     imgURL = scrappedData.data.imgURL
                                 )
                             )
-                            successfulRefreshLinksCount.intValue++
+                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                applicationContext.dataStore,
+                                successfulRefreshLinksCount.value++
+                            )
+                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
                         }
                     }
                 }
@@ -100,7 +117,12 @@ class RefreshLinksWorker @Inject constructor(
                                     imgURL = scrappedData.data.imgURL
                                 )
                             )
-                            successfulRefreshLinksCount.intValue++
+                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                applicationContext.dataStore,
+                                successfulRefreshLinksCount.value++
+                            )
+                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
                         }
                     }
                 }
@@ -122,7 +144,12 @@ class RefreshLinksWorker @Inject constructor(
                                             imgURL = scrappedData.data.imgURL
                                         )
                                     )
-                                successfulRefreshLinksCount.intValue++
+                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                    applicationContext.dataStore,
+                                    successfulRefreshLinksCount.value++
+                                )
+                                successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
                             }
                         }
                     }
@@ -133,7 +160,13 @@ class RefreshLinksWorker @Inject constructor(
             archiveLinksTableDeferred.await()
             recentlyVisitedTableDeferred.await()
         }
-        Log.d("Linkora Log", "doWork4")
+        superVisorJob?.join()
+        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+            applicationContext.dataStore,
+            0
+        )
+        workManager.cancelWorkById(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.asStateFlow().value)
         return Result.success()
     }
 }
