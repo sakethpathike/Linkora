@@ -19,6 +19,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Box
@@ -36,6 +37,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
@@ -319,13 +321,12 @@ fun ParentHomeScreen(
                 LazyColumn(
                     state = shelfLazyColumnState,
                     modifier = Modifier
-                        .padding(top = 200.dp, bottom = 200.dp)
                         .fillMaxHeight()
                         .animateContentSize()
                         .width(if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) 80.dp else 0.dp)
                 ) {
                     item {
-                        Spacer(modifier = Modifier.height(150.dp))
+                        Spacer(modifier = Modifier.height(200.dp))
                     }
                     items(shelfData) {
                                 androidx.compose.material3.NavigationRailItem(
@@ -413,8 +414,24 @@ fun ParentHomeScreen(
                                 Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                             }
                         }
-                        Spacer(modifier = Modifier.height(150.dp))
+                        Spacer(modifier = Modifier.height(200.dp))
                     }
+                }
+                if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .width(5.dp)
+                            .border(
+                                5f.dp, color = MaterialTheme.colorScheme.primary.copy(0.1f),
+                                RoundedCornerShape(
+                                    topStart = 0.dp,
+                                    bottomStart = 0.dp,
+                                    topEnd = 5.dp,
+                                    bottomEnd = 5.dp
+                                )
+                            )
+                    )
                 }
                 Column(
                     modifier = Modifier
@@ -868,7 +885,10 @@ fun ParentHomeScreen(
     LaunchedEffect(key1 = Unit) {
         if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue.toInt() != -1) {
             coroutineScope.launch {
-                shelfLazyColumnState.animateScrollToItem(shelfData.indexOf(shelfData.first { it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue }))
+                shelfData.firstOrNull { it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue }
+                    ?.let {
+                        shelfLazyColumnState.animateScrollToItem(shelfData.indexOf(it))
+                    }
             }
         }
     }
