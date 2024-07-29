@@ -36,13 +36,11 @@ class RefreshLinksWorker @AssistedInject constructor(
 
     companion object {
         val successfulRefreshLinksCount = MutableStateFlow(0)
-        val unSuccessfulRefreshLinksCount = mutableIntStateOf(0)
         val totalLinksCount = mutableIntStateOf(0)
         var superVisorJob: Job? = null
     }
 
     override suspend fun doWork(): Result {
-        unSuccessfulRefreshLinksCount.intValue = 0
         totalLinksCount.intValue = 0
         val linksTable = localDatabase.linksDao().getAllFromLinksTable()
         val impLinksTable = localDatabase.linksDao().getAllImpLinks()
@@ -69,18 +67,52 @@ class RefreshLinksWorker @AssistedInject constructor(
             applicationContext.dataStore
         ) ?: -1
 
+        val linksTableSublist = linksTable.subList(
+            linksTableCompletedIndex + 1, if (linksTable.isNotEmpty()) linksTable.size - 1 else 0
+        )
+        val impLinksSublist = impLinksTable.subList(
+            impLinksTableCompletedIndex + 1,
+            if (impLinksTable.isNotEmpty()) impLinksTable.size - 1 else 0
+        )
+        val archiveLinksSublist = archiveLinksTable.subList(
+            archiveTableIndexCompletedIndex + 1,
+            if (archiveLinksTable.isNotEmpty()) archiveLinksTable.size - 1 else 0
+        )
+
+        val recentlyVisitedSublist = recentlyVisitedTable.subList(
+            recentlyTableIndexCompletedIndex + 1,
+            if (recentlyVisitedTable.isNotEmpty()) recentlyVisitedTable.size - 1 else 0
+        )
+
+        successfulRefreshLinksCount.value =
+            (linksTable.size - linksTableSublist.size) + (impLinksTable.size - impLinksSublist.size) + (archiveLinksTable.size - archiveLinksSublist.size) + (recentlyVisitedTable.size - recentlyVisitedSublist.size)
+
+        Log.d(
+            "Linkora Log",
+            "Links Table Total Size : ${linksTable.size} :: Sublist Size : ${linksTableSublist.size}"
+        )
+        Log.d(
+            "Linkora Log",
+            "Imp Links Table Total Size : ${impLinksTable.size} :: Sublist Size : ${impLinksSublist.size}"
+        )
+        Log.d(
+            "Linkora Log",
+            "Links Table Total Size : ${archiveLinksTable.size} :: Sublist Size : ${archiveLinksSublist.size}"
+        )
+        Log.d(
+            "Linkora Log",
+            "Links Table Total Size : ${recentlyVisitedTable.size} :: Sublist Size : ${recentlyVisitedSublist.size}"
+        )
+        successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
+        
         superVisorJob =
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             val linksTableDeferred = async {
-                linksTable.subList(
-                    linksTableCompletedIndex + 1,
-                    if (linksTable.isNotEmpty()) linksTable.size - 1 else 0
-                )
-                    .forEachIndexed { index, link ->
+                linksTableSublist.forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
-                            unSuccessfulRefreshLinksCount.intValue++
+
                         }
 
                         is LinkMetaDataScrapperResult.Success -> {
@@ -95,23 +127,21 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 applicationContext.dataStore,
                                 linksTableCompletedIndex + 1 + index
                             )
+                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
                             Log.d(
                                 "Linkora Log",
-                                "Links Table : ${linksTableCompletedIndex + 1 + index}"
+                                "Links Table : ${linksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
                             )
                         }
                     }
                 }
             }
             val impLinksTableDeferred = async {
-                impLinksTable.subList(
-                    impLinksTableCompletedIndex + 1,
-                    if (impLinksTable.isNotEmpty()) impLinksTable.size - 1 else 0
-                ).forEachIndexed { index, link ->
+                impLinksSublist.forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
-                            unSuccessfulRefreshLinksCount.intValue++
+
                         }
 
                         is LinkMetaDataScrapperResult.Success -> {
@@ -126,23 +156,21 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 applicationContext.dataStore,
                                 impLinksTableCompletedIndex + 1 + index
                             )
+                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
                             Log.d(
                                 "Linkora Log",
-                                "Imp Link : ${impLinksTableCompletedIndex + 1 + index}"
+                                "Imp Link : ${impLinksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
                             )
                         }
                     }
                 }
             }
             val archiveLinksTableDeferred = async {
-                archiveLinksTable.subList(
-                    archiveTableIndexCompletedIndex + 1,
-                    if (archiveLinksTable.isNotEmpty()) archiveLinksTable.size - 1 else 0
-                ).forEachIndexed { index, link ->
+                archiveLinksSublist.forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
-                            unSuccessfulRefreshLinksCount.intValue++
+
                         }
 
                         is LinkMetaDataScrapperResult.Success -> {
@@ -157,9 +185,10 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 applicationContext.dataStore,
                                 archiveTableIndexCompletedIndex + 1 + index
                             )
+                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
                             Log.d(
                                 "Linkora Log",
-                                "Archive Link : ${archiveTableIndexCompletedIndex + 1 + index}"
+                                "Archive Link : ${archiveTableIndexCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
                             )
                         }
                     }
@@ -167,14 +196,11 @@ class RefreshLinksWorker @AssistedInject constructor(
             }
             val recentlyVisitedTableDeferred =
                 async {
-                    recentlyVisitedTable.subList(
-                        recentlyTableIndexCompletedIndex + 1,
-                        if (recentlyVisitedTable.isNotEmpty()) recentlyVisitedTable.size - 1 else 0
-                    ).forEachIndexed { index, link ->
+                    recentlyVisitedSublist.forEachIndexed { index, link ->
                         when (val scrappedData =
                             linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                             is LinkMetaDataScrapperResult.Failure -> {
-                                unSuccessfulRefreshLinksCount.intValue++
+
                             }
 
                             is LinkMetaDataScrapperResult.Success -> {
@@ -190,9 +216,10 @@ class RefreshLinksWorker @AssistedInject constructor(
                                     applicationContext.dataStore,
                                     recentlyTableIndexCompletedIndex + index + 1
                                 )
+                                successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
                                 Log.d(
                                     "Linkora Log",
-                                    "Recently visited : ${recentlyTableIndexCompletedIndex + 1 + index}"
+                                    "Recently visited : ${recentlyTableIndexCompletedIndex + 1 + index}\nSuccessful : ${successfulRefreshLinksCount.value}"
                                 )
                             }
                         }
