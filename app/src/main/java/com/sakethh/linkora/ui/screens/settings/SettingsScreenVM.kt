@@ -111,11 +111,6 @@ class SettingsScreenVM @Inject constructor(
     }
 
     fun cancelRefreshAllLinksImagesAndTitlesWork(context: Context) {
-        Settings.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
-            context.dataStore,
-            0
-        )
         RefreshLinksWorker.superVisorJob?.cancel()
         workManager.cancelAllWork()
     }
@@ -597,7 +592,7 @@ class SettingsScreenVM @Inject constructor(
 
     enum class SettingsPreferences {
         DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE, CURRENT_WORK_MANAGER_WORK_UUID,
-        CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT
+        REFRESH_LINKS_TABLE_INDEX, REFRESH_IMP_LINKS_TABLE_INDEX, REFRESH_ARCHIVE_LINKS_TABLE_INDEX, REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX,
     }
 
     enum class SortingPreferences {
@@ -766,14 +761,6 @@ class SettingsScreenVM @Inject constructor(
                                     dataStore = context.dataStore
                                 ) ?: "d267865d-e1c9-42b7-be38-1ab6db0e312b"
                             )
-                        )
-                    },
-                    async {
-                        RefreshLinksWorker.successfulRefreshLinksCount.emit(
-                            readSettingPreferenceValue(
-                                preferenceKey = intPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
-                                dataStore = context.dataStore
-                            ) ?: 0
                         )
                     },
                 )

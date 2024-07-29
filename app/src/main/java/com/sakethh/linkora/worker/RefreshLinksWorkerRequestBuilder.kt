@@ -12,6 +12,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.changeSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
@@ -27,34 +28,45 @@ class RefreshLinksWorkerRequestBuilder @Inject constructor(
     }
 
     suspend fun request(): OneTimeWorkRequest {
-        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
-            context.dataStore,
-            0
-        )
         RefreshLinksWorker.successfulRefreshLinksCount.emit(0)
+        changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+            context.dataStore, -1
+        )
+        changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+            context.dataStore, -1
+        )
+        changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+            context.dataStore, -1
+        )
+        changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+            context.dataStore, -1
+        )
+
         val request = OneTimeWorkRequestBuilder<RefreshLinksWorker>()
             .setConstraints(Constraints(requiredNetworkType = NetworkType.CONNECTED))
             .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
             .build()
+
+        changeSettingPreferenceValue(
+            stringPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
+            context.dataStore,
+            request.id.toString()
+        )
+
+        Log.d("Linkora Log", "In Builder")
+        Log.d("Linkora Log", request.id.toString())
+        REFRESH_LINKS_WORKER_TAG.emit(request.id)
+        workManager.cancelAllWork()
+        RefreshLinksWorker.superVisorJob?.cancel()
         workManager.enqueueUniqueWork(
             REFRESH_LINKS_WORKER_TAG.value.toString(),
             ExistingWorkPolicy.KEEP,
             request
         )
-        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-            stringPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
-            context.dataStore,
-            request.id.toString()
-        )
-        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
-            context.dataStore,
-            0
-        )
-        Log.d("Linkora Log", "In Builder")
-        RefreshLinksWorker.superVisorJob?.cancel()
-        REFRESH_LINKS_WORKER_TAG.emit(request.id)
         return request
     }
 }

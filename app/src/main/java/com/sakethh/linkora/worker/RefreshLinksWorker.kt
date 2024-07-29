@@ -1,6 +1,7 @@
 package com.sakethh.linkora.worker
 
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.hilt.work.HiltWorker
@@ -12,9 +13,9 @@ import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.readSettingPreferenceValue
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
-import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -50,10 +51,32 @@ class RefreshLinksWorker @AssistedInject constructor(
 
         totalLinksCount.intValue =
             linksTable.size + impLinksTable.size + archiveLinksTable.size + recentlyVisitedTable.size
+
+        val linksTableCompletedIndex = readSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+            applicationContext.dataStore
+        ) ?: -1
+        val impLinksTableCompletedIndex = readSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+            applicationContext.dataStore
+        ) ?: -1
+        val archiveTableIndexCompletedIndex = readSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+            applicationContext.dataStore
+        ) ?: -1
+        val recentlyTableIndexCompletedIndex = readSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+            applicationContext.dataStore
+        ) ?: -1
+
         superVisorJob =
-            CoroutineScope(Dispatchers.IO + SupervisorJob() + CoroutineExceptionHandler { coroutineContext, throwable -> }).launch {
+            CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             val linksTableDeferred = async {
-                linksTable.forEach { link ->
+                linksTable.subList(
+                    linksTableCompletedIndex + 1,
+                    if (linksTable.isNotEmpty()) linksTable.size - 1 else 0
+                )
+                    .forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
@@ -68,17 +91,23 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 )
                             )
                             SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
                                 applicationContext.dataStore,
-                                successfulRefreshLinksCount.value++
+                                linksTableCompletedIndex + 1 + index
                             )
-                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
+                            Log.d(
+                                "Linkora Log",
+                                "Links Table : ${linksTableCompletedIndex + 1 + index}"
+                            )
                         }
                     }
                 }
             }
             val impLinksTableDeferred = async {
-                impLinksTable.forEach { link ->
+                impLinksTable.subList(
+                    impLinksTableCompletedIndex + 1,
+                    if (impLinksTable.isNotEmpty()) impLinksTable.size - 1 else 0
+                ).forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
@@ -93,17 +122,23 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 )
                             )
                             SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
                                 applicationContext.dataStore,
-                                successfulRefreshLinksCount.value++
+                                impLinksTableCompletedIndex + 1 + index
                             )
-                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
+                            Log.d(
+                                "Linkora Log",
+                                "Imp Link : ${impLinksTableCompletedIndex + 1 + index}"
+                            )
                         }
                     }
                 }
             }
             val archiveLinksTableDeferred = async {
-                archiveLinksTable.forEach { link ->
+                archiveLinksTable.subList(
+                    archiveTableIndexCompletedIndex + 1,
+                    if (archiveLinksTable.isNotEmpty()) archiveLinksTable.size - 1 else 0
+                ).forEachIndexed { index, link ->
                     when (val scrappedData =
                         linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                         is LinkMetaDataScrapperResult.Failure -> {
@@ -118,18 +153,24 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 )
                             )
                             SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
                                 applicationContext.dataStore,
-                                successfulRefreshLinksCount.value++
+                                archiveTableIndexCompletedIndex + 1 + index
                             )
-                            successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
+                            Log.d(
+                                "Linkora Log",
+                                "Archive Link : ${archiveTableIndexCompletedIndex + 1 + index}"
+                            )
                         }
                     }
                 }
             }
             val recentlyVisitedTableDeferred =
                 async {
-                    recentlyVisitedTable.forEach { link ->
+                    recentlyVisitedTable.subList(
+                        recentlyTableIndexCompletedIndex + 1,
+                        if (recentlyVisitedTable.isNotEmpty()) recentlyVisitedTable.size - 1 else 0
+                    ).forEachIndexed { index, link ->
                         when (val scrappedData =
                             linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
                             is LinkMetaDataScrapperResult.Failure -> {
@@ -145,27 +186,24 @@ class RefreshLinksWorker @AssistedInject constructor(
                                         )
                                     )
                                 SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
+                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
                                     applicationContext.dataStore,
-                                    successfulRefreshLinksCount.value++
+                                    recentlyTableIndexCompletedIndex + index + 1
                                 )
-                                successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
+                                Log.d(
+                                    "Linkora Log",
+                                    "Recently visited : ${recentlyTableIndexCompletedIndex + 1 + index}"
+                                )
                             }
                         }
                     }
                 }
-
             linksTableDeferred.await()
             impLinksTableDeferred.await()
             archiveLinksTableDeferred.await()
             recentlyVisitedTableDeferred.await()
         }
         superVisorJob?.join()
-        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_REFRESH_LINK_SUCCESSFUL_COUNT.name),
-            applicationContext.dataStore,
-            0
-        )
         workManager.cancelWorkById(RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.asStateFlow().value)
         return Result.success()
     }
