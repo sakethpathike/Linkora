@@ -34,10 +34,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
@@ -68,7 +68,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -127,7 +127,9 @@ import kotlin.math.roundToInt
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
-fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
+fun ParentHomeScreen(
+    navController: NavController, customWebTab: CustomWebTab
+) {
     val pagerState = rememberPagerState()
     val homeScreenVM: HomeScreenVM = hiltViewModel()
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
@@ -176,11 +178,9 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
-    val selectedShelfID = rememberSaveable {
-        mutableLongStateOf(-1)
-    }
     val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle().value
     val context = LocalContext.current
+    val shelfLazyColumnState = rememberLazyListState()
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -316,22 +316,24 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                 })
             }) {
             Row(modifier = Modifier.fillMaxSize()) {
-                Box(
+                LazyColumn(
+                    state = shelfLazyColumnState,
                     modifier = Modifier
+                        .padding(top = 200.dp, bottom = 200.dp)
                         .fillMaxHeight()
-                        .verticalScroll(rememberScrollState())
-                        .animateContentSize(),
-                    contentAlignment = Alignment.Center
+                        .animateContentSize()
+                        .width(if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) 80.dp else 0.dp)
                 ) {
-                    if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) {
-                        Column {
-                            Spacer(modifier = Modifier.height(100.dp))
-                            shelfData.forEach {
+                    item {
+                        Spacer(modifier = Modifier.height(150.dp))
+                    }
+                    items(shelfData) {
                                 androidx.compose.material3.NavigationRailItem(
                                     modifier = Modifier.rotate(90f),
-                                    selected = it.id == selectedShelfID.longValue,
+                                    selected = it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue,
                                     onClick = {
-                                        selectedShelfID.longValue = it.id
+                                        SettingsScreenVM.Settings.lastSelectedShelfID.longValue =
+                                            it.id
                                         homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
                                             it.id
                                         )
@@ -340,7 +342,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         Column {
                                             Icon(
                                                 modifier = Modifier.rotate(180f),
-                                                imageVector = if (it.id == selectedShelfID.longValue) {
+                                                imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue) {
                                                     Icons.Filled.Folder
                                                 } else {
                                                     Icons.Outlined.Folder
@@ -361,52 +363,59 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         )
                                     })
                                 Spacer(modifier = Modifier.height(20.dp))
-                            }
-                            androidx.compose.material3.NavigationRailItem(
-                                modifier = Modifier.rotate(90f),
-                                selected = (-1).toLong() == selectedShelfID.longValue,
-                                onClick = {
-                                    selectedShelfID.longValue = (-1).toLong()
-                                },
-                                icon = {
-                                    Column {
-                                        Icon(
-                                            modifier = Modifier.rotate(180f),
-                                            imageVector = if (selectedShelfID.longValue == (-1).toLong()) {
-                                                Icons.Filled.Layers
-                                            } else {
-                                                Icons.Outlined.Layers
-                                            }, contentDescription = null
-                                        )
-                                    }
-                                }, label = {
-                                    Text(
-                                        overflow = TextOverflow.Ellipsis,
-                                        modifier = Modifier
-                                            .rotate(180f)
-                                            .width(56.dp)
-                                            .padding(bottom = 2.dp),
-                                        text = "Default",
-                                        style = MaterialTheme.typography.titleSmall,
-                                        maxLines = 1,
-                                        textAlign = TextAlign.Center
+                    }
+                    item {
+                        androidx.compose.material3.NavigationRailItem(
+                            modifier = Modifier.rotate(90f),
+                            selected = (-1).toLong() == SettingsScreenVM.Settings.lastSelectedShelfID.longValue,
+                            onClick = {
+                                SettingsScreenVM.Settings.lastSelectedShelfID.longValue =
+                                    (-1).toLong()
+                            },
+                            icon = {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier.rotate(180f),
+                                        imageVector = if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
+                                            Icons.Filled.Layers
+                                        } else {
+                                            Icons.Outlined.Layers
+                                        }, contentDescription = null
                                     )
-                                })
-                            Spacer(modifier = Modifier.height(20.dp))
+                                }
+                            }, label = {
+                                Text(
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .rotate(180f)
+                                        .width(56.dp)
+                                        .padding(bottom = 2.dp),
+                                    text = "Default",
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    textAlign = TextAlign.Center
+                                )
+                            })
+
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(20.dp))
+                        Box(
+                            modifier = Modifier.fillMaxWidth(),
+                            contentAlignment = Alignment.Center
+                        ) {
                             IconButton(
                                 modifier = Modifier
-                                    .align(Alignment.CenterHorizontally)
                                     .pulsateEffect(0.9f),
                                 onClick = {
                                     shouldShelfBottomSheetAppear.value = true
                                 }) {
                                 Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                             }
-                            Spacer(modifier = Modifier.height(100.dp))
                         }
+                        Spacer(modifier = Modifier.height(150.dp))
                     }
                 }
-
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
@@ -415,7 +424,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
                             Column(modifier = Modifier.animateContentSize()) {
-                                if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
+                                if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedShelfID.longValue != (-1).toLong()) {
                                     ScrollableTabRow(
                                         divider = {},
                                         modifier = Modifier
@@ -442,7 +451,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             }
                                         }
                                     }
-                                } else if (selectedShelfID.longValue == (-1).toLong()) {
+                                } else if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
                                     Column {
                                         ScrollableTabRow(
                                             divider = {},
@@ -475,7 +484,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                             }
                         }
                     }
-                    if (homeScreenList.isNotEmpty() && selectedShelfID.longValue != (-1).toLong()) {
+                    if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedShelfID.longValue != (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -484,13 +493,12 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                             count = homeScreenList.size,
                             state = pagerState
                         ) {
-                            // // TODO()
-                            /*ChildHomeScreen(
+                            ChildHomeScreen(
                                 homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                                 navController = navController,
                                 folderLinksData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                        LocalDatabase.localDB.regularFolderLinksSorting()
+                                        homeScreenVM.folderLinksSortingRepo
                                             .sortByAToZV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -498,7 +506,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                        LocalDatabase.localDB.regularFolderLinksSorting()
+                                        homeScreenVM.folderLinksSortingRepo
                                             .sortByZToAV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -506,7 +514,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                        LocalDatabase.localDB.regularFolderLinksSorting()
+                                        homeScreenVM.folderLinksSortingRepo
                                             .sortByLatestToOldestV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -514,7 +522,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                        LocalDatabase.localDB.regularFolderLinksSorting()
+                                        homeScreenVM.folderLinksSortingRepo
                                             .sortByOldestToLatestV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -522,7 +530,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
 
                                     else -> {
-                                        LocalDatabase.localDB.readDao()
+                                        homeScreenVM.linksRepo
                                             .getLinksOfThisFolderV10(homeScreenList[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -531,48 +539,54 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                                 },
                                 childFoldersData = when (SettingsScreenVM.Settings.selectedSortingType.value) {
                                     SettingsScreenVM.SortingPreferences.A_TO_Z.name -> {
-                                        LocalDatabase.localDB.subFoldersSortingDao()
-                                            .sortSubFoldersByAToZ(homeScreenList[it].id)
+                                        homeScreenVM.subFoldersSortingRepo.sortSubFoldersByAToZ(
+                                            homeScreenList[it].id
+                                        )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.Z_TO_A.name -> {
-                                        LocalDatabase.localDB.subFoldersSortingDao()
-                                            .sortSubFoldersByZToA(homeScreenList[it].id)
+                                        homeScreenVM.subFoldersSortingRepo.sortSubFoldersByZToA(
+                                            homeScreenList[it].id
+                                        )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.NEW_TO_OLD.name -> {
-                                        LocalDatabase.localDB.subFoldersSortingDao()
-                                            .sortSubFoldersByLatestToOldest(homeScreenList[it].id)
+                                        homeScreenVM.subFoldersSortingRepo.sortSubFoldersByLatestToOldest(
+                                            homeScreenList[it].id
+                                        )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
                                     }
 
                                     SettingsScreenVM.SortingPreferences.OLD_TO_NEW.name -> {
-                                        LocalDatabase.localDB.subFoldersSortingDao()
-                                            .sortSubFoldersByOldestToLatest(homeScreenList[it].id)
+                                        homeScreenVM.subFoldersSortingRepo.sortSubFoldersByOldestToLatest(
+                                            homeScreenList[it].id
+                                        )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
                                     }
 
                                     else -> {
-                                        LocalDatabase.localDB.readDao()
-                                            .getChildFoldersOfThisParentID(homeScreenList[it].id)
+                                        homeScreenVM.foldersRepo.getChildFoldersOfThisParentID(
+                                            homeScreenList[it].id
+                                        )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
                                     }
                                 },
-                            )*/
+                                customWebTab = customWebTab
+                            )
                         }
-                    } else if (selectedShelfID.longValue == (-1).toLong()) {
+                    } else if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -770,7 +784,6 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
         val isDataExtractingForTheLink = rememberSaveable {
             mutableStateOf(false)
         }
-        val context = LocalContext.current
         AddANewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
@@ -852,7 +865,13 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
             )
         )
     }
-
+    LaunchedEffect(key1 = Unit) {
+        if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue.toInt() != -1) {
+            coroutineScope.launch {
+                shelfLazyColumnState.animateScrollToItem(shelfData.indexOf(shelfData.first { it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue }))
+            }
+        }
+    }
     BackHandler {
         if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false

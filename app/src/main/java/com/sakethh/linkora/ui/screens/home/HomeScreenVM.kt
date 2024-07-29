@@ -41,18 +41,18 @@ import javax.inject.Inject
 
 @HiltViewModel
 open class HomeScreenVM @Inject constructor(
-    private val linksRepo: LinksRepo,
-    foldersRepo: FoldersRepo,
-    savedLinksSortingRepo: SavedLinksSortingRepo,
-    importantLinksSortingRepo: ImportantLinksSortingRepo,
-    folderLinksSortingRepo: RegularFolderLinksSortingRepo,
-    archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
-    subFoldersSortingRepo: SubFoldersSortingRepo,
-    regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    private val shelfListsRepo: ShelfListsRepo,
-    shelfRepo: ShelfRepo,
-    customWebTab: CustomWebTab
+    val linksRepo: LinksRepo,
+    val foldersRepo: FoldersRepo,
+    val savedLinksSortingRepo: SavedLinksSortingRepo,
+    val importantLinksSortingRepo: ImportantLinksSortingRepo,
+    val folderLinksSortingRepo: RegularFolderLinksSortingRepo,
+    val archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
+    val subFoldersSortingRepo: SubFoldersSortingRepo,
+    val regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    val shelfListsRepo: ShelfListsRepo,
+    val shelfRepo: ShelfRepo,
+    val customWebTab: CustomWebTab
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -182,11 +182,11 @@ open class HomeScreenVM @Inject constructor(
             })
         }
 
-        /*// // TODO() viewModelScope.launch {
-             LocalDatabase.localDB.shelfCrud().getAllShelfItems().collectLatest {
-                 _shelfData.emit(it)
-             }
-         }*/
+        viewModelScope.launch {
+            shelfRepo.getAllShelfItems().collectLatest {
+                _shelfData.emit(it)
+            }
+        }
     }
 
 

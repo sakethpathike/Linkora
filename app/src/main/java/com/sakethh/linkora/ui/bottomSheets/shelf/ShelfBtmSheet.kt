@@ -236,13 +236,8 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         }
                     }
                 }
-                if (shelfData.size == 5 && !isTuneIconClicked.value) {
-                    item {
-                        InfoUI(infoText = "Only a maximum of 5 shelf rows can be added to the shelf. To add another shelf, you need to remove one from the list above.")
-                        Spacer(modifier = Modifier.navigationBarsPadding())
-                    }
-                }
-                if (shelfData.size < 5 && !isTuneIconClicked.value) {
+
+                if (!isTuneIconClicked.value) {
                     item {
                         Button(
                             modifier = Modifier

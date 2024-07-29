@@ -33,8 +33,8 @@ class ShelfBtmSheetVM @Inject constructor(
     subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    private val shelfListsRepo: ShelfListsRepo,
-    private val shelfRepo: ShelfRepo,
+    shelfListsRepo: ShelfListsRepo,
+    shelfRepo: ShelfRepo,
     customWebTab: CustomWebTab
 ) : HomeScreenVM(
     linksRepo,

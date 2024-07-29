@@ -18,6 +18,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
@@ -592,7 +593,7 @@ class SettingsScreenVM @Inject constructor(
 
     enum class SettingsPreferences {
         DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE, CURRENT_WORK_MANAGER_WORK_UUID,
-        REFRESH_LINKS_TABLE_INDEX, REFRESH_IMP_LINKS_TABLE_INDEX, REFRESH_ARCHIVE_LINKS_TABLE_INDEX, REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX, SHELF_VISIBLE_STATE
+        REFRESH_LINKS_TABLE_INDEX, REFRESH_IMP_LINKS_TABLE_INDEX, REFRESH_ARCHIVE_LINKS_TABLE_INDEX, REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX, SHELF_VISIBLE_STATE, LAST_SELECTED_SHELF_ID
     }
 
     enum class SortingPreferences {
@@ -621,6 +622,7 @@ class SettingsScreenVM @Inject constructor(
         val jsoupUserAgent =
             mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
         val isShelfMinimizedInHomeScreen = mutableStateOf(false)
+        val lastSelectedShelfID = mutableLongStateOf(-1)
 
         suspend fun <T> readSettingPreferenceValue(
             preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -759,6 +761,12 @@ class SettingsScreenVM @Inject constructor(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
                             dataStore = context.dataStore
                         ) ?: false
+                    },
+                    async {
+                        lastSelectedShelfID.longValue = (readSettingPreferenceValue(
+                            preferenceKey = intPreferencesKey(SettingsPreferences.LAST_SELECTED_SHELF_ID.name),
+                            dataStore = context.dataStore
+                        ) ?: -1).toLong()
                     },
                     async {
                         RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(
