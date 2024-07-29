@@ -8,7 +8,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.data.local.FoldersTable
-import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
+import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -27,7 +27,7 @@ class IntentActivity : ComponentActivity() {
             }
             val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
             LinkoraTheme {
-                AddNewLinkDialogBox(
+                AddANewLinkDialogBox(
                     shouldDialogBoxAppear = shouldUIBeVisible,
                     screenType = SpecificScreenType.INTENT_ACTIVITY,
                     onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->

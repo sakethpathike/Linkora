@@ -97,9 +97,9 @@ import com.sakethh.linkora.ui.bottomSheets.shelf.ShelfBtmSheet
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
+import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -742,7 +742,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
             mutableStateOf(false)
         }
         val context = LocalContext.current
-        AddNewLinkDialogBox(
+        AddANewLinkDialogBox(
             shouldDialogBoxAppear = shouldDialogForNewLinkAppear,
             screenType = SpecificScreenType.ROOT_SCREEN,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->

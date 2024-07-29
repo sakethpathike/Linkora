@@ -64,9 +64,9 @@ import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
+import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.AddNewLinkDialogBox
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -1302,7 +1302,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 }
             )
         )
-        AddNewLinkDialogBox(
+        AddANewLinkDialogBox(
             shouldDialogBoxAppear = shouldNewLinkDialogBoxBeVisible,
             screenType = SpecificCollectionsScreenVM.screenType.value,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
