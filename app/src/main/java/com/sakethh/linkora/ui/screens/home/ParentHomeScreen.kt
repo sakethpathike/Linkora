@@ -43,6 +43,8 @@ import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Maximize
+import androidx.compose.material.icons.filled.Minimize
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -54,6 +56,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -87,6 +90,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -111,6 +115,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -175,21 +180,45 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
         mutableLongStateOf(-1)
     }
     val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
-                FloatingActionBtn(
-                    FloatingActionBtnParam(
-                        newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
-                        shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                        shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
-                        shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
-                        shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
-                        isMainFabRotated = isMainFabRotated,
-                        rotationAnimation = rotationAnimation,
-                        inASpecificScreen = false
-                    )
-                )
+                if (!homeScreenVM.isSelectionModeEnabled.value) {
+                    Column(
+                        Modifier
+                            .wrapContentHeight()
+                    ) {
+                        if (!isMainFabRotated.value) {
+                            FloatingActionButton(onClick = {
+                                SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value =
+                                    !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value
+                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                    booleanPreferencesKey(SettingsScreenVM.SettingsPreferences.SHELF_VISIBLE_STATE.name),
+                                    context.dataStore,
+                                    SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value
+                                )
+                            }) {
+                                Icon(
+                                    imageVector = if (SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) Icons.Default.Maximize else Icons.Default.Minimize,
+                                    contentDescription = ""
+                                )
+                            }
+                        }
+                        FloatingActionBtn(
+                            FloatingActionBtnParam(
+                                newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                                shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                                shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                                shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                                shouldDialogForNewLinkAppear = shouldDialogForNewLinkAppear,
+                                isMainFabRotated = isMainFabRotated,
+                                rotationAnimation = rotationAnimation,
+                                inASpecificScreen = false
+                            )
+                        )
+                    }
+                }
             },
             floatingActionButtonPosition = FabPosition.End,
             modifier = Modifier.background(MaterialTheme.colorScheme.surface),
@@ -294,7 +323,7 @@ fun ParentHomeScreen(navController: NavController, customWebTab: CustomWebTab) {
                         .animateContentSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (!homeScreenVM.isSelectionModeEnabled.value) {
+                    if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsScreenVM.Settings.isShelfMinimizedInHomeScreen.value) {
                         Column {
                             Spacer(modifier = Modifier.height(100.dp))
                             shelfData.forEach {

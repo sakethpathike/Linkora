@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 class ShelfImpl @Inject constructor(private val localDatabase: LocalDatabase) : ShelfRepo {
     override suspend fun addANewShelf(shelf: Shelf) {
-        addANewShelf(shelf)
+        localDatabase.shelfDao().addANewShelf(shelf)
     }
 
     override suspend fun deleteAFolderFromShelf(folderID: Long) {
