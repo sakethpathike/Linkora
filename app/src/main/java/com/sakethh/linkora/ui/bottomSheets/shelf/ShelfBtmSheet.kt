@@ -24,6 +24,7 @@ import androidx.compose.material.icons.filled.ArrowDownward
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.RemoveCircle
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Button
@@ -147,7 +148,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     isTuneIconClicked.value = true
                                 },
                                 elementName = it.shelfName,
-                                elementImageVector = Icons.Default.Folder,
+                                elementImageVector = Icons.Default.Storage,
                                 inShelfUI = true,
                                 onDeleteIconClick = {
                                     ShelfBtmSheetVM.selectedShelfData = it

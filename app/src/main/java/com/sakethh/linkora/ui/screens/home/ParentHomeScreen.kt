@@ -43,15 +43,15 @@ import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
-import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Maximize
 import androidx.compose.material.icons.filled.Minimize
+import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
-import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Layers
+import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Tune
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -344,9 +344,9 @@ fun ParentHomeScreen(
                                             Icon(
                                                 modifier = Modifier.rotate(180f),
                                                 imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue) {
-                                                    Icons.Filled.Folder
+                                                    Icons.Filled.Storage
                                                 } else {
-                                                    Icons.Outlined.Folder
+                                                    Icons.Outlined.Storage
                                                 }, contentDescription = null
                                             )
                                         }
