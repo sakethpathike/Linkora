@@ -119,6 +119,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -180,7 +181,7 @@ fun ParentHomeScreen(
             repeatMode = RepeatMode.Reverse
         ), label = ""
     )
-    val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle().value
+    val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shelfLazyColumnState = rememberLazyListState()
     LinkoraTheme {
@@ -328,22 +329,22 @@ fun ParentHomeScreen(
                     item {
                         Spacer(modifier = Modifier.height(200.dp))
                     }
-                    items(shelfData) {
+                    items(shelfData.value) {
                                 androidx.compose.material3.NavigationRailItem(
                                     modifier = Modifier.rotate(90f),
-                                    selected = it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue,
+                                    selected = it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
                                     onClick = {
-                                        SettingsScreenVM.Settings.lastSelectedShelfID.longValue =
+                                        SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
                                             it.id
                                         homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                            it.id
+                                            it.id, context
                                         )
                                     },
                                     icon = {
                                         Column {
                                             Icon(
                                                 modifier = Modifier.rotate(180f),
-                                                imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue) {
+                                                imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue) {
                                                     Icons.Filled.Storage
                                                 } else {
                                                     Icons.Outlined.Storage
@@ -368,16 +369,16 @@ fun ParentHomeScreen(
                     item {
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = (-1).toLong() == SettingsScreenVM.Settings.lastSelectedShelfID.longValue,
+                            selected = (-1).toLong() == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
                             onClick = {
-                                SettingsScreenVM.Settings.lastSelectedShelfID.longValue =
+                                SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
                                     (-1).toLong()
                             },
                             icon = {
                                 Column {
                                     Icon(
                                         modifier = Modifier.rotate(180f),
-                                        imageVector = if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
+                                        imageVector = if (SettingsScreenVM.Settings.lastSelectedPanelID.longValue == (-1).toLong()) {
                                             Icons.Filled.Layers
                                         } else {
                                             Icons.Outlined.Layers
@@ -441,7 +442,7 @@ fun ParentHomeScreen(
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
                             Column(modifier = Modifier.animateContentSize()) {
-                                if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedShelfID.longValue != (-1).toLong()) {
+                                if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedPanelID.longValue != (-1).toLong()) {
                                     ScrollableTabRow(
                                         divider = {},
                                         modifier = Modifier
@@ -468,7 +469,7 @@ fun ParentHomeScreen(
                                             }
                                         }
                                     }
-                                } else if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
+                                } else if (SettingsScreenVM.Settings.lastSelectedPanelID.longValue == (-1).toLong()) {
                                     Column {
                                         ScrollableTabRow(
                                             divider = {},
@@ -501,7 +502,7 @@ fun ParentHomeScreen(
                             }
                         }
                     }
-                    if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedShelfID.longValue != (-1).toLong()) {
+                    if (homeScreenList.isNotEmpty() && SettingsScreenVM.Settings.lastSelectedPanelID.longValue != (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -603,7 +604,7 @@ fun ParentHomeScreen(
                                 customWebTab = customWebTab
                             )
                         }
-                    } else if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue == (-1).toLong()) {
+                    } else if (SettingsScreenVM.Settings.lastSelectedPanelID.longValue == (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -882,14 +883,21 @@ fun ParentHomeScreen(
             )
         )
     }
-    LaunchedEffect(key1 = Unit) {
-        if (SettingsScreenVM.Settings.lastSelectedShelfID.longValue.toInt() != -1) {
-            coroutineScope.launch {
-                shelfData.firstOrNull { it.id == SettingsScreenVM.Settings.lastSelectedShelfID.longValue }
-                    ?.let {
-                        shelfLazyColumnState.animateScrollToItem(shelfData.indexOf(it))
+    LaunchedEffect(
+        key1 = SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
+        key2 = shelfData.value.size
+    ) {
+        if (SettingsScreenVM.Settings.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && shelfData.value.isNotEmpty()) {
+            linkoraLog(shelfData.value.size.toString())
+            shelfData.value.find {
+                it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue
+            }?.let {
+                shelfLazyColumnState.animateScrollToItem(shelfData.value.indexOf(it))
                     }
-            }
+            homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                SettingsScreenVM.Settings.lastSelectedPanelID.longValue, context
+            )
+            HomeScreenVM.initialStart = false
         }
     }
     BackHandler {

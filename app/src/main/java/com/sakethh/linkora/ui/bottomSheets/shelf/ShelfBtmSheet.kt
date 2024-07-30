@@ -60,11 +60,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
-import com.sakethh.linkora.ui.commonComposables.AddANewShelfDialogBox
+import com.sakethh.linkora.ui.commonComposables.AddANewPanelInShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.AddANewShelfParam
-import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.RenameAShelfDialogBox
+import com.sakethh.linkora.ui.commonComposables.DeleteAShelfPanelDialogBox
+import com.sakethh.linkora.ui.commonComposables.RenameAShelfPanelDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
@@ -86,7 +86,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val isTuneIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
-    val selectedShelfName = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
+    val selectedPanelName = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
         mutableStateOf(ShelfBtmSheetVM.selectedShelfData.shelfName)
     }
     val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()
@@ -96,6 +96,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
     val isRenameAShelfDialogBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
     if (isBtmSheetVisible.value) {
         ModalBottomSheet(
             sheetState = modalBottomSheetState,
@@ -112,8 +113,8 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     if (!isTuneIconClicked.value) {
                         item {
                             Text(
-                                text = if (isTuneIconClicked.value) "Currently shown in ${selectedShelfName.value}" else "Currently shown in Shelf",
-                                style = MaterialTheme.typography.titleMedium,
+                                text = if (isTuneIconClicked.value) "Currently shown in ${selectedPanelName.value}" else "Panels in the Shelf",
+                                style = MaterialTheme.typography.titleSmall,
                                 fontSize = 14.sp,
                                 modifier = Modifier.padding(start = 15.dp, end = 20.dp),
                                 color = MaterialTheme.colorScheme.primary
@@ -123,9 +124,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                         if (isTuneIconClicked.value && selectedShelfFolders.isEmpty()) {
                             item {
                                 InfoUI(infoText = buildAnnotatedString {
-                                    append("No folders are added in the shelf ")
+                                    append("This Panel has no folders. Add folders to get started.")
                                     withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                        append(selectedShelfName.value)
+                                        append(selectedPanelName.value)
                                     }
                                     append(".")
                                 })
@@ -141,10 +142,10 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 },
                                 onOptionClick = {
                                     shelfBtmSheetVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                        it.id
+                                        it.id, context
                                     )
                                     ShelfBtmSheetVM.selectedShelfData = it
-                                    selectedShelfName.value = it.shelfName
+                                    selectedPanelName.value = it.shelfName
                                     isTuneIconClicked.value = true
                                 },
                                 elementName = it.shelfName,
@@ -155,10 +156,10 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                     isDeleteAShelfDialogBoxVisible.value = true
                                 },
                                 onTuneIconClick = {
-                                    selectedShelfName.value = it.shelfName
+                                    selectedPanelName.value = it.shelfName
                                     ShelfBtmSheetVM.selectedShelfData = it
                                     shelfBtmSheetVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                        it.id
+                                        it.id, context
                                     )
                                     isTuneIconClicked.value = true
                                 }
@@ -169,7 +170,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                             item {
                                 Spacer(modifier = Modifier.height(10.dp))
                                 Text(
-                                    text = "Folders in \"${selectedShelfName.value}\" Shelf",
+                                    text = "Folders in the \"${selectedPanelName.value}\" Panel",
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 14.sp,
                                     modifier = Modifier.padding(start = 15.dp, end = 20.dp),
@@ -206,7 +207,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                     item {
                         Spacer(modifier = Modifier.height(15.dp))
                         Text(
-                            text = "Add folders into the \"${selectedShelfName.value}\" Shelf",
+                            text = "Add folders to the \"${selectedPanelName.value}\" Panel",
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 14.sp,
                             modifier = Modifier.padding(start = 15.dp, end = 20.dp),
@@ -248,7 +249,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
                                 .pulsateEffect(0.9f),
                             onClick = { isAddANewShelfDialogBoxVisible.value = true }) {
                             Text(
-                                text = "Create a new Shelf row",
+                                text = "Add New Panel to Shelf",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -264,7 +265,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
         }
     }
     val localContext = LocalContext.current
-    AddANewShelfDialogBox(
+    AddANewPanelInShelfDialogBox(
         addANewShelfParam = AddANewShelfParam(
             isDialogBoxVisible = isAddANewShelfDialogBoxVisible,
             onCreateClick = { shelfName, shelfIconName ->
@@ -280,7 +281,7 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             })
     )
 
-    DeleteAShelfDialogBox(
+    DeleteAShelfPanelDialogBox(
         deleteAShelfDialogBoxParam = DeleteAShelfDialogBoxParam(
             isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
             onDeleteClick = { ->
@@ -292,7 +293,9 @@ fun ShelfBtmSheet(isBtmSheetVisible: MutableState<Boolean>) {
             },
         )
     )
-    RenameAShelfDialogBox(isDialogBoxVisible = isRenameAShelfDialogBoxVisible, onRenameClick = {
+    RenameAShelfPanelDialogBox(
+        isDialogBoxVisible = isRenameAShelfDialogBoxVisible,
+        onRenameClick = {
         shelfBtmSheetVM.onShelfUiEvent(
             ShelfUIEvent.UpdateAShelfName(
                 it, ShelfBtmSheetVM.selectedShelfData.id

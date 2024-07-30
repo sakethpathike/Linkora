@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
 @Composable
-fun RenameAShelfDialogBox(
+fun RenameAShelfPanelDialogBox(
     isDialogBoxVisible: MutableState<Boolean>,
     onRenameClick: (String) -> Unit
 ) {
@@ -37,7 +37,7 @@ fun RenameAShelfDialogBox(
                     isDialogBoxVisible.value = false
                 }) {
                     Text(
-                        text = "Change shelf name",
+                        text = "Change Panel name",
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -45,7 +45,7 @@ fun RenameAShelfDialogBox(
             },
             title = {
                 Text(
-                    text = "Rename \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" Shelf name",
+                    text = "Edit \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" Panel Name",
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
@@ -55,7 +55,7 @@ fun RenameAShelfDialogBox(
             text = {
                 OutlinedTextField(label = {
                     Text(
-                        text = "New Shelf Name",
+                        text = "New Name for Panel",
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp
                     )

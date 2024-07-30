@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.HomeScreenListTable
@@ -27,6 +28,7 @@ import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -43,16 +45,16 @@ import javax.inject.Inject
 open class HomeScreenVM @Inject constructor(
     val linksRepo: LinksRepo,
     val foldersRepo: FoldersRepo,
-    val savedLinksSortingRepo: SavedLinksSortingRepo,
-    val importantLinksSortingRepo: ImportantLinksSortingRepo,
+    savedLinksSortingRepo: SavedLinksSortingRepo,
+    importantLinksSortingRepo: ImportantLinksSortingRepo,
     val folderLinksSortingRepo: RegularFolderLinksSortingRepo,
-    val archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
+    archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
     val subFoldersSortingRepo: SubFoldersSortingRepo,
-    val regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     val shelfListsRepo: ShelfListsRepo,
     val shelfRepo: ShelfRepo,
-    val customWebTab: CustomWebTab
+    val customWebTab: CustomWebTab,
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -78,13 +80,18 @@ open class HomeScreenVM @Inject constructor(
 
     val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
 
-    fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long) {
+    fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long, context: Context) {
         viewModelScope.launch {
             shelfListsRepo.getAllFoldersOfThisShelf(shelfID)
                 .collectLatest {
                     _selectedShelfFoldersForSelectedShelf.emit(it)
                 }
         }
+        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+            intPreferencesKey(SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+            context.dataStore,
+            newValue = shelfID.toInt()
+        )
     }
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
@@ -146,6 +153,7 @@ open class HomeScreenVM @Inject constructor(
         val tempImpLinkData = ImportantLinks(
             title = "", webURL = "", baseURL = "", imgURL = "", infoForSaving = ""
         )
+        var initialStart = true
     }
 
     init {

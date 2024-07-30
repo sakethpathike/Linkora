@@ -21,7 +21,7 @@ data class AddANewShelfParam(
 )
 
 @Composable
-fun AddANewShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
+fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
     if (addANewShelfParam.isDialogBoxVisible.value) {
         val customShelfName = rememberSaveable {
             mutableStateOf("")
@@ -32,7 +32,7 @@ fun AddANewShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
 
         AlertDialog(title = {
             Text(
-                text = "Create a new Shelf row", style = MaterialTheme.typography.titleMedium,
+                text = "Add New Panel to Shelf", style = MaterialTheme.typography.titleMedium,
                 fontSize = 22.sp,
                 lineHeight = 28.sp
             )
@@ -45,7 +45,7 @@ fun AddANewShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                     maxLines = 1,
                     label = {
                         Text(
-                            text = "Shelf name",
+                            text = "Panel Name",
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
                         )
@@ -68,7 +68,7 @@ fun AddANewShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                 addANewShelfParam.isDialogBoxVisible.value = false
             }) {
                 Text(
-                    text = "Create",
+                    text = "Add New Panel",
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )

@@ -22,10 +22,10 @@ data class DeleteAShelfDialogBoxParam(
 )
 
 @Composable
-fun DeleteAShelfDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam) {
+fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam) {
     if (deleteAShelfDialogBoxParam.isDialogBoxVisible.value) {
         val title = rememberSaveable(ShelfBtmSheetVM.selectedShelfData.shelfName) {
-            mutableStateOf("Are you sure you want to delete ${ShelfBtmSheetVM.selectedShelfData.shelfName}?")
+            mutableStateOf("Are you sure you want to delete \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
         }
         LinkoraTheme {
             AlertDialog(
@@ -39,7 +39,7 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam
                             deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                         }) {
                         Text(
-                            text = "Delete it",
+                            text = "Permanently Delete Panel",
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -67,7 +67,7 @@ fun DeleteAShelfDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam
                     )
                 }, text = {
                     Text(
-                        text = "This shelf deletion can't be undone.",
+                        text = "Once deleted, this Panel cannot be restored.",
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 14.sp,
                         lineHeight = 18.sp,
