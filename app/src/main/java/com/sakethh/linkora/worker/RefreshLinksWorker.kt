@@ -1,7 +1,6 @@
 package com.sakethh.linkora.worker
 
 import android.content.Context
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.hilt.work.HiltWorker
@@ -9,11 +8,15 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
 import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
+import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.readSettingPreferenceValue
+import com.sakethh.linkora.utils.linkoraLog
+import com.sakethh.linkora.utils.sanitizeLink
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.CoroutineScope
@@ -31,7 +34,8 @@ class RefreshLinksWorker @AssistedInject constructor(
     @Assisted params: WorkerParameters,
     private val localDatabase: LocalDatabase,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
-    private val workManager: WorkManager
+    private val workManager: WorkManager,
+    private val twitterMetaDataRepo: TwitterMetaDataRepo
 ) : CoroutineWorker(appContext, params) {
 
     companion object {
@@ -87,142 +91,250 @@ class RefreshLinksWorker @AssistedInject constructor(
         successfulRefreshLinksCount.value =
             (linksTable.size - linksTableSublist.size) + (impLinksTable.size - impLinksSublist.size) + (archiveLinksTable.size - archiveLinksSublist.size) + (recentlyVisitedTable.size - recentlyVisitedSublist.size)
 
-        Log.d(
-            "Linkora Log",
+        linkoraLog(
             "Links Table Total Size : ${linksTable.size} :: Sublist Size : ${linksTableSublist.size}"
         )
-        Log.d(
-            "Linkora Log",
+        linkoraLog(
             "Imp Links Table Total Size : ${impLinksTable.size} :: Sublist Size : ${impLinksSublist.size}"
         )
-        Log.d(
-            "Linkora Log",
+        linkoraLog(
             "Links Table Total Size : ${archiveLinksTable.size} :: Sublist Size : ${archiveLinksSublist.size}"
         )
-        Log.d(
-            "Linkora Log",
+        linkoraLog(
             "Links Table Total Size : ${recentlyVisitedTable.size} :: Sublist Size : ${recentlyVisitedSublist.size}"
         )
+
         successfulRefreshLinksCount.emit(successfulRefreshLinksCount.value)
-        
+
         superVisorJob =
             CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             val linksTableDeferred = async {
                 linksTableSublist.forEachIndexed { index, link ->
-                    when (val scrappedData =
-                        linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
-                        is LinkMetaDataScrapperResult.Failure -> {
+                    var modifiedLink = link.copy(webURL = link.webURL.sanitizeLink())
+                    if (link.webURL.trim().startsWith("https://x.com/") || link.webURL.trim()
+                            .startsWith("http://x.com/") || link.webURL.trim()
+                            .startsWith("https://twitter.com/") || link.webURL.trim()
+                            .startsWith("http://twitter.com/")
+                    ) {
+                        when (val tweetMetaData =
+                            twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
+                            is TwitterMetaDataResult.Failure -> {
 
-                        }
+                            }
 
-                        is LinkMetaDataScrapperResult.Success -> {
-                            localDatabase.linksDao().updateALinkDataFromLinksTable(
-                                link.copy(
-                                    title = scrappedData.data.title,
-                                    imgURL = scrappedData.data.imgURL
-                                )
-                            )
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
-                                applicationContext.dataStore,
-                                linksTableCompletedIndex + 1 + index
-                            )
-                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
-                            Log.d(
-                                "Linkora Log",
-                                "Links Table : ${linksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
-                            )
+                            is TwitterMetaDataResult.Success -> {
+                                modifiedLink =
+                                    modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
+                                            "https://t.co/"
+                                        )
+                                    ) tweetMetaData.data.text else modifiedLink.title,
+                                        imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                            it.contains(
+                                                "jpg"
+                                            )
+                                        }
+                                            ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
+                            }
                         }
-                    }
-                }
-            }
-            val impLinksTableDeferred = async {
-                impLinksSublist.forEachIndexed { index, link ->
-                    when (val scrappedData =
-                        linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
-                        is LinkMetaDataScrapperResult.Failure -> {
-
-                        }
-
-                        is LinkMetaDataScrapperResult.Success -> {
-                            localDatabase.linksDao().updateALinkDataFromImpLinksTable(
-                                link.copy(
-                                    title = scrappedData.data.title,
-                                    imgURL = scrappedData.data.imgURL
-                                )
-                            )
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
-                                applicationContext.dataStore,
-                                impLinksTableCompletedIndex + 1 + index
-                            )
-                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
-                            Log.d(
-                                "Linkora Log",
-                                "Imp Link : ${impLinksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
-                            )
-                        }
-                    }
-                }
-            }
-            val archiveLinksTableDeferred = async {
-                archiveLinksSublist.forEachIndexed { index, link ->
-                    when (val scrappedData =
-                        linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
-                        is LinkMetaDataScrapperResult.Failure -> {
-
-                        }
-
-                        is LinkMetaDataScrapperResult.Success -> {
-                            localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
-                                link.copy(
-                                    title = scrappedData.data.title,
-                                    imgURL = scrappedData.data.imgURL
-                                )
-                            )
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
-                                applicationContext.dataStore,
-                                archiveTableIndexCompletedIndex + 1 + index
-                            )
-                            successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
-                            Log.d(
-                                "Linkora Log",
-                                "Archive Link : ${archiveTableIndexCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
-                            )
-                        }
-                    }
-                }
-            }
-            val recentlyVisitedTableDeferred =
-                async {
-                    recentlyVisitedSublist.forEachIndexed { index, link ->
+                    } else {
                         when (val scrappedData =
-                            linkMetaDataScrapperService.scrapeLinkData(link.webURL)) {
+                            linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
                             is LinkMetaDataScrapperResult.Failure -> {
 
                             }
 
                             is LinkMetaDataScrapperResult.Success -> {
-                                localDatabase.linksDao()
-                                    .updateALinkDataFromRecentlyVisitedLinksTable(
-                                        link.copy(
-                                            title = scrappedData.data.title,
-                                            imgURL = scrappedData.data.imgURL
-                                        )
-                                    )
-                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
-                                    applicationContext.dataStore,
-                                    recentlyTableIndexCompletedIndex + index + 1
-                                )
-                                successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
-                                Log.d(
-                                    "Linkora Log",
-                                    "Recently visited : ${recentlyTableIndexCompletedIndex + 1 + index}\nSuccessful : ${successfulRefreshLinksCount.value}"
+                                modifiedLink = modifiedLink.copy(
+                                    title = scrappedData.data.title,
+                                    imgURL = scrappedData.data.imgURL
                                 )
                             }
                         }
+                    }
+                    localDatabase.linksDao().updateALinkDataFromLinksTable(
+                        modifiedLink
+                    )
+                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                        intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+                        applicationContext.dataStore,
+                        linksTableCompletedIndex + 1 + index
+                    )
+                    successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
+                    linkoraLog(
+                        "Links Table : ${linksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
+                    )
+                }
+            }
+            val impLinksTableDeferred = async {
+                impLinksSublist.forEachIndexed { index, link ->
+                    var modifiedLink = link.copy(webURL = link.webURL.sanitizeLink())
+                    if (link.webURL.trim().startsWith("https://x.com/") || link.webURL.trim()
+                            .startsWith("http://x.com/") || link.webURL.trim()
+                            .startsWith("https://twitter.com/") || link.webURL.trim()
+                            .startsWith("http://twitter.com/")
+                    ) {
+                        when (val tweetMetaData =
+                            twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
+                            is TwitterMetaDataResult.Failure -> {
+
+                            }
+
+                            is TwitterMetaDataResult.Success -> {
+                                modifiedLink =
+                                    modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
+                                            "https://t.co/"
+                                        )
+                                    ) tweetMetaData.data.text else modifiedLink.title,
+                                        imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                            it.contains(
+                                                "jpg"
+                                            )
+                                        }
+                                            ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
+                            }
+                        }
+                    } else {
+                        when (val scrappedData =
+                            linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                            is LinkMetaDataScrapperResult.Failure -> {
+
+                            }
+
+                            is LinkMetaDataScrapperResult.Success -> {
+                                modifiedLink = modifiedLink.copy(
+                                    title = scrappedData.data.title,
+                                    imgURL = scrappedData.data.imgURL
+                                )
+                            }
+                        }
+                    }
+                    localDatabase.linksDao().updateALinkDataFromImpLinksTable(
+                        modifiedLink
+                    )
+                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                        intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+                        applicationContext.dataStore,
+                        impLinksTableCompletedIndex + 1 + index
+                    )
+                    successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
+                    linkoraLog(
+                        "Imp Link : ${impLinksTableCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
+                    )
+                }
+            }
+            val archiveLinksTableDeferred = async {
+                archiveLinksSublist.forEachIndexed { index, link ->
+                    var modifiedLink = link.copy(webURL = link.webURL.sanitizeLink())
+                    if (link.webURL.trim().startsWith("https://x.com/") || link.webURL.trim()
+                            .startsWith("http://x.com/") || link.webURL.trim()
+                            .startsWith("https://twitter.com/") || link.webURL.trim()
+                            .startsWith("http://twitter.com/")
+                    ) {
+                        when (val tweetMetaData =
+                            twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
+                            is TwitterMetaDataResult.Failure -> {
+
+                            }
+
+                            is TwitterMetaDataResult.Success -> {
+                                modifiedLink =
+                                    modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
+                                            "https://t.co/"
+                                        )
+                                    ) tweetMetaData.data.text else modifiedLink.title,
+                                        imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                            it.contains(
+                                                "jpg"
+                                            )
+                                        }
+                                            ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
+                            }
+                        }
+                    } else {
+                        when (val scrappedData =
+                            linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                            is LinkMetaDataScrapperResult.Failure -> {
+
+                            }
+
+                            is LinkMetaDataScrapperResult.Success -> {
+                                modifiedLink = modifiedLink.copy(
+                                    title = scrappedData.data.title,
+                                    imgURL = scrappedData.data.imgURL
+                                )
+                            }
+                        }
+                    }
+                    localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
+                        modifiedLink
+                    )
+                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                        intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+                        applicationContext.dataStore,
+                        archiveTableIndexCompletedIndex + 1 + index
+                    )
+                    successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
+                    linkoraLog(
+                        "Archive Link : ${archiveTableIndexCompletedIndex + 1 + index}\n" + "Successful : ${successfulRefreshLinksCount.value}"
+                    )
+                }
+            }
+            val recentlyVisitedTableDeferred =
+                async {
+                    recentlyVisitedSublist.forEachIndexed { index, link ->
+                        var modifiedLink = link.copy(webURL = link.webURL.sanitizeLink())
+                        if (link.webURL.trim().startsWith("https://x.com/") || link.webURL.trim()
+                                .startsWith("http://x.com/") || link.webURL.trim()
+                                .startsWith("https://twitter.com/") || link.webURL.trim()
+                                .startsWith("http://twitter.com/")
+                        ) {
+                            when (val tweetMetaData =
+                                twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
+                                is TwitterMetaDataResult.Failure -> {
+
+                                }
+
+                                is TwitterMetaDataResult.Success -> {
+                                    modifiedLink =
+                                        modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
+                                                "https://t.co/"
+                                            )
+                                        ) tweetMetaData.data.text else modifiedLink.title,
+                                            imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                                it.contains(
+                                                    "jpg"
+                                                )
+                                            }
+                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
+                                }
+                            }
+                        } else {
+                            when (val scrappedData =
+                                linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                                is LinkMetaDataScrapperResult.Failure -> {
+
+                                }
+
+                                is LinkMetaDataScrapperResult.Success -> {
+                                    modifiedLink = modifiedLink.copy(
+                                        title = scrappedData.data.title,
+                                        imgURL = scrappedData.data.imgURL
+                                    )
+                                }
+                            }
+                        }
+                        localDatabase.linksDao().updateALinkDataFromRecentlyVisitedLinksTable(
+                            modifiedLink
+                        )
+                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+                            applicationContext.dataStore,
+                            recentlyTableIndexCompletedIndex + index + 1
+                        )
+                        successfulRefreshLinksCount.emit(++successfulRefreshLinksCount.value)
+                        linkoraLog(
+                            "Recently visited : ${recentlyTableIndexCompletedIndex + 1 + index}\nSuccessful : ${successfulRefreshLinksCount.value}"
+                        )
                     }
                 }
             linksTableDeferred.await()

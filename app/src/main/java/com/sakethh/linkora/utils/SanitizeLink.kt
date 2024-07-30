@@ -10,3 +10,13 @@ fun sanitizeLink(url: String): String {
         else -> url
     }
 }
+
+fun String.sanitizeLink(): String {
+    return when {
+        this.contains("https://open.spotify.com") || this.contains("http://open.spotify.com") -> {
+            this.substringBefore("?")
+        }
+
+        else -> this
+    }
+}
