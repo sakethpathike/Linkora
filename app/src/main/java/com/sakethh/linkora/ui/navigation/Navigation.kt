@@ -12,6 +12,8 @@ import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SpecificSettingSectionScreen
+import com.sakethh.linkora.ui.screens.shelf.ShelfPanelsScreen
+import com.sakethh.linkora.ui.screens.shelf.SpecificPanelScreen
 
 @Composable
 fun MainNavigation(navController: NavHostController, customWebTab: CustomWebTab) {
@@ -40,6 +42,12 @@ fun MainNavigation(navController: NavHostController, customWebTab: CustomWebTab)
         }
         composable(route = NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name) {
             SpecificSettingSectionScreen(navController = navController, customWebTab)
+        }
+        composable(route = NavigationRoutes.SHELF_SCREEN.name) {
+            ShelfPanelsScreen(navController)
+        }
+        composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
+            SpecificPanelScreen(navController)
         }
     }
 

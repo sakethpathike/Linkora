@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.bottomSheets.shelf
+package com.sakethh.linkora.ui.screens.shelf
 
 import com.sakethh.linkora.data.local.Shelf
 

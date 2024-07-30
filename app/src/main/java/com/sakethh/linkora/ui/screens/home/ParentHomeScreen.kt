@@ -99,7 +99,6 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.ui.bottomSheets.shelf.ShelfBtmSheet
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -112,6 +111,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
@@ -410,7 +410,7 @@ fun ParentHomeScreen(
                                 modifier = Modifier
                                     .pulsateEffect(0.9f),
                                 onClick = {
-                                    shouldShelfBottomSheetAppear.value = true
+                                    navController.navigate(NavigationRoutes.SHELF_SCREEN.name)
                                 }) {
                                 Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                             }
@@ -864,7 +864,6 @@ fun ParentHomeScreen(
             )
         )
 
-        ShelfBtmSheet(isBtmSheetVisible = shouldShelfBottomSheetAppear)
         DeleteDialogBox(
             deleteDialogBoxParam = DeleteDialogBoxParam(
                 areFoldersSelectable = true,
