@@ -77,6 +77,9 @@ fun ChildArchiveScreen(
     val selectedURLTitle = rememberSaveable {
         mutableStateOf("")
     }
+    val selectedURLImgLink = rememberSaveable {
+        mutableStateOf("")
+    }
     val selectedFolderNote = rememberSaveable {
         mutableStateOf("")
     }
@@ -113,6 +116,7 @@ fun ChildArchiveScreen(
                                     selectedURLOrFolderName.value = it.webURL
                                     selectedFolderNote.value = it.infoForSaving
                                     selectedURLTitle.value = it.title
+                                    selectedURLImgLink.value = it.imgURL
                                     coroutineScope.launch {
                                         optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
                                     }
@@ -324,7 +328,9 @@ fun ChildArchiveScreen(
                     )
                 },
                 folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
-                linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else ""
+                linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else "",
+                imgLink = selectedURLImgLink.value,
+                onRefreshClick = {}
             )
         )
 

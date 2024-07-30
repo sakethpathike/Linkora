@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.bottomSheets.menu
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -21,6 +23,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -28,8 +32,11 @@ import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
@@ -43,6 +50,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
@@ -55,7 +63,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
+import com.sakethh.linkora.ui.screens.CoilImage
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
+import com.sakethh.linkora.utils.fadedEdges
 import kotlinx.coroutines.launch
 
 
@@ -75,6 +85,9 @@ fun MenuBtmSheetUI(
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val localClipBoardManager = LocalClipboardManager.current
+    val isImageAssociatedWithTheLinkIsExpanded = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (menuBtmSheetParam.shouldBtmModalSheetBeVisible.value) {
         ModalBottomSheet(
             dragHandle = {},
@@ -94,20 +107,70 @@ fun MenuBtmSheetUI(
                     .navigationBarsPadding()
                     .verticalScroll(rememberScrollState())
             ) {
-                FolderIndividualComponent(
-                    folderName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle,
-                    folderNote = "",
-                    onMoreIconClick = {
-                        localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
-                        Toast.makeText(context, "Title copied to clipboard", Toast.LENGTH_SHORT)
-                            .show()
-                    },
-                    onFolderClick = { },
-                    maxLines = 2,
-                    showMoreIcon = false,
-                    folderIcon = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
-                )
-                Spacer(modifier = Modifier.height(5.dp))
+                if (menuBtmSheetParam.imgLink.isNotEmpty() && menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK) {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(bottom = 15.dp)
+                            .wrapContentHeight()
+                    ) {
+                        CoilImage(
+                            modifier = Modifier
+                                .animateContentSize()
+                                .fillMaxWidth()
+                                .then(
+                                    if (isImageAssociatedWithTheLinkIsExpanded.value) Modifier.wrapContentHeight() else Modifier.heightIn(
+                                        max = 150.dp
+                                    )
+                                )
+                                .fadedEdges(MaterialTheme.colorScheme),
+                            imgURL = menuBtmSheetParam.imgLink
+                        )
+                        FilledTonalIconButton(onClick = {
+                            isImageAssociatedWithTheLinkIsExpanded.value =
+                                !isImageAssociatedWithTheLinkIsExpanded.value
+                        }, modifier = Modifier
+                            .alpha(0.75f)
+                            .padding(5.dp)) {
+                            Icon(
+                                imageVector = if (!isImageAssociatedWithTheLinkIsExpanded.value) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                contentDescription = ""
+                            )
+                        }
+                        Text(
+                            text = menuBtmSheetParam.linkTitle,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp,
+                            modifier = Modifier
+                                .padding(15.dp)
+                                .align(Alignment.BottomStart),
+                            maxLines = 2,
+                            lineHeight = 20.sp,
+                            textAlign = TextAlign.Start,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                    )
+                } else {
+                    FolderIndividualComponent(
+                        folderName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle,
+                        folderNote = "",
+                        onMoreIconClick = {
+                            localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
+                            Toast.makeText(context, "Title copied to clipboard", Toast.LENGTH_SHORT)
+                                .show()
+                        },
+                        onFolderClick = { },
+                        maxLines = 2,
+                        showMoreIcon = false,
+                        folderIcon = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
+                    )
+                    Spacer(modifier = Modifier.height(5.dp))
+                }
                 if (!isNoteBtnSelected.value) {
                     IndividualMenuComponent(
                         onOptionClick = {
@@ -139,6 +202,22 @@ fun MenuBtmSheetUI(
                         elementName = "Rename",
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
+                    if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK) {
+                        IndividualMenuComponent(
+                            onOptionClick = {
+                                menuBtmSheetParam.onRefreshClick()
+                                coroutineScope.launch {
+                                    if (menuBtmSheetParam.btmModalSheetState.isVisible) {
+                                        menuBtmSheetParam.btmModalSheetState.hide()
+                                    }
+                                }.invokeOnCompletion {
+                                    menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
+                                }
+                            },
+                            elementName = "Refresh Title and Image",
+                            elementImageVector = Icons.Outlined.Refresh
+                        )
+                    }
 
                     if ((menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) && !menuBtmSheetParam.inArchiveScreen.value) {
                         IndividualMenuComponent(

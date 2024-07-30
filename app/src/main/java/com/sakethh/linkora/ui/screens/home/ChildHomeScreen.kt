@@ -548,6 +548,8 @@ fun ChildHomeScreen(
                 },
                 folderName = selectedURLTitle.value,
                 linkTitle = selectedURLTitle.value,
+                imgLink = HomeScreenVM.tempImpLinkData.imgURL,
+                onRefreshClick = {}
             )
         )
     }

@@ -11,6 +11,7 @@ fun sanitizeLink(url: String): String {
     }
 }
 
+@JvmName("sanitizeLinkExtenxsionFunction")
 fun String.sanitizeLink(): String {
     return when {
         this.contains("https://open.spotify.com") || this.contains("http://open.spotify.com") -> {

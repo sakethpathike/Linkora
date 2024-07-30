@@ -1402,7 +1402,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 },
                 noteForSaving = selectedURLNote.value,
                 folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
-                linkTitle = selectedLinkTitle.value
+                linkTitle = selectedLinkTitle.value,
+                imgLink = HomeScreenVM.tempImpLinkData.imgURL,
+                onRefreshClick = {}
             )
         )
         RenameDialogBox(

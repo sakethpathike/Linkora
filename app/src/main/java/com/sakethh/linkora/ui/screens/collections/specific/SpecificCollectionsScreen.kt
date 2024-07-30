@@ -1162,7 +1162,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                     )
                 },
                 folderName = selectedURLTitle.value,
-                linkTitle = tempImpLinkData.title.value
+                linkTitle = tempImpLinkData.title.value,
+                imgLink = tempImpLinkData.imgURL.value,
+                onRefreshClick = {}
             )
         )
         DeleteDialogBox(

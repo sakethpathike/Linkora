@@ -560,7 +560,9 @@ fun CollectionsScreen(navController: NavController) {
                     )
                 },
                 linkTitle = "",
-                folderName = CollectionsScreenVM.selectedFolderData.value.folderName
+                folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
+                imgLink = "",
+                onRefreshClick = {}
             )
         )
         RenameDialogBox(

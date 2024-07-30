@@ -13,6 +13,7 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val onDeleteCardClick: () -> Unit,
     val onNoteDeleteCardClick: () -> Unit,
     val onRenameClick: () -> Unit,
+    val onRefreshClick: () -> Unit,
     val onArchiveClick: () -> Unit,
     val onUnarchiveClick: () -> Unit = {},
     val onImportantLinkClick: (() -> Unit?)? = null,
@@ -21,5 +22,6 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val noteForSaving: String,
     val folderName: String,
     val linkTitle: String,
+    val imgLink: String,
     val forAChildFolder: MutableState<Boolean> = mutableStateOf(false)
 )
