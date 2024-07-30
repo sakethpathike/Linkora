@@ -594,30 +594,32 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 settingsUIElement = it
                             )
                         }
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .animateContentSize()
-                            ) {
-                                if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
-                                    RegularSettingComponent(
-                                        settingsUIElement = SettingsUIElement(title = "Refresh All Links' Titles and Images",
-                                            doesDescriptionExists = true,
-                                            description = "Manually entered titles will be replaced with detected titles.",
-                                            isSwitchNeeded = false,
-                                            isIconNeeded = rememberSaveable {
-                                                mutableStateOf(true)
-                                            },
-                                            icon = Icons.Default.Refresh,
-                                            isSwitchEnabled = rememberSaveable {
-                                                mutableStateOf(false)
-                                            },
-                                            onSwitchStateChange = {
-                                                settingsScreenVM.refreshAllLinksImagesAndTitles()
-                                            })
-                                    )
+                        if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.GENERAL) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .animateContentSize()
+                                ) {
+                                    if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
+                                        RegularSettingComponent(
+                                            settingsUIElement = SettingsUIElement(title = "Refresh All Links' Titles and Images",
+                                                doesDescriptionExists = true,
+                                                description = "Manually entered titles will be replaced with detected titles.",
+                                                isSwitchNeeded = false,
+                                                isIconNeeded = rememberSaveable {
+                                                    mutableStateOf(true)
+                                                },
+                                                icon = Icons.Default.Refresh,
+                                                isSwitchEnabled = rememberSaveable {
+                                                    mutableStateOf(false)
+                                                },
+                                                onSwitchStateChange = {
+                                                    settingsScreenVM.refreshAllLinksImagesAndTitles()
+                                                })
+                                        )
+                                    }
                                 }
                             }
                         }
@@ -704,107 +706,119 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 }
                             }
                         }
-                        item {
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                                    .animateContentSize()
-                            ) {
-                                if (SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
-                                    Column(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight()
-                                    ) {
-                                        HorizontalDivider(
-                                            Modifier.padding(
-                                                start = 15.dp,
-                                                end = 15.dp,
-                                                bottom = 15.dp
-                                            ),
-                                            color = DividerDefaults.color.copy(0.5f)
-                                        )
-                                        Spacer(modifier = Modifier.height(15.dp))
-                                        Text(
-                                            text = "Refreshing links...",
-                                            style = MaterialTheme.typography.titleMedium,
-                                            modifier = Modifier.padding(start = 15.dp, end = 15.dp)
-                                        )
-                                        if (RefreshLinksWorker.totalLinksCount.intValue != 0) {
-                                            Row(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(start = 15.dp),
-                                                verticalAlignment = Alignment.CenterVertically,
-                                                horizontalArrangement = Arrangement.SpaceBetween
-                                            ) {
-                                                LinearProgressIndicator(
-                                                    modifier = Modifier
-                                                        .fillMaxWidth(0.85f),
-                                                    progress = {
-                                                        if (!(successfulRefreshLinksCount.value.toFloat() / RefreshLinksWorker.totalLinksCount.intValue.toFloat()).isNaN() && successfulRefreshLinksCount.value.toFloat() < RefreshLinksWorker.totalLinksCount.intValue.toFloat()) {
-                                                            successfulRefreshLinksCount.value.toFloat() / RefreshLinksWorker.totalLinksCount.intValue.toFloat()
-                                                        } else {
-                                                            0f
-                                                        }
-                                                    }
-                                                )
-                                                IconButton(onClick = {
-                                                    settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork(
-                                                        context
-                                                    )
-                                                }) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Cancel,
-                                                        contentDescription = ""
-                                                    )
-                                                }
-                                            }
-                                        }
-                                        if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) {
-                                            Spacer(modifier = Modifier.height(15.dp))
-                                        }
-                                        Text(
-                                            text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) "Work Manager is scheduling the link refresh. It will continue shortly." else "${successfulRefreshLinkCount.value} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
-                                            style = MaterialTheme.typography.titleSmall,
-                                            modifier = Modifier.padding(start = 15.dp, end = 15.dp),
-                                            lineHeight = 18.sp
-                                        )
-                                        Card(
-                                            border = BorderStroke(
-                                                1.dp,
-                                                contentColorFor(MaterialTheme.colorScheme.surface)
-                                            ),
-                                            colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                        if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.GENERAL) {
+                            item {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .wrapContentHeight()
+                                        .animateContentSize()
+                                ) {
+                                    if (SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
+                                        Column(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .padding(start = 15.dp, end = 15.dp, top = 20.dp)
+                                                .wrapContentHeight()
                                         ) {
-                                            Row(
+                                            HorizontalDivider(
+                                                Modifier.padding(
+                                                    start = 15.dp,
+                                                    end = 15.dp,
+                                                    bottom = 15.dp
+                                                ),
+                                                color = DividerDefaults.color.copy(0.5f)
+                                            )
+                                            Spacer(modifier = Modifier.height(15.dp))
+                                            Text(
+                                                text = "Refreshing links...",
+                                                style = MaterialTheme.typography.titleMedium,
+                                                modifier = Modifier.padding(
+                                                    start = 15.dp,
+                                                    end = 15.dp
+                                                )
+                                            )
+                                            if (RefreshLinksWorker.totalLinksCount.intValue != 0) {
+                                                Row(
+                                                    modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .padding(start = 15.dp),
+                                                    verticalAlignment = Alignment.CenterVertically,
+                                                    horizontalArrangement = Arrangement.SpaceBetween
+                                                ) {
+                                                    LinearProgressIndicator(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth(0.85f),
+                                                        progress = {
+                                                            if (!(successfulRefreshLinksCount.value.toFloat() / RefreshLinksWorker.totalLinksCount.intValue.toFloat()).isNaN() && successfulRefreshLinksCount.value.toFloat() < RefreshLinksWorker.totalLinksCount.intValue.toFloat()) {
+                                                                successfulRefreshLinksCount.value.toFloat() / RefreshLinksWorker.totalLinksCount.intValue.toFloat()
+                                                            } else {
+                                                                0f
+                                                            }
+                                                        }
+                                                    )
+                                                    IconButton(onClick = {
+                                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork(
+                                                            context
+                                                        )
+                                                    }) {
+                                                        Icon(
+                                                            imageVector = Icons.Default.Cancel,
+                                                            contentDescription = ""
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                            if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) {
+                                                Spacer(modifier = Modifier.height(15.dp))
+                                            }
+                                            Text(
+                                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) "Work Manager is scheduling the link refresh. It will continue shortly." else "${successfulRefreshLinkCount.value} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                modifier = Modifier.padding(
+                                                    start = 15.dp,
+                                                    end = 15.dp
+                                                ),
+                                                lineHeight = 18.sp
+                                            )
+                                            Card(
+                                                border = BorderStroke(
+                                                    1.dp,
+                                                    contentColorFor(MaterialTheme.colorScheme.surface)
+                                                ),
+                                                colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
                                                 modifier = Modifier
                                                     .fillMaxWidth()
-                                                    .wrapContentHeight()
                                                     .padding(
-                                                        top = 10.dp, bottom = 10.dp
-                                                    ),
-                                                verticalAlignment = Alignment.CenterVertically
+                                                        start = 15.dp,
+                                                        end = 15.dp,
+                                                        top = 20.dp
+                                                    )
                                             ) {
-
-                                                Icon(
-                                                    imageVector = Icons.Outlined.Info,
-                                                    contentDescription = null,
+                                                Row(
                                                     modifier = Modifier
+                                                        .fillMaxWidth()
+                                                        .wrapContentHeight()
                                                         .padding(
-                                                            start = 10.dp, end = 10.dp
-                                                        )
-                                                )
-                                                Text(
-                                                    text = "Closing Linkora won't interrupt link refreshing, but newly added links might not be processed.",
-                                                    style = MaterialTheme.typography.titleSmall,
-                                                    lineHeight = 18.sp,
-                                                    modifier = Modifier.padding(end = 15.dp)
-                                                )
+                                                            top = 10.dp, bottom = 10.dp
+                                                        ),
+                                                    verticalAlignment = Alignment.CenterVertically
+                                                ) {
+
+                                                    Icon(
+                                                        imageVector = Icons.Outlined.Info,
+                                                        contentDescription = null,
+                                                        modifier = Modifier
+                                                            .padding(
+                                                                start = 10.dp, end = 10.dp
+                                                            )
+                                                    )
+                                                    Text(
+                                                        text = "Closing Linkora won't interrupt link refreshing, but newly added links might not be processed.",
+                                                        style = MaterialTheme.typography.titleSmall,
+                                                        lineHeight = 18.sp,
+                                                        modifier = Modifier.padding(end = 15.dp)
+                                                    )
+                                                }
                                             }
                                         }
                                     }

@@ -473,7 +473,7 @@ fun ChildHomeScreen(
                 }
             }
             item {
-                Spacer(modifier = Modifier.height(225.dp))
+                Spacer(modifier = Modifier.height(350.dp))
             }
         }
         MenuBtmSheetUI(

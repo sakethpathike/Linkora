@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -28,6 +27,7 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.ImageNotSupported
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -84,7 +84,7 @@ fun LinkUIComponent(
                 onLongClick = {
                     linkUIComponentParam.onLongClick()
                 })
-            .padding(start = 15.dp, end = 15.dp, top = 15.dp)
+            .padding(start = 15.dp, top = 15.dp)
             .fillMaxWidth()
             .wrapContentHeight()
             .pulsateEffect()
@@ -94,6 +94,7 @@ fun LinkUIComponent(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(end = 15.dp)
                 .wrapContentHeight(),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
@@ -154,49 +155,46 @@ fun LinkUIComponent(
                 }
             }
         }
+        Text(
+            text = linkUIComponentParam.webBaseURL,
+            style = MaterialTheme.typography.titleSmall,
+            fontWeight = FontWeight.SemiBold,
+            maxLines = 1,
+            textAlign = TextAlign.Start,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 15.dp, end = 15.dp)
+        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(top = 20.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
+                .wrapContentHeight(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = linkUIComponentParam.webBaseURL,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                fontSize = 14.sp,
-                maxLines = 1,
-                textAlign = TextAlign.Start,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(top = 5.dp)
-                    .fillMaxWidth(0.45f)
-            )
-
-            if (!linkUIComponentParam.isSelectionModeEnabled.value) {
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(15.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(imageVector = Icons.Outlined.OpenInBrowser, contentDescription = null,
-                        modifier = Modifier
-                            .clickable {
-                                linkUIComponentParam.onForceOpenInExternalBrowserClicked()
-                                try {
-                                    localURIHandler.openUri(linkUIComponentParam.webURL)
-                                } catch (_: android.content.ActivityNotFoundException) {
-                                    Toast.makeText(
-                                        context,
-                                        "No Activity found to handle Intent",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                }
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                if (!linkUIComponentParam.isSelectionModeEnabled.value) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        IconButton(onClick = {
+                            linkUIComponentParam.onForceOpenInExternalBrowserClicked()
+                            try {
+                                localURIHandler.openUri(linkUIComponentParam.webURL)
+                            } catch (_: android.content.ActivityNotFoundException) {
+                                Toast.makeText(
+                                    context,
+                                    "No Activity found to handle Intent",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
-                    )
-                    Icon(imageVector = Icons.Outlined.ContentCopy, contentDescription = null,
-                        modifier = Modifier.clickable {
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.OpenInBrowser,
+                                contentDescription = null
+                            )
+                        }
+                        IconButton(onClick = {
                             localClipBoardManager.setText(
                                 AnnotatedString(linkUIComponentParam.webURL)
                             )
@@ -204,9 +202,13 @@ fun LinkUIComponent(
                                 context, "Link copied to the clipboard",
                                 Toast.LENGTH_SHORT
                             ).show()
-                        })
-                    Icon(imageVector = Icons.Outlined.Share, contentDescription = null,
-                        modifier = Modifier.clickable {
+                        }) {
+                            Icon(
+                                imageVector = Icons.Outlined.ContentCopy,
+                                contentDescription = null
+                            )
+                        }
+                        IconButton(onClick = {
                             val intent = Intent().apply {
                                 action = Intent.ACTION_SEND
                                 putExtra(Intent.EXTRA_TEXT, linkUIComponentParam.webURL)
@@ -214,16 +216,23 @@ fun LinkUIComponent(
                             }
                             val shareIntent = Intent.createChooser(intent, null)
                             context.startActivity(shareIntent)
-                        })
-                    Icon(
-                        imageVector = Icons.Filled.MoreVert,
-                        contentDescription = null,
-                        modifier = Modifier.clickable { linkUIComponentParam.onMoreIconCLick() })
+                        }) {
+                            Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
+                        }
+                        IconButton(onClick = {
+                            linkUIComponentParam.onMoreIconCLick()
+                        }) {
+                            Icon(
+                                imageVector = Icons.Filled.MoreVert,
+                                contentDescription = null
+                            )
+                        }
+                    }
                 }
             }
         }
         HorizontalDivider(
-            modifier = Modifier.padding(start = 10.dp, end = 10.dp, top = 10.dp),
+            modifier = Modifier.padding(start = 10.dp, end = 10.dp),
             thickness = 0.5.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.25f)
         )

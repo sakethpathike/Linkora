@@ -374,6 +374,11 @@ fun ParentHomeScreen(
                             onClick = {
                                 SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
                                     (-1).toLong()
+                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                                    context.dataStore,
+                                    newValue = -1
+                                )
                             },
                             icon = {
                                 Column {
