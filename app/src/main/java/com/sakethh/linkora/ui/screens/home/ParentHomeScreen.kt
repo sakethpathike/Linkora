@@ -46,13 +46,13 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Maximize
 import androidx.compose.material.icons.filled.Minimize
-import androidx.compose.material.icons.filled.Storage
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.filled.ViewArray
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.Layers
-import androidx.compose.material.icons.outlined.Storage
 import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.ViewArray
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -93,6 +93,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -345,9 +346,9 @@ fun ParentHomeScreen(
                                             Icon(
                                                 modifier = Modifier.rotate(180f),
                                                 imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue) {
-                                                    Icons.Filled.Storage
+                                                    Icons.Filled.ViewArray
                                                 } else {
-                                                    Icons.Outlined.Storage
+                                                    Icons.Outlined.ViewArray
                                                 }, contentDescription = null
                                             )
                                         }
@@ -893,8 +894,13 @@ fun ParentHomeScreen(
             }?.let {
                 shelfLazyColumnState.animateScrollToItem(shelfData.value.indexOf(it))
                     }
+
             homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                SettingsScreenVM.Settings.lastSelectedPanelID.longValue, context
+                (SettingsScreenVM.Settings.readSettingPreferenceValue(
+                    intPreferencesKey(
+                        SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name
+                    ), context.dataStore
+                ) ?: -1).toLong(), context
             )
             HomeScreenVM.initialStart = false
         }

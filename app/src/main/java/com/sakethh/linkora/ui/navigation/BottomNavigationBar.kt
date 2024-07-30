@@ -10,12 +10,11 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -23,9 +22,6 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun BottomNavigationBar(navController: NavController) {
     val navigationVM: NavigationVM = viewModel()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
-    val clickedSettingsRoute = rememberSaveable {
-        mutableStateOf(false)
-    }
     LinkoraTheme {
         NavigationBar(
             modifier = Modifier.fillMaxWidth()
@@ -33,9 +29,12 @@ fun BottomNavigationBar(navController: NavController) {
             if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
                 NavigationBarItem(selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
                     onClick = {
-                        if (currentRoute != NavigationRoutes.HOME_SCREEN.name) navController.navigate(
-                            NavigationRoutes.HOME_SCREEN.name
-                        )
+                        if (currentRoute != NavigationRoutes.HOME_SCREEN.name) {
+                            navController.navigate(
+                                NavigationRoutes.HOME_SCREEN.name
+                            )
+                            HomeScreenVM.initialStart = true
+                        }
                     },
                     icon = {
                         Icon(
@@ -57,9 +56,10 @@ fun BottomNavigationBar(navController: NavController) {
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name, onClick = {
-                        if (it.navigationRoute.name == NavigationRoutes.SETTINGS_SCREEN.name) clickedSettingsRoute.value =
-                            true
-                        if (currentRoute != it.navigationRoute.name) navController.navigate(it.navigationRoute.name)
+                        if (currentRoute != it.navigationRoute.name) {
+                            navController.navigate(it.navigationRoute.name)
+                            HomeScreenVM.initialStart = true
+                        }
                     }, icon = {
                         Icon(
                             imageVector = if (currentRoute == it.navigationRoute.name) {

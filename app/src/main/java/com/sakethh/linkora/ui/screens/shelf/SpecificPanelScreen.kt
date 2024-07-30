@@ -52,6 +52,7 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -82,6 +83,7 @@ fun SpecificPanelScreen(navController: NavController) {
         })
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
+            HomeScreenVM.initialStart = true
             navController.navigate(NavigationRoutes.HOME_SCREEN.name)
         }) {
             Icon(imageVector = Icons.Default.Home, contentDescription = "")

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.screens.shelf
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +10,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.ViewArray
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +42,7 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -109,7 +111,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                             navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
                         },
                         elementName = it.shelfName,
-                        elementImageVector = Icons.Default.Storage,
+                        elementImageVector = Icons.Default.ViewArray,
                         inShelfUI = true,
                         onDeleteIconClick = {
                             ShelfBtmSheetVM.selectedShelfData = it
@@ -165,4 +167,8 @@ fun ShelfPanelsScreen(navController: NavController) {
                 )
             )
         })
+    BackHandler {
+        HomeScreenVM.initialStart = true
+        navController.navigateUp()
+    }
 }
