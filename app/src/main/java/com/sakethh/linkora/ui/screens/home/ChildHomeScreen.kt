@@ -550,7 +550,10 @@ fun ChildHomeScreen(
                 linkTitle = selectedURLTitle.value,
                 imgLink = HomeScreenVM.tempImpLinkData.imgURL,
                 onRefreshClick = {
-                    homeScreenVM.reloadLinkData(selectedElementID.longValue)
+                    homeScreenVM.reloadLinkData(
+                        selectedElementID.longValue,
+                        homeScreenType = homeScreenType
+                    )
                 }
             )
         )

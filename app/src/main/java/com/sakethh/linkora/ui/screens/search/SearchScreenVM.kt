@@ -128,7 +128,10 @@ class SearchScreenVM @Inject constructor(
             }
         }
     }
-    override fun reloadLinkData(linkID: Long) {
+    override fun reloadLinkData(
+        linkID: Long,
+        homeScreenType: HomeScreenVM.HomeScreenType
+    ) {
         viewModelScope.launch {
             when (selectedLinkType) {
                 SelectedLinkType.HISTORY_LINKS -> linksRepo.reloadHistoryLinksTableLink(linkID)

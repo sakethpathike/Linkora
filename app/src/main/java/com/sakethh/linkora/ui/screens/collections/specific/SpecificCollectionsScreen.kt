@@ -83,6 +83,7 @@ import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -1165,7 +1166,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                 linkTitle = tempImpLinkData.title.value,
                 imgLink = tempImpLinkData.imgURL.value,
                 onRefreshClick = {
-                    specificCollectionsScreenVM.reloadLinkData(CollectionsScreenVM.selectedFolderData.value.id)
+                    specificCollectionsScreenVM.reloadLinkData(
+                        CollectionsScreenVM.selectedFolderData.value.id,
+                        HomeScreenVM.HomeScreenType.CUSTOM_LIST
+                    )
                 }
             )
         )

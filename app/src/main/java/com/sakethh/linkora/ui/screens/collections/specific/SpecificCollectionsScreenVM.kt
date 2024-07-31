@@ -24,6 +24,7 @@ import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -124,14 +125,24 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         val inARegularFolder = mutableStateOf(true)
     }
 
-    open fun reloadLinkData(linkID: Long) {
+    open fun reloadLinkData(linkID: Long, homeScreenType: HomeScreenVM.HomeScreenType) {
         viewModelScope.launch {
-            when (selectedBtmSheetType.value) {
-                OptionsBtmSheetType.LINK -> linksRepo.reloadLinksTableLink(linkID)
-                OptionsBtmSheetType.FOLDER -> TODO()
-                OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN -> linksRepo.reloadImpLinksTableLink(
+            if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
+                linksRepo.reloadImpLinksTableLink(
                     linkID
                 )
+            } else {
+                when (screenType.value) {
+                    SpecificScreenType.SAVED_LINKS_SCREEN, SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN, SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> linksRepo.reloadLinksTableLink(
+                        linkID
+                    )
+
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> linksRepo.reloadImpLinksTableLink(
+                        linkID
+                    )
+
+                    else -> {}
+                }
             }
         }
     }

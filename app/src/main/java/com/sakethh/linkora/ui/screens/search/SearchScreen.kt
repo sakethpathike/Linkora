@@ -1405,7 +1405,10 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 linkTitle = selectedLinkTitle.value,
                 imgLink = HomeScreenVM.tempImpLinkData.imgURL,
                 onRefreshClick = {
-                    searchScreenVM.reloadLinkData(SearchScreenVM.selectedLinkID)
+                    searchScreenVM.reloadLinkData(
+                        SearchScreenVM.selectedLinkID,
+                        homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST
+                    )
                 }
             )
         )

@@ -62,7 +62,7 @@ class LinksImpl @Inject constructor(
                 LinkType.IMP_LINK -> doesThisExistsInImpLinks(importantLink!!.webURL)
                 LinkType.HISTORY_LINK -> doesThisExistsInRecentlyVisitedLinks(recentlyVisited!!.webURL)
                 LinkType.ARCHIVE_LINK -> doesThisExistsInArchiveLinks(recentlyVisited!!.webURL)
-            }
+            } && !updateExistingLink
         ) {
             onTaskCompleted()
             return CommonUiEvents.ShowToast("given link already exists")
@@ -72,9 +72,11 @@ class LinksImpl @Inject constructor(
                 when (linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         if (updateExistingLink) {
+                            linkoraLog("Update ${linkType.name}")
                             localDatabase.linksDao()
                                 .updateALinkDataFromLinksTable(linksTable!!.copy(id = existingLinkID))
                         } else {
+                            linkoraLog("Create ${linkType.name}")
                             localDatabase.linksDao()
                                 .addANewLinkToSavedLinksOrInFolders(linksTable!!)
                         }
@@ -82,9 +84,11 @@ class LinksImpl @Inject constructor(
 
                     LinkType.IMP_LINK -> {
                         if (updateExistingLink) {
+                            linkoraLog("Update ${linkType.name}")
                             localDatabase.linksDao()
                                 .updateALinkDataFromImpLinksTable(importantLink!!.copy(id = existingLinkID))
                         } else {
+                            linkoraLog("Create ${linkType.name}")
                             localDatabase.linksDao()
                                 .addANewLinkToImpLinks(importantLink!!)
                         }
@@ -92,6 +96,7 @@ class LinksImpl @Inject constructor(
 
                     LinkType.HISTORY_LINK -> {
                         if (updateExistingLink) {
+                            linkoraLog("Update ${linkType.name}")
                             localDatabase.linksDao()
                                 .updateALinkDataFromRecentlyVisitedLinksTable(
                                     recentlyVisited!!.copy(
@@ -99,6 +104,7 @@ class LinksImpl @Inject constructor(
                                     )
                                 )
                         } else {
+                            linkoraLog("Create ${linkType.name}")
                             localDatabase.linksDao()
                                 .addANewLinkInRecentlyVisited(recentlyVisited!!)
                         }
@@ -106,6 +112,7 @@ class LinksImpl @Inject constructor(
 
                     LinkType.ARCHIVE_LINK -> {
                         if (updateExistingLink) {
+                            linkoraLog("Update ${linkType.name}")
                             localDatabase.linksDao()
                                 .updateALinkDataFromArchivedLinksTable(
                                     archivedLinks!!.copy(
@@ -113,6 +120,7 @@ class LinksImpl @Inject constructor(
                                     )
                                 )
                         } else {
+                            linkoraLog("Create ${linkType.name}")
                             localDatabase.linksDao()
                                 .addANewLinkToArchiveLink(archivedLinks!!)
                         }
@@ -190,9 +198,11 @@ class LinksImpl @Inject constructor(
                                     keyOfImpLinkedFolder = ""
                                 )
                                 if (updateExistingLink) {
+                                    linkoraLog("Update ${linkType.name}")
                                     localDatabase.linksDao()
                                         .updateALinkDataFromLinksTable(linkTableData.copy(id = existingLinkID))
                                 } else {
+                                    linkoraLog("Create ${linkType.name}")
                                     localDatabase.linksDao()
                                         .addANewLinkToSavedLinksOrInFolders(linkTableData)
                                 }
@@ -215,10 +225,12 @@ class LinksImpl @Inject constructor(
                                     infoForSaving = importantLink.infoForSaving
                                 )
                                 if (updateExistingLink) {
+                                    linkoraLog("Update ${linkType.name}")
                                     localDatabase.linksDao().updateALinkDataFromImpLinksTable(
                                         importantLinkScrappedData.copy(id = existingLinkID)
                                     )
                                 } else {
+                                    linkoraLog("Create ${linkType.name}")
                                     localDatabase.linksDao()
                                         .addANewLinkToImpLinks(importantLinkScrappedData)
                                 }
@@ -241,11 +253,13 @@ class LinksImpl @Inject constructor(
                                     infoForSaving = importantLink.infoForSaving
                                 )
                                 if (updateExistingLink) {
+                                    linkoraLog("Update ${linkType.name}")
                                     localDatabase.linksDao()
                                         .updateALinkDataFromRecentlyVisitedLinksTable(
                                             recentlyVisitedLinkScrappedData.copy(id = existingLinkID)
                                         )
                                 } else {
+                                    linkoraLog("Create ${linkType.name}")
                                     localDatabase.linksDao()
                                         .addANewLinkInRecentlyVisited(
                                             recentlyVisitedLinkScrappedData
@@ -270,10 +284,12 @@ class LinksImpl @Inject constructor(
                                     infoForSaving = importantLink.infoForSaving
                                 )
                                 if (updateExistingLink) {
+                                    linkoraLog("Update ${linkType.name}")
                                     localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
                                         archiveLinkScrappedData.copy(id = existingLinkID)
                                     )
                                 } else {
+                                    linkoraLog("Create ${linkType.name}")
                                     localDatabase.linksDao()
                                         .addANewLinkToArchiveLink(archiveLinkScrappedData)
                                 }
@@ -330,9 +346,11 @@ class LinksImpl @Inject constructor(
                                 keyOfImpLinkedFolder = ""
                             )
                             if (updateExistingLink) {
+                                linkoraLog("Update ${linkType.name}")
                                 localDatabase.linksDao()
                                     .updateALinkDataFromLinksTable(linkData.copy(id = existingLinkID))
                             } else {
+                                linkoraLog("Create ${linkType.name}")
                                 localDatabase.linksDao()
                                     .addANewLinkToSavedLinksOrInFolders(linkData)
                             }
@@ -347,10 +365,12 @@ class LinksImpl @Inject constructor(
                                 infoForSaving = importantLink.infoForSaving
                             )
                             if (updateExistingLink) {
+                                linkoraLog("Update ${linkType.name}")
                                 localDatabase.linksDao().updateALinkDataFromImpLinksTable(
                                     importantLinkScrappedData.copy(id = existingLinkID)
                                 )
                             } else {
+                                linkoraLog("Create ${linkType.name}")
                                 localDatabase.linksDao()
                                     .addANewLinkToImpLinks(importantLinkScrappedData)
                             }
@@ -365,11 +385,13 @@ class LinksImpl @Inject constructor(
                                 infoForSaving = importantLink.infoForSaving
                             )
                             if (updateExistingLink) {
+                                linkoraLog("Update ${linkType.name}")
                                 localDatabase.linksDao()
                                     .updateALinkDataFromRecentlyVisitedLinksTable(
                                         recentlyVisitedLinkScrappedData.copy(id = existingLinkID)
                                     )
                             } else {
+                                linkoraLog("Create ${linkType.name}")
                                 localDatabase.linksDao()
                                     .addANewLinkInRecentlyVisited(recentlyVisitedLinkScrappedData)
                             }
@@ -384,11 +406,13 @@ class LinksImpl @Inject constructor(
                                 infoForSaving = importantLink.infoForSaving
                             )
                             if (updateExistingLink) {
+                                linkoraLog("Update ${linkType.name}")
                                 localDatabase.linksDao()
                                     .updateALinkDataFromArchivedLinksTable(
                                         archiveLinkScrappedData.copy(id = existingLinkID)
                                     )
                             } else {
+                                linkoraLog("Create ${linkType.name}")
                                 localDatabase.linksDao()
                                     .addANewLinkToArchiveLink(archiveLinkScrappedData)
                             }
@@ -588,7 +612,8 @@ class LinksImpl @Inject constructor(
     }
 
     override suspend fun reloadArchiveLink(linkID: Long) {
-        linkoraLog(linkID.toString())
+        val linkData = getThisLinkFromArchiveLinksTable(linkID)
+        linkoraLog("${linkData.title} In reloadArchiveLink")
         saveLink(
             linksTable = null,
             importantLink = null,
@@ -597,13 +622,13 @@ class LinksImpl @Inject constructor(
             linkType = LinkType.ARCHIVE_LINK,
             autoDetectTitle = true,
             existingLinkID = linkID,
-            updateExistingLink = true, archivedLinks = getThisLinkFromArchiveLinksTable(linkID)
+            updateExistingLink = true, archivedLinks = linkData
         )
     }
 
     override suspend fun reloadLinksTableLink(linkID: Long) {
-        linkoraLog(linkID.toString())
         val linkData = getThisLinkFromLinksTable(linkID)
+        linkoraLog("${linkData.title} In reloadLinksTableLink")
         saveLink(
             linksTable = linkData,
             importantLink = null,
@@ -617,10 +642,11 @@ class LinksImpl @Inject constructor(
     }
 
     override suspend fun reloadImpLinksTableLink(linkID: Long) {
-        linkoraLog(linkID.toString())
+        val linkData = getThisLinkFromImpLinksTable(linkID)
+        linkoraLog("${linkData.title} In reloadImpLinksTableLink")
         saveLink(
             linksTable = null,
-            importantLink = getThisLinkFromImpLinksTable(linkID),
+            importantLink = linkData,
             recentlyVisited = null,
             onTaskCompleted = {},
             linkType = LinkType.IMP_LINK,
@@ -647,11 +673,12 @@ class LinksImpl @Inject constructor(
     }
 
     override suspend fun reloadHistoryLinksTableLink(linkID: Long) {
-        linkoraLog(linkID.toString())
+        val linkData = getThisLinkFromRecentlyVisitedLinksTable(linkID)
+        linkoraLog("${linkData.title} In reloadHistoryLinksTableLink")
         saveLink(
             linksTable = null,
             importantLink = null,
-            recentlyVisited = getThisLinkFromRecentlyVisitedLinksTable(linkID),
+            recentlyVisited = linkData,
             onTaskCompleted = {},
             linkType = LinkType.HISTORY_LINK,
             autoDetectTitle = true,
