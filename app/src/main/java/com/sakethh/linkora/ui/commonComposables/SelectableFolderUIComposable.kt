@@ -104,7 +104,7 @@ fun SelectableFolderUIComponent(
         HorizontalDivider(
             modifier = Modifier.padding(start = 25.dp, end = 25.dp),
             thickness = 1.dp,
-            color = MaterialTheme.colorScheme.outline.copy(0.25f)
+            color = MaterialTheme.colorScheme.outline.copy(0.1f)
         )
     }
 }
