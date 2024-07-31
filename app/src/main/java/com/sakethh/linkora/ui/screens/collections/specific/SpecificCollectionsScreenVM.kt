@@ -124,6 +124,17 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         val inARegularFolder = mutableStateOf(true)
     }
 
+    open fun reloadLinkData(linkID: Long) {
+        viewModelScope.launch {
+            when (selectedBtmSheetType.value) {
+                OptionsBtmSheetType.LINK -> linksRepo.reloadLinksTableLink(linkID)
+                OptionsBtmSheetType.FOLDER -> TODO()
+                OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN -> linksRepo.reloadImpLinksTableLink(
+                    linkID
+                )
+            }
+        }
+    }
     private fun retrieveChildFoldersData() {
         viewModelScope.launch {
             foldersRepo.getChildFoldersOfThisParentID(

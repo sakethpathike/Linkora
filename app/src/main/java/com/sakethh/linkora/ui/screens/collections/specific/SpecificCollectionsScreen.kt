@@ -1164,7 +1164,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                 folderName = selectedURLTitle.value,
                 linkTitle = tempImpLinkData.title.value,
                 imgLink = tempImpLinkData.imgURL.value,
-                onRefreshClick = {}
+                onRefreshClick = {
+                    specificCollectionsScreenVM.reloadLinkData(CollectionsScreenVM.selectedFolderData.value.id)
+                }
             )
         )
         DeleteDialogBox(

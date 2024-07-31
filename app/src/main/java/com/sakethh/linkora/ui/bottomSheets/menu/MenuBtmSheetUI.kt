@@ -107,7 +107,7 @@ fun MenuBtmSheetUI(
                     .navigationBarsPadding()
                     .verticalScroll(rememberScrollState())
             ) {
-                if (menuBtmSheetParam.imgLink.isNotEmpty() && menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK) {
+                if (menuBtmSheetParam.imgLink.isNotEmpty() && (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -126,29 +126,36 @@ fun MenuBtmSheetUI(
                                 .fadedEdges(MaterialTheme.colorScheme),
                             imgURL = menuBtmSheetParam.imgLink
                         )
-                        FilledTonalIconButton(onClick = {
-                            isImageAssociatedWithTheLinkIsExpanded.value =
-                                !isImageAssociatedWithTheLinkIsExpanded.value
-                        }, modifier = Modifier
-                            .alpha(0.75f)
-                            .padding(5.dp)) {
-                            Icon(
-                                imageVector = if (!isImageAssociatedWithTheLinkIsExpanded.value) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
-                                contentDescription = ""
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .align(Alignment.BottomStart)
+                                .padding(end = 15.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            FilledTonalIconButton(
+                                onClick = {
+                                    isImageAssociatedWithTheLinkIsExpanded.value =
+                                        !isImageAssociatedWithTheLinkIsExpanded.value
+                                }, modifier = Modifier
+                                    .alpha(0.75f)
+                                    .padding(5.dp)
+                            ) {
+                                Icon(
+                                    imageVector = if (!isImageAssociatedWithTheLinkIsExpanded.value) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                                    contentDescription = ""
+                                )
+                            }
+                            Text(
+                                text = menuBtmSheetParam.linkTitle,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp,
+                                maxLines = 2,
+                                lineHeight = 20.sp,
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Ellipsis
                             )
                         }
-                        Text(
-                            text = menuBtmSheetParam.linkTitle,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp,
-                            modifier = Modifier
-                                .padding(15.dp)
-                                .align(Alignment.BottomStart),
-                            maxLines = 2,
-                            lineHeight = 20.sp,
-                            textAlign = TextAlign.Start,
-                            overflow = TextOverflow.Ellipsis
-                        )
                     }
                     HorizontalDivider(
                         modifier = Modifier.padding(start = 25.dp, end = 25.dp),
@@ -202,9 +209,15 @@ fun MenuBtmSheetUI(
                         elementName = "Rename",
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
-                    if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK) {
+                    if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         IndividualMenuComponent(
                             onOptionClick = {
+                                Toast.makeText(
+                                    context,
+                                    "Refreshing Link Info...",
+                                    Toast.LENGTH_SHORT
+                                )
+                                    .show()
                                 menuBtmSheetParam.onRefreshClick()
                                 coroutineScope.launch {
                                     if (menuBtmSheetParam.btmModalSheetState.isVisible) {

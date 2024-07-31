@@ -128,7 +128,19 @@ class SearchScreenVM @Inject constructor(
             }
         }
     }
+    override fun reloadLinkData(linkID: Long) {
+        viewModelScope.launch {
+            when (selectedLinkType) {
+                SelectedLinkType.HISTORY_LINKS -> linksRepo.reloadHistoryLinksTableLink(linkID)
+                SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS, SelectedLinkType.FOLDER_BASED_LINKS, SelectedLinkType.SAVED_LINKS -> linksRepo.reloadLinksTableLink(
+                    linkID
+                )
 
+                SelectedLinkType.IMP_LINKS -> linksRepo.reloadImpLinksTableLink(linkID)
+                SelectedLinkType.ARCHIVE_LINKS -> linksRepo.reloadArchiveLink(linkID)
+            }
+        }
+    }
     fun archiveSelectedLinksTableLinks() {
         viewModelScope.launch {
             selectedLinksTableData.toList().forEach {

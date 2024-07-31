@@ -212,6 +212,17 @@ interface LinksDao {
     )
     suspend fun copyLinkFromImpTableToArchiveLinks(link: String)
 
+    @Query("SELECT * FROM links_table WHERE id=:linkID LIMIT 1")
+    suspend fun getThisLinkFromLinksTable(linkID: Long): LinksTable
+
+    @Query("SELECT * FROM important_links_table WHERE id=:linkID LIMIT 1")
+    suspend fun getThisLinkFromImpLinksTable(linkID: Long): ImportantLinks
+
+    @Query("SELECT * FROM archived_links_table WHERE id=:linkID LIMIT 1")
+    suspend fun getThisLinkFromArchiveLinksTable(linkID: Long): ArchivedLinks
+
+    @Query("SELECT * FROM recently_visited_table WHERE id=:linkID LIMIT 1")
+    suspend fun getThisLinkFromRecentlyVisitedLinksTable(linkID: Long): RecentlyVisited
 
     @Update
     suspend fun updateALinkDataFromLinksTable(linksTable: LinksTable)

@@ -16,6 +16,7 @@ import com.sakethh.linkora.ui.CommonUiEvents
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.isAValidURL
+import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.utils.sanitizeLink
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -29,13 +30,22 @@ class LinksImpl @Inject constructor(
 ) : LinksRepo {
 
     private suspend fun saveLink(
-        linksTable: LinksTable?, importantLink: ImportantLinks?, onTaskCompleted: () -> Unit,
-        linkType: LinkType, autoDetectTitle: Boolean
+        linksTable: LinksTable?,
+        importantLink: ImportantLinks?,
+        recentlyVisited: RecentlyVisited?,
+        archivedLinks: ArchivedLinks?,
+        onTaskCompleted: () -> Unit,
+        linkType: LinkType,
+        autoDetectTitle: Boolean,
+        existingLinkID: Long,
+        updateExistingLink: Boolean
     ): CommonUiEvents {
         if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> !isAValidURL(linksTable!!.webURL)
                 LinkType.IMP_LINK -> !isAValidURL(importantLink!!.webURL)
+                LinkType.HISTORY_LINK -> !isAValidURL(recentlyVisited!!.webURL)
+                LinkType.ARCHIVE_LINK -> !isAValidURL(archivedLinks!!.webURL)
             }
         ) {
             onTaskCompleted()
@@ -50,6 +60,8 @@ class LinksImpl @Inject constructor(
                 } == true
 
                 LinkType.IMP_LINK -> doesThisExistsInImpLinks(importantLink!!.webURL)
+                LinkType.HISTORY_LINK -> doesThisExistsInRecentlyVisitedLinks(recentlyVisited!!.webURL)
+                LinkType.ARCHIVE_LINK -> doesThisExistsInArchiveLinks(recentlyVisited!!.webURL)
             }
         ) {
             onTaskCompleted()
@@ -58,11 +70,53 @@ class LinksImpl @Inject constructor(
 
             suspend fun saveWithGivenData(): CommonUiEvents {
                 when (linkType) {
-                    LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> localDatabase.linksDao()
-                        .addANewLinkToSavedLinksOrInFolders(linksTable!!)
+                    LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
+                        if (updateExistingLink) {
+                            localDatabase.linksDao()
+                                .updateALinkDataFromLinksTable(linksTable!!.copy(id = existingLinkID))
+                        } else {
+                            localDatabase.linksDao()
+                                .addANewLinkToSavedLinksOrInFolders(linksTable!!)
+                        }
+                    }
 
-                    LinkType.IMP_LINK -> localDatabase.linksDao()
-                        .addANewLinkToImpLinks(importantLink!!)
+                    LinkType.IMP_LINK -> {
+                        if (updateExistingLink) {
+                            localDatabase.linksDao()
+                                .updateALinkDataFromImpLinksTable(importantLink!!.copy(id = existingLinkID))
+                        } else {
+                            localDatabase.linksDao()
+                                .addANewLinkToImpLinks(importantLink!!)
+                        }
+                    }
+
+                    LinkType.HISTORY_LINK -> {
+                        if (updateExistingLink) {
+                            localDatabase.linksDao()
+                                .updateALinkDataFromRecentlyVisitedLinksTable(
+                                    recentlyVisited!!.copy(
+                                        id = existingLinkID
+                                    )
+                                )
+                        } else {
+                            localDatabase.linksDao()
+                                .addANewLinkInRecentlyVisited(recentlyVisited!!)
+                        }
+                    }
+
+                    LinkType.ARCHIVE_LINK -> {
+                        if (updateExistingLink) {
+                            localDatabase.linksDao()
+                                .updateALinkDataFromArchivedLinksTable(
+                                    archivedLinks!!.copy(
+                                        id = existingLinkID
+                                    )
+                                )
+                        } else {
+                            localDatabase.linksDao()
+                                .addANewLinkToArchiveLink(archivedLinks!!)
+                        }
+                    }
                 }
                 onTaskCompleted()
                 return CommonUiEvents.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
@@ -82,6 +136,18 @@ class LinksImpl @Inject constructor(
                         .startsWith("http://x.com/") || importantLink.webURL.trim()
                         .startsWith("https://twitter.com/") || importantLink.webURL.trim()
                         .startsWith("http://twitter.com/")
+
+                    LinkType.HISTORY_LINK -> recentlyVisited!!.webURL.trim()
+                        .startsWith("https://x.com/") || recentlyVisited.webURL.trim()
+                        .startsWith("http://x.com/") || recentlyVisited.webURL.trim()
+                        .startsWith("https://twitter.com/") || recentlyVisited.webURL.trim()
+                        .startsWith("http://twitter.com/")
+
+                    LinkType.ARCHIVE_LINK -> archivedLinks!!.webURL.trim()
+                        .startsWith("https://x.com/") || archivedLinks.webURL.trim()
+                        .startsWith("http://x.com/") || archivedLinks.webURL.trim()
+                        .startsWith("https://twitter.com/") || archivedLinks.webURL.trim()
+                        .startsWith("http://twitter.com/")
                 }
             ) {
                 when (val tweetMetaData =
@@ -89,6 +155,8 @@ class LinksImpl @Inject constructor(
                         when (linkType) {
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> linksTable!!.webURL.trim()
                             LinkType.IMP_LINK -> importantLink!!.webURL.trim()
+                            LinkType.HISTORY_LINK -> recentlyVisited!!.webURL.trim()
+                            LinkType.ARCHIVE_LINK -> archivedLinks!!.webURL.trim()
                         }
                     )) {
                     is TwitterMetaDataResult.Failure -> {
@@ -121,8 +189,13 @@ class LinksImpl @Inject constructor(
                                     keyOfArchiveLinkedFolderV10 = 0,
                                     keyOfImpLinkedFolder = ""
                                 )
-                                localDatabase.linksDao()
-                                    .addANewLinkToSavedLinksOrInFolders(linkTableData)
+                                if (updateExistingLink) {
+                                    localDatabase.linksDao()
+                                        .updateALinkDataFromLinksTable(linkTableData.copy(id = existingLinkID))
+                                } else {
+                                    localDatabase.linksDao()
+                                        .addANewLinkToSavedLinksOrInFolders(linkTableData)
+                                }
                             }
 
                             LinkType.IMP_LINK -> {
@@ -141,8 +214,70 @@ class LinksImpl @Inject constructor(
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = importantLink.infoForSaving
                                 )
-                                localDatabase.linksDao()
-                                    .addANewLinkToImpLinks(importantLinkScrappedData)
+                                if (updateExistingLink) {
+                                    localDatabase.linksDao().updateALinkDataFromImpLinksTable(
+                                        importantLinkScrappedData.copy(id = existingLinkID)
+                                    )
+                                } else {
+                                    localDatabase.linksDao()
+                                        .addANewLinkToImpLinks(importantLinkScrappedData)
+                                }
+                            }
+
+                            LinkType.HISTORY_LINK -> {
+                                val recentlyVisitedLinkScrappedData = RecentlyVisited(
+                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                            "https://t.co/"
+                                        )
+                                    ) tweetMetaData.data.text else importantLink!!.title,
+                                    webURL = sanitizeLink(importantLink!!.webURL),
+                                    baseURL = "twitter.com",
+                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                        it.contains(
+                                            "jpg"
+                                        )
+                                    }
+                                        ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                    infoForSaving = importantLink.infoForSaving
+                                )
+                                if (updateExistingLink) {
+                                    localDatabase.linksDao()
+                                        .updateALinkDataFromRecentlyVisitedLinksTable(
+                                            recentlyVisitedLinkScrappedData.copy(id = existingLinkID)
+                                        )
+                                } else {
+                                    localDatabase.linksDao()
+                                        .addANewLinkInRecentlyVisited(
+                                            recentlyVisitedLinkScrappedData
+                                        )
+                                }
+                            }
+
+                            LinkType.ARCHIVE_LINK -> {
+                                val archiveLinkScrappedData = ArchivedLinks(
+                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                            "https://t.co/"
+                                        )
+                                    ) tweetMetaData.data.text else importantLink!!.title,
+                                    webURL = sanitizeLink(importantLink!!.webURL),
+                                    baseURL = "twitter.com",
+                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
+                                        it.contains(
+                                            "jpg"
+                                        )
+                                    }
+                                        ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                    infoForSaving = importantLink.infoForSaving
+                                )
+                                if (updateExistingLink) {
+                                    localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
+                                        archiveLinkScrappedData.copy(id = existingLinkID)
+                                    )
+                                } else {
+                                    localDatabase.linksDao()
+                                        .addANewLinkToArchiveLink(archiveLinkScrappedData)
+                                }
+
                             }
                         }
                         onTaskCompleted()
@@ -161,6 +296,12 @@ class LinksImpl @Inject constructor(
                             }
 
                             LinkType.IMP_LINK -> importantLink!!.webURL.substringAfter("http")
+                                .substringBefore(" ").trim()
+
+                            LinkType.HISTORY_LINK -> recentlyVisited!!.webURL.substringAfter("http")
+                                .substringBefore(" ").trim()
+
+                            LinkType.ARCHIVE_LINK -> archivedLinks!!.webURL.substringAfter("http")
                                 .substringBefore(" ").trim()
                         }
                     )
@@ -188,7 +329,13 @@ class LinksImpl @Inject constructor(
                                 keyOfArchiveLinkedFolderV10 = 0,
                                 keyOfImpLinkedFolder = ""
                             )
-                            localDatabase.linksDao().addANewLinkToSavedLinksOrInFolders(linkData)
+                            if (updateExistingLink) {
+                                localDatabase.linksDao()
+                                    .updateALinkDataFromLinksTable(linkData.copy(id = existingLinkID))
+                            } else {
+                                localDatabase.linksDao()
+                                    .addANewLinkToSavedLinksOrInFolders(linkData)
+                            }
                         }
 
                         LinkType.IMP_LINK -> {
@@ -199,8 +346,52 @@ class LinksImpl @Inject constructor(
                                 imgURL = linkDataExtractor.data.imgURL,
                                 infoForSaving = importantLink.infoForSaving
                             )
-                            localDatabase.linksDao()
-                                .addANewLinkToImpLinks(importantLinkScrappedData)
+                            if (updateExistingLink) {
+                                localDatabase.linksDao().updateALinkDataFromImpLinksTable(
+                                    importantLinkScrappedData.copy(id = existingLinkID)
+                                )
+                            } else {
+                                localDatabase.linksDao()
+                                    .addANewLinkToImpLinks(importantLinkScrappedData)
+                            }
+                        }
+
+                        LinkType.HISTORY_LINK -> {
+                            val recentlyVisitedLinkScrappedData = RecentlyVisited(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
+                                webURL = sanitizeLink(importantLink!!.webURL),
+                                baseURL = linkDataExtractor.data.baseURL,
+                                imgURL = linkDataExtractor.data.imgURL,
+                                infoForSaving = importantLink.infoForSaving
+                            )
+                            if (updateExistingLink) {
+                                localDatabase.linksDao()
+                                    .updateALinkDataFromRecentlyVisitedLinksTable(
+                                        recentlyVisitedLinkScrappedData.copy(id = existingLinkID)
+                                    )
+                            } else {
+                                localDatabase.linksDao()
+                                    .addANewLinkInRecentlyVisited(recentlyVisitedLinkScrappedData)
+                            }
+                        }
+
+                        LinkType.ARCHIVE_LINK -> {
+                            val archiveLinkScrappedData = ArchivedLinks(
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
+                                webURL = sanitizeLink(importantLink!!.webURL),
+                                baseURL = linkDataExtractor.data.baseURL,
+                                imgURL = linkDataExtractor.data.imgURL,
+                                infoForSaving = importantLink.infoForSaving
+                            )
+                            if (updateExistingLink) {
+                                localDatabase.linksDao()
+                                    .updateALinkDataFromArchivedLinksTable(
+                                        archiveLinkScrappedData.copy(id = existingLinkID)
+                                    )
+                            } else {
+                                localDatabase.linksDao()
+                                    .addANewLinkToArchiveLink(archiveLinkScrappedData)
+                            }
                         }
                     }
 
@@ -221,7 +412,11 @@ class LinksImpl @Inject constructor(
             importantLink = null,
             onTaskCompleted = onTaskCompleted,
             linkType = LinkType.SAVED_LINK,
-            autoDetectTitle = autoDetectTitle
+            autoDetectTitle = autoDetectTitle,
+            existingLinkID = 0L,
+            updateExistingLink = false,
+            recentlyVisited = null,
+            archivedLinks = null
         )
     }
 
@@ -235,7 +430,10 @@ class LinksImpl @Inject constructor(
             importantLink = null,
             onTaskCompleted = onTaskCompleted,
             linkType = LinkType.FOLDER_LINK,
-            autoDetectTitle = autoDetectTitle
+            autoDetectTitle = autoDetectTitle,
+            existingLinkID = 0L,
+            updateExistingLink = false,
+            recentlyVisited = null, archivedLinks = null
         )
     }
 
@@ -389,6 +587,78 @@ class LinksImpl @Inject constructor(
         return localDatabase.linksDao().deleteThisArchiveFolderDataV9(folderID)
     }
 
+    override suspend fun reloadArchiveLink(linkID: Long) {
+        linkoraLog(linkID.toString())
+        saveLink(
+            linksTable = null,
+            importantLink = null,
+            recentlyVisited = null,
+            onTaskCompleted = {},
+            linkType = LinkType.ARCHIVE_LINK,
+            autoDetectTitle = true,
+            existingLinkID = linkID,
+            updateExistingLink = true, archivedLinks = getThisLinkFromArchiveLinksTable(linkID)
+        )
+    }
+
+    override suspend fun reloadLinksTableLink(linkID: Long) {
+        linkoraLog(linkID.toString())
+        val linkData = getThisLinkFromLinksTable(linkID)
+        saveLink(
+            linksTable = linkData,
+            importantLink = null,
+            recentlyVisited = null,
+            onTaskCompleted = {},
+            linkType = if (linkData.isLinkedWithSavedLinks) LinkType.SAVED_LINK else LinkType.FOLDER_LINK,
+            autoDetectTitle = true,
+            existingLinkID = linkID,
+            updateExistingLink = true, archivedLinks = null
+        )
+    }
+
+    override suspend fun reloadImpLinksTableLink(linkID: Long) {
+        linkoraLog(linkID.toString())
+        saveLink(
+            linksTable = null,
+            importantLink = getThisLinkFromImpLinksTable(linkID),
+            recentlyVisited = null,
+            onTaskCompleted = {},
+            linkType = LinkType.IMP_LINK,
+            autoDetectTitle = true,
+            existingLinkID = linkID,
+            updateExistingLink = true, archivedLinks = null
+        )
+    }
+
+    override suspend fun getThisLinkFromLinksTable(linkID: Long): LinksTable {
+        return localDatabase.linksDao().getThisLinkFromLinksTable(linkID)
+    }
+
+    override suspend fun getThisLinkFromImpLinksTable(linkID: Long): ImportantLinks {
+        return localDatabase.linksDao().getThisLinkFromImpLinksTable(linkID)
+    }
+
+    override suspend fun getThisLinkFromArchiveLinksTable(linkID: Long): ArchivedLinks {
+        return localDatabase.linksDao().getThisLinkFromArchiveLinksTable(linkID)
+    }
+
+    override suspend fun getThisLinkFromRecentlyVisitedLinksTable(linkID: Long): RecentlyVisited {
+        return localDatabase.linksDao().getThisLinkFromRecentlyVisitedLinksTable(linkID)
+    }
+
+    override suspend fun reloadHistoryLinksTableLink(linkID: Long) {
+        linkoraLog(linkID.toString())
+        saveLink(
+            linksTable = null,
+            importantLink = null,
+            recentlyVisited = getThisLinkFromRecentlyVisitedLinksTable(linkID),
+            onTaskCompleted = {},
+            linkType = LinkType.HISTORY_LINK,
+            autoDetectTitle = true,
+            existingLinkID = linkID,
+            updateExistingLink = true, archivedLinks = null
+        )
+    }
     override suspend fun addANewLinkToImpLinks(
         importantLink: ImportantLinks,
         onTaskCompleted: () -> Unit,
@@ -399,7 +669,10 @@ class LinksImpl @Inject constructor(
             importantLink = importantLink,
             onTaskCompleted = onTaskCompleted,
             linkType = LinkType.IMP_LINK,
-            autoDetectTitle = autoDetectTitle
+            autoDetectTitle = autoDetectTitle,
+            existingLinkID = 0L,
+            updateExistingLink = false,
+            recentlyVisited = null, archivedLinks = null
         )
     }
 

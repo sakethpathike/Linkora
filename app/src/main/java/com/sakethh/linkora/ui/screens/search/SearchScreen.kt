@@ -1404,7 +1404,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 linkTitle = selectedLinkTitle.value,
                 imgLink = HomeScreenVM.tempImpLinkData.imgURL,
-                onRefreshClick = {}
+                onRefreshClick = {
+                    searchScreenVM.reloadLinkData(SearchScreenVM.selectedLinkID)
+                }
             )
         )
         RenameDialogBox(

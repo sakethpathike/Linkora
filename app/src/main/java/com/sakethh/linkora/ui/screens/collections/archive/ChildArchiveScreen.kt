@@ -330,7 +330,11 @@ fun ChildArchiveScreen(
                 folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
                 linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else "",
                 imgLink = selectedURLImgLink.value,
-                onRefreshClick = {}
+                onRefreshClick = {
+                    if (archiveScreenType == ArchiveScreenType.LINKS) {
+                        archiveScreenVM.refreshArchivedLinkData(archiveScreenVM.selectedArchivedLinkData.value.id)
+                    }
+                }
             )
         )
 

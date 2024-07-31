@@ -105,6 +105,12 @@ class ArchiveScreenVM @Inject constructor(
         }
     }
 
+    fun refreshArchivedLinkData(archiveLinkId: Long) {
+        viewModelScope.launch {
+            linksRepo.reloadArchiveLink(archiveLinkId)
+        }
+    }
+
     fun deleteMultipleSelectedLinks() {
         viewModelScope.launch {
             selectedLinksData.toList().forEach {

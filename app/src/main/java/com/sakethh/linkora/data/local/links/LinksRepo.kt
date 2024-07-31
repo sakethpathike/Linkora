@@ -84,6 +84,16 @@ interface LinksRepo {
 
     suspend fun deleteThisArchiveFolderDataV9(folderID: String)
 
+    suspend fun reloadArchiveLink(linkID: Long)
+
+    suspend fun reloadLinksTableLink(linkID: Long)
+
+    suspend fun reloadImpLinksTableLink(linkID: Long)
+    suspend fun getThisLinkFromLinksTable(linkID: Long): LinksTable
+    suspend fun getThisLinkFromImpLinksTable(linkID: Long): ImportantLinks
+    suspend fun getThisLinkFromArchiveLinksTable(linkID: Long): ArchivedLinks
+    suspend fun getThisLinkFromRecentlyVisitedLinksTable(linkID: Long): RecentlyVisited
+    suspend fun reloadHistoryLinksTableLink(linkID: Long)
 
     suspend fun addANewLinkToImpLinks(
         importantLink: ImportantLinks,
