@@ -61,7 +61,7 @@ class LinksImpl @Inject constructor(
 
                 LinkType.IMP_LINK -> doesThisExistsInImpLinks(importantLink!!.webURL)
                 LinkType.HISTORY_LINK -> doesThisExistsInRecentlyVisitedLinks(recentlyVisited!!.webURL)
-                LinkType.ARCHIVE_LINK -> doesThisExistsInArchiveLinks(recentlyVisited!!.webURL)
+                LinkType.ARCHIVE_LINK -> doesThisExistsInArchiveLinks(archivedLinks!!.webURL)
             } && !updateExistingLink
         ) {
             onTaskCompleted()
@@ -400,10 +400,10 @@ class LinksImpl @Inject constructor(
                         LinkType.ARCHIVE_LINK -> {
                             val archiveLinkScrappedData = ArchivedLinks(
                                 title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
-                                webURL = sanitizeLink(importantLink!!.webURL),
+                                webURL = sanitizeLink(archivedLinks!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
-                                infoForSaving = importantLink.infoForSaving
+                                infoForSaving = archivedLinks.infoForSaving
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
