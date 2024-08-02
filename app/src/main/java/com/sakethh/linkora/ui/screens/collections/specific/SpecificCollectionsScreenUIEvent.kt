@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.ImportantLinks
 
 sealed class SpecificCollectionsScreenUIEvent {
     data class ArchiveAFolder(val folderId: Long) : SpecificCollectionsScreenUIEvent()
@@ -54,4 +55,7 @@ sealed class SpecificCollectionsScreenUIEvent {
     data class CreateANewFolder(val foldersTable: FoldersTable) : SpecificCollectionsScreenUIEvent()
 
     data class DeleteAFolder(val folderId: Long) : SpecificCollectionsScreenUIEvent()
+
+    data class AddExistingLinkToImportantLink(val importantLinks: ImportantLinks) :
+        SpecificCollectionsScreenUIEvent()
 }

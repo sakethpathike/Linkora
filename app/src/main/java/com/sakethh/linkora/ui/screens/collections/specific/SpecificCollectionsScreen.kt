@@ -1136,6 +1136,19 @@ fun SpecificCollectionScreen(navController: NavController) {
                 forAChildFolder = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) mutableStateOf(
                     false
                 ) else mutableStateOf(true),
+                onImportantLinkClick = {
+                    specificCollectionsScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
+                            ImportantLinks(
+                                title = tempImpLinkData.title.value,
+                                webURL = tempImpLinkData.webURL.value,
+                                baseURL = tempImpLinkData.baseURL.value,
+                                imgURL = tempImpLinkData.imgURL.value,
+                                infoForSaving = tempImpLinkData.infoForSaving.value
+                            )
+                        )
+                    )
+                },
                 onArchiveClick = {
                     if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
                         specificCollectionsScreenVM.onArchiveClick(

@@ -63,6 +63,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -1420,6 +1421,18 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                     searchScreenVM.reloadLinkData(
                         SearchScreenVM.selectedLinkID,
                         homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST
+                    )
+                }, onImportantLinkClick = {
+                    searchScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
+                            ImportantLinks(
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                            )
+                        )
                     )
                 }
             )

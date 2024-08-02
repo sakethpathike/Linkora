@@ -349,6 +349,25 @@ open class CollectionsScreenVM @Inject constructor(
                     pushAUIEvent(CommonUiEvent.ShowToast("deleted the folder"))
                 }
             }
+
+            is SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink -> {
+                viewModelScope.launch {
+                    if (linksRepo.doesThisExistsInImpLinks(specificCollectionsScreenUIEvent.importantLinks.webURL)) {
+                        linksRepo.deleteALinkFromImpLinksBasedOnURL(specificCollectionsScreenUIEvent.importantLinks.webURL)
+                        pushAUIEvent(CommonUiEvent.ShowToast("Removed link from \"Important Links\" successfully"))
+                    } else {
+                        linksRepo.addANewLinkToImpLinks(
+                            specificCollectionsScreenUIEvent.importantLinks,
+                            onTaskCompleted = {
+                                this.launch {
+                                    pushAUIEvent(CommonUiEvent.ShowToast("Added link to \"Important Links\""))
+                                }
+                            },
+                            autoDetectTitle = false
+                        )
+                    }
+                }
+            }
         }
     }
 

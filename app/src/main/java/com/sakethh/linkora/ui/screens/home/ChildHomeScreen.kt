@@ -26,6 +26,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
@@ -564,6 +565,18 @@ fun ChildHomeScreen(
                     homeScreenVM.reloadLinkData(
                         selectedElementID.longValue,
                         homeScreenType = homeScreenType
+                    )
+                }, onImportantLinkClick = {
+                    homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
+                            ImportantLinks(
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                            )
+                        )
                     )
                 }
             )
