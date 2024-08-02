@@ -560,17 +560,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         }
                                                     } else {
                                                         customWebTab.openInWeb(
-                                                                recentlyVisitedData = RecentlyVisited(
-                                                                    title = it.title,
-                                                                    webURL = it.webURL,
-                                                                    baseURL = it.baseURL,
-                                                                    imgURL = it.imgURL,
-                                                                    infoForSaving = it.infoForSaving
-                                                                ),
-                                                                context = context,
-                                                                uriHandler = uriHandler,
-                                                                forceOpenInExternalBrowser = false
-                                                            )
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -676,17 +676,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         }
                                                     } else {
                                                         customWebTab.openInWeb(
-                                                                recentlyVisitedData = RecentlyVisited(
-                                                                    title = it.title,
-                                                                    webURL = it.webURL,
-                                                                    baseURL = it.baseURL,
-                                                                    imgURL = it.imgURL,
-                                                                    infoForSaving = it.infoForSaving
-                                                                ),
-                                                                context = context,
-                                                                uriHandler = uriHandler,
-                                                                forceOpenInExternalBrowser = false
-                                                            )
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -789,17 +789,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         }
                                                     } else {
                                                         customWebTab.openInWeb(
-                                                                recentlyVisitedData = RecentlyVisited(
-                                                                    title = it.title,
-                                                                    webURL = it.webURL,
-                                                                    baseURL = it.baseURL,
-                                                                    imgURL = it.imgURL,
-                                                                    infoForSaving = it.infoForSaving
-                                                                ),
-                                                                context = context,
-                                                                uriHandler = uriHandler,
-                                                                forceOpenInExternalBrowser = false
-                                                            )
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -904,17 +904,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         }
                                                     } else {
                                                         customWebTab.openInWeb(
-                                                                recentlyVisitedData = RecentlyVisited(
-                                                                    title = it.title,
-                                                                    webURL = it.webURL,
-                                                                    baseURL = it.baseURL,
-                                                                    imgURL = it.imgURL,
-                                                                    infoForSaving = it.infoForSaving
-                                                                ),
-                                                                context = context,
-                                                                uriHandler = uriHandler,
-                                                                forceOpenInExternalBrowser = false
-                                                            )
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -1019,17 +1019,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         }
                                                     } else {
                                                         customWebTab.openInWeb(
-                                                                recentlyVisitedData = RecentlyVisited(
-                                                                    title = it.title,
-                                                                    webURL = it.webURL,
-                                                                    baseURL = it.baseURL,
-                                                                    imgURL = it.imgURL,
-                                                                    infoForSaving = it.infoForSaving
-                                                                ),
-                                                                context = context,
-                                                                uriHandler = uriHandler,
-                                                                forceOpenInExternalBrowser = false
-                                                            )
+                                                            recentlyVisitedData = RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            forceOpenInExternalBrowser = false
+                                                        )
                                                     }
                                                 },
                                                 webURL = it.webURL,
@@ -1308,17 +1308,17 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                 onLinkClick = {
                                     if (!isSelectionModeEnabled.value) {
                                         customWebTab.openInWeb(
-                                                recentlyVisitedData = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler,
-                                                forceOpenInExternalBrowser = false
-                                            )
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ),
+                                            context = context,
+                                            uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
                                     } else {
                                         if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
                                             searchScreenVM.selectedHistoryLinksData.add(it)
@@ -1452,8 +1452,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                     } else {
                         searchScreenVM.onUiEvent(
                             SpecificCollectionsScreenUIEvent.UpdateFolderNote(
-                            CollectionsScreenVM.selectedFolderData.value.id,
-                            newNote
+                                CollectionsScreenVM.selectedFolderData.value.id,
+                                newNote
                             )
                         )
                     }

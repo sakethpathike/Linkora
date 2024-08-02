@@ -329,14 +329,14 @@ fun AddANewLinkDialogBox(
                         }
                         item {
                             if (screenType == SpecificScreenType.ROOT_SCREEN || screenType == SpecificScreenType.INTENT_ACTIVITY) {
-                                    Text(
-                                        text = "Add in",
-                                        color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontSize = 18.sp,
-                                        modifier = Modifier
-                                            .padding(start = 20.dp, top = 20.dp, end = 20.dp)
-                                    )
+                                Text(
+                                    text = "Add in",
+                                    color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontSize = 18.sp,
+                                    modifier = Modifier
+                                        .padding(start = 20.dp, top = 20.dp, end = 20.dp)
+                                )
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
                                     horizontalArrangement = Arrangement.SpaceBetween,
@@ -411,7 +411,7 @@ fun AddANewLinkDialogBox(
                                     onItemClick = {
                                         selectedFolderName.value = it.folderName
                                         selectedFolderID.longValue = it.id
-                                            isDropDownMenuIconClicked.value = false
+                                        isDropDownMenuIconClicked.value = false
                                     },
                                     isCurrentFolderSelected = mutableStateOf(it.id == selectedFolderID.longValue),
                                     folderName = it.folderName,

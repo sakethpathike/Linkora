@@ -128,6 +128,7 @@ class SearchScreenVM @Inject constructor(
             }
         }
     }
+
     override fun reloadLinkData(
         linkID: Long,
         homeScreenType: HomeScreenVM.HomeScreenType
@@ -144,6 +145,7 @@ class SearchScreenVM @Inject constructor(
             }
         }
     }
+
     fun archiveSelectedLinksTableLinks() {
         viewModelScope.launch {
             selectedLinksTableData.toList().forEach {
@@ -380,9 +382,9 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
 
                     linksRepo.deleteALinkNoteFromArchiveBasedFolderLinksV10(
-                            folderID = folderID,
-                            webURL = selectedWebURL
-                        )
+                        folderID = folderID,
+                        webURL = selectedWebURL
+                    )
                     withContext(Dispatchers.Main) {
                         Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
                     }
@@ -400,14 +402,14 @@ class SearchScreenVM @Inject constructor(
             awaitAll(async {
                 linksRepo.archiveLinkTableUpdater(
                     archivedLinks = ArchivedLinks(
-                    title = HomeScreenVM.tempImpLinkData.title,
-                    webURL = HomeScreenVM.tempImpLinkData.webURL,
-                    baseURL = HomeScreenVM.tempImpLinkData.baseURL,
-                    imgURL = HomeScreenVM.tempImpLinkData.imgURL,
-                    infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                ), context = context, onTaskCompleted = {
+                        title = HomeScreenVM.tempImpLinkData.title,
+                        webURL = HomeScreenVM.tempImpLinkData.webURL,
+                        baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                        imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                        infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                    ), context = context, onTaskCompleted = {
 
-                })
+                    })
             }, async {
                 when (selectedLinkType) {
                     SelectedLinkType.HISTORY_LINKS -> {
@@ -494,8 +496,8 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
 
                     linksRepo.renameALinkInfoFromArchiveBasedFolderLinksV10(
-                            webURL = webURL, newInfo = newNote, folderID = folderID
-                        )
+                        webURL = webURL, newInfo = newNote, folderID = folderID
+                    )
                 }
             }
         }
@@ -511,8 +513,8 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
 
                     linksRepo.renameALinkTitleFromRecentlyVisited(
-                            webURL = webURL, newTitle = newTitle
-                        )
+                        webURL = webURL, newTitle = newTitle
+                    )
                 }
             }
 
@@ -548,8 +550,8 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
 
                     linksRepo.renameALinkTitleFromArchiveBasedFolderLinksV10(
-                            webURL = webURL, newTitle = newTitle, folderID = folderID
-                        )
+                        webURL = webURL, newTitle = newTitle, folderID = folderID
+                    )
                 }
             }
         }

@@ -769,17 +769,17 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             } else {
                                                 specificCollectionsScreenVM.onLinkClick(
                                                     RecentlyVisited(
-                                                            title = linkData.title,
-                                                            webURL = linkData.webURL,
-                                                            baseURL = linkData.baseURL,
-                                                            imgURL = linkData.imgURL,
-                                                            infoForSaving = linkData.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
+                                                        title = linkData.title,
+                                                        webURL = linkData.webURL,
+                                                        baseURL = linkData.baseURL,
+                                                        imgURL = linkData.imgURL,
+                                                        infoForSaving = linkData.infoForSaving
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false,
                                                     onTaskCompleted = {}
-                                                    )
+                                                )
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -882,17 +882,17 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             } else {
                                                 specificCollectionsScreenVM.onLinkClick(
                                                     RecentlyVisited(
-                                                            title = linkData.title,
-                                                            webURL = linkData.webURL,
-                                                            baseURL = linkData.baseURL,
-                                                            imgURL = linkData.imgURL,
-                                                            infoForSaving = linkData.infoForSaving,
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
+                                                        title = linkData.title,
+                                                        webURL = linkData.webURL,
+                                                        baseURL = linkData.baseURL,
+                                                        imgURL = linkData.imgURL,
+                                                        infoForSaving = linkData.infoForSaving,
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false,
                                                     onTaskCompleted = {}
-                                                    )
+                                                )
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -1040,17 +1040,17 @@ fun SpecificCollectionScreen(navController: NavController) {
                                             } else {
                                                 specificCollectionsScreenVM.onLinkClick(
                                                     RecentlyVisited(
-                                                            title = linkData.title,
-                                                            webURL = linkData.webURL,
-                                                            baseURL = linkData.baseURL,
-                                                            imgURL = linkData.imgURL,
-                                                            infoForSaving = linkData.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
+                                                        title = linkData.title,
+                                                        webURL = linkData.webURL,
+                                                        baseURL = linkData.baseURL,
+                                                        imgURL = linkData.imgURL,
+                                                        infoForSaving = linkData.infoForSaving
+                                                    ),
+                                                    context = context,
+                                                    uriHandler = uriHandler,
                                                     forceOpenInExternalBrowser = false,
                                                     onTaskCompleted = {}
-                                                    )
+                                                )
                                             }
                                         },
                                         webURL = linkData.webURL,
@@ -1345,16 +1345,16 @@ fun SpecificCollectionScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                         specificCollectionsScreenVM.onUiEvent(
                             SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
-                            autoDetectTitle = isAutoDetectSelected,
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
+                                autoDetectTitle = isAutoDetectSelected,
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
                                 folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                            onTaskCompleted = {
-                                shouldNewLinkDialogBoxBeVisible.value = false
-                                isDataExtractingForTheLink.value = false
-                            },
-                            folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
+                                onTaskCompleted = {
+                                    shouldNewLinkDialogBoxBeVisible.value = false
+                                    isDataExtractingForTheLink.value = false
+                                },
+                                folderName = CollectionsScreenVM.currentClickedFolderData.value.folderName
                             )
                         )
                     }
@@ -1375,14 +1375,14 @@ fun SpecificCollectionScreen(navController: NavController) {
                     SpecificScreenType.SAVED_LINKS_SCREEN -> {
                         specificCollectionsScreenVM.onUiEvent(
                             SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
-                            autoDetectTitle = isAutoDetectSelected,
-                            title = title,
-                            webURL = webURL,
-                            noteForSaving = note,
-                            onTaskCompleted = {
-                                shouldNewLinkDialogBoxBeVisible.value = false
-                                isDataExtractingForTheLink.value = false
-                            },
+                                autoDetectTitle = isAutoDetectSelected,
+                                title = title,
+                                webURL = webURL,
+                                noteForSaving = note,
+                                onTaskCompleted = {
+                                    shouldNewLinkDialogBoxBeVisible.value = false
+                                    isDataExtractingForTheLink.value = false
+                                },
                             )
                         )
                     }

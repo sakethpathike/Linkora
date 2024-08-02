@@ -259,6 +259,7 @@ object AppModule {
     fun provideShelfRepo(localDatabase: LocalDatabase): ShelfRepo {
         return ShelfImpl(localDatabase)
     }
+
     @Provides
     @Singleton
     fun provideSearchRepo(localDatabase: LocalDatabase): SearchRepo {

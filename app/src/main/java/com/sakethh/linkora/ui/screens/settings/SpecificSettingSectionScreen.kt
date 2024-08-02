@@ -405,7 +405,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                         if (isNetworkAvailable(context)) {
                                             if (SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName == "") {
                                                 settingsScreenVM.latestAppVersionRetriever { }
-                                                }
+                                            }
                                             shouldVersionCheckerDialogAppear.value = false
                                             if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                                 shouldBtmModalSheetBeVisible.value = true
@@ -478,17 +478,17 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 localIcon = R.drawable.github_logo,
                                 onClick = {
                                     customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = "Linkora on Github",
-                                                webURL = "https://www.github.com/sakethpathike/Linkora",
-                                                baseURL = "github.com",
-                                                imgURL = "it.imgURL",
-                                                infoForSaving = "Linkora on Github"
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = "Linkora on Github",
+                                            webURL = "https://www.github.com/sakethpathike/Linkora",
+                                            baseURL = "github.com",
+                                            imgURL = "it.imgURL",
+                                            infoForSaving = "Linkora on Github"
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
+                                    )
                                 })
 
                             HorizontalDivider(
@@ -519,17 +519,17 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 title = "Twitter",
                                 onClick = {
                                     customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = "Linkora on Twitter",
-                                                webURL = "https://www.twitter.com/LinkoraApp",
-                                                baseURL = "twitter.com",
-                                                imgURL = "it.imgURL",
-                                                infoForSaving = "Linkora on Twitter"
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
+                                        recentlyVisitedData = RecentlyVisited(
+                                            title = "Linkora on Twitter",
+                                            webURL = "https://www.twitter.com/LinkoraApp",
+                                            baseURL = "twitter.com",
+                                            imgURL = "it.imgURL",
+                                            infoForSaving = "Linkora on Twitter"
+                                        ),
+                                        context = context,
+                                        uriHandler = uriHandler,
+                                        forceOpenInExternalBrowser = false
+                                    )
                                 })
                             HorizontalDivider(
                                 modifier = Modifier.padding(
