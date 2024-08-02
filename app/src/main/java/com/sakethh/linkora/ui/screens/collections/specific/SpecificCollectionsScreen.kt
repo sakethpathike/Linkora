@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -41,6 +42,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,6 +61,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
@@ -89,6 +92,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState", "LongLogTag")
@@ -96,6 +100,16 @@ import kotlinx.coroutines.launch
 @Composable
 fun SpecificCollectionScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        specificCollectionsScreenVM.eventChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val selectedWebURL = rememberSaveable {
         mutableStateOf("")
     }
@@ -137,7 +151,6 @@ fun SpecificCollectionScreen(navController: NavController) {
         mutableStateOf("")
     }
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val topBarText = when (SpecificCollectionsScreenVM.screenType.value) {

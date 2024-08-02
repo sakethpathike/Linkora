@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.search
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -47,6 +48,7 @@ import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -62,6 +64,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
@@ -90,6 +93,7 @@ import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFo
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -119,6 +123,15 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     val historyLinksData = searchScreenVM.historyLinksData.collectAsStateWithLifecycle().value
     val selectedSearchFilters = searchScreenVM.selectedSearchFilters
     val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        searchScreenVM.eventChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val uriHandler = LocalUriHandler.current
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
@@ -1377,7 +1390,6 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         )
                     } else {
                         searchScreenVM.onNoteDeleteClick(
-                            context,
                             CollectionsScreenVM.selectedFolderData.value.id
                         )
                     }

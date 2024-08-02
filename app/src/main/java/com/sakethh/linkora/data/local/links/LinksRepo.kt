@@ -5,7 +5,7 @@ import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.ui.CommonUiEvents
+import com.sakethh.linkora.ui.CommonUiEvent
 import kotlinx.coroutines.flow.Flow
 
 interface LinksRepo {
@@ -14,13 +14,13 @@ interface LinksRepo {
         linksTable: LinksTable,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean,
-    ): CommonUiEvents
+    ): CommonUiEvent
 
     suspend fun addANewLinkInAFolder(
         linksTable: LinksTable,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
-    ): CommonUiEvents
+    ): CommonUiEvent
 
     suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
 
@@ -99,7 +99,7 @@ interface LinksRepo {
         importantLink: ImportantLinks,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
-    ): CommonUiEvents
+    ): CommonUiEvent
 
 
     suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)

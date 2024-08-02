@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.collections
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
@@ -53,6 +54,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -74,6 +76,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
@@ -102,6 +105,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState", "LongLogTag")
@@ -122,6 +126,15 @@ fun CollectionsScreen(navController: NavController) {
     val activity = LocalContext.current as? Activity
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()
+    LaunchedEffect(key1 = Unit) {
+        collectionsScreenVM.eventChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val foldersData = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -556,7 +569,7 @@ fun CollectionsScreen(navController: NavController) {
                 noteForSaving = clickedFolderNote.value,
                 onNoteDeleteCardClick = {
                     collectionsScreenVM.onNoteDeleteClick(
-                        context, CollectionsScreenVM.selectedFolderData.value.id
+                        CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
                 linkTitle = "",

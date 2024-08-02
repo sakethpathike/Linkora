@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.collections.archive
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -21,6 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
@@ -41,6 +44,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -59,6 +63,15 @@ fun ChildArchiveScreen(
         archiveScreenVM.archiveFoldersDataV10.collectAsStateWithLifecycle().value
     val uriHandler = LocalUriHandler.current
     val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        archiveScreenVM.channelEvent.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState =
         androidx.compose.material3.rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -322,7 +335,6 @@ fun ChildArchiveScreen(
                     archiveScreenVM.onNoteDeleteCardClick(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
-                        context = context,
                         onTaskCompleted = {},
                         folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
@@ -345,7 +357,6 @@ fun ChildArchiveScreen(
                     archiveScreenVM.onDeleteClick(
                         archiveScreenType = archiveScreenType,
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
-                        context = context,
                         onTaskCompleted = {
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(

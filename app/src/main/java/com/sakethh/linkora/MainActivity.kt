@@ -24,6 +24,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -37,6 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
@@ -90,6 +92,15 @@ class MainActivity : ComponentActivity() {
                 }
                 val customWebTab: CustomWebTab = hiltViewModel()
                 val mainActivityVM: MainActivityVM = hiltViewModel()
+                LaunchedEffect(key1 = Unit) {
+                    mainActivityVM.channelEvent.collectLatest {
+                        when (it) {
+                            is CommonUiEvent.ShowToast -> {
+                                Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    }
+                }
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.home
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,6 +28,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
@@ -50,6 +52,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 
@@ -89,11 +92,20 @@ fun ChildHomeScreen(
             }
         })
     }
+    val context = LocalContext.current
+    LaunchedEffect(key1 = Unit) {
+        specificCollectionsScreenVM.eventChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val savedLinksData =
         specificCollectionsScreenVM.savedLinksTable.collectAsStateWithLifecycle().value
     val impLinksData = specificCollectionsScreenVM.impLinksTable.collectAsStateWithLifecycle().value
     val uriHandler = LocalUriHandler.current
-    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
@@ -541,7 +553,6 @@ fun ChildHomeScreen(
                         )
                     } else {
                         specificCollectionsScreenVM.onNoteDeleteClick(
-                            context,
                             selectedElementID.longValue
                         )
                     }

@@ -182,6 +182,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
     }
 
     override suspend fun deleteAFolder(folderID: Long) {
+        localDatabase.linksDao().deleteThisFolderLinks(folderID)
         deleteAllChildFoldersAndLinksOfASpecificFolder(folderID)
         return localDatabase.foldersDao().deleteAFolder(folderID)
     }

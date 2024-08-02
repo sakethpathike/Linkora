@@ -4,7 +4,10 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -15,19 +18,16 @@ class MainActivityVM @Inject constructor(
     private val importRepo: ImportRepo
 ) : ViewModel() {
 
+    private val _channelEvent = Channel<CommonUiEvent>()
+    val channelEvent = _channelEvent.receiveAsFlow()
+
     fun migrateArchiveFoldersV9toV10() {
         viewModelScope.launch {
             if (foldersRepo.getAllArchiveFoldersV9List()
                     .isNotEmpty()
             ) {
                 importRepo.migrateArchiveFoldersV9toV10()
-                /* withContext(Dispatchers.Main) {
-                     Toast.makeText(
-                         context,
-                         "Archived folders Data Migrated successfully",
-                         Toast.LENGTH_SHORT
-                     ).show()
-                 }*/
+                pushUIEvent(CommonUiEvent.ShowToast("Archived folders data migrated successfully"))
             }
         }
     }
@@ -39,14 +39,12 @@ class MainActivityVM @Inject constructor(
             ) {
                 importRepo.migrateRegularFoldersLinksDataFromV9toV10()
             }
-            /*withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    "Root folders Data Migrated successfully",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }*/
+            pushUIEvent(CommonUiEvent.ShowToast("Root folders data migrated successfully"))
         }
+    }
+
+    private suspend fun pushUIEvent(commonUiEvent: CommonUiEvent) {
+        _channelEvent.send(commonUiEvent)
     }
 
 }

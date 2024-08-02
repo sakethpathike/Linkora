@@ -91,6 +91,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
@@ -108,6 +109,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.theme.fonts
 import com.sakethh.linkora.utils.isNetworkAvailable
 import com.sakethh.linkora.worker.RefreshLinksWorker
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -125,12 +127,18 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
     val isImportConflictBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val isNewFeatureDialogBoxVisible = rememberSaveable {
-        mutableStateOf(false)
-    }
     val successfulRefreshLinkCount =
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
     val settingsScreenVM: SettingsScreenVM = hiltViewModel()
+    LaunchedEffect(key1 = Unit) {
+        settingsScreenVM.eventChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowToast -> {
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             val file = createTempFile()

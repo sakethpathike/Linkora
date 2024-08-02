@@ -12,7 +12,7 @@ import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
-import com.sakethh.linkora.ui.CommonUiEvents
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.isAValidURL
@@ -39,7 +39,7 @@ class LinksImpl @Inject constructor(
         autoDetectTitle: Boolean,
         existingLinkID: Long,
         updateExistingLink: Boolean
-    ): CommonUiEvents {
+    ): CommonUiEvent {
         if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> !isAValidURL(linksTable!!.webURL)
@@ -49,7 +49,7 @@ class LinksImpl @Inject constructor(
             }
         ) {
             onTaskCompleted()
-            return CommonUiEvents.ShowToast("invalid url")
+            return CommonUiEvent.ShowToast("invalid url")
         } else if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> linksTable!!.keyOfLinkedFolderV10?.let {
@@ -65,10 +65,10 @@ class LinksImpl @Inject constructor(
             } && !updateExistingLink
         ) {
             onTaskCompleted()
-            return CommonUiEvents.ShowToast("given link already exists")
+            return CommonUiEvent.ShowToast("given link already exists")
         } else {
 
-            suspend fun saveWithGivenData(): CommonUiEvents {
+            suspend fun saveWithGivenData(): CommonUiEvent {
                 when (linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         if (updateExistingLink) {
@@ -127,7 +127,7 @@ class LinksImpl @Inject constructor(
                     }
                 }
                 onTaskCompleted()
-                return CommonUiEvents.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
+                return CommonUiEvent.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
             }
 
 
@@ -297,7 +297,7 @@ class LinksImpl @Inject constructor(
                             }
                         }
                         onTaskCompleted()
-                        return CommonUiEvents.ShowToast("added the url")
+                        return CommonUiEvent.ShowToast("added the url")
                     }
                 }
             }
@@ -378,11 +378,11 @@ class LinksImpl @Inject constructor(
 
                         LinkType.HISTORY_LINK -> {
                             val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
-                                webURL = sanitizeLink(importantLink!!.webURL),
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else recentlyVisited!!.title,
+                                webURL = sanitizeLink(recentlyVisited!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
-                                infoForSaving = importantLink.infoForSaving
+                                infoForSaving = recentlyVisited.infoForSaving
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
@@ -399,7 +399,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.ARCHIVE_LINK -> {
                             val archiveLinkScrappedData = ArchivedLinks(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
+                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else archivedLinks!!.title,
                                 webURL = sanitizeLink(archivedLinks!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
@@ -420,7 +420,7 @@ class LinksImpl @Inject constructor(
                     }
 
                     onTaskCompleted()
-                    return CommonUiEvents.ShowToast("added the url")
+                    return CommonUiEvent.ShowToast("added the url")
                 }
             }
         }
@@ -430,7 +430,7 @@ class LinksImpl @Inject constructor(
         linksTable: LinksTable,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
-    ): CommonUiEvents {
+    ): CommonUiEvent {
         return saveLink(
             linksTable = linksTable,
             importantLink = null,
@@ -448,7 +448,7 @@ class LinksImpl @Inject constructor(
         linksTable: LinksTable,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
-    ): CommonUiEvents {
+    ): CommonUiEvent {
         return saveLink(
             linksTable = linksTable,
             importantLink = null,
@@ -690,7 +690,7 @@ class LinksImpl @Inject constructor(
         importantLink: ImportantLinks,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
-    ): CommonUiEvents {
+    ): CommonUiEvent {
         return saveLink(
             linksTable = null,
             importantLink = importantLink,

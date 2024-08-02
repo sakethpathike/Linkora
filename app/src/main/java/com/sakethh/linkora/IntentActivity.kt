@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
@@ -13,7 +12,9 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class IntentActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,7 +22,6 @@ class IntentActivity : ComponentActivity() {
             val shouldUIBeVisible = rememberSaveable {
                 mutableStateOf(true)
             }
-            val context = LocalContext.current
             val isDataExtractingForTheLink = rememberSaveable {
                 mutableStateOf(false)
             }
@@ -95,8 +95,4 @@ class IntentActivity : ComponentActivity() {
             }
         }
     }
-}
-
-object IntentActivityData {
-    val foldersData = mutableStateOf(emptyList<FoldersTable>())
 }

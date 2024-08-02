@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
-import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShortText
@@ -42,6 +41,7 @@ import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesResult
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
@@ -50,11 +50,13 @@ import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -483,6 +485,13 @@ class SettingsScreenVM @Inject constructor(
         }
     }
 
+    private val _eventChannel = Channel<CommonUiEvent>()
+    val eventChannel = _eventChannel.receiveAsFlow()
+
+    private suspend fun pushUiEvent(commonUiEvent: CommonUiEvent) {
+        _eventChannel.send(commonUiEvent)
+    }
+
     fun exportDataToAFile(
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
@@ -491,11 +500,7 @@ class SettingsScreenVM @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModelScope.launch {
                 exportRepo.exportToAFile()
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context, "Successfully Exported", Toast.LENGTH_SHORT
-                    ).show()
-                }
+                pushUiEvent(CommonUiEvent.ShowToast("Successfully Exported"))
             }
         } else {
             when (ContextCompat.checkSelfPermission(
@@ -504,11 +509,7 @@ class SettingsScreenVM @Inject constructor(
                 PackageManager.PERMISSION_GRANTED -> {
                     viewModelScope.launch {
                         exportRepo.exportToAFile()
-                        withContext(Dispatchers.Main) {
-                            Toast.makeText(
-                                context, "Successfully Exported", Toast.LENGTH_SHORT
-                            ).show()
-                        }
+                        pushUiEvent(CommonUiEvent.ShowToast("Successfully Exported"))
                     }
                     isDialogBoxVisible.value = false
                 }
@@ -517,17 +518,13 @@ class SettingsScreenVM @Inject constructor(
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                         runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         viewModelScope.launch {
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(context, "PERMISSION DENIED", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
+                            pushUiEvent(CommonUiEvent.ShowToast("PERMISSION DENIED"))
                         }
                     }
                 }
             }
         }
     }
-
     fun dataSection(
         runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
         context: Context,
