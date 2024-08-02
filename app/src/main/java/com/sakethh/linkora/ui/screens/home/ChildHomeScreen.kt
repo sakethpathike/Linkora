@@ -199,15 +199,15 @@ fun ChildHomeScreen(
                                         }
                                     } else {
                                         customWebTab.openInWeb(
-                                                recentlyVisitedData = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                forceOpenInExternalBrowser = false
-                                            )
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
                                     }
                                 },
                                 webURL = it.webURL,
@@ -296,15 +296,15 @@ fun ChildHomeScreen(
                                         }
                                     } else {
                                         customWebTab.openInWeb(
-                                                recentlyVisitedData = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                forceOpenInExternalBrowser = false
-                                            )
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
                                     }
                                 },
                                 webURL = it.webURL,
@@ -452,15 +452,15 @@ fun ChildHomeScreen(
                                         }
                                     } else {
                                         customWebTab.openInWeb(
-                                                recentlyVisitedData = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                forceOpenInExternalBrowser = false
-                                            )
+                                            recentlyVisitedData = RecentlyVisited(
+                                                title = it.title,
+                                                webURL = it.webURL,
+                                                baseURL = it.baseURL,
+                                                imgURL = it.imgURL,
+                                                infoForSaving = it.infoForSaving
+                                            ), context = context, uriHandler = uriHandler,
+                                            forceOpenInExternalBrowser = false
+                                        )
                                     }
                                 },
                                 webURL = it.webURL,
@@ -634,8 +634,8 @@ fun ChildHomeScreen(
 
                     HomeScreenVM.HomeScreenType.IMP_LINKS -> homeScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.UpdateImpLinkNote(
-                        selectedElementID.longValue,
-                        newNote
+                            selectedElementID.longValue,
+                            newNote
                         )
                     )
 

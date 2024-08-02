@@ -38,120 +38,120 @@ fun SettingsNewVersionUpdateBtmContent(
     shouldBtmModalSheetBeVisible: MutableState<Boolean>, settingsScreenVM: SettingsScreenVM
 ) {
     val uriHandler = LocalUriHandler.current
-     val context = LocalContext.current
-     val coroutineScope = rememberCoroutineScope()
-     LazyColumn(
-         modifier = Modifier
-             .fillMaxWidth()
-             .wrapContentHeight()
-     ) {
-         item {
-             Text(
-                 text = "Linkora just got better,\nnew update is available.",
-                 style = MaterialTheme.typography.titleLarge,
-                 fontSize = 24.sp,
-                 textAlign = TextAlign.Start,
-                 lineHeight = 28.sp,
-                 modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-             )
-         }
-         item {
-             VersionCardForBtmSheetContent(
-                 title = "version you're using",
-                 value = SettingsScreenVM.APP_VERSION_NAME
-             )
-         }
-         if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
-             item {
-                 VersionCardForBtmSheetContent(
-                     title = "latest version which you should be using",
-                     value = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName
-                 )
-             }
-         }
-         item {
-             Spacer(modifier = Modifier.height(20.dp))
-         }
-             item {
-                 Button(
-                     modifier = Modifier
-                         .padding(start = 20.dp, end = 20.dp)
-                         .fillMaxWidth()
-                         .pulsateEffect(),
-                     onClick = {
-                         coroutineScope.launch {
-                             if (modalBtmSheetState.isVisible) {
-                                 modalBtmSheetState.hide()
-                             }
-                         }.invokeOnCompletion {
-                             shouldBtmModalSheetBeVisible.value = false
-                         }
-                         coroutineScope.launch {
-                             settingsScreenVM.openInWeb(
-                                 recentlyVisitedData = RecentlyVisited(
-                                     title = "Linkora ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} release page on GitHub",
-                                     webURL = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releasePageURL,
-                                     baseURL = "github.com",
-                                     imgURL = "it.imgURL",
-                                     infoForSaving = ""
-                                 ),
-                                 context = context,
-                                 uriHandler = uriHandler, forceOpenInExternalBrowser = false
-                             )
-                         }
-                     }) {
-                     Text(
-                         text = "Redirect to latest release page",
-                         style = MaterialTheme.typography.titleSmall,
-                         fontSize = 16.sp,
-                         textAlign = TextAlign.Center,
-                         lineHeight = 18.sp,
-                         modifier = Modifier
-                             .fillMaxWidth()
-                     )
-                 }
-             }
-         item {
-             Spacer(modifier = Modifier.height(5.dp))
-         }
-             item {
-                 Button(
-                     modifier = Modifier
-                         .padding(start = 20.dp, end = 20.dp)
-                         .fillMaxWidth()
-                         .pulsateEffect(),
-                     onClick = {
-                         coroutineScope.launch {
-                             if (modalBtmSheetState.isVisible) {
-                                 modalBtmSheetState.hide()
-                             }
-                         }.invokeOnCompletion {
-                             shouldBtmModalSheetBeVisible.value = false
-                         }
-                         SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.assets.find {
-                             it.directDownloadURL.endsWith(".apk")
-                         }?.directDownloadURL?.let { uriHandler.openUri(it) }
-                     }) {
-                     Text(
-                         text = "Download",
-                         style = MaterialTheme.typography.titleSmall,
-                         fontSize = 16.sp,
-                         textAlign = TextAlign.Center, lineHeight = 18.sp,
-                         modifier = Modifier
-                             .fillMaxWidth()
-                     )
-                 }
-             }
-         item {
-             HorizontalDivider(
-                 modifier = Modifier
-                     .padding(20.dp)
-                     .navigationBarsPadding(),
-                 thickness = 0.5.dp,
-                 color = MaterialTheme.colorScheme.outline.copy(0.25f)
-             )
-         }
-     }
+    val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        item {
+            Text(
+                text = "Linkora just got better,\nnew update is available.",
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 24.sp,
+                textAlign = TextAlign.Start,
+                lineHeight = 28.sp,
+                modifier = Modifier.padding(start = 20.dp, end = 20.dp)
+            )
+        }
+        item {
+            VersionCardForBtmSheetContent(
+                title = "version you're using",
+                value = SettingsScreenVM.APP_VERSION_NAME
+            )
+        }
+        if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+            item {
+                VersionCardForBtmSheetContent(
+                    title = "latest version which you should be using",
+                    value = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName
+                )
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(20.dp))
+        }
+        item {
+            Button(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp)
+                    .fillMaxWidth()
+                    .pulsateEffect(),
+                onClick = {
+                    coroutineScope.launch {
+                        if (modalBtmSheetState.isVisible) {
+                            modalBtmSheetState.hide()
+                        }
+                    }.invokeOnCompletion {
+                        shouldBtmModalSheetBeVisible.value = false
+                    }
+                    coroutineScope.launch {
+                        settingsScreenVM.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Linkora ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} release page on GitHub",
+                                webURL = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releasePageURL,
+                                baseURL = "github.com",
+                                imgURL = "it.imgURL",
+                                infoForSaving = ""
+                            ),
+                            context = context,
+                            uriHandler = uriHandler, forceOpenInExternalBrowser = false
+                        )
+                    }
+                }) {
+                Text(
+                    text = "Redirect to latest release page",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+        }
+        item {
+            Spacer(modifier = Modifier.height(5.dp))
+        }
+        item {
+            Button(
+                modifier = Modifier
+                    .padding(start = 20.dp, end = 20.dp)
+                    .fillMaxWidth()
+                    .pulsateEffect(),
+                onClick = {
+                    coroutineScope.launch {
+                        if (modalBtmSheetState.isVisible) {
+                            modalBtmSheetState.hide()
+                        }
+                    }.invokeOnCompletion {
+                        shouldBtmModalSheetBeVisible.value = false
+                    }
+                    SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.assets.find {
+                        it.directDownloadURL.endsWith(".apk")
+                    }?.directDownloadURL?.let { uriHandler.openUri(it) }
+                }) {
+                Text(
+                    text = "Download",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp,
+                    textAlign = TextAlign.Center, lineHeight = 18.sp,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
+        }
+        item {
+            HorizontalDivider(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .navigationBarsPadding(),
+                thickness = 0.5.dp,
+                color = MaterialTheme.colorScheme.outline.copy(0.25f)
+            )
+        }
+    }
 }
 
 @Composable

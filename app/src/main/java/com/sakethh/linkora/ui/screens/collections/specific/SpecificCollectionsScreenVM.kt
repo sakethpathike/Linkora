@@ -146,6 +146,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             }
         }
     }
+
     private fun retrieveChildFoldersData() {
         viewModelScope.launch {
             foldersRepo.getChildFoldersOfThisParentID(
@@ -647,14 +648,14 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {
+                                onTaskCompleted()
+                            })
                     }, async {
                         linksRepo
                             .deleteALinkFromImpLinksBasedOnURL(tempImpLinkData.webURL)
@@ -669,14 +670,14 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {
+                                onTaskCompleted()
+                            })
                     })
                 }.invokeOnCompletion {
                     onTaskCompleted()
@@ -688,14 +689,14 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {
+                                onTaskCompleted()
+                            })
                     }, async {
                         linksRepo
                             .deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
@@ -710,14 +711,14 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
-                            onTaskCompleted()
-                        })
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {
+                                onTaskCompleted()
+                            })
                     }, async {
                         linksRepo.deleteALinkFromLinksTable(linkID)
                     })
@@ -869,6 +870,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         }
 
     }
+
     fun onLinkClick(
         recentlyVisited: RecentlyVisited,
         onTaskCompleted: () -> Unit,
@@ -877,18 +879,18 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         forceOpenInExternalBrowser: Boolean,
     ) {
         customWebTab.openInWeb(
-                recentlyVisitedData = RecentlyVisited(
-                    title = recentlyVisited.title,
-                    webURL = recentlyVisited.webURL,
-                    baseURL = recentlyVisited.baseURL,
-                    imgURL = recentlyVisited.imgURL,
-                    infoForSaving = recentlyVisited.infoForSaving
-                ),
-                context = context,
-                uriHandler = uriHandler,
-                forceOpenInExternalBrowser = forceOpenInExternalBrowser
-            )
-            onTaskCompleted()
+            recentlyVisitedData = RecentlyVisited(
+                title = recentlyVisited.title,
+                webURL = recentlyVisited.webURL,
+                baseURL = recentlyVisited.baseURL,
+                imgURL = recentlyVisited.imgURL,
+                infoForSaving = recentlyVisited.infoForSaving
+            ),
+            context = context,
+            uriHandler = uriHandler,
+            forceOpenInExternalBrowser = forceOpenInExternalBrowser
+        )
+        onTaskCompleted()
     }
 }
 

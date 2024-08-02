@@ -331,46 +331,46 @@ fun ParentHomeScreen(
                         Spacer(modifier = Modifier.height(200.dp))
                     }
                     items(shelfData.value) {
-                                androidx.compose.material3.NavigationRailItem(
-                                    modifier = Modifier.rotate(90f),
-                                    selected = it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
-                                    onClick = {
-                                        coroutineScope.launch {
-                                            async {
-                                                pagerState.animateScrollToPage(0)
-                                            }.await()
-                                            SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
-                                                it.id
-                                            homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                                it.id, context
-                                            )
-                                        }.start()
-                                    },
-                                    icon = {
-                                        Column {
-                                            Icon(
-                                                modifier = Modifier.rotate(180f),
-                                                imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue) {
-                                                    Icons.Filled.ViewArray
-                                                } else {
-                                                    Icons.Outlined.ViewArray
-                                                }, contentDescription = null
-                                            )
-                                        }
-                                    }, label = {
-                                        Text(
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier
-                                                .rotate(180f)
-                                                .width(56.dp)
-                                                .padding(bottom = 2.dp),
-                                            text = it.shelfName,
-                                            style = MaterialTheme.typography.titleSmall,
-                                            maxLines = 1,
-                                            textAlign = TextAlign.Center
-                                        )
-                                    })
-                                Spacer(modifier = Modifier.height(20.dp))
+                        androidx.compose.material3.NavigationRailItem(
+                            modifier = Modifier.rotate(90f),
+                            selected = it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
+                            onClick = {
+                                coroutineScope.launch {
+                                    async {
+                                        pagerState.animateScrollToPage(0)
+                                    }.await()
+                                    SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
+                                        it.id
+                                    homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                                        it.id, context
+                                    )
+                                }.start()
+                            },
+                            icon = {
+                                Column {
+                                    Icon(
+                                        modifier = Modifier.rotate(180f),
+                                        imageVector = if (it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue) {
+                                            Icons.Filled.ViewArray
+                                        } else {
+                                            Icons.Outlined.ViewArray
+                                        }, contentDescription = null
+                                    )
+                                }
+                            }, label = {
+                                Text(
+                                    overflow = TextOverflow.Ellipsis,
+                                    modifier = Modifier
+                                        .rotate(180f)
+                                        .width(56.dp)
+                                        .padding(bottom = 2.dp),
+                                    text = it.shelfName,
+                                    style = MaterialTheme.typography.titleSmall,
+                                    maxLines = 1,
+                                    textAlign = TextAlign.Center
+                                )
+                            })
+                        Spacer(modifier = Modifier.height(20.dp))
                     }
                     item {
                         androidx.compose.material3.NavigationRailItem(
@@ -838,14 +838,14 @@ fun ParentHomeScreen(
                 if (selectedDefaultFolderName == "Important Links") {
                     homeScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
-                        onTaskCompleted = {
-                            shouldDialogForNewLinkAppear.value = false
-                            isDataExtractingForTheLink.value = false
-                        },
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        autoDetectTitle = isAutoDetectSelected
+                            onTaskCompleted = {
+                                shouldDialogForNewLinkAppear.value = false
+                                isDataExtractingForTheLink.value = false
+                            },
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected
                         )
                     )
                 }
@@ -908,7 +908,7 @@ fun ParentHomeScreen(
                 it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue
             }?.let {
                 shelfLazyColumnState.animateScrollToItem(shelfData.value.indexOf(it))
-                    }
+            }
 
             homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
                 (SettingsScreenVM.Settings.readSettingPreferenceValue(

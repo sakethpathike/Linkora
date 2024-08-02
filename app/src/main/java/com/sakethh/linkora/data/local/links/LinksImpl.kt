@@ -686,6 +686,7 @@ class LinksImpl @Inject constructor(
             updateExistingLink = true, archivedLinks = null
         )
     }
+
     override suspend fun addANewLinkToImpLinks(
         importantLink: ImportantLinks,
         onTaskCompleted: () -> Unit,

@@ -659,14 +659,14 @@ fun CollectionsScreen(navController: NavController) {
                 if (selectedDefaultFolderName == "Important Links") {
                     collectionsScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
-                        onTaskCompleted = {
-                            shouldDialogForNewLinkAppear.value = false
-                            isDataExtractingForTheLink.value = false
-                        },
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        autoDetectTitle = isAutoDetectSelected
+                            onTaskCompleted = {
+                                shouldDialogForNewLinkAppear.value = false
+                                isDataExtractingForTheLink.value = false
+                            },
+                            title = title,
+                            webURL = webURL,
+                            noteForSaving = note,
+                            autoDetectTitle = isAutoDetectSelected
                         )
                     )
                 }

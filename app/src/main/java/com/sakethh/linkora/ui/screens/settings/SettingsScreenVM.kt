@@ -102,7 +102,7 @@ class SettingsScreenVM @Inject constructor(
                         isAnyRefreshingTaskGoingOn.value =
                             it.state == WorkInfo.State.RUNNING || it.state == WorkInfo.State.ENQUEUED
                     }
-                    }
+                }
             }
         }
     }
@@ -117,6 +117,7 @@ class SettingsScreenVM @Inject constructor(
         RefreshLinksWorker.superVisorJob?.cancel()
         workManager.cancelAllWork()
     }
+
     companion object {
         val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
@@ -525,6 +526,7 @@ class SettingsScreenVM @Inject constructor(
             }
         }
     }
+
     fun dataSection(
         runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
         context: Context,
@@ -795,6 +797,7 @@ class SettingsScreenVM @Inject constructor(
             onTaskCompleted()
         }
     }
+
     fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {

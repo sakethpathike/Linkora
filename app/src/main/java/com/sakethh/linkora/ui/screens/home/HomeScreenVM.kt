@@ -93,6 +93,7 @@ open class HomeScreenVM @Inject constructor(
             newValue = shelfID.toInt()
         )
     }
+
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
     }
@@ -264,8 +265,8 @@ open class HomeScreenVM @Inject constructor(
                 viewModelScope.launch {
 
                     linksRepo.renameALinkInfoFromRecentlyVisitedLinks(
-                            webURL = webURL, newInfo = newNote
-                        )
+                        webURL = webURL, newInfo = newNote
+                    )
                 }
                 Unit
             }
@@ -386,12 +387,12 @@ open class HomeScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {})
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {})
                     }, async {
 
                         linksRepo.deleteALinkFromSavedLinksBasedOnURL(webURL = tempImpLinkData.webURL)
@@ -413,14 +414,14 @@ open class HomeScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, onTaskCompleted = {
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, onTaskCompleted = {
 
-                        })
+                            })
                     }, async {
 
                         linksRepo.deleteARecentlyVisitedLink(webURL = tempImpLinkData.webURL)
@@ -434,12 +435,12 @@ open class HomeScreenVM @Inject constructor(
                     awaitAll(async {
                         linksRepo.archiveLinkTableUpdater(
                             archivedLinks = ArchivedLinks(
-                            title = tempImpLinkData.title,
-                            webURL = tempImpLinkData.webURL,
-                            baseURL = tempImpLinkData.baseURL,
-                            imgURL = tempImpLinkData.imgURL,
-                            infoForSaving = tempImpLinkData.infoForSaving
-                        ), context = context, {})
+                                title = tempImpLinkData.title,
+                                webURL = tempImpLinkData.webURL,
+                                baseURL = tempImpLinkData.baseURL,
+                                imgURL = tempImpLinkData.imgURL,
+                                infoForSaving = tempImpLinkData.infoForSaving
+                            ), context = context, {})
                     }, async {
 
                         linksRepo.deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
