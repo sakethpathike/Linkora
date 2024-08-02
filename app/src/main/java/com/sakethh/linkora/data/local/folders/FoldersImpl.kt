@@ -182,6 +182,16 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
     }
 
     override suspend fun deleteAFolder(folderID: Long) {
+        localDatabase.shelfDao().getShelvesOfThisFolder(folderID).forEach { shelf ->
+            val newFolderIdsList = shelf.folderIds.toMutableList()
+            newFolderIdsList.removeAll {
+                it == folderID
+            }
+            localDatabase.shelfDao()
+                .updateFoldersOfThisShelf(folderIds = newFolderIdsList.toList(), shelf.id)
+        }
+        localDatabase.shelfListDao().deleteAShelfFolder(folderID)
+
         localDatabase.linksDao().deleteThisFolderLinks(folderID)
         deleteAllChildFoldersAndLinksOfASpecificFolder(folderID)
         return localDatabase.foldersDao().deleteAFolder(folderID)
