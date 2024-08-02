@@ -335,11 +335,16 @@ fun ParentHomeScreen(
                                     modifier = Modifier.rotate(90f),
                                     selected = it.id == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
                                     onClick = {
-                                        SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
-                                            it.id
-                                        homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                            it.id, context
-                                        )
+                                        coroutineScope.launch {
+                                            async {
+                                                pagerState.animateScrollToPage(0)
+                                            }.await()
+                                            SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
+                                                it.id
+                                            homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
+                                                it.id, context
+                                            )
+                                        }.start()
                                     },
                                     icon = {
                                         Column {
@@ -372,13 +377,18 @@ fun ParentHomeScreen(
                             modifier = Modifier.rotate(90f),
                             selected = (-1).toLong() == SettingsScreenVM.Settings.lastSelectedPanelID.longValue,
                             onClick = {
-                                SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
-                                    (-1).toLong()
-                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                    intPreferencesKey(SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
-                                    context.dataStore,
-                                    newValue = -1
-                                )
+                                coroutineScope.launch {
+                                    async {
+                                        pagerState.animateScrollToPage(0)
+                                    }.await()
+                                    SettingsScreenVM.Settings.lastSelectedPanelID.longValue =
+                                        (-1).toLong()
+                                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                        intPreferencesKey(SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                                        context.dataStore,
+                                        newValue = -1
+                                    )
+                                }.start()
                             },
                             icon = {
                                 Column {
