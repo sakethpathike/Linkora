@@ -113,15 +113,15 @@ class SettingsScreenVM @Inject constructor(
         }
     }
 
-    fun cancelRefreshAllLinksImagesAndTitlesWork(context: Context) {
+    fun cancelRefreshAllLinksImagesAndTitlesWork() {
         RefreshLinksWorker.superVisorJob?.cancel()
         workManager.cancelAllWork()
     }
     companion object {
         val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
-        const val APP_VERSION_NAME = "v0.5.0"
-        const val APP_VERSION_CODE = 23
+        const val APP_VERSION_NAME = "v0.6.0"
+        const val APP_VERSION_CODE = 24
         private val _latestReleaseInfoFromGitHubReleases = MutableStateFlow(
             GitHubReleaseDTOItem(
                 assets = listOf(),

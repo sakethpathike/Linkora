@@ -571,7 +571,7 @@ fun AddANewLinkDialogBox(
                                         }
                                         itemsIndexed(addANewLinkDialogBoxVM.subFoldersList) { index, subFolder ->
                                             Text(
-                                                text = subFolder.folderName + " $index",
+                                                text = subFolder.folderName,
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontSize = 16.sp,
                                                 modifier = Modifier.clickable {

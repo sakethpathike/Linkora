@@ -164,7 +164,11 @@ fun LinkUIComponent(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 15.dp, end = 15.dp)
+                .padding(
+                    top = 15.dp,
+                    end = 15.dp,
+                    bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 15.dp else 0.dp
+                )
         )
         Row(
             modifier = Modifier

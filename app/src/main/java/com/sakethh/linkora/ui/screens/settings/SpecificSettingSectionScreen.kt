@@ -765,9 +765,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                                         }
                                                     )
                                                     IconButton(onClick = {
-                                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork(
-                                                            context
-                                                        )
+                                                        settingsScreenVM.cancelRefreshAllLinksImagesAndTitlesWork()
                                                     }) {
                                                         Icon(
                                                             imageVector = Icons.Default.Cancel,

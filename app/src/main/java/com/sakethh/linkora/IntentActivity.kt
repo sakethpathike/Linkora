@@ -1,18 +1,23 @@
 package com.sakethh.linkora
 
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
 
 @AndroidEntryPoint
 class IntentActivity : ComponentActivity() {
@@ -26,6 +31,16 @@ class IntentActivity : ComponentActivity() {
                 mutableStateOf(false)
             }
             val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
+            val context = LocalContext.current
+            LaunchedEffect(key1 = Unit) {
+                specificCollectionsScreenVM.eventChannel.collectLatest {
+                    when (it) {
+                        is CommonUiEvent.ShowToast -> {
+                            Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
             LinkoraTheme {
                 AddANewLinkDialogBox(
                     shouldDialogBoxAppear = shouldUIBeVisible,
