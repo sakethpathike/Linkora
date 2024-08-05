@@ -16,10 +16,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -52,7 +55,7 @@ fun FloatingActionBtn(
     val coroutineScope = rememberCoroutineScope()
     if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
         androidx.compose.foundation.layout.Column(
-            modifier = androidx.compose.ui.Modifier.padding(
+            modifier = Modifier.padding(
                 bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
             )
         ) {
@@ -78,13 +81,13 @@ fun FloatingActionBtn(
         }
     } else {
         androidx.compose.foundation.layout.Column(
-            modifier = androidx.compose.ui.Modifier.padding(
+            modifier = Modifier.padding(
                 bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
             )
         ) {
             androidx.compose.foundation.layout.Row(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = androidx.compose.ui.Modifier.align(androidx.compose.ui.Alignment.End)
+                modifier = Modifier.align(Alignment.End)
             ) {
                 if (floatingActionBtnParam.isMainFabRotated.value) {
                     AnimatedVisibility(
@@ -101,11 +104,11 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = "Create a new folder",
+                            text = stringResource(id = R.string.create_a_new_folder),
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = androidx.compose.ui.Modifier.padding(
+                            modifier = Modifier.padding(
                                 top = 20.dp,
                                 end = 15.dp
                             )
@@ -140,13 +143,13 @@ fun FloatingActionBtn(
 
             }
             androidx.compose.foundation.layout.Spacer(
-                modifier = androidx.compose.ui.Modifier.height(
+                modifier = Modifier.height(
                     15.dp
                 )
             )
             androidx.compose.foundation.layout.Row(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = androidx.compose.ui.Modifier.align(androidx.compose.ui.Alignment.End)
+                modifier = Modifier.align(Alignment.End)
             ) {
                 if (floatingActionBtnParam.isMainFabRotated.value) {
                     AnimatedVisibility(
@@ -163,11 +166,11 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = "Add a new link",
+                            text = stringResource(id = R.string.add_a_new_link),
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
-                            modifier = androidx.compose.ui.Modifier.padding(
+                            modifier = Modifier.padding(
                                 top = 20.dp,
                                 end = 15.dp
                             )
@@ -175,7 +178,7 @@ fun FloatingActionBtn(
                     }
                 }
                 androidx.compose.material3.FloatingActionButton(
-                    modifier = androidx.compose.ui.Modifier
+                    modifier = Modifier
                         .rotate(
                             floatingActionBtnParam.rotationAnimation.value
                         )

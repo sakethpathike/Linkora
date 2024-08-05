@@ -12,8 +12,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
 @Composable
@@ -37,7 +39,7 @@ fun RenameAShelfPanelDialogBox(
                     isDialogBoxVisible.value = false
                 }) {
                     Text(
-                        text = "Change Panel name",
+                        text = stringResource(id = R.string.change_panel_name),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -45,7 +47,9 @@ fun RenameAShelfPanelDialogBox(
             },
             title = {
                 Text(
-                    text = "Edit \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" Panel Name",
+                    text = stringResource(id = R.string.edit) + " \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" " + stringResource(
+                        id = R.string.panel_name
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
@@ -55,7 +59,7 @@ fun RenameAShelfPanelDialogBox(
             text = {
                 OutlinedTextField(label = {
                     Text(
-                        text = "New Name for Panel",
+                        text = stringResource(id = R.string.new_name_for_panel),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp
                     )
@@ -73,7 +77,7 @@ fun RenameAShelfPanelDialogBox(
                     isDialogBoxVisible.value = false
                 }) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(id = R.string.cancel),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )

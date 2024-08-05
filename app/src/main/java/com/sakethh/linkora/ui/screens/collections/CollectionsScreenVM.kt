@@ -379,7 +379,7 @@ open class CollectionsScreenVM @Inject constructor(
         }
     }
 
-    private suspend fun pushAUIEvent(commonUiEvent: CommonUiEvent) {
+    protected suspend fun pushAUIEvent(commonUiEvent: CommonUiEvent) {
         _eventChannel.send(commonUiEvent)
     }
 

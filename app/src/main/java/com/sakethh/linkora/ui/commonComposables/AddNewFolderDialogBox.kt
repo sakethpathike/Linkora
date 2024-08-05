@@ -22,8 +22,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -62,7 +64,7 @@ fun AddNewFolderDialogBox(
                             addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(id = R.string.cancel),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -77,7 +79,9 @@ fun AddNewFolderDialogBox(
                             isFolderCreationInProgress.value = true
                             if (folderNameTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
-                                    context, "folder name can't be empty", Toast.LENGTH_SHORT
+                                    context,
+                                    context.getString(R.string.folder_name_cannnot_be_empty),
+                                    Toast.LENGTH_SHORT
                                 ).show()
                                 isFolderCreationInProgress.value = false
                             } else {
@@ -92,7 +96,7 @@ fun AddNewFolderDialogBox(
                             }
                         }) {
                             Text(
-                                text = "Create",
+                                text = stringResource(id = R.string.create),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -114,7 +118,7 @@ fun AddNewFolderDialogBox(
                             maxLines = 1,
                             label = {
                                 Text(
-                                    text = "Folder name",
+                                    text = stringResource(id = R.string.folder_name),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -130,7 +134,7 @@ fun AddNewFolderDialogBox(
                             modifier = Modifier.fillMaxWidth(),
                             label = {
                                 Text(
-                                    text = "Note why you're creating this folder",
+                                    text = stringResource(id = R.string.note_for_creating_the_folder),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -148,7 +152,11 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) "Create a new internal folder in \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else "Create a new folder",
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) stringResource(
+                            id = R.string.create_a_new_folder_in
+                        ) + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else stringResource(
+                            id = R.string.create_a_new_folder
+                        ),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp

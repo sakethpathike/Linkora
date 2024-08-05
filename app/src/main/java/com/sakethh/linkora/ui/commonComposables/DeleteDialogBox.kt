@@ -13,9 +13,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -54,7 +56,7 @@ fun DeleteDialogBox(
                             deleteDialogBoxParam.onDeleted()
                         }) {
                         Text(
-                            text = "Delete it",
+                            text = stringResource(id = R.string.delete_it),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -68,14 +70,24 @@ fun DeleteDialogBox(
                             deleteDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = "Cacnel",
+                            text = stringResource(id = R.string.cancel),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
                     }
                 }, title = {
                     Text(
-                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected links?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) "Are you sure you want to delete the link?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable) "Are you sure you want to delete all selected folders?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) "Are you sure you want to delete the \"${deleteDialogBoxParam.folderName.value}\" folder?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA) "Are you sure you want to delete all selected items?" else "Are you sure you want to delete all folders and links?",
+                        text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK && deleteDialogBoxParam.areFoldersSelectable) stringResource(
+                            id = R.string.are_you_sure_you_want_to_delete_all_selected_links
+                        ) else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK) stringResource(
+                            id = R.string.are_you_sure_you_want_to_delete_the_link
+                        ) else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable) stringResource(
+                            id = R.string.are_you_sure_you_want_to_delete_all_selected_folders
+                        ) else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER) stringResource(
+                            id = R.string.are_you_sure_want_to_delete_the
+                        ) + " \"${deleteDialogBoxParam.folderName.value}\" " + stringResource(id = R.string.folder) + "?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA) stringResource(
+                            id = R.string.are_you_sure_you_want_to_delete_all_selected_items
+                        ) else stringResource(id = R.string.are_you_sure_you_want_to_delete_all_folders_and_links),
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 27.sp,
@@ -85,7 +97,7 @@ fun DeleteDialogBox(
                     if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.totalIds.longValue > 0
                     ) {
                         Text(
-                            text = "This folder deletion will also delete all its internal folder(s).",
+                            text = stringResource(id = R.string.this_folder_deletion_will_also_delete_all_its_internal_folders),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
                             lineHeight = 18.sp,

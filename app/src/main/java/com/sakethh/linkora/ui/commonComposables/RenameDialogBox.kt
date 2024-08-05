@@ -32,9 +32,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -67,7 +69,7 @@ fun RenameDialogBox(
                     renameDialogBoxParam.onNoteChangeClick(newNote.value)
                 }) {
                     Text(
-                        text = "Change note only",
+                        text = stringResource(id = R.string.change_note_only),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -84,12 +86,14 @@ fun RenameDialogBox(
                         }
                     } else {
                         Toast.makeText(
-                            localContext, "Title can't be empty", Toast.LENGTH_SHORT
+                            localContext,
+                            localContext.getString(R.string.title_cannot_be_empty),
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 }) {
                     Text(
-                        text = "Change both name and note",
+                        text = stringResource(id = R.string.change_both_name_and_note),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -101,14 +105,18 @@ fun RenameDialogBox(
                     renameDialogBoxParam.shouldDialogBoxAppear.value = false
                 }) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(id = R.string.cancel),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
                 }
             }, title = {
                 Text(
-                    text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK) "Rename \"${renameDialogBoxParam.existingFolderName}\" folder:" else "Change Link's Data:",
+                    text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK) stringResource(
+                        id = R.string.rename
+                    ) + " \"${renameDialogBoxParam.existingFolderName}\" " + stringResource(id = R.string.folder) + ":" else stringResource(
+                        id = R.string.change_link_data
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
@@ -119,7 +127,9 @@ fun RenameDialogBox(
                     OutlinedTextField(maxLines = 1,
                         label = {
                             Text(
-                                text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) "New Name" else "New title",
+                                text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER) stringResource(
+                                    id = R.string.new_name
+                                ) else stringResource(id = R.string.new_title),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -133,7 +143,7 @@ fun RenameDialogBox(
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(label = {
                         Text(
-                            text = "New note",
+                            text = stringResource(id = R.string.new_note),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
                         )
@@ -171,7 +181,7 @@ fun RenameDialogBox(
                                 )
                             }
                             Text(
-                                text = "Leave above field empty, if you don't want to change the note.",
+                                text = stringResource(id = R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note),
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 14.sp,
                                 lineHeight = 18.sp,

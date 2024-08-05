@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets
 
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.data.local.folders.FoldersRepo
@@ -13,6 +14,7 @@ import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolde
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.shelf.ShelfUIEvent
@@ -85,7 +87,7 @@ class ShelfBtmSheetVM @Inject constructor(
             is ShelfUIEvent.AddANewShelf -> {
                 viewModelScope.launch {
                     if (shelfRepo.doesThisShelfExists(shelfUIEvent.shelf.shelfName)) {
-                        // // // // TODO()
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.shelf_name_already_exists))
                     } else {
                         shelfRepo.addANewShelf(shelfUIEvent.shelf)
                     }

@@ -46,6 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.CoilImage
 
 
@@ -188,7 +189,7 @@ fun LinkUIComponent(
                             } catch (_: android.content.ActivityNotFoundException) {
                                 Toast.makeText(
                                     context,
-                                    "No Activity found to handle Intent",
+                                    context.getString(R.string.no_activity_found_to_handle_intent),
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -203,7 +204,7 @@ fun LinkUIComponent(
                                 AnnotatedString(linkUIComponentParam.webURL)
                             )
                             Toast.makeText(
-                                context, "Link copied to the clipboard",
+                                context, context.getString(R.string.link_copied_to_the_clipboard),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }) {
