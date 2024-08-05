@@ -18,10 +18,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -186,7 +188,7 @@ fun ChildArchiveScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "No links were archived.")
+                        DataEmptyScreen(text = stringResource(id = R.string.no_links_were_archived))
                     }
                     item {
                         Spacer(modifier = Modifier.height(165.dp))
@@ -303,7 +305,7 @@ fun ChildArchiveScreen(
 
                 if (archiveFoldersDataV9.isEmpty() && archiveFoldersDataV10.isEmpty()) {
                     item {
-                        DataEmptyScreen(text = "No folders were archived.")
+                        DataEmptyScreen(text = stringResource(id = R.string.no_folders_were_archived))
                     }
                 }
             }

@@ -52,12 +52,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
@@ -155,7 +157,7 @@ fun SpecificCollectionScreen(navController: NavController) {
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val topBarText = when (SpecificCollectionsScreenVM.screenType.value) {
         SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-            "Important Links"
+            stringResource(id = R.string.important_links)
         }
 
         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
@@ -163,15 +165,11 @@ fun SpecificCollectionScreen(navController: NavController) {
         }
 
         SpecificScreenType.SAVED_LINKS_SCREEN -> {
-            "Saved Links"
+            stringResource(id = R.string.saved_links)
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-            try {
-                CollectionsScreenVM.currentClickedFolderData.value.folderName
-            } catch (_: java.lang.NullPointerException) {
-                ""
-            }
+            CollectionsScreenVM.currentClickedFolderData.value.folderName
         }
 
         else -> {
@@ -699,7 +697,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = "This folder doesn't contain any links. Add links for further usage.")
+                                DataEmptyScreen(text = stringResource(id = R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage))
                             }
                         }
                     }
@@ -808,7 +806,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = "No links found. To continue, please add links.")
+                                DataEmptyScreen(text = stringResource(id = R.string.no_links_were_found))
                             }
                         }
                     }
@@ -921,7 +919,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = "No important links were found. To continue, please add links.")
+                                DataEmptyScreen(text = stringResource(id = R.string.no_important_links_were_found))
                             }
                         }
                     }
@@ -1079,7 +1077,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = "No links were found in this archived folder.")
+                                DataEmptyScreen(text = stringResource(id = R.string.no_links_found_in_this_archived_folder))
                             }
                         }
                     }

@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -97,7 +98,7 @@ open class CollectionsScreenVM @Inject constructor(
                     shelfRepo.deleteAFolderFromShelf(folder.id)
                 }
             })
-            pushAUIEvent(CommonUiEvent.ShowToast("Successfully deleted selected folders"))
+            pushAUIEvent(CommonUiEvent.ShowToast(R.string.selected_folders_deleted_successfully))
         }
     }
 
@@ -106,7 +107,7 @@ open class CollectionsScreenVM @Inject constructor(
             foldersRepo
                 .moveAMultipleFoldersToArchivesV10(selectedFoldersData.toList().map { it.id }
                     .toTypedArray())
-            pushAUIEvent(CommonUiEvent.ShowToast("Selected folders archived successfully"))
+            pushAUIEvent(CommonUiEvent.ShowToast(R.string.selected_folders_archived_successfully))
         }
     }
 
@@ -224,7 +225,7 @@ open class CollectionsScreenVM @Inject constructor(
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("New link added to \"${specificCollectionsScreenUIEvent.folderName}\""))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.new_link_added_to_the_folder))
                 }
             }
 
@@ -241,7 +242,7 @@ open class CollectionsScreenVM @Inject constructor(
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle,
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("New link added to \"Important Links\""))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.new_link_added_to_important_links))
                 }
             }
 
@@ -265,14 +266,14 @@ open class CollectionsScreenVM @Inject constructor(
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("New link added to \"Saved Links\""))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.new_link_added_to_saved_links))
                 }
             }
 
             is SpecificCollectionsScreenUIEvent.ArchiveAFolder -> {
                 viewModelScope.launch {
                     foldersRepo.moveAFolderToArchive(specificCollectionsScreenUIEvent.folderId)
-                    pushAUIEvent(CommonUiEvent.ShowToast("Folder archived successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.folder_archived_successfully))
                 }
             }
 
@@ -282,7 +283,7 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.folderId,
                         specificCollectionsScreenUIEvent.folderName
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Folder info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.folder_info_updated_successfully))
                 }
             }
 
@@ -292,7 +293,7 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.folderId,
                         specificCollectionsScreenUIEvent.newFolderNote
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Folder info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.folder_info_updated_successfully))
                 }
             }
 
@@ -302,7 +303,7 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.linkId,
                         specificCollectionsScreenUIEvent.newNote
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_successfully))
                 }
             }
 
@@ -312,7 +313,7 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.linkId,
                         specificCollectionsScreenUIEvent.title
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_successfully))
                 }
             }
 
@@ -322,7 +323,7 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.linkId,
                         specificCollectionsScreenUIEvent.newNote
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_successfully))
                 }
             }
 
@@ -332,21 +333,21 @@ open class CollectionsScreenVM @Inject constructor(
                         specificCollectionsScreenUIEvent.linkId,
                         specificCollectionsScreenUIEvent.title
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_successfully))
                 }
             }
 
             is SpecificCollectionsScreenUIEvent.CreateANewFolder -> {
                 viewModelScope.launch {
                     foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
-                    pushAUIEvent(CommonUiEvent.ShowToast("Folder  \"${specificCollectionsScreenUIEvent.foldersTable.folderName}\" created successfully"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.folder_created_successfully))
                 }
             }
 
             is SpecificCollectionsScreenUIEvent.DeleteAFolder -> {
                 viewModelScope.launch {
                     foldersRepo.deleteAFolder(specificCollectionsScreenUIEvent.folderId)
-                    pushAUIEvent(CommonUiEvent.ShowToast("deleted the folder"))
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_folder))
                 }
             }
 
@@ -354,13 +355,13 @@ open class CollectionsScreenVM @Inject constructor(
                 viewModelScope.launch {
                     if (linksRepo.doesThisExistsInImpLinks(specificCollectionsScreenUIEvent.importantLinks.webURL)) {
                         linksRepo.deleteALinkFromImpLinksBasedOnURL(specificCollectionsScreenUIEvent.importantLinks.webURL)
-                        pushAUIEvent(CommonUiEvent.ShowToast("Removed link from \"Important Links\" successfully"))
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.removed_link_from_important_links_successfully))
                     } else {
                         linksRepo.addANewLinkToImpLinks(
                             specificCollectionsScreenUIEvent.importantLinks,
                             onTaskCompleted = {
                                 this.launch {
-                                    pushAUIEvent(CommonUiEvent.ShowToast("Added link to \"Important Links\""))
+                                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.added_link_to_important_links))
                                 }
                             },
                             autoDetectTitle = false
@@ -375,7 +376,7 @@ open class CollectionsScreenVM @Inject constructor(
         viewModelScope.launch {
             foldersRepo
                 .deleteAFolderNote(folderID = clickedFolderID)
-            pushAUIEvent(CommonUiEvent.ShowToast("deleted the note"))
+            pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
         }
     }
 

@@ -37,6 +37,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +45,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -116,7 +118,7 @@ fun ParentArchiveScreen(navController: NavController, customWebTab: CustomWebTab
                             )
                         }
                         Text(
-                            text = " items selected",
+                            text = " " + stringResource(id = R.string.items_selected),
                             color = MaterialTheme.colorScheme.onSurface,
                             style = MaterialTheme.typography.titleLarge,
                             fontSize = 18.sp
@@ -124,7 +126,7 @@ fun ParentArchiveScreen(navController: NavController, customWebTab: CustomWebTab
                     }
                 } else {
                     Text(
-                        text = "Archive",
+                        text = stringResource(id = R.string.archive),
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 24.sp
                     )
@@ -170,7 +172,7 @@ fun ParentArchiveScreen(navController: NavController, customWebTab: CustomWebTab
                                     }.start()
                                 }) {
                                     Text(
-                                        text = archiveScreenModal.name,
+                                        text = stringResource(id = archiveScreenModal.name),
                                         style = MaterialTheme.typography.titleLarge,
                                         fontSize = 18.sp,
                                         modifier = Modifier.padding(15.dp),

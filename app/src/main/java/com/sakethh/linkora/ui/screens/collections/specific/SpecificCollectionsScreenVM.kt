@@ -1,12 +1,12 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -21,6 +21,7 @@ import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolde
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
@@ -805,9 +806,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             else -> {}
         }
         if (shouldShowToastOnCompletion) {
-            Toast.makeText(
-                context, "deleted the link successfully", Toast.LENGTH_SHORT
-            ).show()
+            viewModelScope.launch {
+                pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+            }
         }
 
     }
@@ -821,7 +822,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     linksRepo
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    viewModelScope.launch {
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                    }
                 }
             }
 
@@ -837,7 +840,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         )
                     }
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    viewModelScope.launch {
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                    }
                 }
             }
 
@@ -846,7 +851,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     linksRepo
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    viewModelScope.launch {
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                    }
                 }
             }
 
@@ -862,7 +869,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         )
                     }
                 }.invokeOnCompletion {
-                    Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                    viewModelScope.launch {
+                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                    }
                 }
             }
 
