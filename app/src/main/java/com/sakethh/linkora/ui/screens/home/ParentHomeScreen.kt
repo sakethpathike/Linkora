@@ -504,7 +504,7 @@ fun ParentHomeScreen(
                                                         }.start()
                                                     }) {
                                                     Text(
-                                                        text = archiveScreenModal.name,
+                                                        text = stringResource(id = archiveScreenModal.name),
                                                         style = MaterialTheme.typography.titleLarge,
                                                         fontSize = 18.sp,
                                                         modifier = Modifier.padding(15.dp),

@@ -12,7 +12,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 
 
 data class AddANewShelfParam(
@@ -32,7 +34,8 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
 
         AlertDialog(title = {
             Text(
-                text = "Add New Panel to Shelf", style = MaterialTheme.typography.titleMedium,
+                text = stringResource(id = R.string.add_a_new_panel_to_the_shelf),
+                style = MaterialTheme.typography.titleMedium,
                 fontSize = 22.sp,
                 lineHeight = 28.sp
             )
@@ -45,7 +48,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                     maxLines = 1,
                     label = {
                         Text(
-                            text = "Panel Name",
+                            text = stringResource(id = R.string.panel_name),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
                         )
@@ -68,7 +71,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                 addANewShelfParam.isDialogBoxVisible.value = false
             }) {
                 Text(
-                    text = "Add New Panel",
+                    text = stringResource(id = R.string.add_new_panel),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )
@@ -81,7 +84,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                     addANewShelfParam.isDialogBoxVisible.value = false
                 }) {
                 Text(
-                    text = "Cancel",
+                    text = stringResource(id = R.string.cancel),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )
