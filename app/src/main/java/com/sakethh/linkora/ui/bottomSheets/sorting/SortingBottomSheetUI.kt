@@ -29,9 +29,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.SortingBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
@@ -76,13 +78,13 @@ fun SortingBottomSheetUI(
                 ) {
                     androidx.compose.material3.Text(
                         text = when (sortingBottomSheetParam.sortingBtmSheetType) {
-                            SortingBtmSheetType.COLLECTIONS_SCREEN -> "Sort folders by"
-                            SortingBtmSheetType.HISTORY_SCREEN -> "Sort History Links by"
-                            SortingBtmSheetType.PARENT_ARCHIVE_SCREEN -> "Sort by"
-                            SortingBtmSheetType.SAVED_LINKS_SCREEN -> "Sort Saved Links by"
-                            SortingBtmSheetType.IMPORTANT_LINKS_SCREEN -> "Sort Important Links by"
+                            SortingBtmSheetType.COLLECTIONS_SCREEN -> stringResource(id = R.string.sort_folders_by)
+                            SortingBtmSheetType.HISTORY_SCREEN -> stringResource(id = R.string.sort_history_links_by)
+                            SortingBtmSheetType.PARENT_ARCHIVE_SCREEN -> stringResource(id = R.string.sort_by)
+                            SortingBtmSheetType.SAVED_LINKS_SCREEN -> stringResource(id = R.string.sort_saved_links_by)
+                            SortingBtmSheetType.IMPORTANT_LINKS_SCREEN -> stringResource(id = R.string.sort_important_links_by)
                             else -> {
-                                "Sort based on"
+                                stringResource(id = R.string.sort_based_on)
                             }
                         },
                         style = MaterialTheme.typography.titleMedium,
@@ -95,7 +97,7 @@ fun SortingBottomSheetUI(
                     }
                     if ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN) && sortingBottomSheetParam.shouldFoldersSelectionBeVisible.value) {
                         FolderIndividualComponent(
-                            folderName = "Folders",
+                            folderName = stringResource(id = R.string.folders),
                             folderNote = "",
                             onMoreIconClick = { },
                             onFolderClick = {
@@ -162,7 +164,7 @@ fun SortingBottomSheetUI(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     androidx.compose.material3.Text(
-                                        text = it.sortingName,
+                                        text = stringResource(id = it.sortingName),
                                         fontSize = 16.sp,
                                         style = MaterialTheme.typography.titleSmall,
                                         color = if (it.sortingType == SettingsScreenVM.SortingPreferences.valueOf(
@@ -191,7 +193,7 @@ fun SortingBottomSheetUI(
                     }
                     if (((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && foldersSortingSelectedState.value) || (sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && linksSortingSelectedState.value)) || ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && foldersSortingSelectedState.value) || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && linksSortingSelectedState.value)) {
                         androidx.compose.material3.Text(
-                            text = "Sort by",
+                            text = stringResource(id = R.string.sort_by),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,

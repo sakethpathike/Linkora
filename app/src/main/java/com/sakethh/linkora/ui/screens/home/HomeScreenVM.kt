@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -68,7 +69,7 @@ open class HomeScreenVM @Inject constructor(
     shelfRepo = shelfRepo,
     customWebTab = customWebTab
 ) {
-    val currentPhaseOfTheDay = mutableStateOf("")
+    val currentPhaseOfTheDay = mutableStateOf(0)
 
     val isSelectionModeEnabled = mutableStateOf(false)
 
@@ -131,7 +132,8 @@ open class HomeScreenVM @Inject constructor(
         }
     }
 
-    val defaultScreenData = listOf(ArchiveScreenModal(name = "Saved Links", screen = { it, _ ->
+    val defaultScreenData =
+        listOf(ArchiveScreenModal(name = R.string.saved_links, screen = { it, _ ->
         ChildHomeScreen(
             homeScreenType = HomeScreenType.SAVED_LINKS,
             navController = it,
@@ -139,7 +141,7 @@ open class HomeScreenVM @Inject constructor(
             childFoldersData = emptyList(),
             customWebTab
         )
-    }), ArchiveScreenModal(name = "Important Links", screen = { it, _ ->
+        }), ArchiveScreenModal(name = R.string.important_links, screen = { it, _ ->
         ChildHomeScreen(
             homeScreenType = HomeScreenType.IMP_LINKS,
             it,
@@ -169,23 +171,23 @@ open class HomeScreenVM @Inject constructor(
             }, async {
                 when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
                     in 0..11 -> {
-                        currentPhaseOfTheDay.value = "Good Morning"
+                        currentPhaseOfTheDay.value = R.string.good_morning
                     }
 
                     in 12..15 -> {
-                        currentPhaseOfTheDay.value = "Good Afternoon"
+                        currentPhaseOfTheDay.value = R.string.good_afternoon
                     }
 
                     in 16..22 -> {
-                        currentPhaseOfTheDay.value = "Good Evening"
+                        currentPhaseOfTheDay.value = R.string.good_evening
                     }
 
                     in 23 downTo 0 -> {
-                        currentPhaseOfTheDay.value = "Good Night?"
+                        currentPhaseOfTheDay.value = R.string.good_night
                     }
 
                     else -> {
-                        currentPhaseOfTheDay.value = "Hey, hi\uD83D\uDC4B"
+                        currentPhaseOfTheDay.value = R.string.hey_hi
                     }
                 }
             })
@@ -296,7 +298,7 @@ open class HomeScreenVM @Inject constructor(
                     shouldDeleteBoxAppear.value = false
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
+                            context, R.string.deleted_the_link_successfully, Toast.LENGTH_SHORT
                         ).show()
                     }
                 }.invokeOnCompletion {
@@ -349,7 +351,11 @@ open class HomeScreenVM @Inject constructor(
 
                     linksRepo.deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            R.string.deleted_the_note_successfully,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 Unit
@@ -360,7 +366,11 @@ open class HomeScreenVM @Inject constructor(
 
                     linksRepo.deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            R.string.deleted_the_note_successfully,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 Unit
@@ -371,7 +381,11 @@ open class HomeScreenVM @Inject constructor(
 
                     linksRepo.deleteANoteFromImportantLinks(webURL = selectedWebURL)
                     withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(
+                            context,
+                            R.string.deleted_the_note_successfully,
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
                 }
                 Unit

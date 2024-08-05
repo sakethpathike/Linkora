@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
@@ -30,7 +31,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class ArchiveScreenModal(
-    val name: String,
+    val name: Int,
     val screen: @Composable (navController: NavController, customWebTab: CustomWebTab) -> Unit,
 )
 
@@ -55,13 +56,14 @@ class ArchiveScreenVM @Inject constructor(
         )
     )
     val parentArchiveScreenData = listOf(
-        ArchiveScreenModal(name = "Links", screen = { navController, customWebTab ->
+        ArchiveScreenModal(name = R.string.links, screen = { navController, customWebTab ->
             ChildArchiveScreen(
                 archiveScreenType = ArchiveScreenType.LINKS,
                 navController = navController,
                 customWebTab = customWebTab
             )
-        }), ArchiveScreenModal(name = "Folders",
+        }), ArchiveScreenModal(
+            name = R.string.folders,
             screen = { navController, customWebTab ->
                 ChildArchiveScreen(
                     archiveScreenType = ArchiveScreenType.FOLDERS,
@@ -104,7 +106,7 @@ class ArchiveScreenVM @Inject constructor(
             selectedFoldersID.toList().forEach {
                 foldersRepo.moveArchivedFolderToRegularFolderV10(it)
             }
-            pushUiEvent(CommonUiEvent.ShowToast("Selected folders unarchived successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.selected_folders_unarchived_succesfully))
         }
     }
 
@@ -119,7 +121,7 @@ class ArchiveScreenVM @Inject constructor(
             selectedLinksData.toList().forEach {
                 linksRepo.deleteALinkFromArchiveLinks(it.id)
             }
-            pushUiEvent(CommonUiEvent.ShowToast("Selected links deleted successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.selected_links_deleted_succesfully))
         }.invokeOnCompletion {
             selectedLinksData.clear()
         }
@@ -130,7 +132,7 @@ class ArchiveScreenVM @Inject constructor(
             selectedFoldersID.toList().forEach {
                 foldersRepo.deleteAFolder(it)
             }
-            pushUiEvent(CommonUiEvent.ShowToast("Selected folders deleted successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.selected_folders_deleted_succesfully))
         }.invokeOnCompletion {
             selectedFoldersID.clear()
         }
@@ -155,7 +157,7 @@ class ArchiveScreenVM @Inject constructor(
                 )
                 linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
             }
-            pushUiEvent(CommonUiEvent.ShowToast("Selected links unarchived successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.selected_links_unarchived_succesfully))
         }.invokeOnCompletion {
             selectedLinksData.clear()
         }
@@ -178,7 +180,7 @@ class ArchiveScreenVM @Inject constructor(
                 ), onTaskCompleted = {}, autoDetectTitle = false
             )
             linksRepo.deleteALinkFromArchiveLinks(archivedLink.id)
-            pushUiEvent(CommonUiEvent.ShowToast("Link unarchived successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.link_unarchived_succesfully))
         }.invokeOnCompletion {
             selectedLinksData.clear()
         }
@@ -196,14 +198,14 @@ class ArchiveScreenVM @Inject constructor(
             viewModelScope.launch {
                 linksRepo
                     .renameALinkInfoFromArchiveLinks(webURL, newNote)
-                pushUiEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_succesfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
                 foldersRepo.updateAFolderNote(folderID, newNote)
-                pushUiEvent(CommonUiEvent.ShowToast("Folder info updated successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.folder_info_updated_succesfully))
             }
         }
     }
@@ -219,14 +221,14 @@ class ArchiveScreenVM @Inject constructor(
             viewModelScope.launch {
                 linksRepo
                     .renameALinkTitleFromArchiveLinks(webURL = webURL, newTitle = newTitle)
-                pushUiEvent(CommonUiEvent.ShowToast("Link info updated successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.link_info_updated_succesfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
         } else {
             viewModelScope.launch {
                 foldersRepo.updateAFolderName(folderID, newTitle)
-                pushUiEvent(CommonUiEvent.ShowToast("Folder info updated successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.folder_info_updated_succesfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -350,7 +352,7 @@ class ArchiveScreenVM @Inject constructor(
             viewModelScope.launch {
                 linksRepo
                     .deleteALinkFromArchiveLinksV9(webURL = selectedURLOrFolderName)
-                pushUiEvent(CommonUiEvent.ShowToast("Archived link deleted permanently"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.archived_link_deleted_succesfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -373,7 +375,7 @@ class ArchiveScreenVM @Inject constructor(
         if (archiveScreenType == ArchiveScreenType.FOLDERS) {
             viewModelScope.launch {
                 foldersRepo.deleteAFolderNote(folderID)
-                pushUiEvent(CommonUiEvent.ShowToast("Note deleted successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note_successfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -381,7 +383,7 @@ class ArchiveScreenVM @Inject constructor(
             viewModelScope.launch {
                 linksRepo
                     .deleteANoteFromArchiveLinks(webURL = selectedURLOrFolderName)
-                pushUiEvent(CommonUiEvent.ShowToast("Note deleted successfully"))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note_successfully))
             }.invokeOnCompletion {
                 onTaskCompleted()
             }
@@ -392,7 +394,7 @@ class ArchiveScreenVM @Inject constructor(
         viewModelScope.launch {
             foldersRepo
                 .moveArchivedFolderToRegularFolderV10(folderID)
-            pushUiEvent(CommonUiEvent.ShowToast("Folder unarchived successfully"))
+            pushUiEvent(CommonUiEvent.ShowToast(R.string.folder_unarchived_succesfully))
         }.invokeOnCompletion {
             selectedFoldersID.clear()
         }

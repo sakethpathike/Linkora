@@ -21,10 +21,12 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -228,7 +230,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "Welcome back to Linkora! No links found. To continue, please add links.")
+                        DataEmptyScreen(text = stringResource(id = R.string.welcome_back_to_linkora))
                     }
                     item {
                         Spacer(modifier = Modifier.height(165.dp))
@@ -325,7 +327,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "No important links were found. To continue, please add links.")
+                        DataEmptyScreen(text = stringResource(id = R.string.no_important_links_were_found))
                     }
                 }
             } else {
@@ -481,7 +483,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "No links were found. To continue, please add links.")
+                        DataEmptyScreen(text = stringResource(id = R.string.no_links_were_found))
                     }
                 }
             }

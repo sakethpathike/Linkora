@@ -11,9 +11,11 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -47,7 +49,7 @@ fun BottomNavigationBar(navController: NavController) {
                     },
                     label = {
                         Text(
-                            text = "Home",
+                            text = stringResource(id = R.string.home),
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )
@@ -70,7 +72,7 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     }, label = {
                         Text(
-                            text = it.itemName,
+                            text = stringResource(id = it.itemName),
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )

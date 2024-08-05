@@ -81,6 +81,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -100,6 +101,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -280,7 +282,7 @@ fun ParentHomeScreen(
                         }
                     } else {
                         Text(
-                            text = homeScreenVM.currentPhaseOfTheDay.value,
+                            text = stringResource(id = homeScreenVM.currentPhaseOfTheDay.value),
                             style = MaterialTheme.typography.titleLarge,
                             fontSize = 24.sp
                         )
@@ -408,7 +410,7 @@ fun ParentHomeScreen(
                                         .rotate(180f)
                                         .width(56.dp)
                                         .padding(bottom = 2.dp),
-                                    text = "Default",
+                                    text = stringResource(id = R.string.default_shelf),
                                     style = MaterialTheme.typography.titleSmall,
                                     maxLines = 1,
                                     textAlign = TextAlign.Center
@@ -675,17 +677,17 @@ fun ParentHomeScreen(
                                         Text(text = "• ")
                                         Text(
                                             text = buildAnnotatedString {
-                                                append("To add folders into this shelf, click on the ")
+                                                append("${stringResource(id = R.string.to_add_folders_into_this_panel_click_on_the)} ")
                                                 appendInlineContent("tuneIcon")
-                                                append(" at the ")
+                                                append(" ${stringResource(id = R.string.at_the)} ")
                                                 withStyle(
                                                     style = SpanStyle(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append("bottom of the Shelf")
+                                                    append(stringResource(id = R.string.bottom_of_the_shelf))
                                                 }
-                                                append(".")
+                                                append(stringResource(id = R.string.period))
                                             },
                                             inlineContent = mapOf(
                                                 Pair("tuneIcon", InlineTextContent(
@@ -721,19 +723,19 @@ fun ParentHomeScreen(
                                         Text(
                                             text = buildAnnotatedString {
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("Saved Links")
+                                                    append(stringResource(id = R.string.saved_links))
                                                 }
-                                                append(" and ")
+                                                append(" ${stringResource(id = R.string.and)} ")
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("Important Links")
+                                                    append(stringResource(id = R.string.important_links))
                                                 }
-                                                append(" can be accessed from the ")
+                                                append(" ${stringResource(id = R.string.can_be_accessed_from_the)} ")
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("Default Shelf ")
+                                                    append("${stringResource(id = R.string.default_panel_desc)} ")
                                                 }
                                                 append("(")
                                                 appendInlineContent("defaultSectionIcon")
-                                                append(").")
+                                                append(")${stringResource(id = R.string.period)}")
                                             },
                                             inlineContent = mapOf(
                                                 Pair(
