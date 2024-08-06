@@ -19,10 +19,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -56,7 +58,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             strokeWidth = 4.dp
                         )
                         Text(
-                            text = "Retrieving latest information, this may take sometime.",
+                            text = stringResource(id = R.string.retrieving_latest_information),
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
@@ -73,7 +75,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = "Cancel",
+                            text = stringResource(id = R.string.cancel),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )

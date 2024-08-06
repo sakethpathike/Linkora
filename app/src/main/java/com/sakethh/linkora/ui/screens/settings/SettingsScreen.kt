@@ -23,11 +23,13 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -44,7 +46,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             Column {
                 LargeTopAppBar(scrollBehavior = topAppBarScrollState, title = {
                     Text(
-                        text = "Settings",
+                        text = stringResource(id = R.string.settings),
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 24.sp
@@ -65,7 +67,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.THEME
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "Theme",
+                        sectionTitle = stringResource(id = R.string.theme),
                         sectionIcon = Icons.Default.ColorLens
                     )
                 }
@@ -76,7 +78,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.GENERAL
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "General",
+                        sectionTitle = stringResource(id = R.string.general),
                         sectionIcon = Icons.Default.SettingsInputSvideo
                     )
                 }
@@ -87,7 +89,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.DATA
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "Data",
+                        sectionTitle = stringResource(id = R.string.data),
                         sectionIcon = Icons.Default.Storage
                     )
                 }
@@ -98,7 +100,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.PRIVACY
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "Privacy",
+                        sectionTitle = stringResource(id = R.string.privacy),
                         sectionIcon = Icons.Default.PrivacyTip
                     )
                 }
@@ -109,7 +111,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.ABOUT
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "About",
+                        sectionTitle = stringResource(id = R.string.about),
                         sectionIcon = Icons.Default.Info
                     )
                 }
@@ -120,7 +122,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.ACKNOWLEDGMENT
                             navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
                         },
-                        sectionTitle = "Acknowledgments",
+                        sectionTitle = stringResource(id = R.string.acknowledgments),
                         sectionIcon = Icons.Default.Group
                     )
                 }

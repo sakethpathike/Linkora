@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -19,16 +18,18 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportConflictBtmSheet(
     modalBottomSheetState: SheetState,
@@ -57,7 +58,7 @@ fun ImportConflictBtmSheet(
                     }
                 }) {
                 Text(
-                    text = "Heads Up!",
+                    text = stringResource(id = R.string.heads_up),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp),
@@ -65,9 +66,7 @@ fun ImportConflictBtmSheet(
                     textAlign = TextAlign.Start
                 )
                 Text(
-                    text = "You already have links saved, so importing data might cause conflicts in some cases. To prevent any unwanted surprises, export your data before selecting any import options.\n" +
-                            "\n" +
-                            "Remember, the actions triggered by your choice will happen simultaneously.",
+                    text = stringResource(id = R.string.you_already_have_links_saved),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
@@ -90,7 +89,7 @@ fun ImportConflictBtmSheet(
                         )
                     }) {
                     Text(
-                        text = "Export data",
+                        text = stringResource(id = R.string.export_data),
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
@@ -110,7 +109,7 @@ fun ImportConflictBtmSheet(
                         onMergeClick()
                     }) {
                     Text(
-                        text = "Import data, and keep the existing data.",
+                        text = stringResource(id = R.string.import_data_and_keep_the_existing_data),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -132,7 +131,7 @@ fun ImportConflictBtmSheet(
                         onExportAndThenImportClick()
                     }) {
                     Text(
-                        text = "Import data, export and delete the existing data.",
+                        text = stringResource(id = R.string.import_data_export_and_delete_the_existing_data),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -155,7 +154,7 @@ fun ImportConflictBtmSheet(
                         onDeleteExistingDataClick()
                     }) {
                     Text(
-                        text = "Import data, and delete the existing data.",
+                        text = stringResource(id = R.string.import_data_and_delete_the_existing_data),
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,

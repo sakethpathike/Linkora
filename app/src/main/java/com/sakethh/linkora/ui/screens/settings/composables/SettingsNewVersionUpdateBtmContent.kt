@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -22,16 +21,18 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsNewVersionUpdateBtmContent(
     modalBtmSheetState: SheetState,
@@ -47,7 +48,7 @@ fun SettingsNewVersionUpdateBtmContent(
     ) {
         item {
             Text(
-                text = "Linkora just got better,\nnew update is available.",
+                text = stringResource(id = R.string.new_update_is_available),
                 style = MaterialTheme.typography.titleLarge,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Start,
@@ -57,14 +58,14 @@ fun SettingsNewVersionUpdateBtmContent(
         }
         item {
             VersionCardForBtmSheetContent(
-                title = "version you're using",
+                title = stringResource(id = R.string.current_version),
                 value = SettingsScreenVM.APP_VERSION_NAME
             )
         }
         if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
             item {
                 VersionCardForBtmSheetContent(
-                    title = "latest version which you should be using",
+                    title = stringResource(id = R.string.latest_version),
                     value = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName
                 )
             }
@@ -89,7 +90,9 @@ fun SettingsNewVersionUpdateBtmContent(
                     coroutineScope.launch {
                         settingsScreenVM.openInWeb(
                             recentlyVisitedData = RecentlyVisited(
-                                title = "Linkora ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} release page on GitHub",
+                                title = context.getString(R.string.app_name) + " ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} " + context.getString(
+                                    R.string.release_page_on_gitHub
+                                ),
                                 webURL = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releasePageURL,
                                 baseURL = "github.com",
                                 imgURL = "it.imgURL",
@@ -101,7 +104,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     }
                 }) {
                 Text(
-                    text = "Redirect to latest release page",
+                    text = stringResource(id = R.string.redirect_to_latest_release_page),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -133,7 +136,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     }?.directDownloadURL?.let { uriHandler.openUri(it) }
                 }) {
                 Text(
-                    text = "Download",
+                    text = stringResource(id = R.string.download),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center, lineHeight = 18.sp,
@@ -178,25 +181,4 @@ fun VersionCardForBtmSheetContent(title: String, value: String) {
             modifier = Modifier.padding(start = 20.dp, bottom = 20.dp, end = 20.dp)
         )
     }
-}
-
-@Composable
-private fun ReleaseNotesComponent(versionValue: String, versionReleaseNote: String) {
-    Text(
-        text = "Updates in $versionValue",
-        style = MaterialTheme.typography.titleMedium,
-        fontSize = 20.sp,
-        textAlign = TextAlign.Start,
-        lineHeight = 24.sp,
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp, bottom = 12.dp)
-    )
-
-    Text(
-        text = versionReleaseNote,
-        style = MaterialTheme.typography.titleSmall,
-        fontSize = 16.sp,
-        textAlign = TextAlign.Start,
-        lineHeight = 24.sp,
-        modifier = Modifier.padding(start = 20.dp, end = 20.dp)
-    )
 }

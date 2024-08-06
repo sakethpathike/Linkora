@@ -18,9 +18,11 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -40,7 +42,7 @@ fun PermissionDialog(
             ) {
                 Column {
                     Text(
-                        text = "Permission Denied",
+                        text = stringResource(id = R.string.permission_denied_title),
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -49,7 +51,7 @@ fun PermissionDialog(
                         textAlign = TextAlign.Start
                     )
                     Text(
-                        text = "It seems you've denied the permission, Linkora needs storage access to export links to a JSON file in your local storage.",
+                        text = stringResource(id = R.string.permission_is_denied_desc),
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -70,7 +72,7 @@ fun PermissionDialog(
                             onClick()
                         }) {
                         Text(
-                            text = "Go to Settings",
+                            text = stringResource(id = R.string.go_to_settings),
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
@@ -93,7 +95,7 @@ fun PermissionDialog(
                             isVisible.value = false
                         }) {
                         Text(
-                            text = "Cacnel",
+                            text = stringResource(id = R.string.cancel),
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp

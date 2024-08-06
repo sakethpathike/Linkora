@@ -11,8 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.serialization.SerializationException
@@ -29,9 +31,9 @@ fun ImportExceptionDialogBox(
             AlertDialog(title = {
                 Text(
                     text = when (exceptionType.value) {
-                        IllegalArgumentException().toString() -> "Incompatible File Type"
+                        IllegalArgumentException().toString() -> stringResource(id = R.string.incompatible_file_type)
 
-                        SerializationException().toString() -> "Data Conversion Failed"
+                        SerializationException().toString() -> stringResource(id = R.string.data_conversion_failed)
                         else -> ""
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -42,9 +44,9 @@ fun ImportExceptionDialogBox(
             }, text = {
                 Text(
                     text = when (exceptionType.value) {
-                        IllegalArgumentException().toString() -> "Selected file doesn't match Linkora's Schema for JSON files. Please choose a compatible file to import your links."
+                        IllegalArgumentException().toString() -> stringResource(id = R.string.selected_file_does_not_match_Linkora_schema)
 
-                        SerializationException().toString() -> "Apologies, but there was an issue importing the links. Please try again with a different file."
+                        SerializationException().toString() -> stringResource(id = R.string.there_was_an_issue_importing_the_links)
                         else -> ""
                     },
                     style = MaterialTheme.typography.titleSmall,
@@ -62,7 +64,7 @@ fun ImportExceptionDialogBox(
                         onClick()
                     }) {
                     Text(
-                        text = "Choose another file",
+                        text = stringResource(id = R.string.choose_another_file),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -76,7 +78,7 @@ fun ImportExceptionDialogBox(
                         isVisible.value = false
                     }) {
                     Text(
-                        text = "Cancel",
+                        text = stringResource(id = R.string.cancel),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
