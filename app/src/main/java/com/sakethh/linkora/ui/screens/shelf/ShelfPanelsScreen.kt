@@ -26,11 +26,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
 import com.sakethh.linkora.ui.commonComposables.AddANewPanelInShelfDialogBox
@@ -71,7 +73,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                     isAddANewShelfDialogBoxVisible.value = true
                 }) {
                 Text(
-                    text = "Add New Panel to Shelf",
+                    text = stringResource(id = R.string.add_new_panel_to_shelf),
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )
@@ -86,7 +88,7 @@ fun ShelfPanelsScreen(navController: NavController) {
             }
         }, scrollBehavior = topAppBarState, title = {
             Text(
-                text = "Panels in the Shelf",
+                text = stringResource(id = R.string.panels_in_the_shelf),
                 fontSize = 18.sp,
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -110,7 +112,8 @@ fun ShelfPanelsScreen(navController: NavController) {
                             ShelfBtmSheetVM.selectedShelfData = it
                             navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
                         },
-                        elementName = it.shelfName,
+                        elementName = 0,
+                        elementNameString = it.shelfName,
                         elementImageVector = Icons.Default.ViewArray,
                         inShelfUI = true,
                         onDeleteIconClick = {
@@ -125,7 +128,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                 }
             } else {
                 item {
-                    DataEmptyScreen(text = "No Panels found. Add a new panel to the Shelf to get started.")
+                    DataEmptyScreen(text = stringResource(id = R.string.no_panels_found))
                 }
             }
         }

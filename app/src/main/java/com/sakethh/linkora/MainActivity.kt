@@ -96,7 +96,11 @@ class MainActivity : ComponentActivity() {
                     mainActivityVM.channelEvent.collectLatest {
                         when (it) {
                             is CommonUiEvent.ShowToast -> {
-                                Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    context.getString(it.msg),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }
                     }
@@ -127,7 +131,7 @@ class MainActivity : ComponentActivity() {
                             if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                 Toast.makeText(
                                     context,
-                                    "A new update is available; check out the latest update from settings screen",
+                                    context.getString(R.string.a_new_update_is_available),
                                     Toast.LENGTH_LONG
                                 ).show()
                             }

@@ -27,7 +27,7 @@ class MainActivityVM @Inject constructor(
                     .isNotEmpty()
             ) {
                 importRepo.migrateArchiveFoldersV9toV10()
-                pushUIEvent(CommonUiEvent.ShowToast("Archived folders data migrated successfully"))
+                pushUIEvent(CommonUiEvent.ShowToast(R.string.archived_folders_data_migrated_successfully))
             }
         }
     }
@@ -39,7 +39,7 @@ class MainActivityVM @Inject constructor(
             ) {
                 importRepo.migrateRegularFoldersLinksDataFromV9toV10()
             }
-            pushUIEvent(CommonUiEvent.ShowToast("Root folders data migrated successfully"))
+            pushUIEvent(CommonUiEvent.ShowToast(R.string.root_folders_data_migrated_successfully))
         }
     }
 

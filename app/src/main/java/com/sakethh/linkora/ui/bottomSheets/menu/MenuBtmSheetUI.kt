@@ -387,6 +387,7 @@ fun MenuBtmSheetUI(
 fun IndividualMenuComponent(
     onOptionClick: () -> Unit,
     elementName: Int,
+    elementNameString: String = "",
     elementImageVector: ImageVector,
     inShelfUI: Boolean = false,
     onDeleteIconClick: () -> Unit = {},
@@ -419,7 +420,7 @@ fun IndividualMenuComponent(
                 Icon(imageVector = elementImageVector, contentDescription = null)
             }
             Text(
-                text = stringResource(id = elementName),
+                text = if (elementNameString != "") elementNameString else stringResource(id = elementName),
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth(if (inShelfUI) 0.4f else 1f),

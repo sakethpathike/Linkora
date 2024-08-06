@@ -12,6 +12,7 @@ import androidx.browser.customtabs.CustomTabsIntent
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
@@ -66,7 +67,7 @@ open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : 
                         withContext(Dispatchers.Main) {
                             Toast.makeText(
                                 context,
-                                "No Activity found to handle Intent",
+                                context.getString(R.string.no_activity_found_to_handle_intent),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -89,7 +90,7 @@ open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : 
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
-                                    "Chrome isn't installed",
+                                    context.getString(R.string.chrome_isnt_installed),
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
@@ -100,7 +101,11 @@ open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : 
                             Intent(Intent.ACTION_VIEW, Uri.parse(recentlyVisitedData.webURL))
                         context.startActivity(browserIntent)
                         withContext(Dispatchers.Main) {
-                            Toast.makeText(context, "Chrome isn't installed", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.chrome_isnt_installed),
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                         }
                     }

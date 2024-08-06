@@ -75,6 +75,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -134,7 +135,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -171,12 +172,12 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
     val btmModalSheetState =
         rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val topAppBarText = when (SettingsScreenVM.currentSelectedSettingSection.value) {
-        SettingsSections.THEME -> "Theme"
-        SettingsSections.GENERAL -> "General"
-        SettingsSections.DATA -> "Data"
-        SettingsSections.PRIVACY -> "Privacy"
-        SettingsSections.ABOUT -> "About"
-        SettingsSections.ACKNOWLEDGMENT -> "Acknowledgments"
+        SettingsSections.THEME -> stringResource(id = R.string.theme)
+        SettingsSections.GENERAL -> stringResource(id = R.string.general)
+        SettingsSections.DATA -> stringResource(id = R.string.data)
+        SettingsSections.PRIVACY -> stringResource(id = R.string.privacy)
+        SettingsSections.ABOUT -> stringResource(id = R.string.about)
+        SettingsSections.ACKNOWLEDGMENT -> stringResource(id = R.string.acknowledgments)
     }
     val jsoupStringAgent = SettingsScreenVM.Settings.jsoupUserAgent
     val isReadOnlyTextFieldForUserAgent = rememberSaveable {
@@ -206,7 +207,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         )
                         if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
                             Text(
-                                text = "Beta",
+                                text = stringResource(id = R.string.beta),
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 15.sp,
@@ -241,7 +242,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                 if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
                     item {
                         Text(
-                            text = "The Import feature is polished, not perfect. While it's much better, surprises might still pop up during import. However, exporting should be no problem.",
+                            text = stringResource(id = R.string.import_feature_is_polished_not_perfect_desc),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 15.sp,
                             lineHeight = 20.sp,
@@ -253,7 +254,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                 if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.ACKNOWLEDGMENT) {
                     item {
                         Text(
-                            text = "Linkora wouldn't be possible without the following open-source software, libraries.",
+                            text = stringResource(id = R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries),
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 15.sp,
                             lineHeight = 20.sp,
@@ -267,7 +268,8 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) {
                             item(key = "Follow System Theme") {
                                 RegularSettingComponent(
-                                    settingsUIElement = SettingsUIElement(title = "Follow System Theme",
+                                    settingsUIElement = SettingsUIElement(
+                                        title = stringResource(id = R.string.follow_system_theme),
                                         doesDescriptionExists = false,
                                         isSwitchNeeded = true,
                                         description = null,
@@ -291,7 +293,8 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         if (!SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
                             item(key = "Use Dark Mode") {
                                 RegularSettingComponent(
-                                    settingsUIElement = SettingsUIElement(title = "Use Dark Mode",
+                                    settingsUIElement = SettingsUIElement(
+                                        title = stringResource(id = R.string.use_dark_mode),
                                         doesDescriptionExists = false,
                                         description = null,
                                         isSwitchNeeded = true,
@@ -315,9 +318,10 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                             item(key = "Use dynamic theming") {
                                 RegularSettingComponent(
-                                    settingsUIElement = SettingsUIElement(title = "Use dynamic theming",
+                                    settingsUIElement = SettingsUIElement(
+                                        title = stringResource(id = R.string.use_dynamic_theming),
                                         doesDescriptionExists = true,
-                                        description = "Change colour themes within the app based on your wallpaper.",
+                                        description = stringResource(id = R.string.use_dynamic_theming_desc),
                                         isSwitchNeeded = true,
                                         isSwitchEnabled = SettingsScreenVM.Settings.shouldFollowDynamicTheming,
                                         onSwitchStateChange = {
@@ -342,7 +346,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         item(key = "settingsCard") {
                             Row {
                                 Text(
-                                    text = "Linkora",
+                                    text = stringResource(id = R.string.app_name),
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 18.sp,
                                     modifier = Modifier
@@ -363,7 +367,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 SettingsAppInfoComponent(hasDescription = false,
                                     description = "",
                                     icon = Icons.Outlined.Refresh,
-                                    title = "Check for latest version",
+                                    title = stringResource(id = R.string.check_for_latest_version),
                                     onClick = {
                                         shouldVersionCheckerDialogAppear.value = true
                                         if (isNetworkAvailable(context)) {
@@ -382,7 +386,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                             shouldVersionCheckerDialogAppear.value = false
                                             Toast.makeText(
                                                 context,
-                                                "network error, check your network connection and try again",
+                                                context.getString(R.string.network_error),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -399,7 +403,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 SettingsAppInfoComponent(hasDescription = false,
                                     description = "",
                                     icon = Icons.Outlined.GetApp,
-                                    title = "${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName} is now available.",
+                                    title = "${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName} " + stringResource(
+                                        id = R.string.is_now_available
+                                    ),
                                     onClick = {
                                         shouldVersionCheckerDialogAppear.value = true
                                         if (isNetworkAvailable(context)) {
@@ -419,7 +425,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                             shouldVersionCheckerDialogAppear.value = false
                                             Toast.makeText(
                                                 context,
-                                                "network error, check your network connection and try again",
+                                                context.getString(R.string.network_error),
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
@@ -455,7 +461,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                                 )
                                             }
                                             Text(
-                                                text = "You are using latest version of Linkora.",
+                                                text = stringResource(id = R.string.you_are_using_latest_version_of_linkora),
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 14.sp,
                                                 lineHeight = 18.sp,
@@ -471,10 +477,11 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 thickness = 0.5.dp,
                                 color = MaterialTheme.colorScheme.outline
                             )
-                            SettingsAppInfoComponent(description = "The source code for Linkora is public and open-source; feel free to check out what Linkora does under the hood.",
+                            SettingsAppInfoComponent(
+                                description = stringResource(id = R.string.github_desc),
                                 icon = null,
                                 usingLocalIcon = true,
-                                title = "Github",
+                                title = stringResource(id = R.string.github),
                                 localIcon = R.drawable.github_logo,
                                 onClick = {
                                     customWebTab.openInWeb(
@@ -498,11 +505,11 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                             )
                             Text(
                                 text = buildAnnotatedString {
-                                    append("Follow")
+                                    append(stringResource(id = R.string.follow))
                                     withStyle(SpanStyle(fontWeight = SemiBold)) {
                                         append(" @LinkoraApp ")
                                     }
-                                    append("on the bird app to get the latest information about releases and everything in between about Linkora.")
+                                    append(stringResource(id = R.string.twitter_desc))
                                 }, style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp,
                                 textAlign = TextAlign.Start,
@@ -516,7 +523,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 hasDescription = false,
                                 usingLocalIcon = true,
                                 localIcon = R.drawable.twitter_logo,
-                                title = "Twitter",
+                                title = stringResource(id = R.string.twitter),
                                 onClick = {
                                     customWebTab.openInWeb(
                                         recentlyVisitedData = RecentlyVisited(
@@ -544,9 +551,10 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
 
                         item {
                             RegularSettingComponent(
-                                settingsUIElement = SettingsUIElement(title = "Auto-Check for Updates",
+                                settingsUIElement = SettingsUIElement(
+                                    title = stringResource(id = R.string.auto_check_for_updates),
                                     doesDescriptionExists = SettingsScreenVM.Settings.showDescriptionForSettingsState.value,
-                                    description = "If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.",
+                                    description = stringResource(id = R.string.auto_check_for_updates_desc),
                                     isIconNeeded = rememberSaveable {
                                         mutableStateOf(true)
                                     },
@@ -595,7 +603,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 )
 
                                 SettingsSections.ABOUT -> emptyList()
-                                SettingsSections.ACKNOWLEDGMENT -> settingsScreenVM.acknowledgmentsSection
+                                SettingsSections.ACKNOWLEDGMENT -> settingsScreenVM.acknowledgmentsSection(
+                                    context
+                                )
                             }
                         ) {
                             RegularSettingComponent(
@@ -612,9 +622,12 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 ) {
                                     if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
                                         RegularSettingComponent(
-                                            settingsUIElement = SettingsUIElement(title = "Refresh All Links' Titles and Images",
+                                            settingsUIElement = SettingsUIElement(
+                                                title = stringResource(
+                                                    id = R.string.refresh_all_links_titles_and_images
+                                                ),
                                                 doesDescriptionExists = true,
-                                                description = "Manually entered titles will be replaced with detected titles.",
+                                                description = stringResource(id = R.string.refresh_all_links_titles_and_images_desc),
                                                 isSwitchNeeded = false,
                                                 isIconNeeded = rememberSaveable {
                                                     mutableStateOf(true)
@@ -644,7 +657,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                         OutlinedTextField(
                                             supportingText = {
                                                 Text(
-                                                    text = "Helps detect images and titles from web page meta tags; different agent strings can change the detected data.",
+                                                    text = stringResource(id = R.string.user_agent_desc),
                                                     style = MaterialTheme.typography.titleSmall,
                                                     lineHeight = 18.sp,
                                                     modifier = Modifier.padding(
@@ -663,7 +676,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                                 .focusRequester(focusRequester),
                                             label = {
                                                 Text(
-                                                    text = "User Agent",
+                                                    text = stringResource(id = R.string.user_agent),
                                                     style = MaterialTheme.typography.titleSmall
                                                 )
                                             }
@@ -738,7 +751,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                             )
                                             Spacer(modifier = Modifier.height(15.dp))
                                             Text(
-                                                text = "Refreshing links...",
+                                                text = stringResource(id = R.string.refreshing_links),
                                                 style = MaterialTheme.typography.titleMedium,
                                                 modifier = Modifier.padding(
                                                     start = 15.dp,
@@ -778,7 +791,13 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                                 Spacer(modifier = Modifier.height(15.dp))
                                             }
                                             Text(
-                                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) "Work Manager is scheduling the link refresh. It will continue shortly." else "${successfulRefreshLinkCount.value} of ${RefreshLinksWorker.totalLinksCount.intValue} links refreshed",
+                                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) stringResource(
+                                                    id = R.string.work_manager_desc
+                                                ) else "${successfulRefreshLinkCount.value} " + stringResource(
+                                                    id = R.string.of
+                                                ) + " ${RefreshLinksWorker.totalLinksCount.intValue} " + stringResource(
+                                                    id = R.string.links_refreshed
+                                                ),
                                                 style = MaterialTheme.typography.titleSmall,
                                                 modifier = Modifier.padding(
                                                     start = 15.dp,
@@ -819,7 +838,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                                             )
                                                     )
                                                     Text(
-                                                        text = "Closing Linkora won't interrupt link refreshing, but newly added links might not be processed.",
+                                                        text = stringResource(id = R.string.refreshing_links_info),
                                                         style = MaterialTheme.typography.titleSmall,
                                                         lineHeight = 18.sp,
                                                         modifier = Modifier.padding(end = 15.dp)
@@ -902,14 +921,18 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                                 runtimePermission = runtimePermission
                             )
                             Toast.makeText(
-                                context, "Successfully Exported", Toast.LENGTH_SHORT
+                                context,
+                                context.getString(R.string.succesfully_exported),
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
 
                         else -> {
                             runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             Toast.makeText(
-                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                                context,
+                                context.getString(R.string.succesfully_exported),
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -923,7 +946,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         runtimePermission = runtimePermission
                     )
                     Toast.makeText(
-                        context, "Successfully Exported", Toast.LENGTH_SHORT
+                        context,
+                        context.getString(R.string.succesfully_exported),
+                        Toast.LENGTH_SHORT
                     ).show()
                     settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                         activityResultLauncher.launch("text/*")
@@ -942,7 +967,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                         else -> {
                             runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             Toast.makeText(
-                                context, "Permission required to write the data", Toast.LENGTH_SHORT
+                                context,
+                                context.getString(R.string.permission_required_to_write_the_data),
+                                Toast.LENGTH_SHORT
                             ).show()
                         }
                     }
@@ -954,7 +981,9 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                 onDeleteClick = {
                     settingsScreenVM.deleteEntireLinksAndFoldersData()
                     Toast.makeText(
-                        context, "Deleted entire data from the local database", Toast.LENGTH_SHORT
+                        context,
+                        context.getString(R.string.deleted_entire_data_from_the_local_database),
+                        Toast.LENGTH_SHORT
                     ).show()
                 })
         )
@@ -971,7 +1000,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                 }
             }, title = {
                 Text(
-                    text = "Refreshing",
+                    text = stringResource(id = R.string.refreshing),
                     style = MaterialTheme.typography.titleSmall,
                 )
             })
