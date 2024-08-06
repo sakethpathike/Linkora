@@ -128,4 +128,19 @@
     <string name="new_link_added_to_important_links">New link added to "Important Links"</string>
     <string name="new_link_added_to_the_folder">New link added to the folder</string>
     <string name="selected_folders_archived_successfully">Selected folders archived successfully</string>
+    <string name="deleted_the_note">deleted the note</string>
+    <string name="search_titles_to_find_links_and_folders">Search titles to find links and folders</string>
+    <string name="archived_links">Archived Links</string>
+    <string name="archived_folders">Archived Folders</string>
+    <string name="links_from_folders">Links from folders</string>
+    <string name="history">History</string>
+    <string name="search_linkora_retrieve_all_the_links_you_saved">Search Linkora: Retrieve all the links you saved.</string>
+    <string name="no_matching_items_found_try_a_different_search">No Matching items Found. Try a Different Search.</string>
+    <string name="from_folders">From Folders</string>
+    <string name="from_saved_links">From Saved Links</string>
+    <string name="from_important_links">From Important Links</string>
+    <string name="links_from_history">Links from History</string>
+    <string name="links_from_archive">Links from Archive</string>
+    <string name="from_archived_folders">From Archived Folders</string>
+    <string name="no_links_were_found_in_history">No Links were found in History.</string>
 </resources>

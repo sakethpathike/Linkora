@@ -58,11 +58,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
@@ -128,7 +130,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
         searchScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -168,6 +170,14 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     }
     val clickedFolderName = rememberSaveable { mutableStateOf("") }
     val clickedFolderNote = rememberSaveable { mutableStateOf("") }
+    val archivedFoldersStringRes = stringResource(id = R.string.archived_folders)
+    val archivedLinksStringRes = stringResource(id = R.string.archived_links)
+    val historyStringRes = stringResource(id = R.string.history)
+    val linksFromFoldersStringRes = stringResource(id = R.string.links_from_folders)
+    val impLinksStringRes = stringResource(id = R.string.important_links)
+    val savedLinksStringRes = stringResource(id = R.string.saved_links)
+    val foldersStringRes = stringResource(id = R.string.folders)
+
     LinkoraTheme {
         Column {
             SearchBar(
@@ -214,7 +224,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 },
                 placeholder = {
                     Text(
-                        text = "Search titles to find links and folders",
+                        text = stringResource(id = R.string.search_titles_to_find_links_and_folders),
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.basicMarquee(),
                         maxLines = 1
@@ -281,7 +291,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     )
                                 }
                                 Text(
-                                    text = " items selected",
+                                    text = " " + stringResource(id = R.string.items_selected),
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp
@@ -336,18 +346,24 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         .padding(top = 2.dp)
                                 ) {
                                     listOf(
-                                        "Saved Links",
-                                        "Important Links",
-                                        "Archived Links",
-                                        "Folders",
-                                        "Archived Folders",
-                                        "Links from folders",
-                                        "History"
+                                        context.getString(R.string.saved_links),
+                                        context.getString(R.string.important_links),
+                                        context.getString(R.string.archived_links),
+                                        context.getString(R.string.folders),
+                                        context.getString(R.string.archived_folders),
+                                        context.getString(R.string.links_from_folders),
+                                        context.getString(R.string.history)
                                     ).forEach {
-                                        if (it == "Saved Links" && queriedSavedLinks.isNotEmpty() || it == "Important Links" && impLinksQueriedData.isNotEmpty() ||
-                                            it == "Archived Links" && archiveLinksQueriedData.isNotEmpty() || it == "Folders" && queriedUnarchivedFoldersData.isNotEmpty()
-                                            || it == "Archived Folders" && queriedArchivedFoldersData.isNotEmpty() || it == "Links from folders" && queriedFolderLinks.isNotEmpty()
-                                            || it == "History" && historyLinksQueriedData.isNotEmpty()
+                                        if (it == context.getString(R.string.saved_links) && queriedSavedLinks.isNotEmpty() || it == context.getString(
+                                                R.string.important_links
+                                            ) && impLinksQueriedData.isNotEmpty() ||
+                                            it == context.getString(R.string.archived_links) && archiveLinksQueriedData.isNotEmpty() || it == context.getString(
+                                                R.string.folders
+                                            ) && queriedUnarchivedFoldersData.isNotEmpty()
+                                            || it == context.getString(R.string.archived_folders) && queriedArchivedFoldersData.isNotEmpty() || it == context.getString(
+                                                R.string.links_from_folders
+                                            ) && queriedFolderLinks.isNotEmpty()
+                                            || it == context.getString(R.string.history) && historyLinksQueriedData.isNotEmpty()
                                         ) {
                                             Row(modifier = Modifier.animateContentSize()) {
                                                 Spacer(modifier = Modifier.width(10.dp))
@@ -383,7 +399,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         when {
                             searchTextField.isEmpty() -> {
                                 item {
-                                    DataEmptyScreen(text = "Search Linkora: Retrieve all the links you saved.")
+                                    DataEmptyScreen(text = stringResource(id = R.string.search_linkora_retrieve_all_the_links_you_saved))
                                 }
                             }
 
@@ -396,18 +412,18 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     && archiveLinksQueriedData.isEmpty()
                                     && historyLinksQueriedData.isEmpty() -> {
                                 item {
-                                    DataEmptyScreen(text = "No Matching items Found. Try a Different Search.")
+                                    DataEmptyScreen(text = stringResource(id = R.string.no_matching_items_found_try_a_different_search))
                                 }
                             }
 
                             else -> {
                                 if (queriedUnarchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Folders"
+                                        foldersStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "From Folders",
+                                            text = stringResource(id = R.string.from_folders),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -480,12 +496,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (queriedSavedLinks.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Saved Links"
+                                        savedLinksStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "From Saved Links",
+                                            text = stringResource(id = R.string.from_saved_links),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -593,12 +609,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (impLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Important Links"
+                                        impLinksStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "From Important Links",
+                                            text = stringResource(id = R.string.from_important_links),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -709,12 +725,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (queriedFolderLinks.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Links from folders"
+                                        linksFromFoldersStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "Links from folders",
+                                            text = stringResource(id = R.string.links_from_folders),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -822,12 +838,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (historyLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "History"
+                                        historyStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "Links from History",
+                                            text = stringResource(id = R.string.links_from_history),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -937,12 +953,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (archiveLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Archived Links"
+                                        archivedLinksStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "Links from Archive",
+                                            text = stringResource(id = R.string.links_from_archive),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -1052,12 +1068,12 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                                 if (queriedArchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        "Archived Folders"
+                                        archivedFoldersStringRes
                                     ) || selectedSearchFilters.isEmpty())
                                 ) {
                                     item {
                                         Text(
-                                            text = "From Archived Folders",
+                                            text = stringResource(id = R.string.from_archived_folders),
                                             style = MaterialTheme.typography.titleMedium,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontSize = 14.sp,
@@ -1199,7 +1215,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         )
                                     }
                                     Text(
-                                        text = " items selected",
+                                        text = " " + stringResource(id = R.string.items_selected),
                                         color = MaterialTheme.colorScheme.onSurface,
                                         style = MaterialTheme.typography.titleLarge,
                                         fontSize = 18.sp
@@ -1207,7 +1223,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                 }
                             } else {
                                 Text(
-                                    text = "History",
+                                    text = stringResource(id = R.string.history),
                                     color = MaterialTheme.colorScheme.primary,
                                     style = MaterialTheme.typography.titleMedium,
                                     fontSize = 20.sp,
@@ -1353,7 +1369,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = "No Links were found in History.")
+                        DataEmptyScreen(text = stringResource(id = R.string.no_links_were_found_in_history))
                     }
                 }
                 item {

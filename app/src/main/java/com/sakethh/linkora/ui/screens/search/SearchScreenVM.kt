@@ -1,12 +1,12 @@
 package com.sakethh.linkora.ui.screens.search
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -23,19 +23,18 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -330,64 +329,46 @@ class SearchScreenVM @Inject constructor(
         when (selectedLinkType) {
             SelectedLinkType.HISTORY_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteALinkInfoOfFolders(linkID = selectedLinkID)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteANoteFromImportantLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteANoteFromArchiveLinks(webURL = selectedWebURL)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
 
             SelectedLinkType.ARCHIVE_FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
-
                     linksRepo.deleteALinkNoteFromArchiveBasedFolderLinksV10(
                         folderID = folderID,
                         webURL = selectedWebURL
                     )
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(context, "deleted the note", Toast.LENGTH_SHORT).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
                 }
             }
         }
@@ -570,11 +551,7 @@ class SearchScreenVM @Inject constructor(
                     webURL = selectedWebURL
                 )
                 shouldDeleteBoxAppear.value = false
-                withContext(Dispatchers.Main) {
-                    Toast.makeText(
-                        context, "deleted the link successfully", Toast.LENGTH_SHORT
-                    ).show()
-                }
+                pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
             }
 
             SelectedLinkType.SAVED_LINKS -> {
@@ -583,11 +560,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
                 }
             }
 
@@ -595,11 +568,7 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
                     linksRepo.deleteALinkFromLinksTable(selectedLinkID)
                     shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
                 }
             }
 
@@ -609,11 +578,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
                 }
             }
 
@@ -623,11 +588,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
                 }
             }
 
@@ -638,11 +599,7 @@ class SearchScreenVM @Inject constructor(
                             webURL = selectedWebURL, archiveFolderID = folderID
                         )
                     shouldDeleteBoxAppear.value = false
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(
-                            context, "deleted the link successfully", Toast.LENGTH_SHORT
-                        ).show()
-                    }
+                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
                 }
             }
         }
