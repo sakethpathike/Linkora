@@ -2,6 +2,7 @@ package com.sakethh.linkora.data.local.links
 
 import android.content.Context
 import android.widget.Toast
+import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -49,7 +50,7 @@ class LinksImpl @Inject constructor(
             }
         ) {
             onTaskCompleted()
-            return CommonUiEvent.ShowToast("invalid url")
+            return CommonUiEvent.ShowToast(R.string.invalid_url)
         } else if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> linksTable!!.keyOfLinkedFolderV10?.let {
@@ -65,7 +66,7 @@ class LinksImpl @Inject constructor(
             } && !updateExistingLink
         ) {
             onTaskCompleted()
-            return CommonUiEvent.ShowToast("given link already exists")
+            return CommonUiEvent.ShowToast(R.string.given_link_already_exists)
         } else {
 
             suspend fun saveWithGivenData(): CommonUiEvent {
@@ -127,7 +128,7 @@ class LinksImpl @Inject constructor(
                     }
                 }
                 onTaskCompleted()
-                return CommonUiEvent.ShowToast("couldn't retrieve metadata now, but linkora saved the link")
+                return CommonUiEvent.ShowToast(R.string.could_not_retrieve_metadata_now_but_linkora_saved_the_link)
             }
 
 
@@ -297,7 +298,7 @@ class LinksImpl @Inject constructor(
                             }
                         }
                         onTaskCompleted()
-                        return CommonUiEvent.ShowToast("added the url")
+                        return CommonUiEvent.ShowToast(R.string.added_the_url)
                     }
                 }
             }
@@ -420,7 +421,7 @@ class LinksImpl @Inject constructor(
                     }
 
                     onTaskCompleted()
-                    return CommonUiEvent.ShowToast("added the url")
+                    return CommonUiEvent.ShowToast(R.string.added_the_url)
                 }
             }
         }

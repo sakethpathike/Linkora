@@ -236,4 +236,8 @@
     <string name="a_new_update_is_available">A new update is available</string>
     <string name="root_folders_data_migrated_successfully">Root folders data migrated successfully</string>
     <string name="archived_folders_data_migrated_successfully">Archived folders data migrated successfully</string>
+    <string name="invalid_url">\"invalid url\"</string>
+    <string name="given_link_already_exists">given link already exists</string>
+    <string name="could_not_retrieve_metadata_now_but_linkora_saved_the_link">couldn\'t retrieve metadata now, but linkora saved the link</string>
+    <string name="added_the_url">Added the url</string>
 </resources>
