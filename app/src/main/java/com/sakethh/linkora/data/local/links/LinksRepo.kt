@@ -59,7 +59,7 @@ interface LinksRepo {
     suspend fun archiveLinkTableUpdater(
         archivedLinks: ArchivedLinks, context: Context,
         onTaskCompleted: () -> Unit,
-    )
+    ): CommonUiEvent
 
     suspend fun deleteALinkFromArchiveFolderBasedLinksV10(webURL: String, archiveFolderID: Long)
 

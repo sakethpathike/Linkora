@@ -94,7 +94,7 @@
     <string name="are_you_sure_want_to_delete_the">Are you sure you want to delete the</string>
     <string name="folder">folder</string>
     <string name="are_you_sure_you_want_to_delete_all_selected_items">Are you sure you want to delete all selected items?</string>
-    <string name="are_you_sure_you_want_to_delete_all_folders_and_links">\"Are you sure you want to delete all folders and links?\"</string>
+    <string name="are_you_sure_you_want_to_delete_all_folders_and_links">Are you sure you want to delete all folders and links?</string>
     <string name="this_folder_deletion_will_also_delete_all_its_internal_folders">This folder deletion will also delete all its internal folder(s).</string>
     <string name="no_activity_found_to_handle_intent">No Activity found to handle Intent</string>
     <string name="link_copied_to_the_clipboard">Link copied to the clipboard</string>
@@ -239,4 +239,6 @@
     <string name="given_link_already_exists">given link already exists</string>
     <string name="could_not_retrieve_metadata_now_but_linkora_saved_the_link">couldn\'t retrieve metadata now, but linkora saved the link</string>
     <string name="added_the_url">Added the url</string>
+    <string name="removed_the_link_from_archive">removed the link from archive(s)</string>
+    <string name="moved_the_link_to_archive">moved the link to archive(s)</string>
 </resources>
