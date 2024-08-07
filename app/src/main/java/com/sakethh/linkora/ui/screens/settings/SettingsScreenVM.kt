@@ -507,7 +507,7 @@ class SettingsScreenVM @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModelScope.launch {
                 exportRepo.exportToAFile()
-                pushUiEvent(CommonUiEvent.ShowToast(R.string.succesfully_exported))
+                pushUiEvent(CommonUiEvent.ShowToast(R.string.successfully_exported))
             }
         } else {
             when (ContextCompat.checkSelfPermission(
@@ -516,7 +516,7 @@ class SettingsScreenVM @Inject constructor(
                 PackageManager.PERMISSION_GRANTED -> {
                     viewModelScope.launch {
                         exportRepo.exportToAFile()
-                        pushUiEvent(CommonUiEvent.ShowToast(R.string.succesfully_exported))
+                        pushUiEvent(CommonUiEvent.ShowToast(R.string.successfully_exported))
                     }
                     isDialogBoxVisible.value = false
                 }

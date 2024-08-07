@@ -190,7 +190,7 @@
     <string name="auto_check_for_updates_desc">यदि यह सक्षम किया गया है, तो लिंकोरा आपके द्वारा ऐप खोलने पर स्वचालित रूप से अपडेट की जाँच करता है। यदि कोई नया अपडेट उपलब्ध है, तो यह आपको एक टोस्ट संदेश के साथ सूचित करता है। यदि यह सेटिंग अक्षम है, तो नवीनतम संस्करण के लिए मैन्युअल जाँच सेटिंग्स -> अबाउट में से की जा सकती है।</string>
     <string name="show_description_for_settings">सेटिंग्स के लिए विवरण दिखाएँ</string>
     <string name="show_description_for_settings_desc">यदि यह सेटिंग सक्षम है, तो कुछ सेटिंग्स के लिए विस्तृत विवरण दिखाई देंगे, जैसे कि आप अभी पढ़ रहे हैं। यदि इसे अक्षम किया गया है, तो केवल शीर्षक दिखाए जाएंगे।</string>
-    <string name="succesfully_exported">सफलतापूर्वक निर्यात किया गया</string>
+    <string name="successfully_exported">सफलतापूर्वक निर्यात किया गया</string>
     <string name="import_data">डेटा आयात करें</string>
     <string name="import_data_from_external_JSON_file">बाह्य JSON फ़ाइल से डेटा आयात करें।</string>
     <string name="export_data_desc">अपने सभी डेटा को JSON फॉर्मेट में निर्यात करें।</string>

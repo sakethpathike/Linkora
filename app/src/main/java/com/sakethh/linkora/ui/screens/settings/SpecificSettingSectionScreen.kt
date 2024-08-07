@@ -922,7 +922,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                             )
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.succesfully_exported),
+                                context.getString(R.string.successfully_exported),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -931,7 +931,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                             runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.succesfully_exported),
+                                context.getString(R.string.successfully_exported),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -947,7 +947,7 @@ fun SpecificSettingSectionScreen(navController: NavController, customWebTab: Cus
                     )
                     Toast.makeText(
                         context,
-                        context.getString(R.string.succesfully_exported),
+                        context.getString(R.string.successfully_exported),
                         Toast.LENGTH_SHORT
                     ).show()
                     settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {

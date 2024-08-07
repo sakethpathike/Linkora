@@ -189,7 +189,7 @@
     <string name="auto_check_for_updates_desc">If this is enabled, Linkora automatically checks for updates when you open the app. If a new update is available, it notifies you with a toast message. If this setting is disabled, manual checks for the latest version can be done from the top of this screen.</string>
     <string name="show_description_for_settings">Show description for Settings</string>
     <string name="show_description_for_settings_desc">If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you\'re reading now. If it is disabled, only the titles will be shown.</string>
-    <string name="succesfully_exported">Successfully Exported</string>
+    <string name="successfully_exported">Successfully Exported</string>
     <string name="import_data">Import Data</string>
     <string name="import_data_from_external_JSON_file">Import Data from external JSON file.\"</string>
     <string name="export_data_desc">Export all of your data in JSON format.</string>
@@ -215,7 +215,7 @@
     <string name="refresh_all_links_titles_and_images_desc">Manually entered titles will be replaced with detected titles.</string>
     <string name="user_agent_desc">Helps detect images and titles from web page meta tags; different agent strings can change the detected data.</string>
     <string name="user_agent">User Agent</string>
-    <string name="refreshing_links">Refreshing links...</string>
+    <string name="refreshing_links">Refreshing links…</string>
     <string name="work_manager_desc">Work Manager is scheduling the link refresh. It will continue shortly.</string>
     <string name="links_refreshed">links refreshed</string>
     <string name="of">of</string>
@@ -230,12 +230,11 @@
     <string name="folders_listed_in_this_panel">Folders Listed in This Panel</string>
     <string name="no_folders_found_in_this_panel">No Folders Found in This Panel. Add Folders to Get Started.</string>
     <string name="you_can_add_the_following_folders_to_this_panel">You Can Add the Following Folders to This Panel</string>
-    <string name="you_can_add_the_following_folders_to_this_panel">You Can Add the Following Folders to This Panel</string>
     <string name="chrome_isnt_installed">Chrome isn\'t installed</string>
     <string name="a_new_update_is_available">A new update is available</string>
     <string name="root_folders_data_migrated_successfully">Root folders data migrated successfully</string>
     <string name="archived_folders_data_migrated_successfully">Archived folders data migrated successfully</string>
-    <string name="invalid_url">\"invalid url\"</string>
+    <string name="invalid_url">invalid url</string>
     <string name="given_link_already_exists">given link already exists</string>
     <string name="could_not_retrieve_metadata_now_but_linkora_saved_the_link">couldn\'t retrieve metadata now, but linkora saved the link</string>
     <string name="added_the_url">Added the url</string>
