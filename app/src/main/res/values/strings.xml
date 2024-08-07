@@ -229,7 +229,7 @@
     <string name="shelf">Shelf</string>
     <string name="folders_listed_in_this_panel">Folders Listed in This Panel</string>
     <string name="no_folders_found_in_this_panel">No Folders Found in This Panel. Add Folders to Get Started.</string>
-    <string name="ou_can_add_the_following_folders_to_this_panel">You Can Add the Following Folders to This Panel</string>
+    <string name="you_can_add_the_following_folders_to_this_panel">You Can Add the Following Folders to This Panel</string>
     <string name="you_can_add_the_following_folders_to_this_panel">You Can Add the Following Folders to This Panel</string>
     <string name="chrome_isnt_installed">Chrome isn\'t installed</string>
     <string name="a_new_update_is_available">A new update is available</string>
