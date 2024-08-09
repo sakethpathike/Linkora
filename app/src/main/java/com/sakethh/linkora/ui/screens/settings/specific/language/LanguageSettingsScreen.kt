@@ -19,9 +19,9 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.ModeEdit
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
@@ -155,7 +155,7 @@ fun LanguageSettingsScreen(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (isInfoExpanded.value) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(imageVector = Icons.Default.Translate, contentDescription = "")
+                                Icon(imageVector = Icons.Default.Check, contentDescription = "")
                                 Spacer(modifier = Modifier.width(15.dp))
                                 Column {
                                     Text(
@@ -167,11 +167,11 @@ fun LanguageSettingsScreen(
                             }
                             Spacer(modifier = Modifier.height(15.dp))
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(imageVector = Icons.Default.ModeEdit, contentDescription = "")
+                                Icon(imageVector = Icons.Default.Translate, contentDescription = "")
                                 Spacer(modifier = Modifier.width(15.dp))
                                 Column {
                                     Text(
-                                        text = "Represents contributing to the language strings. Click to contribute to the language. If successful, your contribution will be reflected in the app's language strings.",
+                                        text = stringResource(id = R.string.contributing_to_the_language_strings),
                                         style = MaterialTheme.typography.titleSmall,
                                         lineHeight = 20.sp
                                     )
@@ -208,13 +208,13 @@ fun LanguageSettingsScreen(
                         FilledTonalIconButton(
                             modifier = Modifier.pulsateEffect(),
                             onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.Translate, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Check, contentDescription = "")
                         }
                         Spacer(modifier = Modifier.width(15.dp))
                         FilledTonalIconButton(
                             modifier = Modifier.pulsateEffect(),
                             onClick = { /*TODO*/ }) {
-                            Icon(imageVector = Icons.Default.ModeEdit, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Translate, contentDescription = "")
                         }
                     }
                 }

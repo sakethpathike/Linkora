@@ -246,4 +246,5 @@
     <string name="current_language">Current Language</string>
     <string name="available_languages">Available Languages</string>
     <string name="represents_switching_to_the_respective_language">Represents switching to the respective language</string>
+    <string name="contributing_to_the_language_strings">Represents contributing to the language strings. Click to contribute to the language. If successful, your contribution will be reflected in the app\'s language strings.</string>
 </resources>

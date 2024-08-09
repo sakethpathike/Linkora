@@ -9,9 +9,10 @@ import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
 
 @HiltViewModel
-class LanguageSettingsScreenVM(
+class LanguageSettingsScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
     private val importRepo: ImportRepo,
     private val localDatabase: LocalDatabase,
