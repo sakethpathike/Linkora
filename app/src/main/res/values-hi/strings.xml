@@ -243,4 +243,7 @@
     <string name="moved_the_link_to_archive">लिंक को आर्काइव में ले जाया गया</string>
     <string name="change_app_language">ऐप की भाषा बदलें</string>
     <string name="language">Language</string>
+    <string name="current_language">Current Language</string>
+    <string name="available_languages">Available Languages</string>
+    <string name="represents_switching_to_the_respective_language">Represents switching to the respective language</string>
 </resources>

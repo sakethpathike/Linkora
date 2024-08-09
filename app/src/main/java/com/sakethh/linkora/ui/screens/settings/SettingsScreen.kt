@@ -11,10 +11,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.SettingsInputSvideo
 import androidx.compose.material.icons.filled.Storage
-import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -91,7 +91,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                             navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.language),
-                        sectionIcon = Icons.Default.Translate
+                        sectionIcon = Icons.Default.Language
                     )
                 }
                 item(key = "dataRow") {
