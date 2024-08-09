@@ -9,7 +9,7 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 
 
 private val LightColors = lightColorScheme(
@@ -85,22 +85,22 @@ fun LinkoraTheme(
 ) {
     val context = LocalContext.current
     val colors = when {
-        SettingsScreenVM.Settings.shouldFollowDynamicTheming.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
+        SettingsPreference.shouldFollowDynamicTheming.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (SettingsPreference.shouldFollowSystemTheme.value) {
                 if (useDarkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(
                     context
                 )
             } else {
-                if (SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) dynamicDarkColorScheme(
+                if (SettingsPreference.shouldDarkThemeBeEnabled.value) dynamicDarkColorScheme(
                     context
                 ) else dynamicLightColorScheme(context)
             }
         }
 
-        else -> if (SettingsScreenVM.Settings.shouldFollowSystemTheme.value) {
+        else -> if (SettingsPreference.shouldFollowSystemTheme.value) {
             if (useDarkTheme) DarkColors else LightColors
         } else {
-            if (SettingsScreenVM.Settings.shouldDarkThemeBeEnabled.value) DarkColors else LightColors
+            if (SettingsPreference.shouldDarkThemeBeEnabled.value) DarkColors else LightColors
         }
     }
 

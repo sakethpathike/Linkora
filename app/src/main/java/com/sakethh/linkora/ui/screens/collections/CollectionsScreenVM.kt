@@ -19,7 +19,8 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -131,15 +132,15 @@ open class CollectionsScreenVM @Inject constructor(
 
     init {
         changeRetrievedFoldersData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                SettingsScreenVM.Settings.selectedSortingType.value
+            sortingPreferences = SortingPreferences.valueOf(
+                SettingsPreference.selectedSortingType.value
             )
         )
     }
 
-    fun changeRetrievedFoldersData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+    fun changeRetrievedFoldersData(sortingPreferences: SortingPreferences) {
         when (sortingPreferences) {
-            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+            SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     parentRegularFoldersSortingRepo.sortByAToZ()
                         .collect {
@@ -154,7 +155,7 @@ open class CollectionsScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+            SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     parentRegularFoldersSortingRepo.sortByZToA()
                         .collect {
@@ -169,7 +170,7 @@ open class CollectionsScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+            SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
                     parentRegularFoldersSortingRepo
                         .sortByLatestToOldest()
@@ -185,7 +186,7 @@ open class CollectionsScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+            SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
                     parentRegularFoldersSortingRepo
                         .sortByOldestToLatest()

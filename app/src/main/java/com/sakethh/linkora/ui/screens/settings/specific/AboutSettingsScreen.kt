@@ -54,8 +54,10 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
@@ -122,7 +124,7 @@ fun AboutSettingsScreen(
                         modifier = Modifier.alignByBaseline()
                     )
                 }
-                if (!SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                if (!SettingsPreference.isAutoCheckUpdatesEnabled.value && !SettingsPreference.isOnLatestUpdate.value && isNetworkAvailable(
                         context
                     )
                 ) {
@@ -137,10 +139,10 @@ fun AboutSettingsScreen(
                                     shouldVersionCheckerDialogAppear.value = false
                                     if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                         shouldBtmModalSheetBeVisible.value = true
-                                        SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                        SettingsPreference.isOnLatestUpdate.value =
                                             false
                                     } else {
-                                        SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                        SettingsPreference.isOnLatestUpdate.value =
                                             true
                                     }
                                 }
@@ -153,7 +155,7 @@ fun AboutSettingsScreen(
                                 ).show()
                             }
                         })
-                } else if (SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value && !SettingsScreenVM.Settings.isOnLatestUpdate.value && isNetworkAvailable(
+                } else if (SettingsPreference.isAutoCheckUpdatesEnabled.value && !SettingsPreference.isOnLatestUpdate.value && isNetworkAvailable(
                         context
                     )
                 ) {
@@ -177,10 +179,10 @@ fun AboutSettingsScreen(
                                 shouldVersionCheckerDialogAppear.value = false
                                 if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                     shouldBtmModalSheetBeVisible.value = true
-                                    SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                    SettingsPreference.isOnLatestUpdate.value =
                                         false
                                 } else {
-                                    SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                                    SettingsPreference.isOnLatestUpdate.value =
                                         true
                                 }
                             } else {
@@ -315,27 +317,27 @@ fun AboutSettingsScreen(
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
                         title = stringResource(id = R.string.auto_check_for_updates),
-                        doesDescriptionExists = SettingsScreenVM.Settings.showDescriptionForSettingsState.value,
+                        doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
                         description = stringResource(id = R.string.auto_check_for_updates_desc),
                         isIconNeeded = rememberSaveable {
                             mutableStateOf(true)
                         },
                         icon = Icons.Default.SystemUpdateAlt,
                         isSwitchNeeded = true,
-                        isSwitchEnabled = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled,
+                        isSwitchEnabled = SettingsPreference.isAutoCheckUpdatesEnabled,
                         onSwitchStateChange = {
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                            SettingsPreference.changeSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(
-                                    SettingsScreenVM.SettingsPreferences.AUTO_CHECK_UPDATES.name
+                                    SettingsPreferences.AUTO_CHECK_UPDATES.name
                                 ),
                                 dataStore = context.dataStore,
                                 newValue = it
                             )
                             coroutineScope.launch {
-                                SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value =
-                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                SettingsPreference.isAutoCheckUpdatesEnabled.value =
+                                    SettingsPreference.readSettingPreferenceValue(
                                         preferenceKey = booleanPreferencesKey(
-                                            SettingsScreenVM.SettingsPreferences.AUTO_CHECK_UPDATES.name
+                                            SettingsPreferences.AUTO_CHECK_UPDATES.name
                                         ),
                                         dataStore = context.dataStore
                                     ) == true

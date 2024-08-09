@@ -44,7 +44,8 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -361,16 +362,16 @@ fun ChildArchiveScreen(
                         selectedURLOrFolderName = selectedURLOrFolderName.value,
                         onTaskCompleted = {
                             archiveScreenVM.changeRetrievedData(
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                sortingPreferences = SortingPreferences.valueOf(
+                                    SettingsPreference.selectedSortingType.value
                                 )
                             )
                         }
                     )
                 }, onDeleted = {
                     archiveScreenVM.changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         )
                     )
                 })
@@ -398,8 +399,8 @@ fun ChildArchiveScreen(
                         onTaskCompleted = {
                             shouldRenameDialogBoxAppear.value = false
                             archiveScreenVM.changeRetrievedData(
-                                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                    SettingsScreenVM.Settings.selectedSortingType.value
+                                sortingPreferences = SortingPreferences.valueOf(
+                                    SettingsPreference.selectedSortingType.value
                                 )
                             )
                         }, folderID = CollectionsScreenVM.selectedFolderData.value.id

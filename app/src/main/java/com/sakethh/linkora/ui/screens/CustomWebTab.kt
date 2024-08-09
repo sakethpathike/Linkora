@@ -15,7 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -60,7 +60,7 @@ open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : 
                     }
                 }
             }, async {
-                if (!SettingsScreenVM.Settings.isInAppWebTabEnabled.value || forceOpenInExternalBrowser) {
+                if (!SettingsPreference.isInAppWebTabEnabled.value || forceOpenInExternalBrowser) {
                     try {
                         uriHandler.openUri(recentlyVisitedData.webURL)
                     } catch (_: android.content.ActivityNotFoundException) {

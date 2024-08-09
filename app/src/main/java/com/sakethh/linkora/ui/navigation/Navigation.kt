@@ -91,7 +91,6 @@ fun MainNavigation(
         composable(route = NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name) {
             LanguageSettingsScreen(
                 navController = navController,
-                settingsScreenVM = settingsScreenVM,
                 customWebTab = customWebTab
             )
         }

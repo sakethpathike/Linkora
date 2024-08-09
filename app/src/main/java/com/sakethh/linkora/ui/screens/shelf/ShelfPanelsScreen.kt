@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.ViewArray
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
@@ -84,7 +84,7 @@ fun ShelfPanelsScreen(navController: NavController) {
             IconButton(onClick = {
                 navController.navigateUp()
             }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
             }
         }, scrollBehavior = topAppBarState, title = {
             Text(

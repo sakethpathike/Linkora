@@ -12,9 +12,10 @@ import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.readSettingPreferenceValue
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.utils.sanitizeLink
 import dagger.assisted.Assisted
@@ -55,19 +56,19 @@ class RefreshLinksWorker @AssistedInject constructor(
             linksTable.size + impLinksTable.size + archiveLinksTable.size + recentlyVisitedTable.size
 
         val linksTableCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val impLinksTableCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val archiveTableIndexCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val recentlyTableIndexCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
 
@@ -154,8 +155,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromLinksTable(
                             modifiedLink
                         )
-                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+                        SettingsPreference.changeSettingPreferenceValue(
+                            intPreferencesKey(SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             linksTableCompletedIndex + 1 + index
                         )
@@ -211,8 +212,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromImpLinksTable(
                             modifiedLink
                         )
-                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+                        SettingsPreference.changeSettingPreferenceValue(
+                            intPreferencesKey(SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             impLinksTableCompletedIndex + 1 + index
                         )
@@ -268,8 +269,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
                             modifiedLink
                         )
-                        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+                        SettingsPreference.changeSettingPreferenceValue(
+                            intPreferencesKey(SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             archiveTableIndexCompletedIndex + 1 + index
                         )
@@ -327,8 +328,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                             localDatabase.linksDao().updateALinkDataFromRecentlyVisitedLinksTable(
                                 modifiedLink
                             )
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+                            SettingsPreference.changeSettingPreferenceValue(
+                                intPreferencesKey(SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
                                 applicationContext.dataStore,
                                 recentlyTableIndexCompletedIndex + index + 1
                             )

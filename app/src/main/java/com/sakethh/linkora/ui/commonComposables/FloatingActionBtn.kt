@@ -23,7 +23,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.R
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -53,7 +53,7 @@ fun FloatingActionBtn(
         )
     }
     val coroutineScope = rememberCoroutineScope()
-    if (SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+    if (SettingsPreference.isBtmSheetEnabledForSavingLinks.value) {
         androidx.compose.foundation.layout.Column(
             modifier = Modifier.padding(
                 bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp

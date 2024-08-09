@@ -51,7 +51,8 @@ import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -76,8 +77,8 @@ fun ChildHomeScreen(
         awaitAll(async {
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
                 specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+                    sortingPreferences = SortingPreferences.valueOf(
+                        SettingsPreference.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -86,8 +87,8 @@ fun ChildHomeScreen(
         }, async {
             if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
                 specificCollectionsScreenVM.changeRetrievedData(
-                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                        SettingsScreenVM.Settings.selectedSortingType.value
+                    sortingPreferences = SortingPreferences.valueOf(
+                        SettingsPreference.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN

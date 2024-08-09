@@ -102,7 +102,8 @@ import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -598,8 +599,8 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                     collectionsScreenVM.changeRetrievedFoldersData(
-                        SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         )
                     )
                     shouldRenameDialogBoxBeVisible.value = false
@@ -629,8 +630,8 @@ fun CollectionsScreen(navController: NavController) {
                 deleteDialogBoxType = DataDialogBoxType.FOLDER,
                 onDeleted = {
                     collectionsScreenVM.changeRetrievedFoldersData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         )
                     )
                 })
@@ -704,8 +705,8 @@ fun CollectionsScreen(navController: NavController) {
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear, onCreated = {
                     collectionsScreenVM.changeRetrievedFoldersData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         )
                     )
                 }, inAChildFolderScreen = false,
@@ -756,7 +757,7 @@ fun CollectionsScreen(navController: NavController) {
             areFoldersSelectable.value = false
             collectionsScreenVM.areAllFoldersChecked.value = false
             collectionsScreenVM.changeAllFoldersSelectedData()
-        } else if (!SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+        } else if (!SettingsPreference.isHomeScreenEnabled.value) {
             activity?.moveTaskToBack(true)
         } else {
             navController.navigate(NavigationRoutes.HOME_SCREEN.name) {

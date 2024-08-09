@@ -19,7 +19,8 @@ import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSorting
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -88,8 +89,8 @@ class ArchiveScreenVM @Inject constructor(
 
     init {
         changeRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                SettingsScreenVM.Settings.selectedSortingType.value
+            sortingPreferences = SortingPreferences.valueOf(
+                SettingsPreference.selectedSortingType.value
             )
         )
     }
@@ -235,9 +236,9 @@ class ArchiveScreenVM @Inject constructor(
         }
     }
 
-    fun changeRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+    fun changeRetrievedData(sortingPreferences: SortingPreferences) {
         when (sortingPreferences) {
-            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+            SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     awaitAll(async {
                         archivedLinksSortingRepo.sortByAToZ()
@@ -263,7 +264,7 @@ class ArchiveScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+            SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     awaitAll(async {
                         archivedLinksSortingRepo.sortByZToA()
@@ -289,7 +290,7 @@ class ArchiveScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+            SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
                     awaitAll(async {
                         archivedLinksSortingRepo
@@ -315,7 +316,7 @@ class ArchiveScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+            SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
                     awaitAll(async {
                         archivedLinksSortingRepo

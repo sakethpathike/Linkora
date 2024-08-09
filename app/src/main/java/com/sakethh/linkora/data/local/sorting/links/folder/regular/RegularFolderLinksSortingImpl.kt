@@ -4,7 +4,7 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
 import kotlinx.coroutines.flow.Flow
 
-class RegularFolderLinksSortingImpl constructor(private val localDatabase: LocalDatabase) :
+class RegularFolderLinksSortingImpl(private val localDatabase: LocalDatabase) :
     RegularFolderLinksSortingRepo {
     override fun sortByAToZV10(folderID: Long): Flow<List<LinksTable>> {
         return localDatabase.regularFolderLinksSorting().sortByAToZV10(folderID)

@@ -89,7 +89,8 @@ import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -219,7 +220,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 )
             } else if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                 FloatingActionButton(onClick = {
-                    if (!SettingsScreenVM.Settings.isBtmSheetEnabledForSavingLinks.value) {
+                    if (!SettingsPreference.isBtmSheetEnabledForSavingLinks.value) {
                         shouldNewLinkDialogBoxBeVisible.value = true
                     } else {
                         coroutineScope.launch {
@@ -1162,8 +1163,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                             onTaskCompleted = {
                                 specificCollectionsScreenVM.changeRetrievedData(
                                     folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    sortingPreferences = SortingPreferences.valueOf(
+                                        SettingsPreference.selectedSortingType.value
                                     )
                                 )
                             },
@@ -1213,8 +1214,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                         specificCollectionsScreenVM.removeAllLinkSelections()
                         specificCollectionsScreenVM.changeRetrievedData(
                             folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                SettingsScreenVM.Settings.selectedSortingType.value
+                            sortingPreferences = SortingPreferences.valueOf(
+                                SettingsPreference.selectedSortingType.value
                             )
                         )
                     } else {
@@ -1224,8 +1225,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                             onTaskCompleted = {
                                 specificCollectionsScreenVM.changeRetrievedData(
                                     folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                    sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                                        SettingsScreenVM.Settings.selectedSortingType.value
+                                    sortingPreferences = SortingPreferences.valueOf(
+                                        SettingsPreference.selectedSortingType.value
                                     )
                                 )
                             },
@@ -1236,8 +1237,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                 deleteDialogBoxType = if (areElementsSelectable.value) DataDialogBoxType.SELECTED_DATA else if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         ),
                         folderID = CollectionsScreenVM.currentClickedFolderData.value.id
                     )
@@ -1315,8 +1316,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
                 onCreated = {
                     collectionsScreenVM.changeRetrievedFoldersData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         )
                     )
                 },

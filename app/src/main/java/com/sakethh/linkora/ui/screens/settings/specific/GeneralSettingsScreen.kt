@@ -59,8 +59,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
@@ -83,7 +85,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
     }
     val successfulRefreshLinkCount =
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
-    val jsoupStringAgent = SettingsScreenVM.Settings.jsoupUserAgent
+    val jsoupStringAgent = SettingsPreference.jsoupUserAgent
     val isReadOnlyTextFieldForUserAgent = rememberSaveable {
         mutableStateOf(true)
     }
@@ -187,12 +189,12 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                                     focusRequester.freeFocus()
                                 }
                                 if (isReadOnlyTextFieldForUserAgent.value) {
-                                    SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                        stringPreferencesKey(SettingsScreenVM.SettingsPreferences.JSOUP_USER_AGENT.name),
+                                    SettingsPreference.changeSettingPreferenceValue(
+                                        stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                                         context.dataStore,
                                         jsoupStringAgent.value
                                     )
-                                    SettingsScreenVM.Settings.jsoupUserAgent.value =
+                                    SettingsPreference.jsoupUserAgent.value =
                                         jsoupStringAgent.value
                                 }
                             }) {
@@ -203,12 +205,12 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                         }
                         Spacer(modifier = Modifier.height(15.dp))
                         FilledTonalIconButton(onClick = {
-                            SettingsScreenVM.Settings.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsScreenVM.SettingsPreferences.JSOUP_USER_AGENT.name),
+                            SettingsPreference.changeSettingPreferenceValue(
+                                stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                                 context.dataStore,
                                 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
                             )
-                            SettingsScreenVM.Settings.jsoupUserAgent.value =
+                            SettingsPreference.jsoupUserAgent.value =
                                 "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
                         }) {
                             Icon(

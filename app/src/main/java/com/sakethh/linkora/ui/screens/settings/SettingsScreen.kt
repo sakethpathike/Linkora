@@ -144,7 +144,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             }
         }
         BackHandler {
-            if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+            if (SettingsPreference.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                     popUpTo(0)
                 }

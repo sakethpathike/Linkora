@@ -26,7 +26,8 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -194,7 +195,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     init {
         viewModelScope.launch {
             changeRetrievedData(
-                sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(SettingsScreenVM.Settings.selectedSortingType.value),
+                sortingPreferences = SortingPreferences.valueOf(SettingsPreference.selectedSortingType.value),
                 folderID = currentClickedFolderData.value.id,
                 isFoldersSortingSelected = true,
                 isLinksSortingSelected = true
@@ -204,7 +205,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     }
 
     fun changeRetrievedData(
-        sortingPreferences: SettingsScreenVM.SortingPreferences,
+        sortingPreferences: SortingPreferences,
         folderID: Long,
         screenType: SpecificScreenType = Companion.screenType.value,
         isFoldersSortingSelected: Boolean = false,
@@ -213,7 +214,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         when (screenType) {
             SpecificScreenType.SAVED_LINKS_SCREEN -> {
                 when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                    SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             savedLinksSortingRepo.sortByAToZ().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
@@ -227,7 +228,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                    SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             savedLinksSortingRepo.sortByZToA().collectLatest {
                                 val mutableBooleanList = mutableListOf<MutableState<Boolean>>()
@@ -241,7 +242,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                    SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             savedLinksSortingRepo.sortByLatestToOldest()
                                 .collectLatest {
@@ -256,7 +257,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                    SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             savedLinksSortingRepo.sortByOldestToLatest()
                                 .collectLatest {
@@ -275,7 +276,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                    SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             importantLinksSortingRepo.sortByAToZ()
                                 .collectLatest {
@@ -290,7 +291,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                    SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             importantLinksSortingRepo.sortByZToA()
                                 .collectLatest {
@@ -305,7 +306,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                    SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             importantLinksSortingRepo.sortByLatestToOldest()
                                 .collectLatest {
@@ -320,7 +321,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                    SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             importantLinksSortingRepo.sortByOldestToLatest()
                                 .collectLatest {
@@ -339,7 +340,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 
             SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
                 when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                    SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -374,7 +375,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                    SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -410,7 +411,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                    SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -446,7 +447,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                    SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -486,7 +487,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 
             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
                 when (sortingPreferences) {
-                    SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+                    SortingPreferences.A_TO_Z -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -521,7 +522,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+                    SortingPreferences.Z_TO_A -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -556,7 +557,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+                    SortingPreferences.NEW_TO_OLD -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {
@@ -592,7 +593,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         }
                     }
 
-                    SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+                    SortingPreferences.OLD_TO_NEW -> {
                         viewModelScope.launch {
                             awaitAll(async {
                                 if (isLinksSortingSelected) {

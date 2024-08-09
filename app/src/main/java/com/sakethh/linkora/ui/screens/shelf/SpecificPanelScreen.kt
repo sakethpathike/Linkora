@@ -18,10 +18,10 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.AddCircle
-import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDownward
-import androidx.compose.material.icons.filled.ArrowRight
 import androidx.compose.material.icons.filled.ArrowUpward
 import androidx.compose.material.icons.filled.Folder
 import androidx.compose.material.icons.filled.Home
@@ -74,7 +74,7 @@ fun SpecificPanelScreen(navController: NavController) {
             IconButton(onClick = {
                 navController.navigateUp()
             }) {
-                Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "")
+                Icon(imageVector = Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "")
             }
         }, scrollBehavior = topAppBarState, title = {
             Text(
@@ -112,7 +112,10 @@ fun SpecificPanelScreen(navController: NavController) {
                         modifier = Modifier.clickable {
                             navController.navigateUp()
                         })
-                    Icon(imageVector = Icons.Default.ArrowRight, contentDescription = "")
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ArrowRight,
+                        contentDescription = ""
+                    )
                     Text(
                         text = ShelfBtmSheetVM.selectedShelfData.shelfName,
                         style = MaterialTheme.typography.titleMedium, fontSize = 16.sp

@@ -17,7 +17,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @Composable
@@ -28,7 +28,7 @@ fun BottomNavigationBar(navController: NavController) {
         NavigationBar(
             modifier = Modifier.fillMaxWidth()
         ) {
-            if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+            if (SettingsPreference.isHomeScreenEnabled.value) {
                 NavigationBarItem(selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
                     onClick = {
                         if (currentRoute != NavigationRoutes.HOME_SCREEN.name) {

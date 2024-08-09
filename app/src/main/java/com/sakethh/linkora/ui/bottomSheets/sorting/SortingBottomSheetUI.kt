@@ -37,7 +37,8 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.SortingBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 
@@ -167,13 +168,13 @@ fun SortingBottomSheetUI(
                                         text = stringResource(id = it.sortingName),
                                         fontSize = 16.sp,
                                         style = MaterialTheme.typography.titleSmall,
-                                        color = if (it.sortingType == SettingsScreenVM.SortingPreferences.valueOf(
-                                                SettingsScreenVM.Settings.selectedSortingType.value
+                                        color = if (it.sortingType == SortingPreferences.valueOf(
+                                                SettingsPreference.selectedSortingType.value
                                             ) && !didAnyCheckBoxStateChanged.value
                                         ) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color
                                     )
                                     RadioButton(
-                                        selected = it.sortingType.name == SettingsScreenVM.Settings.selectedSortingType.value && !didAnyCheckBoxStateChanged.value,
+                                        selected = it.sortingType.name == SettingsPreference.selectedSortingType.value && !didAnyCheckBoxStateChanged.value,
                                         onClick = {
                                             sortingBottomSheetParam.onSelectedAComponent(
                                                 it.sortingType, linksSortingSelectedState.value,

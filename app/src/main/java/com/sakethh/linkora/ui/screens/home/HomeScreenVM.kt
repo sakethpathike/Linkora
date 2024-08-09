@@ -28,8 +28,10 @@ import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -88,8 +90,8 @@ open class HomeScreenVM @Inject constructor(
                     _selectedShelfFoldersForSelectedShelf.emit(it)
                 }
         }
-        SettingsScreenVM.Settings.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+        SettingsPreference.changeSettingPreferenceValue(
+            intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
             context.dataStore,
             newValue = shelfID.toInt()
         )
@@ -163,7 +165,7 @@ open class HomeScreenVM @Inject constructor(
         viewModelScope.launch {
             awaitAll(async {
                 NavigationVM.startDestination.value =
-                    if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+                    if (SettingsPreference.isHomeScreenEnabled.value) {
                         NavigationRoutes.HOME_SCREEN.name
                     } else {
                         NavigationRoutes.COLLECTIONS_SCREEN.name
@@ -200,89 +202,6 @@ open class HomeScreenVM @Inject constructor(
         }
     }
 
-
-    fun onTitleChangeClickForLinks(
-        selectedCardType: HomeScreenBtmSheetType,
-        webURL: String,
-        linkID: Long,
-        newTitle: String,
-    ) {
-        when (selectedCardType) {
-            HomeScreenBtmSheetType.RECENT_SAVES -> {
-                viewModelScope.launch {
-                    linksRepo.renameALinkTitleFromSavedLinks(
-                        webURL = webURL, newTitle = newTitle
-                    )
-                }.invokeOnCompletion {
-                    changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        ),
-                        folderID = 0,
-                        screenType = SpecificScreenType.SAVED_LINKS_SCREEN
-                    )
-                }
-                Unit
-            }
-
-            HomeScreenBtmSheetType.RECENT_VISITS -> {
-
-                Unit
-            }
-
-            HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
-                viewModelScope.launch {
-                    linksRepo.updateImpLinkTitle(linkID, newTitle = newTitle)
-                }.invokeOnCompletion {
-                    changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
-                        ),
-                        folderID = 0,
-                        screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                    )
-                }
-                Unit
-            }
-        }
-    }
-
-    fun onNoteChangeClickForLinks(
-        selectedCardType: HomeScreenBtmSheetType,
-        webURL: String,
-        linkID: Long,
-        newNote: String,
-    ) {
-        when (selectedCardType) {
-            HomeScreenBtmSheetType.RECENT_SAVES -> {
-                viewModelScope.launch {
-                    linksRepo.renameALinkInfoFromSavedLinks(
-                        webURL = webURL, newInfo = newNote
-                    )
-                }
-                Unit
-            }
-
-            HomeScreenBtmSheetType.RECENT_VISITS -> {
-                viewModelScope.launch {
-
-                    linksRepo.renameALinkInfoFromRecentlyVisitedLinks(
-                        webURL = webURL, newInfo = newNote
-                    )
-                }
-                Unit
-            }
-
-            HomeScreenBtmSheetType.RECENT_IMP_SAVES -> {
-                viewModelScope.launch {
-
-                    linksRepo.updateImpLinkNote(linkID, newInfo = newNote)
-                }
-                Unit
-            }
-        }
-    }
-
     fun onDeleteClick(
         selectedCardType: HomeScreenBtmSheetType,
         context: Context,
@@ -303,8 +222,8 @@ open class HomeScreenVM @Inject constructor(
                     }
                 }.invokeOnCompletion {
                     changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -328,8 +247,8 @@ open class HomeScreenVM @Inject constructor(
                     linksRepo.deleteALinkFromImpLinks(linkID = tempImpLinkData.id)
                 }.invokeOnCompletion {
                     changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -413,8 +332,8 @@ open class HomeScreenVM @Inject constructor(
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -461,8 +380,8 @@ open class HomeScreenVM @Inject constructor(
                     })
                 }.invokeOnCompletion {
                     changeRetrievedData(
-                        sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                            SettingsScreenVM.Settings.selectedSortingType.value
+                        sortingPreferences = SortingPreferences.valueOf(
+                            SettingsPreference.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN

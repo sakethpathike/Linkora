@@ -11,9 +11,9 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.changeSettingPreferenceValue
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.changeSettingPreferenceValue
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import kotlinx.coroutines.flow.MutableStateFlow
 import java.util.UUID
 import javax.inject.Inject
@@ -30,19 +30,19 @@ class RefreshLinksWorkerRequestBuilder @Inject constructor(
     suspend fun request(): OneTimeWorkRequest {
         RefreshLinksWorker.successfulRefreshLinksCount.emit(0)
         changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
             context.dataStore, -1
         )
         changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
             context.dataStore, -1
         )
         changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
             context.dataStore, -1
         )
         changeSettingPreferenceValue(
-            intPreferencesKey(SettingsScreenVM.SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
             context.dataStore, -1
         )
 
@@ -52,7 +52,7 @@ class RefreshLinksWorkerRequestBuilder @Inject constructor(
             .build()
 
         changeSettingPreferenceValue(
-            stringPreferencesKey(SettingsScreenVM.SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
+            stringPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
             context.dataStore,
             request.id.toString()
         )

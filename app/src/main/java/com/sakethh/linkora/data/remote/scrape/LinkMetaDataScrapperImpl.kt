@@ -1,7 +1,7 @@
 package com.sakethh.linkora.data.remote.scrape
 
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -21,7 +21,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         Jsoup.connect(
                             "http" + url.substringAfter("http").substringBefore(" ").trim()
                         )
-                            .userAgent(SettingsScreenVM.Settings.jsoupUserAgent.value)
+                            .userAgent(SettingsPreference.jsoupUserAgent.value)
                             .referrer("http://www.google.com")
                             .followRedirects(true)
                             .header("Accept", "text/html")
@@ -45,7 +45,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                     val statusValue = withContext(Dispatchers.IO) {
                         try {
                             Jsoup.connect(it)
-                                .userAgent(SettingsScreenVM.Settings.jsoupUserAgent.value)
+                                .userAgent(SettingsPreference.jsoupUserAgent.value)
                                 .referrer("http://www.google.com")
                                 .followRedirects(true)
                                 .header("Accept", "text/html")

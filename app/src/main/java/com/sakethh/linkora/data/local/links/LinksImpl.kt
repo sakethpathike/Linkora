@@ -14,7 +14,6 @@ import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.isAValidURL
 import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.utils.sanitizeLink
@@ -138,7 +137,7 @@ class LinksImpl @Inject constructor(
                         .startsWith("http://twitter.com/")
 
                     LinkType.IMP_LINK -> importantLink!!.webURL.trim()
-                        .startsWith("https://x.com/") || importantLink!!.webURL.trim()
+                        .startsWith("https://x.com/") || importantLink.webURL.trim()
                         .startsWith("http://x.com/") || importantLink.webURL.trim()
                         .startsWith("https://twitter.com/") || importantLink.webURL.trim()
                         .startsWith("http://twitter.com/")
@@ -173,7 +172,7 @@ class LinksImpl @Inject constructor(
                         when (linkType) {
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                                 val linkTableData = LinksTable(
-                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
                                             "https://t.co/"
                                         )
                                     ) tweetMetaData.data.text else linksTable!!.title,
@@ -208,7 +207,7 @@ class LinksImpl @Inject constructor(
 
                             LinkType.IMP_LINK -> {
                                 val importantLinkScrappedData = ImportantLinks(
-                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
                                             "https://t.co/"
                                         )
                                     ) tweetMetaData.data.text else importantLink!!.title,
@@ -236,7 +235,7 @@ class LinksImpl @Inject constructor(
 
                             LinkType.HISTORY_LINK -> {
                                 val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
                                             "https://t.co/"
                                         )
                                     ) tweetMetaData.data.text else importantLink!!.title,
@@ -267,7 +266,7 @@ class LinksImpl @Inject constructor(
 
                             LinkType.ARCHIVE_LINK -> {
                                 val archiveLinkScrappedData = ArchivedLinks(
-                                    title = if ((SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
+                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
                                             "https://t.co/"
                                         )
                                     ) tweetMetaData.data.text else importantLink!!.title,
@@ -328,7 +327,7 @@ class LinksImpl @Inject constructor(
                     when (linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                             val linkData = LinksTable(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else linksTable!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else linksTable!!.title,
                                 webURL = "http" + linksTable!!.webURL.substringAfter("http")
                                     .substringBefore(" ").trim(),
                                 baseURL = linkDataExtractor.data.baseURL,
@@ -356,7 +355,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.IMP_LINK -> {
                             val importantLinkScrappedData = ImportantLinks(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
                                 webURL = sanitizeLink(importantLink!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
@@ -376,7 +375,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.HISTORY_LINK -> {
                             val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else recentlyVisited!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else recentlyVisited!!.title,
                                 webURL = sanitizeLink(recentlyVisited!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
@@ -397,7 +396,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.ARCHIVE_LINK -> {
                             val archiveLinkScrappedData = ArchivedLinks(
-                                title = if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else archivedLinks!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else archivedLinks!!.title,
                                 webURL = sanitizeLink(archivedLinks!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,

@@ -93,7 +93,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -1562,7 +1562,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 searchScreenVM.selectedArchiveLinksTableData.clear()
                 searchScreenVM.selectedHistoryLinksData.clear()
                 SearchScreenVM.selectedArchiveFoldersData.clear()
-            } else if (SettingsScreenVM.Settings.isHomeScreenEnabled.value) {
+            } else if (SettingsPreference.isHomeScreenEnabled.value) {
                 navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
                     popUpTo(0)
                 }

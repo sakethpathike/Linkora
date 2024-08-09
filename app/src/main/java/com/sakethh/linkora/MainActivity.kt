@@ -30,8 +30,10 @@ import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
@@ -49,10 +51,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            SettingsScreenVM.Settings.readAllPreferencesValues(this@MainActivity)
+            SettingsPreference.readAllPreferencesValues(this@MainActivity)
         }.invokeOnCompletion {
             val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
+            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
         }
         setContent {
             LinkoraTheme {
@@ -122,14 +124,14 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                LaunchedEffect(key1 = SettingsPreference.isAutoCheckUpdatesEnabled.value) {
                     async {
-                        if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
+                        if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
                             settingsScreenVM.latestAppVersionRetriever { }
                         }
                     }.await()
-                    if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
-                        SettingsScreenVM.Settings.isOnLatestUpdate.value =
+                    if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
+                        SettingsPreference.isOnLatestUpdate.value =
                             SettingsScreenVM.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
                         withContext(Dispatchers.Main) {
                             if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
@@ -142,22 +144,22 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LaunchedEffect(key1 = SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
-                    if (!SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value) {
+                LaunchedEffect(key1 = SettingsPreference.didDataAutoDataMigratedFromV9.value) {
+                    if (!SettingsPreference.didDataAutoDataMigratedFromV9.value) {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 mainActivityVM.migrateArchiveFoldersV9toV10()
                                 mainActivityVM.migrateRegularFoldersLinksDataFromV9toV10()
                             } finally {
-                                SettingsScreenVM.Settings.changeSettingPreferenceValue(
+                                SettingsPreference.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
-                                        SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                        SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
                                     ), dataStore = context.dataStore, newValue = true
                                 )
-                                SettingsScreenVM.Settings.didDataAutoDataMigratedFromV9.value =
-                                    SettingsScreenVM.Settings.readSettingPreferenceValue(
+                                SettingsPreference.didDataAutoDataMigratedFromV9.value =
+                                    SettingsPreference.readSettingPreferenceValue(
                                         preferenceKey = booleanPreferencesKey(
-                                            SettingsScreenVM.SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                            SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
                                         ), dataStore = context.dataStore
                                     ) ?: true
                             }

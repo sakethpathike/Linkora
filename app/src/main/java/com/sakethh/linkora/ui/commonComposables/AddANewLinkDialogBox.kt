@@ -27,7 +27,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowRight
+import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -85,7 +85,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddAN
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -111,7 +111,7 @@ fun AddANewLinkDialogBox(
         mutableStateOf(false)
     }
     val isAutoDetectTitleEnabled = rememberSaveable {
-        mutableStateOf(SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value)
+        mutableStateOf(SettingsPreference.isAutoDetectTitleForLinksEnabled.value)
     }
     val isCreateANewFolderIconClicked = rememberSaveable {
         mutableStateOf(false)
@@ -133,9 +133,9 @@ fun AddANewLinkDialogBox(
         awaitAll(async {
             if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
                 this.launch {
-                    SettingsScreenVM.Settings.readAllPreferencesValues(context)
+                    SettingsPreference.readAllPreferencesValues(context)
                 }.invokeOnCompletion {
-                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsScreenVM.Settings.isSendCrashReportsEnabled.value)
+                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
                 }
             }
         })
@@ -240,7 +240,7 @@ fun AddANewLinkDialogBox(
                         }
                         item {
                             Box(modifier = Modifier.animateContentSize()) {
-                                if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
+                                if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
                                     OutlinedTextField(readOnly = isDataExtractingForTheLink,
                                         modifier = Modifier
                                             .padding(
@@ -288,7 +288,7 @@ fun AddANewLinkDialogBox(
                                 })
                         }
                         item {
-                            if (SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                            if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -440,7 +440,7 @@ fun AddANewLinkDialogBox(
                             }
                         }
                         item {
-                            if (!SettingsScreenVM.Settings.isAutoDetectTitleForLinksEnabled.value) {
+                            if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
                                 Row(
                                     modifier = Modifier
                                         .padding(top = 20.dp)
@@ -571,7 +571,7 @@ fun AddANewLinkDialogBox(
                                         }
                                         item {
                                             Icon(
-                                                imageVector = Icons.Default.ArrowRight,
+                                                imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                                                 contentDescription = ""
                                             )
                                         }
@@ -597,7 +597,7 @@ fun AddANewLinkDialogBox(
                                             )
                                             if (subFolder.id != addANewLinkDialogBoxVM.subFoldersList.last().id) {
                                                 Icon(
-                                                    imageVector = Icons.Default.ArrowRight,
+                                                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                                                     contentDescription = ""
                                                 )
                                                 Text(

@@ -27,7 +27,8 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -276,15 +277,15 @@ class SearchScreenVM @Inject constructor(
     init {
         isSearchEnabled.value = false
         changeHistoryRetrievedData(
-            sortingPreferences = SettingsScreenVM.SortingPreferences.valueOf(
-                SettingsScreenVM.Settings.selectedSortingType.value
+            sortingPreferences = SortingPreferences.valueOf(
+                SettingsPreference.selectedSortingType.value
             )
         )
     }
 
-    fun changeHistoryRetrievedData(sortingPreferences: SettingsScreenVM.SortingPreferences) {
+    fun changeHistoryRetrievedData(sortingPreferences: SortingPreferences) {
         when (sortingPreferences) {
-            SettingsScreenVM.SortingPreferences.A_TO_Z -> {
+            SortingPreferences.A_TO_Z -> {
                 viewModelScope.launch {
                     historyLinksSortingRepo.sortByAToZ().collect {
                         _historyLinksData.emit(it)
@@ -292,7 +293,7 @@ class SearchScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.Z_TO_A -> {
+            SortingPreferences.Z_TO_A -> {
                 viewModelScope.launch {
                     historyLinksSortingRepo.sortByZToA().collect {
                         _historyLinksData.emit(it)
@@ -300,7 +301,7 @@ class SearchScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.NEW_TO_OLD -> {
+            SortingPreferences.NEW_TO_OLD -> {
                 viewModelScope.launch {
                     historyLinksSortingRepo.sortByLatestToOldest()
                         .collect {
@@ -309,7 +310,7 @@ class SearchScreenVM @Inject constructor(
                 }
             }
 
-            SettingsScreenVM.SortingPreferences.OLD_TO_NEW -> {
+            SortingPreferences.OLD_TO_NEW -> {
                 viewModelScope.launch {
                     historyLinksSortingRepo.sortByOldestToLatest()
                         .collect {
