@@ -1,6 +1,9 @@
 package com.sakethh.linkora
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.res.Configuration
+import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -43,6 +46,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Locale
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -178,5 +182,16 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun attachBaseContext(newBase: Context?) {
+        if (newBase != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+            val locale = Locale("hi")
+            val config = Configuration(newBase.resources.configuration)
+            Locale.setDefault(locale)
+            config.setLocale(locale)
+            newBase.resources.updateConfiguration(config, newBase.resources.displayMetrics)
+        }
+        super.attachBaseContext(newBase)
     }
 }

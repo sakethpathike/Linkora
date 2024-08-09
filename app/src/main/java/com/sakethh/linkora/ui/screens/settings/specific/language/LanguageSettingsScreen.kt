@@ -41,6 +41,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -60,12 +61,13 @@ fun LanguageSettingsScreen(
 ) {
     val context = LocalContext.current
     val availableLanguages = remember {
-        mutableStateListOf("English", "Hindi", "Urdu", "Punjabi")
+        mutableStateListOf("English", "Hindi")
     }
     val isInfoExpanded = rememberSaveable {
         mutableStateOf(false)
     }
     val languageSettingsScreenVM: LanguageSettingsScreenVM = hiltViewModel()
+    val locale = Locale.current
     LaunchedEffect(key1 = Unit) {
         languageSettingsScreenVM.eventChannel.collectLatest {
             when (it) {
@@ -100,7 +102,7 @@ fun LanguageSettingsScreen(
             }
             item {
                 Text(
-                    text = "English",
+                    text = locale.language,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -207,7 +209,14 @@ fun LanguageSettingsScreen(
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         FilledTonalIconButton(
                             modifier = Modifier.pulsateEffect(),
-                            onClick = { /*TODO*/ }) {
+                            onClick = {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.ChangeLocalLanguage(
+                                        context,
+                                        languageCode = listOf("hi", "en").random(),
+                                    )
+                                )
+                            }) {
                             Icon(imageVector = Icons.Default.Check, contentDescription = "")
                         }
                         Spacer(modifier = Modifier.width(15.dp))
