@@ -16,9 +16,9 @@ import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
-import com.sakethh.linkora.ui.screens.settings.specific.LanguageSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.ThemeSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.language.LanguageSettingsScreen
 import com.sakethh.linkora.ui.screens.shelf.ShelfPanelsScreen
 import com.sakethh.linkora.ui.screens.shelf.SpecificPanelScreen
 

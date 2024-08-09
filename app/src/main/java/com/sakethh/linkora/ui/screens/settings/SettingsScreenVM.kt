@@ -16,19 +16,11 @@ import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.intPreferencesKey
-import androidx.datastore.preferences.core.stringPreferencesKey
-import androidx.datastore.preferences.preferencesDataStore
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -44,23 +36,19 @@ import com.sakethh.linkora.data.remote.releases.GitHubReleasesResult
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Settings.isSendCrashReportsEnabled
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.isSendCrashReportsEnabled
 import com.sakethh.linkora.worker.RefreshLinksWorker
 import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.UUID
 import javax.inject.Inject
 
 data class SettingsUIElement(
@@ -77,11 +65,8 @@ data class SettingsUIElement(
     val shouldArrowIconBeAppear: MutableState<Boolean> = mutableStateOf(false)
 )
 
-enum class SettingsSections {
-    THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT, LANGUAGE
-}
 @HiltViewModel
-class SettingsScreenVM @Inject constructor(
+open class SettingsScreenVM @Inject constructor(
     private val linksRepo: LinksRepo,
     private val importRepo: ImportRepo,
     private val localDatabase: LocalDatabase,
@@ -374,7 +359,7 @@ class SettingsScreenVM @Inject constructor(
             icon = Icons.Default.BugReport,
             onSwitchStateChange = {
                 viewModelScope.launch {
-                    Settings.changeSettingPreferenceValue(
+                    SettingsPreference.changeSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(
                             SettingsPreferences.SEND_CRASH_REPORTS.name
                         ),
@@ -388,74 +373,73 @@ class SettingsScreenVM @Inject constructor(
                 }
             })
     }
-    val dataRefreshState = mutableIntStateOf(1)
     val generalSection: (context: Context) -> List<SettingsUIElement> = { context ->
         listOf(
             SettingsUIElement(title = context.getString(R.string.use_in_app_browser),
-                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
                 description = context.getString(R.string.use_in_app_browser_desc),
                 isSwitchNeeded = true,
-                isSwitchEnabled = Settings.isInAppWebTabEnabled,
+                isSwitchEnabled = SettingsPreference.isInAppWebTabEnabled,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.OpenInBrowser,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
+                        SettingsPreference.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.CUSTOM_TABS.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isInAppWebTabEnabled.value = it
+                        SettingsPreference.isInAppWebTabEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = context.getString(R.string.enable_home_screen),
-                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
                 description = context.getString(R.string.enable_home_screen_desc),
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Home,
-                isSwitchEnabled = Settings.isHomeScreenEnabled,
+                isSwitchEnabled = SettingsPreference.isHomeScreenEnabled,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
+                        SettingsPreference.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.HOME_SCREEN_VISIBILITY.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isHomeScreenEnabled.value = it
+                        SettingsPreference.isHomeScreenEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = context.getString(R.string.auto_detect_title),
                 doesDescriptionExists = true,
                 description = context.getString(R.string.auto_detect_title_desc),
                 isSwitchNeeded = true,
-                isSwitchEnabled = Settings.isAutoDetectTitleForLinksEnabled,
+                isSwitchEnabled = SettingsPreference.isAutoDetectTitleForLinksEnabled,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Search,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
+                        SettingsPreference.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isAutoDetectTitleForLinksEnabled.value = it
+                        SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
                     }
                 }), SettingsUIElement(title = context.getString(R.string.auto_check_for_updates),
-                doesDescriptionExists = Settings.showDescriptionForSettingsState.value,
+                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
                 description = context.getString(R.string.auto_check_for_updates_desc),
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.SystemUpdateAlt,
                 isSwitchNeeded = true,
-                isSwitchEnabled = Settings.isAutoCheckUpdatesEnabled,
+                isSwitchEnabled = SettingsPreference.isAutoCheckUpdatesEnabled,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
+                        SettingsPreference.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.AUTO_CHECK_UPDATES.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.isAutoCheckUpdatesEnabled.value = it
+                        SettingsPreference.isAutoCheckUpdatesEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = context.getString(R.string.show_description_for_settings),
@@ -464,15 +448,15 @@ class SettingsScreenVM @Inject constructor(
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.AutoMirrored.Default.ShortText,
-                isSwitchEnabled = Settings.showDescriptionForSettingsState,
+                isSwitchEnabled = SettingsPreference.showDescriptionForSettingsState,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        Settings.changeSettingPreferenceValue(
+                        SettingsPreference.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
                                 SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        Settings.showDescriptionForSettingsState.value = it
+                        SettingsPreference.showDescriptionForSettingsState.value = it
                     }
                 })
         )
@@ -547,7 +531,7 @@ class SettingsScreenVM @Inject constructor(
                 doesDescriptionExists = true,
                 description = context.getString(R.string.import_data_from_external_JSON_file),
                 isSwitchNeeded = false,
-                isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     viewModelScope.launch {
                         if (linksRepo
@@ -573,7 +557,7 @@ class SettingsScreenVM @Inject constructor(
                 doesDescriptionExists = true,
                 description = context.getString(R.string.export_data_desc),
                 isSwitchNeeded = false,
-                isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     exportDataToAFile(context, isDialogBoxVisible, runtimePermission)
                 },
@@ -586,7 +570,7 @@ class SettingsScreenVM @Inject constructor(
                 doesDescriptionExists = true,
                 description = context.getString(R.string.delete_entire_data_permanently_desc),
                 isSwitchNeeded = false,
-                isSwitchEnabled = Settings.shouldFollowDynamicTheming,
+                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
                     shouldDeleteDialogBoxAppear.value = true
                 },
@@ -594,198 +578,6 @@ class SettingsScreenVM @Inject constructor(
                 shouldFilledIconBeUsed = mutableStateOf(true)
             ),
         )
-    }
-
-    enum class SettingsPreferences {
-        DYNAMIC_THEMING, JSOUP_USER_AGENT, DARK_THEME, FOLLOW_SYSTEM_THEME, SETTING_COMPONENT_DESCRIPTION_STATE, CUSTOM_TABS, AUTO_DETECT_TITLE_FOR_LINK, AUTO_CHECK_UPDATES, BTM_SHEET_FOR_SAVING_LINKS, HOME_SCREEN_VISIBILITY, NEW_FEATURE_DIALOG_BOX_VISIBILITY, SORTING_PREFERENCE, SEND_CRASH_REPORTS, IS_DATA_MIGRATION_COMPLETED_FROM_V9, SAVED_APP_CODE, CURRENT_WORK_MANAGER_WORK_UUID,
-        REFRESH_LINKS_TABLE_INDEX, REFRESH_IMP_LINKS_TABLE_INDEX, REFRESH_ARCHIVE_LINKS_TABLE_INDEX, REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX, SHELF_VISIBLE_STATE, LAST_SELECTED_PANEL_ID
-    }
-
-    enum class SortingPreferences {
-        A_TO_Z, Z_TO_A, NEW_TO_OLD, OLD_TO_NEW
-    }
-
-    object Settings : ViewModel() {
-
-        val Context.dataStore by preferencesDataStore("linkoraDataStore")
-
-        val shouldFollowDynamicTheming = mutableStateOf(false)
-        val shouldFollowSystemTheme = mutableStateOf(true)
-        val shouldDarkThemeBeEnabled = mutableStateOf(false)
-        val isInAppWebTabEnabled = mutableStateOf(true)
-        val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
-        val isBtmSheetEnabledForSavingLinks = mutableStateOf(false)
-        val isHomeScreenEnabled = mutableStateOf(true)
-        val isSendCrashReportsEnabled = mutableStateOf(true)
-        val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
-        val isAutoCheckUpdatesEnabled = mutableStateOf(true)
-        val showDescriptionForSettingsState = mutableStateOf(true)
-        val isOnLatestUpdate = mutableStateOf(false)
-        val didServerTimeOutErrorOccurred = mutableStateOf(false)
-        private val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
-        val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
-        val jsoupUserAgent =
-            mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
-        val isShelfMinimizedInHomeScreen = mutableStateOf(false)
-        val lastSelectedPanelID = mutableLongStateOf(-1)
-
-        suspend fun <T> readSettingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
-            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-        ): T? {
-            return dataStore.data.first()[preferenceKey]
-        }
-
-        private suspend fun readSortingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<String>,
-            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-        ): String? {
-            return dataStore.data.first()[preferenceKey]
-        }
-
-        fun <T> changeSettingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
-            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-            newValue: T,
-        ) {
-            viewModelScope.launch {
-                dataStore.edit {
-                    it[preferenceKey] = newValue
-                }
-            }
-        }
-
-        suspend fun changeSortingPreferenceValue(
-            preferenceKey: androidx.datastore.preferences.core.Preferences.Key<String>,
-            dataStore: DataStore<androidx.datastore.preferences.core.Preferences>,
-            newValue: SortingPreferences,
-        ) {
-            dataStore.edit {
-                it[preferenceKey] = newValue.name
-            }
-        }
-
-        suspend fun readAllPreferencesValues(context: Context) {
-            coroutineScope {
-                kotlinx.coroutines.awaitAll(
-                    async {
-                        shouldFollowSystemTheme.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
-                            dataStore = context.dataStore
-                        ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
-                    },
-                    async {
-                        shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
-                            dataStore = context.dataStore
-                        ) ?: (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
-                    },
-                    async {
-                        shouldFollowDynamicTheming.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
-                            dataStore = context.dataStore
-                        ) ?: false
-                    },
-                    async {
-                        jsoupUserAgent.value = readSettingPreferenceValue(
-                            preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
-                            dataStore = context.dataStore
-                        )
-                            ?: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
-                    },
-                    async {
-                        showDescriptionForSettingsState.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
-                            dataStore = context.dataStore
-                        ) ?: true
-                    },
-                    async {
-                        isInAppWebTabEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
-                            dataStore = context.dataStore
-                        ) ?: false
-                    },
-                    async {
-                        didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
-                            dataStore = context.dataStore
-                        ) ?: false
-                    },
-                    async {
-                        isAutoDetectTitleForLinksEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
-                            dataStore = context.dataStore
-                        ) ?: false
-                    },
-                    async {
-                        isHomeScreenEnabled.value = if (readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                                dataStore = context.dataStore
-                            ) == null
-                        ) {
-                            true
-                        } else {
-                            readSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                                dataStore = context.dataStore
-                            ) == true
-                        }
-                    },
-                    async {
-                        isBtmSheetEnabledForSavingLinks.value =/* readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                        dataStore = context.dataStore
-                    ) ?:*/ false
-                    },
-                    async {
-                        isSendCrashReportsEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                            dataStore = context.dataStore
-                        ) ?: true
-                    },
-                    async {
-                        isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
-                            dataStore = context.dataStore
-                        ) ?: true
-                    },
-                    async {
-                        selectedSortingType.value = readSortingPreferenceValue(
-                            preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
-                            dataStore = context.dataStore
-                        ) ?: SortingPreferences.NEW_TO_OLD.name
-                    },
-                    async {
-                        savedAppCode.intValue = readSettingPreferenceValue(
-                            preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
-                            dataStore = context.dataStore
-                        ) ?: (APP_VERSION_CODE - 1)
-                    },
-                    async {
-                        isShelfMinimizedInHomeScreen.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
-                            dataStore = context.dataStore
-                        ) ?: false
-                    },
-                    async {
-                        lastSelectedPanelID.longValue = (readSettingPreferenceValue(
-                            preferenceKey = intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
-                            dataStore = context.dataStore
-                        ) ?: -1).toLong()
-                    },
-                    async {
-                        RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(
-                            UUID.fromString(
-                                readSettingPreferenceValue(
-                                    preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
-                                    dataStore = context.dataStore
-                                ) ?: "d267865d-e1c9-42b7-be38-1ab6db0e312b"
-                            )
-                        )
-                    },
-                )
-            }
-        }
     }
 
     fun latestAppVersionRetriever(onTaskCompleted: () -> Unit) {

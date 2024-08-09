@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.settings.specific
+package com.sakethh.linkora.ui.screens.settings.specific.language
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
@@ -43,12 +43,12 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
 import kotlinx.coroutines.flow.collectLatest
 
@@ -56,7 +56,6 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun LanguageSettingsScreen(
     navController: NavController,
-    settingsScreenVM: SettingsScreenVM,
     customWebTab: CustomWebTab
 ) {
     val context = LocalContext.current
@@ -66,8 +65,9 @@ fun LanguageSettingsScreen(
     val isInfoExpanded = rememberSaveable {
         mutableStateOf(false)
     }
+    val languageSettingsScreenVM: LanguageSettingsScreenVM = hiltViewModel()
     LaunchedEffect(key1 = Unit) {
-        settingsScreenVM.eventChannel.collectLatest {
+        languageSettingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
