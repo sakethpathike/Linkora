@@ -241,10 +241,10 @@
     <string name="added_the_url">लिंक को ऐड दिया गया</string>
     <string name="removed_the_link_from_archive">लिंक को आर्काइव से हटा दिया गया</string>
     <string name="moved_the_link_to_archive">लिंक को आर्काइव में ले जाया गया</string>
-    <string name="reset_app_language">ऐप की भाषा बदलें</string>
-    <string name="language">Language</string>
-    <string name="current_language">Current Language</string>
-    <string name="available_languages">Available Languages</string>
-    <string name="represents_switching_to_the_respective_language">Represents switching to the respective language</string>
-    <string name="contributing_to_the_language_strings">Represents contributing to the language strings. Click to contribute to the language. If successful, your contribution will be reflected in the app\'s language strings.</string>
+    <string name="reset_app_language">ऐप भाषा रीसेट करें</string>
+    <string name="language">भाषा</string>
+    <string name="app_language">ऐप में उपयोग की गई भाषा</string>
+    <string name="available_languages">उपलब्ध भाषाएँ</string>
+    <string name="represents_switching_to_the_respective_language">भाषा में स्विच करने का प्रतिनिधित्व करता है</string>
+    <string name="contributing_to_the_language_strings">भाषा स्ट्रिंग्स में योगदान देने का प्रतिनिधित्व करता है। योगदान देने के लिए क्लिक करें। यदि सफल हुआ, तो आपका योगदान ऐप की भाषा स्ट्रिंग्स में प्रदर्शित होगा।</string>
 </resources>

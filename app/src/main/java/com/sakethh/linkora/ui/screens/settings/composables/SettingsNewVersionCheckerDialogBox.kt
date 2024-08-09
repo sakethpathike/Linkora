@@ -47,7 +47,7 @@ fun SettingsNewVersionCheckerDialogBox(
                 Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                            .padding(top = 20.dp)
+                            .padding(top = 20.dp, end = 20.dp)
                             .fillMaxWidth()
                     ) {
                         CircularProgressIndicator(
@@ -63,7 +63,8 @@ fun SettingsNewVersionCheckerDialogBox(
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
                             lineHeight = 22.sp,
-                            textAlign = TextAlign.Start
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier.fillMaxWidth()
                         )
                     }
                     Button(

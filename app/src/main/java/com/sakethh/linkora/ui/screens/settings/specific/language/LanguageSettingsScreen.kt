@@ -43,13 +43,18 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
 import kotlinx.coroutines.flow.collectLatest
 
@@ -74,6 +79,17 @@ fun LanguageSettingsScreen(
             }
         }
     }
+    LaunchedEffect(key1 = Unit) {
+        preferredAppLanguageName.value = readSettingPreferenceValue(
+            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+            context.dataStore
+        ) ?: "English"
+
+        SettingsPreference.preferredAppLanguageCode.value = readSettingPreferenceValue(
+            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+            context.dataStore
+        ) ?: "en"
+    }
 
     SpecificSettingsScreenTopAppBar(
         topAppBarText = stringResource(id = R.string.language),
@@ -92,7 +108,7 @@ fun LanguageSettingsScreen(
             }
             item {
                 Text(
-                    text = stringResource(id = R.string.current_language),
+                    text = stringResource(id = R.string.app_language),
                     style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -105,17 +121,32 @@ fun LanguageSettingsScreen(
                 )
             }
             item {
-                FilledTonalButton(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 15.dp, bottom = 15.dp, start = 10.dp, end = 10.dp)
-                    .pulsateEffect(), onClick = {
-
-                }) {
-                    Text(
-                        text = stringResource(id = R.string.reset_app_language),
-                        style = MaterialTheme.typography.titleSmall
-                    )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .animateContentSize()
+                ) {
+                    if (preferredAppLanguageName.value != "English") {
+                        FilledTonalButton(modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 15.dp, bottom = 15.dp, start = 10.dp, end = 10.dp)
+                            .pulsateEffect(), onClick = {
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.ChangeLocalLanguage(
+                                    context,
+                                    languageCode = "en",
+                                    languageName = "English"
+                                )
+                            )
+                        }) {
+                            Text(
+                                text = stringResource(id = R.string.reset_app_language),
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                        }
+                    }
                 }
+
             }
 
             item {

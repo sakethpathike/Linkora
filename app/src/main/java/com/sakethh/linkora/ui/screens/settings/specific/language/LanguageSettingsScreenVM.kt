@@ -58,6 +58,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                 }
                 SettingsPreference.preferredAppLanguageCode.value =
                     languageSettingsScreenUIEvent.languageCode
+
                 SettingsPreference.preferredAppLanguageName.value =
                     languageSettingsScreenUIEvent.languageName
                 SettingsPreference.changeSettingPreferenceValue(

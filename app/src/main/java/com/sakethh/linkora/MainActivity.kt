@@ -15,6 +15,7 @@ import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -129,7 +130,10 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LaunchedEffect(key1 = SettingsPreference.isAutoCheckUpdatesEnabled.value) {
+                LaunchedEffect(
+                    key1 = SettingsPreference.isAutoCheckUpdatesEnabled.value,
+                    key2 = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsState().value.releaseName
+                ) {
                     async {
                         if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
                             settingsScreenVM.latestAppVersionRetriever { }
@@ -139,7 +143,7 @@ class MainActivity : ComponentActivity() {
                         SettingsPreference.isOnLatestUpdate.value =
                             SettingsScreenVM.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
                         withContext(Dispatchers.Main) {
-                            if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                            if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName && SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName != "") {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.a_new_update_is_available),
