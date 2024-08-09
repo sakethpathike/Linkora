@@ -22,9 +22,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - Quickly find and sort through your links and folders.
 - Import and export your data.
 - Linkora automatically recognizes images and titles when available.
-- Customize your home screen by adding any folders you want to the **_Shelf_**, making it easy to
-  access
-  the most important ones.
+- Customize your home screen by adding any folders you want to the **_Shelf_**, making accessing the most important ones easy.
 
 ## Screenshots
 
@@ -100,7 +98,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - [x] Importing and exporting links
 - [x] Improved title and image parsing for links
 - [x] Sub-folders
-- [ ] Backup data to cloud (Dropbox, Google Drive)
+- [ ] Backup data to the cloud (Dropbox, Google Drive)
 - [ ] Folder lock
 - [ ] Read links from QR codes and text
 - [x] Lists similar to Twitter Lists
@@ -123,7 +121,7 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 Contributions are welcome! Feel free to raise issues or submit pull requests to improve Linkora.
 
-- If you're looking to contribute, you can refer to the "Upcoming Updates" section above for areas to work on or any related stuff.
+- If you want to contribute, refer to the "Upcoming Updates" section above for areas to work on or any related stuff.
 
 ## License
 
