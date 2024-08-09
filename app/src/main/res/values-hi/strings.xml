@@ -241,4 +241,6 @@
     <string name="added_the_url">लिंक को ऐड दिया गया</string>
     <string name="removed_the_link_from_archive">लिंक को आर्काइव से हटा दिया गया</string>
     <string name="moved_the_link_to_archive">लिंक को आर्काइव में ले जाया गया</string>
+    <string name="change_app_language">ऐप की भाषा बदलें</string>
+    <string name="language">Language</string>
 </resources>

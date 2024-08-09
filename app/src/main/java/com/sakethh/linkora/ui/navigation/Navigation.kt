@@ -11,12 +11,23 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScr
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
-import com.sakethh.linkora.ui.screens.settings.SpecificSettingSectionScreen
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.DataSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.LanguageSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.ThemeSettingsScreen
 import com.sakethh.linkora.ui.screens.shelf.ShelfPanelsScreen
 import com.sakethh.linkora.ui.screens.shelf.SpecificPanelScreen
 
 @Composable
-fun MainNavigation(navController: NavHostController, customWebTab: CustomWebTab) {
+fun MainNavigation(
+    navController: NavHostController,
+    customWebTab: CustomWebTab,
+    settingsScreenVM: SettingsScreenVM
+) {
 
     NavHost(
         navController = navController,
@@ -40,8 +51,49 @@ fun MainNavigation(navController: NavHostController, customWebTab: CustomWebTab)
         composable(route = NavigationRoutes.SEARCH_SCREEN.name) {
             SearchScreen(navController = navController, customWebTab)
         }
-        composable(route = NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name) {
-            SpecificSettingSectionScreen(navController = navController, customWebTab)
+        composable(route = NavigationRoutes.ABOUT_SETTINGS_SCREEN.name) {
+            AboutSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+                customWebTab = customWebTab
+            )
+        }
+        composable(route = NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name) {
+            AcknowledgmentsSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+            )
+        }
+        composable(route = NavigationRoutes.DATA_SETTINGS_SCREEN.name) {
+            DataSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+            )
+        }
+        composable(route = NavigationRoutes.GENERAL_SETTINGS_SCREEN.name) {
+            GeneralSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+            )
+        }
+        composable(route = NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name) {
+            PrivacySettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+            )
+        }
+        composable(route = NavigationRoutes.THEME_SETTINGS_SCREEN.name) {
+            ThemeSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+            )
+        }
+        composable(route = NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name) {
+            LanguageSettingsScreen(
+                navController = navController,
+                settingsScreenVM = settingsScreenVM,
+                customWebTab = customWebTab
+            )
         }
         composable(route = NavigationRoutes.SHELF_SCREEN.name) {
             ShelfPanelsScreen(navController)

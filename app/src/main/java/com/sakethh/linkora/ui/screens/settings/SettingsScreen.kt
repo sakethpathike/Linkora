@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.PrivacyTip
 import androidx.compose.material.icons.filled.SettingsInputSvideo
 import androidx.compose.material.icons.filled.Storage
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LargeTopAppBar
 import androidx.compose.material3.MaterialTheme
@@ -65,7 +66,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.THEME
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.THEME_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.theme),
                         sectionIcon = Icons.Default.ColorLens
@@ -76,10 +77,21 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.GENERAL
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.GENERAL_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.general),
                         sectionIcon = Icons.Default.SettingsInputSvideo
+                    )
+                }
+                item(key = "languageRow") {
+                    SettingsSectionComposable(
+                        onClick = {
+                            SettingsScreenVM.currentSelectedSettingSection.value =
+                                SettingsSections.LANGUAGE
+                            navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
+                        },
+                        sectionTitle = stringResource(id = R.string.language),
+                        sectionIcon = Icons.Default.Translate
                     )
                 }
                 item(key = "dataRow") {
@@ -87,7 +99,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.DATA
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.DATA_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.data),
                         sectionIcon = Icons.Default.Storage
@@ -98,7 +110,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.PRIVACY
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.privacy),
                         sectionIcon = Icons.Default.PrivacyTip
@@ -109,7 +121,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.ABOUT
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.ABOUT_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.about),
                         sectionIcon = Icons.Default.Info
@@ -120,7 +132,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             SettingsScreenVM.currentSelectedSettingSection.value =
                                 SettingsSections.ACKNOWLEDGMENT
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            navController.navigate(NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name)
                         },
                         sectionTitle = stringResource(id = R.string.acknowledgments),
                         sectionIcon = Icons.Default.Group

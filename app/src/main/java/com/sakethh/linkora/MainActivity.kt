@@ -105,6 +105,7 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
+                val settingsScreenVM: SettingsScreenVM = hiltViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
@@ -113,11 +114,14 @@ class MainActivity : ComponentActivity() {
                             BottomNavigationBar(navController = navController)
                         }) {
                         Scaffold {
-                            MainNavigation(navController = navController, customWebTab)
+                            MainNavigation(
+                                navController = navController,
+                                customWebTab = customWebTab,
+                                settingsScreenVM = settingsScreenVM
+                            )
                         }
                     }
                 }
-                val settingsScreenVM: SettingsScreenVM = hiltViewModel()
                 LaunchedEffect(key1 = SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {
                     async {
                         if (isNetworkAvailable(context) && SettingsScreenVM.Settings.isAutoCheckUpdatesEnabled.value) {

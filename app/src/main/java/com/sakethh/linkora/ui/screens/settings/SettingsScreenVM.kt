@@ -78,7 +78,7 @@ data class SettingsUIElement(
 )
 
 enum class SettingsSections {
-    THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT
+    THEME, GENERAL, DATA, PRIVACY, ABOUT, ACKNOWLEDGMENT, LANGUAGE
 }
 @HiltViewModel
 class SettingsScreenVM @Inject constructor(
