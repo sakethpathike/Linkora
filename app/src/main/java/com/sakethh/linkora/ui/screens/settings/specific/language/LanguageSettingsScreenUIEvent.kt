@@ -4,7 +4,11 @@ import android.content.Context
 
 
 sealed class LanguageSettingsScreenUIEvent {
-    data class ChangeLocalLanguage(val context: Context, val languageCode: String) :
+    data class ChangeLocalLanguage(
+        val context: Context,
+        val languageCode: String,
+        val languageName: String
+    ) :
         LanguageSettingsScreenUIEvent()
 
     data class Contribute(val languageCode: String) : LanguageSettingsScreenUIEvent()

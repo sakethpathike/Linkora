@@ -44,6 +44,8 @@ object SettingsPreference : ViewModel() {
         mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
     val isShelfMinimizedInHomeScreen = mutableStateOf(false)
     val lastSelectedPanelID = mutableLongStateOf(-1)
+    val preferredAppLanguageName = mutableStateOf("English")
+    val preferredAppLanguageCode = mutableStateOf("en")
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -182,6 +184,18 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
                         dataStore = context.dataStore
                     ) ?: false
+                },
+                async {
+                    preferredAppLanguageName.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+                        dataStore = context.dataStore
+                    ) ?: "English"
+                },
+                async {
+                    preferredAppLanguageCode.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+                        dataStore = context.dataStore
+                    ) ?: "en"
                 },
                 async {
                     lastSelectedPanelID.longValue = (readSettingPreferenceValue(

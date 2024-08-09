@@ -19,7 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Translate
@@ -32,7 +32,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -50,6 +49,7 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,9 +60,6 @@ fun LanguageSettingsScreen(
     customWebTab: CustomWebTab
 ) {
     val context = LocalContext.current
-    val availableLanguages = remember {
-        mutableStateListOf("English", "Hindi")
-    }
     val isInfoExpanded = rememberSaveable {
         mutableStateOf(false)
     }
@@ -102,7 +99,7 @@ fun LanguageSettingsScreen(
             }
             item {
                 Text(
-                    text = locale.language,
+                    text = preferredAppLanguageName.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
                 )
@@ -115,7 +112,7 @@ fun LanguageSettingsScreen(
 
                 }) {
                     Text(
-                        text = stringResource(id = R.string.change_app_language),
+                        text = stringResource(id = R.string.reset_app_language),
                         style = MaterialTheme.typography.titleSmall
                     )
                 }
@@ -157,7 +154,7 @@ fun LanguageSettingsScreen(
                     Column(modifier = Modifier.fillMaxWidth()) {
                         if (isInfoExpanded.value) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                                Icon(imageVector = Icons.Default.Done, contentDescription = "")
                                 Spacer(modifier = Modifier.width(15.dp))
                                 Column {
                                     Text(
@@ -184,7 +181,7 @@ fun LanguageSettingsScreen(
                     }
                 }
             }
-            items(availableLanguages) {
+            items(languageSettingsScreenVM.availableLanguages) {
                 Row(
                     Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -192,7 +189,7 @@ fun LanguageSettingsScreen(
                 ) {
                     Column(Modifier.fillMaxWidth(0.6f)) {
                         Text(
-                            text = it,
+                            text = it.languageName,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -213,11 +210,12 @@ fun LanguageSettingsScreen(
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.ChangeLocalLanguage(
                                         context,
-                                        languageCode = listOf("hi", "en").random(),
+                                        languageCode = it.languageCode,
+                                        languageName = it.languageName
                                     )
                                 )
                             }) {
-                            Icon(imageVector = Icons.Default.Check, contentDescription = "")
+                            Icon(imageVector = Icons.Default.Done, contentDescription = "")
                         }
                         Spacer(modifier = Modifier.width(15.dp))
                         FilledTonalIconButton(

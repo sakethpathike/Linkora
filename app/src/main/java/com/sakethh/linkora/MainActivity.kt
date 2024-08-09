@@ -21,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -186,11 +187,17 @@ class MainActivity : ComponentActivity() {
 
     override fun attachBaseContext(newBase: Context?) {
         if (newBase != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
-            val locale = Locale("hi")
-            val config = Configuration(newBase.resources.configuration)
-            Locale.setDefault(locale)
-            config.setLocale(locale)
-            newBase.resources.updateConfiguration(config, newBase.resources.displayMetrics)
+            CoroutineScope(Dispatchers.Default).launch {
+                val appLanguageCode = SettingsPreference.readSettingPreferenceValue(
+                    stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+                    newBase.dataStore
+                ) ?: "en"
+                val locale = Locale(appLanguageCode)
+                val config = Configuration(newBase.resources.configuration)
+                Locale.setDefault(locale)
+                config.setLocale(locale)
+                newBase.resources.updateConfiguration(config, newBase.resources.displayMetrics)
+            }
         }
         super.attachBaseContext(newBase)
     }

@@ -240,7 +240,7 @@
     <string name="added_the_url">Added the url</string>
     <string name="removed_the_link_from_archive">removed the link from archive(s)</string>
     <string name="moved_the_link_to_archive">moved the link to archive(s)</string>
-    <string name="change_app_language">Change App Language</string>
+    <string name="reset_app_language">Reset App Language</string>
     <string name="language">Language</string>
     <string name="current_language">Current Language</string>
     <string name="available_languages">Available Languages</string>
