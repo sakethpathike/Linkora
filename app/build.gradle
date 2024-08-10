@@ -24,14 +24,14 @@ android {
             useSupportLibrary true
         }
 
-        flavorDimensions = ["default"]
+        flavorDimensions = ["distribution"]
         productFlavors {
             fdroid {
-                dimension "default"
+                dimension "distribution"
                 flavour = "fdroid"
             }
             github {
-                dimension "default"
+                dimension "distribution"
                 flavour = "github"
             }
         }
@@ -150,8 +150,16 @@ dependencies {
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
 }
 
-if (flavour != "fdroid") {
-    apply plugin: 'com.google.gms.google-services'
-    apply plugin: 'com.google.firebase.crashlytics'
-    apply plugin: 'com.google.gms.google-services'
+beforeEvaluate {
+    android.applicationVariants.configureEach { variant ->
+        if (variant.productFlavors.any { it.name == "github" }) {
+            buildscript {
+                dependencies {
+                    classpath 'com.google.gms:google-services:4.4.2'
+                }
+            }
+            apply plugin: 'com.google.gms.google-services'
+            apply plugin: 'com.google.firebase.crashlytics'
+        }
+    }
 }
