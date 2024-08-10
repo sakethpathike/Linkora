@@ -1,5 +1,6 @@
 package com.sakethh.linkora
 
+import AddANewLinkDialogBox
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
@@ -11,7 +12,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.commonComposables.AddANewLinkDialogBox
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType

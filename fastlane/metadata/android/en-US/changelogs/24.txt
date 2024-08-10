@@ -1,22 +1,12 @@
 ## Updates
 
-- Shelf can now be minimized or maximized using a new floating action button above the "Add" button on the Home Screen. Linkora will remember your choice.
-- Linkora will remember the last panel you used from the left navigation rail and will open it automatically the next time you use the app.
-- The limit of 5 panels is gone; you can add as many panels as you want, and the Shelf UI has been updated.
-- Items in the shelf navigation rail are now called "Panels". The feature is still called Shelf.
-- The bottom sheet for managing the Shelf has been replaced with new screens for adding and managing folders in panels.
-- The Link UI has been improved.
-- The link menu now shows an image at the top if available; otherwise, it shows the regular menu.
-- Added "Refresh Title and Image" to update the title and image of a link.
-- The full-screen dialog for adding new links lets you add links directly to subfolders.
-- The "Refresh all links titles and images" setting now works in the background, and you can cancel it if needed.
-- vxTwitter is now included to get Twitter metadata when saving links from Twitter.
-- Auto-Update and manual checks for the latest versions now pull data from official Linkora releases.
-
-This update also includes various minor improvements and UI changes.
-
----
-
-Technically, this is the biggest update Linkora has had since its initial release. The codebase has been mostly rewritten and is now much better. This rewrite is one reason for the delay in this release. The codebase will be improved further if needed.
+- New button to minimize/maximize Shelf; Linkora remembers your choice.
+- Auto-opens the last used panel.
+- No more 5-panel limit; add unlimited panels.
+- New screens for managing folders in panels.
+- Improved Link UI; menu shows images if available.
+- Added "Refresh Title and Image" option.
+- Background link refresh with cancel option.
+- vxTwitter support for Twitter metadata.
 
 Full Changelog: https://github.com/sakethpathike/Linkora/compare/release-v0.5.0...release-v0.6.0
