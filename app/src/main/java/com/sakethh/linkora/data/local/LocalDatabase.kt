@@ -5,6 +5,10 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.sakethh.linkora.data.local.folders.FoldersDao
 import com.sakethh.linkora.data.local.links.LinksDao
+import com.sakethh.linkora.data.local.localization.language.Language
+import com.sakethh.linkora.data.local.localization.language.LanguageDao
+import com.sakethh.linkora.data.local.localization.translations.Translation
+import com.sakethh.linkora.data.local.localization.translations.TranslationsDao
 import com.sakethh.linkora.data.local.restore.ImportDao
 import com.sakethh.linkora.data.local.search.SearchDao
 import com.sakethh.linkora.data.local.shelf.ShelfDao
@@ -20,9 +24,12 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingDao
 
 @Database(
-    version = 5,
+    version = 6,
     exportSchema = true,
-    entities = [Shelf::class, HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class, ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class]
+    entities = [Shelf::class, HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
+        ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class,
+        Language::class, Translation::class
+    ]
 )
 @TypeConverters(LongToStringConverter::class)
 abstract class LocalDatabase : RoomDatabase() {
@@ -41,4 +48,6 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun subFoldersSortingDao(): SubFoldersSortingDao
     abstract fun searchDao(): SearchDao
     abstract fun importDao(): ImportDao
+    abstract fun languageDao(): LanguageDao
+    abstract fun translationDao(): TranslationsDao
 }

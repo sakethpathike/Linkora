@@ -13,6 +13,10 @@ import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.localization.language.LanguageImpl
+import com.sakethh.linkora.data.local.localization.language.LanguageRepo
+import com.sakethh.linkora.data.local.localization.translations.TranslationsImpl
+import com.sakethh.linkora.data.local.localization.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportImpl
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl
@@ -136,13 +140,20 @@ object AppModule {
             db.execSQL("CREATE TABLE IF NOT EXISTS `home_screen_list_table` (`primaryKey` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `id` INTEGER NOT NULL, `position` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `parentShelfID` INTEGER NOT NULL)")
         }
     }
+    private val MIGRATION_5_6 = object : Migration(5, 6) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL("CREATE TABLE IF NOT EXISTS `language` (`languageCode` TEXT NOT NULL, `languageName` TEXT NOT NULL, PRIMARY KEY(`languageCode`))")
+            db.execSQL("CREATE TABLE IF NOT EXISTS `translation` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `languageCode` TEXT NOT NULL, `stringName` TEXT NOT NULL, `stringValue` TEXT NOT NULL)")
+        }
+    }
 
     @Provides
     @Singleton
     fun provideLocalDatabase(app: Application): LocalDatabase {
         return Room.databaseBuilder(
             app, LocalDatabase::class.java, "linkora_db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+            .build()
     }
 
     @Provides
@@ -216,6 +227,18 @@ object AppModule {
     @Singleton
     fun provideFoldersRepo(localDatabase: LocalDatabase): FoldersRepo {
         return FoldersImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLanguageRepo(localDatabase: LocalDatabase): LanguageRepo {
+        return LanguageImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTranslationRepo(localDatabase: LocalDatabase): TranslationsRepo {
+        return TranslationsImpl(localDatabase)
     }
 
     @Provides
