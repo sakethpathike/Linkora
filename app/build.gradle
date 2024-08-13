@@ -6,7 +6,9 @@ plugins {
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
 }
-var flavour = ""
+//apply plugin: 'com.google.gms.google-services'
+//apply plugin: 'com.google.firebase.crashlytics'
+
 android {
     namespace 'com.sakethh.linkora'
     compileSdk 34
@@ -28,11 +30,9 @@ android {
         productFlavors {
             fdroid {
                 dimension "distribution"
-                flavour = "fdroid"
             }
             github {
                 dimension "distribution"
-                flavour = "github"
             }
         }
         sourceSets {
@@ -67,6 +67,7 @@ android {
     }
     buildFeatures {
         compose true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion '1.5.3'
@@ -148,18 +149,4 @@ dependencies {
     implementation 'androidx.hilt:hilt-work:1.2.0'
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
-}
-
-beforeEvaluate {
-    android.applicationVariants.configureEach { variant ->
-        if (variant.productFlavors.any { it.name == "github" }) {
-            buildscript {
-                dependencies {
-                    classpath 'com.google.gms:google-services:4.4.2'
-                }
-            }
-            apply plugin: 'com.google.gms.google-services'
-            apply plugin: 'com.google.firebase.crashlytics'
-        }
-    }
 }

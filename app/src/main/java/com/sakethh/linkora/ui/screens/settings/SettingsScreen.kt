@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -91,16 +92,18 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         sectionIcon = Icons.Default.Storage
                     )
                 }
-                item(key = "privacyRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.PRIVACY
-                            navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
-                        },
-                        sectionTitle = "Privacy",
-                        sectionIcon = Icons.Default.PrivacyTip
-                    )
+                if (BuildConfig.FLAVOR != "fdroid") {
+                    item(key = "privacyRow") {
+                        SettingsSectionComposable(
+                            onClick = {
+                                SettingsScreenVM.currentSelectedSettingSection.value =
+                                    SettingsSections.PRIVACY
+                                navController.navigate(NavigationRoutes.SPECIFIC_SETTINGS_SECTION_SCREEN.name)
+                            },
+                            sectionTitle = "Privacy",
+                            sectionIcon = Icons.Default.PrivacyTip
+                        )
+                    }
                 }
                 item(key = "aboutRow") {
                     SettingsSectionComposable(
