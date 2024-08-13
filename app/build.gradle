@@ -29,6 +29,7 @@ android {
         flavorDimensions = ["distribution"]
         productFlavors {
             fdroid {
+                getIsDefault().set(true)
                 dimension "distribution"
             }
             github {
