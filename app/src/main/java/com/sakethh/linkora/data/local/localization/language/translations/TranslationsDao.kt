@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.localization.translations
+package com.sakethh.linkora.data.local.localization.language.translations
 
 import androidx.room.Dao
 import androidx.room.Delete
@@ -17,5 +17,5 @@ interface TranslationsDao {
     suspend fun deleteAnExistingLocalizedString(id: Long)
 
     @Query("SELECT stringValue FROM translation WHERE stringName=:stringName and languageCode=:languageCode")
-    suspend fun getLocalizedStringValueFor(stringName: String, languageCode: String): String
+    suspend fun getLocalizedStringValueFor(stringName: String, languageCode: String): String?
 }

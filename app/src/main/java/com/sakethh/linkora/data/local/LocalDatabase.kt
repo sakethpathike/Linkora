@@ -7,8 +7,8 @@ import com.sakethh.linkora.data.local.folders.FoldersDao
 import com.sakethh.linkora.data.local.links.LinksDao
 import com.sakethh.linkora.data.local.localization.language.Language
 import com.sakethh.linkora.data.local.localization.language.LanguageDao
-import com.sakethh.linkora.data.local.localization.translations.Translation
-import com.sakethh.linkora.data.local.localization.translations.TranslationsDao
+import com.sakethh.linkora.data.local.localization.language.translations.Translation
+import com.sakethh.linkora.data.local.localization.language.translations.TranslationsDao
 import com.sakethh.linkora.data.local.restore.ImportDao
 import com.sakethh.linkora.data.local.search.SearchDao
 import com.sakethh.linkora.data.local.shelf.ShelfDao

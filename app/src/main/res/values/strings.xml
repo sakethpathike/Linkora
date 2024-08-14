@@ -246,4 +246,6 @@
     <string name="available_languages">Available Languages</string>
     <string name="represents_switching_to_the_respective_language">Represents switching to the respective language</string>
     <string name="contributing_to_the_language_strings">Represents contributing to the language strings. Click to contribute to the language. If successful, your contribution will be reflected in the app\'s language strings.</string>
+    <string name="use_language_strings_fetched_from_the_server">Use language strings fetched from the server</string>
+    <string name="use_language_strings_fetched_from_the_server_desc">Enable this to use the strings fetched from the server for your preferred language. If something goes wrong on Linkora\'s side, the default strings will still be used.</string>
 </resources>

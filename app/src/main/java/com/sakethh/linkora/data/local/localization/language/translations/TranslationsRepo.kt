@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.localization.translations
+package com.sakethh.linkora.data.local.localization.language.translations
 
 interface TranslationsRepo {
 
@@ -8,5 +8,5 @@ interface TranslationsRepo {
 
     suspend fun deleteAnExistingLocalizedString(id: Long)
 
-    suspend fun getLocalizedStringValueFor(stringName: String, languageCode: String): String
+    suspend fun getLocalizedStringValueFor(stringName: String, languageCode: String): String?
 }

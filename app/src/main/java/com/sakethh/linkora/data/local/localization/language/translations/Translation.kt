@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.localization.translations
+package com.sakethh.linkora.data.local.localization.language.translations
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey

@@ -15,8 +15,8 @@ import com.sakethh.linkora.data.local.links.LinksImpl
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.localization.language.LanguageImpl
 import com.sakethh.linkora.data.local.localization.language.LanguageRepo
-import com.sakethh.linkora.data.local.localization.translations.TranslationsImpl
-import com.sakethh.linkora.data.local.localization.translations.TranslationsRepo
+import com.sakethh.linkora.data.local.localization.language.translations.TranslationsImpl
+import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportImpl
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl

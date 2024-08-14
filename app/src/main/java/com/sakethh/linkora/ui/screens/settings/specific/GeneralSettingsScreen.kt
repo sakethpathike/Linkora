@@ -22,6 +22,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Restore
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.Card
@@ -50,14 +51,14 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -72,7 +73,11 @@ import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: SettingsScreenVM) {
+fun GeneralSettingsScreen(
+    navController: NavController,
+    settingsScreenVM: SettingsScreenVM,
+    localizedStringsVM: LocalizedStringsVM
+) {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         settingsScreenVM.eventChannel.collectLatest {
@@ -83,6 +88,9 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
             }
         }
     }
+    LaunchedEffect(key1 = Unit) {
+        localizedStringsVM.loadStrings(context)
+    }
     val successfulRefreshLinkCount =
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
     val jsoupStringAgent = SettingsPreference.jsoupUserAgent
@@ -92,8 +100,9 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
     val focusRequester = remember { FocusRequester() }
     val successfulRefreshLinksCount =
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
+
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.general),
+        topAppBarText = localizedStringsVM.general.collectAsStateWithLifecycle().value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -119,11 +128,9 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                     if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(
-                                title = stringResource(
-                                    id = R.string.refresh_all_links_titles_and_images
-                                ),
+                                title = localizedStringsVM.refreshAllLinksTitlesAndImages.collectAsStateWithLifecycle().value,
                                 doesDescriptionExists = true,
-                                description = stringResource(id = R.string.refresh_all_links_titles_and_images_desc),
+                                description = localizedStringsVM.refreshAllLinksTitlesAndImagesDesc.collectAsStateWithLifecycle().value,
                                 isSwitchNeeded = false,
                                 isIconNeeded = rememberSaveable {
                                     mutableStateOf(true)
@@ -139,6 +146,37 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                     }
                 }
             }
+            item(key = "use_language_strings_fetched_from_the_server") {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .animateContentSize()
+                ) {
+                    RegularSettingComponent(
+                        settingsUIElement = SettingsUIElement(
+                            title = localizedStringsVM.useLanguageStringsFetchedFromTheServer.collectAsStateWithLifecycle().value,
+                            doesDescriptionExists = true,
+                            description = localizedStringsVM.useLanguageStringsFetchedFromTheServerDesc.collectAsStateWithLifecycle().value,
+                            isSwitchNeeded = true,
+                            isIconNeeded = rememberSaveable {
+                                mutableStateOf(true)
+                            },
+                            icon = Icons.Default.Translate,
+                            isSwitchEnabled = SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer,
+                            onSwitchStateChange = {
+                                SettingsPreference.changeSettingPreferenceValue(
+                                    preferenceKey = booleanPreferencesKey(
+                                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                                    ), dataStore = context.dataStore, newValue = it
+                                )
+                                SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value =
+                                    it
+                                localizedStringsVM.loadStrings(context)
+                            })
+                    )
+                }
+            }
 
             item(key = "JsoupUserAgent") {
                 Row(
@@ -152,7 +190,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                         OutlinedTextField(
                             supportingText = {
                                 Text(
-                                    text = stringResource(id = R.string.user_agent_desc),
+                                    text = localizedStringsVM.userAgentDesc.collectAsStateWithLifecycle().value,
                                     style = MaterialTheme.typography.titleSmall,
                                     lineHeight = 18.sp,
                                     modifier = Modifier.padding(
@@ -171,7 +209,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                                 .focusRequester(focusRequester),
                             label = {
                                 Text(
-                                    text = stringResource(id = R.string.user_agent),
+                                    text = localizedStringsVM.userAgent.collectAsStateWithLifecycle().value,
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -244,7 +282,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                             Text(
-                                text = stringResource(id = R.string.refreshing_links),
+                                text = localizedStringsVM.userAgent.collectAsStateWithLifecycle().value,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(
                                     start = 15.dp,
@@ -284,13 +322,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                                 Spacer(modifier = Modifier.height(15.dp))
                             }
                             Text(
-                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) stringResource(
-                                    id = R.string.work_manager_desc
-                                ) else "${successfulRefreshLinkCount.value} " + stringResource(
-                                    id = R.string.of
-                                ) + " ${RefreshLinksWorker.totalLinksCount.intValue} " + stringResource(
-                                    id = R.string.links_refreshed
-                                ),
+                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) localizedStringsVM.workManagerDesc.collectAsStateWithLifecycle().value else "${successfulRefreshLinkCount.value} " + localizedStringsVM.of.collectAsStateWithLifecycle().value + " ${RefreshLinksWorker.totalLinksCount.intValue} " + localizedStringsVM.linksRefreshed.collectAsStateWithLifecycle().value,
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.padding(
                                     start = 15.dp,
@@ -331,7 +363,7 @@ fun GeneralSettingsScreen(navController: NavController, settingsScreenVM: Settin
                                             )
                                     )
                                     Text(
-                                        text = stringResource(id = R.string.refreshing_links_info),
+                                        text = localizedStringsVM.refreshingLinksInfo.collectAsStateWithLifecycle().value,
                                         style = MaterialTheme.typography.titleSmall,
                                         lineHeight = 18.sp,
                                         modifier = Modifier.padding(end = 15.dp)

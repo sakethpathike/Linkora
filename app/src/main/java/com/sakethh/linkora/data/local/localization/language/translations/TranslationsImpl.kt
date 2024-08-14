@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.localization.translations
+package com.sakethh.linkora.data.local.localization.language.translations
 
 import com.sakethh.linkora.data.local.LocalDatabase
 import javax.inject.Inject
@@ -20,7 +20,7 @@ class TranslationsImpl @Inject constructor(private val localDatabase: LocalDatab
     override suspend fun getLocalizedStringValueFor(
         stringName: String,
         languageCode: String
-    ): String {
+    ): String? {
         return localDatabase.translationDao().getLocalizedStringValueFor(stringName, languageCode)
     }
 }

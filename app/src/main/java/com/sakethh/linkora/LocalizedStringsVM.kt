@@ -1,0 +1,268 @@
+package com.sakethh.linkora
+
+import android.content.Context
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.utils.ifNullOrBlank
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+@HiltViewModel
+class LocalizedStringsVM @Inject constructor(private val translationsRepo: TranslationsRepo) :
+    ViewModel() {
+
+    private val _general = MutableStateFlow("")
+    val general = _general.asStateFlow()
+
+    private val _useLanguageStringsFetchedFromTheServer = MutableStateFlow("")
+    val useLanguageStringsFetchedFromTheServer =
+        _useLanguageStringsFetchedFromTheServer.asStateFlow()
+
+    private val _useLanguageStringsFetchedFromTheServerDesc = MutableStateFlow("")
+    val useLanguageStringsFetchedFromTheServerDesc =
+        _useLanguageStringsFetchedFromTheServerDesc.asStateFlow()
+
+    private val _userAgentDesc = MutableStateFlow("")
+    val userAgentDesc =
+        _userAgentDesc.asStateFlow()
+
+    private val _userAgent = MutableStateFlow("")
+    val userAgent =
+        _userAgent.asStateFlow()
+
+    private val _refreshingLinks = MutableStateFlow("")
+    val refreshingLinks =
+        _refreshingLinks.asStateFlow()
+
+    private val _workManagerDesc = MutableStateFlow("")
+    val workManagerDesc =
+        _workManagerDesc.asStateFlow()
+
+    private val _of = MutableStateFlow("")
+    val of =
+        _of.asStateFlow()
+
+    private val _linksRefreshed = MutableStateFlow("")
+    val linksRefreshed =
+        _linksRefreshed.asStateFlow()
+
+    private val _refreshingLinksInfo = MutableStateFlow("")
+    val refreshingLinksInfo =
+        _refreshingLinksInfo.asStateFlow()
+
+    private val _refreshAllLinksTitlesAndImages = MutableStateFlow("")
+    val refreshAllLinksTitlesAndImages =
+        _refreshAllLinksTitlesAndImages.asStateFlow()
+
+    private val _refreshAllLinksTitlesAndImagesDesc = MutableStateFlow("")
+    val refreshAllLinksTitlesAndImagesDesc =
+        _refreshAllLinksTitlesAndImagesDesc.asStateFlow()
+
+    fun loadStrings(context: Context) {
+        viewModelScope.launch {
+            awaitAll(
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _general.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "general",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                if (it.isNullOrBlank()) {
+                                    context.getString(R.string.general)
+                                } else {
+                                    it
+                                }
+                            }
+                        )
+                    } else {
+                        _general.emit(context.getString(R.string.general))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useLanguageStringsFetchedFromTheServer.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "use_language_strings_fetched_from_the_server",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.use_language_strings_fetched_from_the_server)
+                                }
+                            }
+                        )
+                    } else {
+                        _useLanguageStringsFetchedFromTheServer.emit(context.getString(R.string.use_language_strings_fetched_from_the_server))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useLanguageStringsFetchedFromTheServerDesc.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "use_language_strings_fetched_from_the_server_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.use_language_strings_fetched_from_the_server_desc)
+                                }
+                            }
+                        )
+                    } else {
+                        _useLanguageStringsFetchedFromTheServerDesc.emit(context.getString(R.string.use_language_strings_fetched_from_the_server_desc))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _userAgentDesc.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "user_agent_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.user_agent_desc)
+                                }
+                            }
+                        )
+                    } else {
+                        _userAgentDesc.emit(context.getString(R.string.user_agent_desc))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _userAgent.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "user_agent",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.user_agent)
+                                }
+                            }
+                        )
+                    } else {
+                        _userAgent.emit(context.getString(R.string.user_agent))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshingLinks.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refreshing_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refreshing_links)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshingLinks.emit(context.getString(R.string.refreshing_links))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _workManagerDesc.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "work_manager_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.work_manager_desc)
+                                }
+                            }
+                        )
+                    } else {
+                        _workManagerDesc.emit(context.getString(R.string.work_manager_desc))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linksRefreshed.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "links_refreshed",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.links_refreshed)
+                                }
+                            }
+                        )
+                    } else {
+                        _linksRefreshed.emit(context.getString(R.string.links_refreshed))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshingLinksInfo.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refreshing_links_info",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refreshing_links_info)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshingLinksInfo.emit(context.getString(R.string.refreshing_links_info))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshAllLinksTitlesAndImages.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refresh_all_links_titles_and_images",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refresh_all_links_titles_and_images)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshAllLinksTitlesAndImages.emit(context.getString(R.string.refresh_all_links_titles_and_images))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshAllLinksTitlesAndImagesDesc.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refresh_all_links_titles_and_images_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refresh_all_links_titles_and_images_desc)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshAllLinksTitlesAndImagesDesc.emit(context.getString(R.string.refresh_all_links_titles_and_images_desc))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _of.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "of",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.of)
+                                }
+                            }
+                        )
+                    } else {
+                        _of.emit(context.getString(R.string.of))
+                    }
+                },
+            )
+        }
+    }
+}

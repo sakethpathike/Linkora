@@ -100,6 +100,7 @@ class MainActivity : ComponentActivity() {
                 }
                 val customWebTab: CustomWebTab = hiltViewModel()
                 val mainActivityVM: MainActivityVM = hiltViewModel()
+                val localizedStringsVM: LocalizedStringsVM = hiltViewModel()
                 LaunchedEffect(key1 = Unit) {
                     mainActivityVM.channelEvent.collectLatest {
                         when (it) {
@@ -125,7 +126,8 @@ class MainActivity : ComponentActivity() {
                             MainNavigation(
                                 navController = navController,
                                 customWebTab = customWebTab,
-                                settingsScreenVM = settingsScreenVM
+                                settingsScreenVM = settingsScreenVM,
+                                localizedStringsVM
                             )
                         }
                     }

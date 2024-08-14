@@ -36,6 +36,7 @@ object SettingsPreference : ViewModel() {
     val didDataAutoDataMigratedFromV9 = mutableStateOf(false)
     val isAutoCheckUpdatesEnabled = mutableStateOf(true)
     val showDescriptionForSettingsState = mutableStateOf(true)
+    val useLanguageStringsBasedOnFetchedValuesFromServer = mutableStateOf(false)
     val isOnLatestUpdate = mutableStateOf(false)
     val didServerTimeOutErrorOccurred = mutableStateOf(false)
     private val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
@@ -202,6 +203,13 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
                         dataStore = context.dataStore
                     ) ?: -1).toLong()
+                },
+                async {
+                    useLanguageStringsBasedOnFetchedValuesFromServer.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name),
+                            dataStore = context.dataStore
+                        ) ?: false
                 },
                 async {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(
