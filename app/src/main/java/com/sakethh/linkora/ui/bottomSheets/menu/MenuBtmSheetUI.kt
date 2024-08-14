@@ -54,14 +54,13 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.sakethh.linkora.R
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -172,7 +171,7 @@ fun MenuBtmSheetUI(
                             localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.title_copied_to_clipboard),
+                                menuBtmSheetParam.localizedStringsVM.titleCopiedToClipboard.value,
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
@@ -198,7 +197,7 @@ fun MenuBtmSheetUI(
                                 }
                             }
                         },
-                        elementName = R.string.view_note,
+                        elementName = menuBtmSheetParam.localizedStringsVM.viewNote.collectAsStateWithLifecycle().value,
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
                     IndividualMenuComponent(
@@ -212,7 +211,7 @@ fun MenuBtmSheetUI(
                             }
                             menuBtmSheetParam.onRenameClick()
                         },
-                        elementName = R.string.rename,
+                        elementName = menuBtmSheetParam.localizedStringsVM.rename.collectAsStateWithLifecycle().value,
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
                     if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
@@ -220,7 +219,7 @@ fun MenuBtmSheetUI(
                             onOptionClick = {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.refreshing_title_and_image),
+                                    menuBtmSheetParam.localizedStringsVM.refreshingTitleAndImage.value,
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
@@ -233,7 +232,7 @@ fun MenuBtmSheetUI(
                                     menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
                                 }
                             },
-                            elementName = R.string.refresh_image_and_title,
+                            elementName = menuBtmSheetParam.localizedStringsVM.refreshImageAndTitle.collectAsStateWithLifecycle().value,
                             elementImageVector = Icons.Outlined.Refresh
                         )
                     }
@@ -250,7 +249,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = optionsBtmSheetVM.importantCardText.value,
+                            elementName = menuBtmSheetParam.localizedStringsVM.importantCardText.collectAsStateWithLifecycle().value,
                             elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                         )
                     }
@@ -267,7 +266,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = optionsBtmSheetVM.archiveCardText.value,
+                            elementName = menuBtmSheetParam.localizedStringsVM.archiveCardText.collectAsStateWithLifecycle().value,
                             elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
                         )
                     }
@@ -284,7 +283,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = R.string.unarchive,
+                            elementName = menuBtmSheetParam.localizedStringsVM.unarchive.collectAsStateWithLifecycle().value,
                             elementImageVector = Icons.Outlined.Unarchive
                         )
                     }
@@ -301,7 +300,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = R.string.delete_the_note,
+                            elementName = menuBtmSheetParam.localizedStringsVM.deleteTheNote.collectAsStateWithLifecycle().value,
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
@@ -318,14 +317,14 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) R.string.delete_folder else R.string.delete_link,
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.localizedStringsVM.deleteFolder.collectAsStateWithLifecycle().value else menuBtmSheetParam.localizedStringsVM.deleteLink.collectAsStateWithLifecycle().value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
                         )
                     }
                 } else {
                     if (mutableStateNote.value.isNotEmpty()) {
                         Text(
-                            text = stringResource(id = R.string.saved_note),
+                            text = menuBtmSheetParam.localizedStringsVM.savedNote.collectAsStateWithLifecycle().value,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
@@ -343,7 +342,7 @@ fun MenuBtmSheetUI(
                                     Toast
                                         .makeText(
                                             context,
-                                            context.getString(R.string.note_copied_to_clipboard),
+                                            menuBtmSheetParam.localizedStringsVM.noteCopiedToClipboard.value,
                                             Toast.LENGTH_SHORT
                                         )
                                         .show()
@@ -362,7 +361,7 @@ fun MenuBtmSheetUI(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = stringResource(id = R.string.you_did_not_add_note_for_this),
+                                text = menuBtmSheetParam.localizedStringsVM.youDidNotAddNoteForThis.collectAsStateWithLifecycle().value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 15.sp,
                                 textAlign = TextAlign.Start,
@@ -386,8 +385,7 @@ fun MenuBtmSheetUI(
 @Composable
 fun IndividualMenuComponent(
     onOptionClick: () -> Unit,
-    elementName: Int,
-    elementNameString: String = "",
+    elementName: String,
     elementImageVector: ImageVector,
     inShelfUI: Boolean = false,
     onDeleteIconClick: () -> Unit = {},
@@ -420,7 +418,7 @@ fun IndividualMenuComponent(
                 Icon(imageVector = elementImageVector, contentDescription = null)
             }
             Text(
-                text = if (elementNameString != "") elementNameString else stringResource(id = elementName),
+                text = elementName,
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 modifier = Modifier.fillMaxWidth(if (inShelfUI) 0.4f else 1f),

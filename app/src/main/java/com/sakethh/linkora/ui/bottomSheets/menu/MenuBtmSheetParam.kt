@@ -4,6 +4,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 
 data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor(
@@ -23,5 +24,6 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val folderName: String,
     val linkTitle: String,
     val imgLink: String,
-    val forAChildFolder: MutableState<Boolean> = mutableStateOf(false)
+    val forAChildFolder: MutableState<Boolean> = mutableStateOf(false),
+    val localizedStringsVM: LocalizedStringsVM
 )

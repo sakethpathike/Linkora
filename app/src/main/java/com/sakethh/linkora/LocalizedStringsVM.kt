@@ -65,6 +65,62 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val refreshAllLinksTitlesAndImagesDesc =
         _refreshAllLinksTitlesAndImagesDesc.asStateFlow()
 
+    private val _titleCopiedToClipboard = MutableStateFlow("")
+    val titleCopiedToClipboard =
+        _titleCopiedToClipboard.asStateFlow()
+
+    private val _viewNote = MutableStateFlow("")
+    val viewNote = _viewNote.asStateFlow()
+
+    private val _rename = MutableStateFlow("")
+    val rename =
+        _rename.asStateFlow()
+
+    private val _refreshingTitleAndImage = MutableStateFlow("")
+    val refreshingTitleAndImage =
+        _refreshingTitleAndImage.asStateFlow()
+
+    private val _refreshImageAndTitle = MutableStateFlow("")
+    val refreshImageAndTitle =
+        _refreshImageAndTitle.asStateFlow()
+
+    private val _unarchive = MutableStateFlow("")
+    val unarchive =
+        _unarchive.asStateFlow()
+
+    private val _deleteTheNote = MutableStateFlow("")
+    val deleteTheNote =
+        _deleteTheNote.asStateFlow()
+
+    private val _importantCardText = MutableStateFlow("")
+    val importantCardText =
+        _importantCardText.asStateFlow()
+
+    private val _archiveCardText = MutableStateFlow("")
+    val archiveCardText =
+        _archiveCardText.asStateFlow()
+
+    private val _deleteFolder = MutableStateFlow("")
+    val deleteFolder =
+        _deleteFolder.asStateFlow()
+
+    private val _deleteLink = MutableStateFlow("")
+    val deleteLink =
+        _deleteLink.asStateFlow()
+
+    private val _savedNote = MutableStateFlow("")
+    val savedNote =
+        _savedNote.asStateFlow()
+
+    private val _noteCopiedToClipboard = MutableStateFlow("")
+    val noteCopiedToClipboard =
+        _noteCopiedToClipboard.asStateFlow()
+
+    private val _youDidNotAddNoteForThis = MutableStateFlow("")
+    val youDidNotAddNoteForThis =
+        _youDidNotAddNoteForThis.asStateFlow()
+
+
     fun loadStrings(context: Context) {
         viewModelScope.launch {
             awaitAll(
