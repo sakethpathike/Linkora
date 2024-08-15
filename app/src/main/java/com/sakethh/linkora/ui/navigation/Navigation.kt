@@ -98,7 +98,7 @@ fun MainNavigation(
             )
         }
         composable(route = NavigationRoutes.SHELF_SCREEN.name) {
-            ShelfPanelsScreen(navController)
+            ShelfPanelsScreen(navController, localizedStringsVM)
         }
         composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
             SpecificPanelScreen(navController)

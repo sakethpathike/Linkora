@@ -29,10 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
@@ -135,7 +133,8 @@ fun SortingBottomSheetUI(
                     }
                     @Composable
                     fun SortByUI() {
-                        sortingBtmSheetVM.sortingBottomSheetData(context).forEach {
+                        sortingBtmSheetVM.sortingBottomSheetData(context, localizedStringsVM)
+                            .forEach {
                             Column(
                                 modifier = Modifier
                                     .combinedClickable(interactionSource = remember {
@@ -167,7 +166,7 @@ fun SortingBottomSheetUI(
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
                                     androidx.compose.material3.Text(
-                                        text = stringResource(id = it.sortingName),
+                                        text = it.sortingName,
                                         fontSize = 16.sp,
                                         style = MaterialTheme.typography.titleSmall,
                                         color = if (it.sortingType == SortingPreferences.valueOf(

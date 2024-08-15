@@ -14,7 +14,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class LocalizedStringsVM @Inject constructor(private val translationsRepo: TranslationsRepo) :
+open class LocalizedStringsVM @Inject constructor(private val translationsRepo: TranslationsRepo) :
     ViewModel() {
 
     private val _general = mutableStateOf("")
@@ -278,6 +278,33 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     private val _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote = mutableStateOf("")
     val leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote =
         _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote
+
+    private val _home = mutableStateOf("")
+    val home = _home
+
+    private val _shelfNameAlreadyExists = mutableStateOf("")
+    val shelfNameAlreadyExists = _shelfNameAlreadyExists
+
+    private val _newestToOldest = mutableStateOf("")
+    val newestToOldest = _newestToOldest
+
+    private val _oldestToNewest = mutableStateOf("")
+    val oldestToNewest = _oldestToNewest
+
+    private val _aToZSequence = mutableStateOf("")
+    val aToZSequence = _aToZSequence
+
+    private val _ztoASequence = mutableStateOf("")
+    val ztoASequence = _ztoASequence
+
+    private val _search = mutableStateOf("")
+    val search = _search
+
+    private val _collections = mutableStateOf("")
+    val collections = _collections
+
+    private val _settings = mutableStateOf("")
+    val settings = _settings
 
 
     fun loadStrings(context: Context) {

@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
@@ -48,7 +49,7 @@ import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShelfPanelsScreen(navController: NavController) {
+fun ShelfPanelsScreen(navController: NavController, localizedStringsVM: LocalizedStringsVM) {
     val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
     val shelfData = shelfBtmSheetVM.shelfData.collectAsStateWithLifecycle().value
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
@@ -112,8 +113,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                             ShelfBtmSheetVM.selectedShelfData = it
                             navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
                         },
-                        elementName = 0,
-                        elementNameString = it.shelfName,
+                        elementName = "0",
                         elementImageVector = Icons.Default.ViewArray,
                         inShelfUI = true,
                         onDeleteIconClick = {
@@ -144,9 +144,11 @@ fun ShelfPanelsScreen(navController: NavController) {
                             shelfIconName = shelfIconName,
                             folderIds = emptyList()
                         )
-                    )
+                    ),
+                    localizedStringsVM
                 )
-            })
+            }, localizedStringsVM
+        )
     )
 
     DeleteAShelfPanelDialogBox(
@@ -156,9 +158,9 @@ fun ShelfPanelsScreen(navController: NavController) {
                 shelfBtmSheetVM.onShelfUiEvent(
                     ShelfUIEvent.DeleteAShelf(
                         ShelfBtmSheetVM.selectedShelfData
-                    )
+                    ), localizedStringsVM
                 )
-            },
+            }, localizedStringsVM
         )
     )
     RenameAShelfPanelDialogBox(
@@ -167,9 +169,10 @@ fun ShelfPanelsScreen(navController: NavController) {
             shelfBtmSheetVM.onShelfUiEvent(
                 ShelfUIEvent.UpdateAShelfName(
                     it, ShelfBtmSheetVM.selectedShelfData.id
-                )
+                ), localizedStringsVM
             )
-        })
+        }, localizedStringsVM
+    )
     BackHandler {
         HomeScreenVM.initialStart = true
         navController.navigateUp()

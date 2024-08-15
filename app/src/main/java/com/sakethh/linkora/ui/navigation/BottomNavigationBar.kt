@@ -11,17 +11,16 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @Composable
-fun BottomNavigationBar(navController: NavController) {
+fun BottomNavigationBar(navController: NavController, localizedStringsVM: LocalizedStringsVM) {
     val navigationVM: NavigationVM = viewModel()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     LinkoraTheme {
@@ -49,13 +48,13 @@ fun BottomNavigationBar(navController: NavController) {
                     },
                     label = {
                         Text(
-                            text = stringResource(id = R.string.home),
+                            text = localizedStringsVM.home.value,
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )
                     })
             }
-            navigationVM.btmBarList.forEach {
+            navigationVM.btmBarList(localizedStringsVM).forEach {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name, onClick = {
                         if (currentRoute != it.navigationRoute.name) {
@@ -72,7 +71,7 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     }, label = {
                         Text(
-                            text = stringResource(id = it.itemName),
+                            text = it.itemName,
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )
