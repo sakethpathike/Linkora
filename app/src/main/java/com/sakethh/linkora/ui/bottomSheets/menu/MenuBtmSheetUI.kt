@@ -197,7 +197,7 @@ fun MenuBtmSheetUI(
                                 }
                             }
                         },
-                        elementName = menuBtmSheetParam.localizedStringsVM.viewNote.collectAsStateWithLifecycle().value,
+                        elementName = menuBtmSheetParam.localizedStringsVM.viewNote.value,
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
                     IndividualMenuComponent(
@@ -211,7 +211,7 @@ fun MenuBtmSheetUI(
                             }
                             menuBtmSheetParam.onRenameClick()
                         },
-                        elementName = menuBtmSheetParam.localizedStringsVM.rename.collectAsStateWithLifecycle().value,
+                        elementName = menuBtmSheetParam.localizedStringsVM.rename.value,
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
                     if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
@@ -232,7 +232,7 @@ fun MenuBtmSheetUI(
                                     menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.refreshImageAndTitle.collectAsStateWithLifecycle().value,
+                            elementName = menuBtmSheetParam.localizedStringsVM.refreshImageAndTitle.value,
                             elementImageVector = Icons.Outlined.Refresh
                         )
                     }
@@ -283,7 +283,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.unarchive.collectAsStateWithLifecycle().value,
+                            elementName = menuBtmSheetParam.localizedStringsVM.unarchive.value,
                             elementImageVector = Icons.Outlined.Unarchive
                         )
                     }
@@ -300,7 +300,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.deleteTheNote.collectAsStateWithLifecycle().value,
+                            elementName = menuBtmSheetParam.localizedStringsVM.deleteTheNote.value,
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
@@ -317,14 +317,14 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.localizedStringsVM.deleteFolder.collectAsStateWithLifecycle().value else menuBtmSheetParam.localizedStringsVM.deleteLink.collectAsStateWithLifecycle().value,
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.localizedStringsVM.deleteFolder.value else menuBtmSheetParam.localizedStringsVM.deleteLink.value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
                         )
                     }
                 } else {
                     if (mutableStateNote.value.isNotEmpty()) {
                         Text(
-                            text = menuBtmSheetParam.localizedStringsVM.savedNote.collectAsStateWithLifecycle().value,
+                            text = menuBtmSheetParam.localizedStringsVM.savedNote.value,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
@@ -361,7 +361,7 @@ fun MenuBtmSheetUI(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = menuBtmSheetParam.localizedStringsVM.youDidNotAddNoteForThis.collectAsStateWithLifecycle().value,
+                                text = menuBtmSheetParam.localizedStringsVM.youDidNotAddNoteForThis.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 15.sp,
                                 textAlign = TextAlign.Start,

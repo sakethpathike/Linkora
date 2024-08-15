@@ -1,6 +1,7 @@
 package com.sakethh.linkora
 
 import android.content.Context
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
@@ -9,8 +10,6 @@ import com.sakethh.linkora.utils.ifNullOrBlank
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,137 +17,171 @@ import javax.inject.Inject
 class LocalizedStringsVM @Inject constructor(private val translationsRepo: TranslationsRepo) :
     ViewModel() {
 
-    private val _general = MutableStateFlow("")
-    val general = _general.asStateFlow()
+    private val _general = mutableStateOf("")
+    val general = _general
 
-    private val _useLanguageStringsFetchedFromTheServer = MutableStateFlow("")
-    val useLanguageStringsFetchedFromTheServer =
-        _useLanguageStringsFetchedFromTheServer.asStateFlow()
+    private val _useLanguageStringsFetchedFromTheServer = mutableStateOf("")
+    val useLanguageStringsFetchedFromTheServer = _useLanguageStringsFetchedFromTheServer
 
-    private val _useLanguageStringsFetchedFromTheServerDesc = MutableStateFlow("")
-    val useLanguageStringsFetchedFromTheServerDesc =
-        _useLanguageStringsFetchedFromTheServerDesc.asStateFlow()
+    private val _useLanguageStringsFetchedFromTheServerDesc = mutableStateOf("")
+    val useLanguageStringsFetchedFromTheServerDesc = _useLanguageStringsFetchedFromTheServerDesc
 
-    private val _userAgentDesc = MutableStateFlow("")
-    val userAgentDesc =
-        _userAgentDesc.asStateFlow()
+    private val _userAgentDesc = mutableStateOf("")
+    val userAgentDesc = _userAgentDesc
 
-    private val _userAgent = MutableStateFlow("")
-    val userAgent =
-        _userAgent.asStateFlow()
+    private val _userAgent = mutableStateOf("")
+    val userAgent = _userAgent
 
-    private val _refreshingLinks = MutableStateFlow("")
-    val refreshingLinks =
-        _refreshingLinks.asStateFlow()
+    private val _refreshingLinks = mutableStateOf("")
+    val refreshingLinks = _refreshingLinks
 
-    private val _workManagerDesc = MutableStateFlow("")
-    val workManagerDesc =
-        _workManagerDesc.asStateFlow()
+    private val _workManagerDesc = mutableStateOf("")
+    val workManagerDesc = _workManagerDesc
 
-    private val _of = MutableStateFlow("")
-    val of =
-        _of.asStateFlow()
+    private val _of = mutableStateOf("")
+    val of = _of
 
-    private val _linksRefreshed = MutableStateFlow("")
-    val linksRefreshed =
-        _linksRefreshed.asStateFlow()
+    private val _linksRefreshed = mutableStateOf("")
+    val linksRefreshed = _linksRefreshed
 
-    private val _refreshingLinksInfo = MutableStateFlow("")
-    val refreshingLinksInfo =
-        _refreshingLinksInfo.asStateFlow()
+    private val _refreshingLinksInfo = mutableStateOf("")
+    val refreshingLinksInfo = _refreshingLinksInfo
 
-    private val _refreshAllLinksTitlesAndImages = MutableStateFlow("")
-    val refreshAllLinksTitlesAndImages =
-        _refreshAllLinksTitlesAndImages.asStateFlow()
+    private val _refreshAllLinksTitlesAndImages = mutableStateOf("")
+    val refreshAllLinksTitlesAndImages = _refreshAllLinksTitlesAndImages
 
-    private val _refreshAllLinksTitlesAndImagesDesc = MutableStateFlow("")
-    val refreshAllLinksTitlesAndImagesDesc =
-        _refreshAllLinksTitlesAndImagesDesc.asStateFlow()
+    private val _refreshAllLinksTitlesAndImagesDesc = mutableStateOf("")
+    val refreshAllLinksTitlesAndImagesDesc = _refreshAllLinksTitlesAndImagesDesc
 
-    private val _titleCopiedToClipboard = MutableStateFlow("")
-    val titleCopiedToClipboard =
-        _titleCopiedToClipboard.asStateFlow()
+    private val _titleCopiedToClipboard = mutableStateOf("")
+    val titleCopiedToClipboard = _titleCopiedToClipboard
 
-    private val _viewNote = MutableStateFlow("")
-    val viewNote = _viewNote.asStateFlow()
+    private val _viewNote = mutableStateOf("")
+    val viewNote = _viewNote
 
-    private val _rename = MutableStateFlow("")
-    val rename =
-        _rename.asStateFlow()
+    private val _rename = mutableStateOf("")
+    val rename = _rename
 
-    private val _refreshingTitleAndImage = MutableStateFlow("")
-    val refreshingTitleAndImage =
-        _refreshingTitleAndImage.asStateFlow()
+    private val _refreshingTitleAndImage = mutableStateOf("")
+    val refreshingTitleAndImage = _refreshingTitleAndImage
 
-    private val _refreshImageAndTitle = MutableStateFlow("")
-    val refreshImageAndTitle =
-        _refreshImageAndTitle.asStateFlow()
+    private val _refreshImageAndTitle = mutableStateOf("")
+    val refreshImageAndTitle = _refreshImageAndTitle
 
-    private val _unarchive = MutableStateFlow("")
-    val unarchive =
-        _unarchive.asStateFlow()
+    private val _unarchive = mutableStateOf("")
+    val unarchive = _unarchive
 
-    private val _deleteTheNote = MutableStateFlow("")
-    val deleteTheNote =
-        _deleteTheNote.asStateFlow()
+    private val _deleteTheNote = mutableStateOf("")
+    val deleteTheNote = _deleteTheNote
 
-    private val _deleteFolder = MutableStateFlow("")
-    val deleteFolder =
-        _deleteFolder.asStateFlow()
+    private val _deleteFolder = mutableStateOf("")
+    val deleteFolder = _deleteFolder
 
-    private val _deleteLink = MutableStateFlow("")
-    val deleteLink =
-        _deleteLink.asStateFlow()
+    private val _deleteLink = mutableStateOf("")
+    val deleteLink = _deleteLink
 
-    private val _savedNote = MutableStateFlow("")
-    val savedNote =
-        _savedNote.asStateFlow()
+    private val _savedNote = mutableStateOf("")
+    val savedNote = _savedNote
 
-    private val _noteCopiedToClipboard = MutableStateFlow("")
-    val noteCopiedToClipboard =
-        _noteCopiedToClipboard.asStateFlow()
+    private val _noteCopiedToClipboard = mutableStateOf("")
+    val noteCopiedToClipboard = _noteCopiedToClipboard
 
-    private val _youDidNotAddNoteForThis = MutableStateFlow("")
-    val youDidNotAddNoteForThis =
-        _youDidNotAddNoteForThis.asStateFlow()
+    private val _youDidNotAddNoteForThis = mutableStateOf("")
+    val youDidNotAddNoteForThis = _youDidNotAddNoteForThis
 
 
     // TODO()
 
-    private val _sortFoldersBy = MutableStateFlow("")
+    private val _sortFoldersBy = mutableStateOf("")
     val sortFoldersBy =
-        _sortFoldersBy.asStateFlow()
+        _sortFoldersBy
 
-    private val _sortHistoryLinksBy = MutableStateFlow("")
+    private val _sortHistoryLinksBy = mutableStateOf("")
     val sortHistoryLinksBy =
-        _sortHistoryLinksBy.asStateFlow()
+        _sortHistoryLinksBy
 
-    private val _sortBy = MutableStateFlow("")
+    private val _sortBy = mutableStateOf("")
     val sortBy =
-        _sortBy.asStateFlow()
+        _sortBy
 
-    private val _sortSavedLinksBy = MutableStateFlow("")
+    private val _sortSavedLinksBy = mutableStateOf("")
     val sortSavedLinksBy =
-        _sortSavedLinksBy.asStateFlow()
+        _sortSavedLinksBy
 
-    private val _sortImportantLinksBy = MutableStateFlow("")
+    private val _sortImportantLinksBy = mutableStateOf("")
     val sortImportantLinksBy =
-        _sortImportantLinksBy.asStateFlow()
+        _sortImportantLinksBy
 
-    private val _sortBasedOn = MutableStateFlow("")
+    private val _sortBasedOn = mutableStateOf("")
     val sortBasedOn =
-        _sortBasedOn.asStateFlow()
+        _sortBasedOn
 
-    private val _folders = MutableStateFlow("")
+    private val _folders = mutableStateOf("")
     val folders =
-        _folders.asStateFlow()
+        _folders
+
+    private val _addANewLinkInImportantLinks = mutableStateOf("")
+    val addANewLinkInImportantLinks =
+        _addANewLinkInImportantLinks
+
+    private val _addANewLinkInSavedLinks = mutableStateOf("")
+    val addANewLinkInSavedLinks =
+        _addANewLinkInSavedLinks
+
+    private val _addANewLinkIn = mutableStateOf("")
+    val addANewLinkIn =
+        _addANewLinkIn
+
+    private val _addANewLink = mutableStateOf("")
+    val addANewLink =
+        _addANewLink
+
+    private val _linkAddress = mutableStateOf("")
+    val linkAddress =
+        _linkAddress
+
+    private val _titleForTheLink = mutableStateOf("")
+    val titleForTheLink =
+        _titleForTheLink
+
+    private val _noteForSavingTheLink = mutableStateOf("")
+    val noteForSavingTheLink =
+        _noteForSavingTheLink
+
+    private val _titleWillBeAutomaticallyDetected = mutableStateOf("")
+    val titleWillBeAutomaticallyDetected =
+        _titleWillBeAutomaticallyDetected
+
+    private val _addIn = mutableStateOf("")
+    val addIn = _addIn
+
+    private val _savedLinks = mutableStateOf("")
+    val savedLinks = _savedLinks
+
+    private val _importantLinks = mutableStateOf("")
+    val importantLinks = _importantLinks
+
+    private val _forceAutoDetectTitle = mutableStateOf("")
+    val forceAutoDetectTitle = _forceAutoDetectTitle
+
+    private val _cancel = mutableStateOf("")
+    val cancel = _cancel
+
+    private val _save = mutableStateOf("")
+    val save = _save
+
+    private val _thisFolderHasNoSubfolders = mutableStateOf("")
+    val thisFolderHasNoSubfolders = _thisFolderHasNoSubfolders
+
+    private val _saveInThisFolder = mutableStateOf("")
+    val saveInThisFolder = _saveInThisFolder
 
     fun loadStrings(context: Context) {
         viewModelScope.launch {
             awaitAll(
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _general.emit(
+                        _general.value =
                             translationsRepo.getLocalizedStringValueFor(
                                 "general",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -159,14 +192,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                                     it
                                 }
                             }
-                        )
                     } else {
-                        _general.emit(context.getString(R.string.general))
+                        _general.value = (context.getString(R.string.general))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useLanguageStringsFetchedFromTheServer.emit(
+                        _useLanguageStringsFetchedFromTheServer.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "use_language_strings_fetched_from_the_server",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -177,12 +209,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _useLanguageStringsFetchedFromTheServer.emit(context.getString(R.string.use_language_strings_fetched_from_the_server))
+                        _useLanguageStringsFetchedFromTheServer.value =
+                            (context.getString(R.string.use_language_strings_fetched_from_the_server))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useLanguageStringsFetchedFromTheServerDesc.emit(
+                        _useLanguageStringsFetchedFromTheServerDesc.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "use_language_strings_fetched_from_the_server_desc",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -193,12 +226,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _useLanguageStringsFetchedFromTheServerDesc.emit(context.getString(R.string.use_language_strings_fetched_from_the_server_desc))
+                        _useLanguageStringsFetchedFromTheServerDesc.value =
+                            (context.getString(R.string.use_language_strings_fetched_from_the_server_desc))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _userAgentDesc.emit(
+                        _userAgentDesc.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "user_agent_desc",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -209,12 +243,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _userAgentDesc.emit(context.getString(R.string.user_agent_desc))
+                        _userAgentDesc.value = (context.getString(R.string.user_agent_desc))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _userAgent.emit(
+                        _userAgent.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "user_agent",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -225,12 +259,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _userAgent.emit(context.getString(R.string.user_agent))
+                        _userAgent.value = (context.getString(R.string.user_agent))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingLinks.emit(
+                        _refreshingLinks.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refreshing_links",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -241,12 +275,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshingLinks.emit(context.getString(R.string.refreshing_links))
+                        _refreshingLinks.value = (context.getString(R.string.refreshing_links))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _workManagerDesc.emit(
+                        _workManagerDesc.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "work_manager_desc",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -257,12 +291,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _workManagerDesc.emit(context.getString(R.string.work_manager_desc))
+                        _workManagerDesc.value = (context.getString(R.string.work_manager_desc))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linksRefreshed.emit(
+                        _linksRefreshed.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "links_refreshed",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -273,12 +307,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _linksRefreshed.emit(context.getString(R.string.links_refreshed))
+                        _linksRefreshed.value = (context.getString(R.string.links_refreshed))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingLinksInfo.emit(
+                        _refreshingLinksInfo.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refreshing_links_info",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -289,12 +323,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshingLinksInfo.emit(context.getString(R.string.refreshing_links_info))
+                        _refreshingLinksInfo.value =
+                            (context.getString(R.string.refreshing_links_info))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshAllLinksTitlesAndImages.emit(
+                        _refreshAllLinksTitlesAndImages.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refresh_all_links_titles_and_images",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -305,12 +340,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshAllLinksTitlesAndImages.emit(context.getString(R.string.refresh_all_links_titles_and_images))
+                        _refreshAllLinksTitlesAndImages.value =
+                            (context.getString(R.string.refresh_all_links_titles_and_images))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshAllLinksTitlesAndImagesDesc.emit(
+                        _refreshAllLinksTitlesAndImagesDesc.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refresh_all_links_titles_and_images_desc",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -321,12 +357,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshAllLinksTitlesAndImagesDesc.emit(context.getString(R.string.refresh_all_links_titles_and_images_desc))
+                        _refreshAllLinksTitlesAndImagesDesc.value =
+                            (context.getString(R.string.refresh_all_links_titles_and_images_desc))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _of.emit(
+                        _of.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "of",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -337,12 +374,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _of.emit(context.getString(R.string.of))
+                        _of.value = (context.getString(R.string.of))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleCopiedToClipboard.emit(
+                        _titleCopiedToClipboard.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "title_copied_to_clipboard",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -353,12 +390,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _titleCopiedToClipboard.emit(context.getString(R.string.title_copied_to_clipboard))
+                        _titleCopiedToClipboard.value =
+                            (context.getString(R.string.title_copied_to_clipboard))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _viewNote.emit(
+                        _viewNote.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "view_note",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -369,12 +407,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _viewNote.emit(context.getString(R.string.view_note))
+                        _viewNote.value = (context.getString(R.string.view_note))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _rename.emit(
+                        _rename.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "rename",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -385,12 +423,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _rename.emit(context.getString(R.string.rename))
+                        _rename.value = (context.getString(R.string.rename))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingTitleAndImage.emit(
+                        _refreshingTitleAndImage.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refreshing_title_and_image",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -401,12 +439,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshingTitleAndImage.emit(context.getString(R.string.refreshing_title_and_image))
+                        _refreshingTitleAndImage.value =
+                            (context.getString(R.string.refreshing_title_and_image))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshImageAndTitle.emit(
+                        _refreshImageAndTitle.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "refresh_image_and_title",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -417,12 +456,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _refreshImageAndTitle.emit(context.getString(R.string.refresh_image_and_title))
+                        _refreshImageAndTitle.value =
+                            (context.getString(R.string.refresh_image_and_title))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _unarchive.emit(
+                        _unarchive.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "unarchive",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -433,12 +473,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _unarchive.emit(context.getString(R.string.unarchive))
+                        _unarchive.value = (context.getString(R.string.unarchive))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteTheNote.emit(
+                        _deleteTheNote.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "delete_the_note",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -449,12 +489,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _deleteTheNote.emit(context.getString(R.string.delete_the_note))
+                        _deleteTheNote.value = (context.getString(R.string.delete_the_note))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteFolder.emit(
+                        _deleteFolder.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "delete_folder",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -465,12 +505,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _deleteFolder.emit(context.getString(R.string.delete_folder))
+                        _deleteFolder.value = (context.getString(R.string.delete_folder))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteLink.emit(
+                        _deleteLink.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "delete_link",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -481,12 +521,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _deleteLink.emit(context.getString(R.string.delete_link))
+                        _deleteLink.value = (context.getString(R.string.delete_link))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _savedNote.emit(
+                        _savedNote.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "saved_note",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -497,12 +537,12 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _savedNote.emit(context.getString(R.string.saved_note))
+                        _savedNote.value = (context.getString(R.string.saved_note))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noteCopiedToClipboard.emit(
+                        _noteCopiedToClipboard.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "note_copied_to_clipboard",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -513,12 +553,13 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _noteCopiedToClipboard.emit(context.getString(R.string.note_copied_to_clipboard))
+                        _noteCopiedToClipboard.value =
+                            (context.getString(R.string.note_copied_to_clipboard))
                     }
                 },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youDidNotAddNoteForThis.emit(
+                        _youDidNotAddNoteForThis.value = (
                             translationsRepo.getLocalizedStringValueFor(
                                 "you_did_not_add_note_for_this",
                                 SettingsPreference.preferredAppLanguageCode.value
@@ -529,7 +570,8 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                             }
                         )
                     } else {
-                        _youDidNotAddNoteForThis.emit(context.getString(R.string.you_did_not_add_note_for_this))
+                        _youDidNotAddNoteForThis.value =
+                            (context.getString(R.string.you_did_not_add_note_for_this))
                     }
                 },
             )
