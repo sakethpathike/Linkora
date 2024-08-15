@@ -65,6 +65,7 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val refreshAllLinksTitlesAndImagesDesc =
         _refreshAllLinksTitlesAndImagesDesc.asStateFlow()
 
+    // TODO()
     private val _titleCopiedToClipboard = MutableStateFlow("")
     val titleCopiedToClipboard =
         _titleCopiedToClipboard.asStateFlow()
@@ -92,13 +93,6 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val deleteTheNote =
         _deleteTheNote.asStateFlow()
 
-    private val _importantCardText = MutableStateFlow("")
-    val importantCardText =
-        _importantCardText.asStateFlow()
-
-    private val _archiveCardText = MutableStateFlow("")
-    val archiveCardText =
-        _archiveCardText.asStateFlow()
 
     private val _deleteFolder = MutableStateFlow("")
     val deleteFolder =
@@ -316,6 +310,198 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
                         )
                     } else {
                         _of.emit(context.getString(R.string.of))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _titleCopiedToClipboard.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "title_copied_to_clipboard",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.title_copied_to_clipboard)
+                                }
+                            }
+                        )
+                    } else {
+                        _titleCopiedToClipboard.emit(context.getString(R.string.title_copied_to_clipboard))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _viewNote.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "view_note",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.view_note)
+                                }
+                            }
+                        )
+                    } else {
+                        _viewNote.emit(context.getString(R.string.view_note))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _rename.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "rename",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.rename)
+                                }
+                            }
+                        )
+                    } else {
+                        _rename.emit(context.getString(R.string.rename))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshingTitleAndImage.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refreshing_title_and_image",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refreshing_title_and_image)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshingTitleAndImage.emit(context.getString(R.string.refreshing_title_and_image))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _refreshImageAndTitle.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "refresh_image_and_title",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.refresh_image_and_title)
+                                }
+                            }
+                        )
+                    } else {
+                        _refreshImageAndTitle.emit(context.getString(R.string.refresh_image_and_title))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _unarchive.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "unarchive",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.unarchive)
+                                }
+                            }
+                        )
+                    } else {
+                        _unarchive.emit(context.getString(R.string.unarchive))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteTheNote.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "delete_the_note",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.delete_the_note)
+                                }
+                            }
+                        )
+                    } else {
+                        _deleteTheNote.emit(context.getString(R.string.delete_the_note))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteFolder.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "delete_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.delete_folder)
+                                }
+                            }
+                        )
+                    } else {
+                        _deleteFolder.emit(context.getString(R.string.delete_folder))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteLink.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "delete_link",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.delete_link)
+                                }
+                            }
+                        )
+                    } else {
+                        _deleteLink.emit(context.getString(R.string.delete_link))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _savedNote.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "saved_note",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.saved_note)
+                                }
+                            }
+                        )
+                    } else {
+                        _savedNote.emit(context.getString(R.string.saved_note))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noteCopiedToClipboard.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "note_copied_to_clipboard",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.note_copied_to_clipboard)
+                                }
+                            }
+                        )
+                    } else {
+                        _noteCopiedToClipboard.emit(context.getString(R.string.note_copied_to_clipboard))
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _youDidNotAddNoteForThis.emit(
+                            translationsRepo.getLocalizedStringValueFor(
+                                "you_did_not_add_note_for_this",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.you_did_not_add_note_for_this)
+                                }
+                            }
+                        )
+                    } else {
+                        _youDidNotAddNoteForThis.emit(context.getString(R.string.you_did_not_add_note_for_this))
                     }
                 },
             )

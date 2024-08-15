@@ -249,7 +249,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.importantCardText.collectAsStateWithLifecycle().value,
+                            elementName = optionsBtmSheetVM.importantCardText.value,
                             elementImageVector = optionsBtmSheetVM.importantCardIcon.value
                         )
                     }
@@ -266,7 +266,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.archiveCardText.collectAsStateWithLifecycle().value,
+                            elementName = optionsBtmSheetVM.archiveCardText.value,
                             elementImageVector = optionsBtmSheetVM.archiveCardIcon.value
                         )
                     }

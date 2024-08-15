@@ -24,15 +24,19 @@ class OptionsBtmSheetVM @Inject constructor(
     private val foldersRepo: FoldersRepo
 ) : ViewModel() {
     val importantCardIcon = mutableStateOf(Icons.Outlined.Favorite)
+    val importantCardText = mutableStateOf("")
 
     val archiveCardIcon = mutableStateOf(Icons.Outlined.Archive)
+    val archiveCardText = mutableStateOf("")
     suspend fun updateImportantCardData(url: String) {
         if (linksRepo
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
+            importantCardText.value = "Remove from Important Links"
         } else {
             importantCardIcon.value = Icons.Outlined.StarOutline
+            importantCardText.value = "Add to Important Links"
         }
     }
 
@@ -41,8 +45,10 @@ class OptionsBtmSheetVM @Inject constructor(
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
+            archiveCardText.value = "Remove from Archive"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
+            archiveCardText.value = "Move to Archive"
         }
     }
 
@@ -51,8 +57,10 @@ class OptionsBtmSheetVM @Inject constructor(
                 .doesThisArchiveFolderExistsV10(folderID)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
+            archiveCardText.value = "Remove from Archive"
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
+            archiveCardText.value = "Move to Archive"
         }
     }
 }
