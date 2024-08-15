@@ -19,10 +19,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -35,7 +34,8 @@ data class FloatingActionBtnParam @OptIn(ExperimentalMaterial3Api::class) constr
     val shouldDialogForNewLinkAppear: MutableState<Boolean>,
     val isMainFabRotated: MutableState<Boolean>,
     val rotationAnimation: Animatable<Float, AnimationVector1D>,
-    val inASpecificScreen: Boolean
+    val inASpecificScreen: Boolean,
+    val localizedStringsVM: LocalizedStringsVM
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,7 +104,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = stringResource(id = R.string.create_a_new_folder),
+                            text = floatingActionBtnParam.localizedStringsVM.createANewFolder.value,
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
@@ -166,7 +166,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = stringResource(id = R.string.add_a_new_link),
+                            text = floatingActionBtnParam.localizedStringsVM.addANewLink.value,
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,

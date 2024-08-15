@@ -12,16 +12,16 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 
 @Composable
 fun RenameAShelfPanelDialogBox(
     isDialogBoxVisible: MutableState<Boolean>,
-    onRenameClick: (String) -> Unit
+    onRenameClick: (String) -> Unit,
+    localizedStringsVM: LocalizedStringsVM
 ) {
     if (isDialogBoxVisible.value) {
         val newShelfName = rememberSaveable {
@@ -39,7 +39,7 @@ fun RenameAShelfPanelDialogBox(
                     isDialogBoxVisible.value = false
                 }) {
                     Text(
-                        text = stringResource(id = R.string.change_panel_name),
+                        text = localizedStringsVM.changePanelName.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -47,9 +47,8 @@ fun RenameAShelfPanelDialogBox(
             },
             title = {
                 Text(
-                    text = stringResource(id = R.string.edit) + " \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" " + stringResource(
-                        id = R.string.panel_name
-                    ),
+                    text = localizedStringsVM.edit.value + " \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\" " +
+                            localizedStringsVM.panelName.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
@@ -59,7 +58,7 @@ fun RenameAShelfPanelDialogBox(
             text = {
                 OutlinedTextField(label = {
                     Text(
-                        text = stringResource(id = R.string.new_name_for_panel),
+                        text = localizedStringsVM.newNameForPanel.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp
                     )
@@ -77,7 +76,7 @@ fun RenameAShelfPanelDialogBox(
                     isDialogBoxVisible.value = false
                 }) {
                     Text(
-                        text = stringResource(id = R.string.cancel),
+                        text = localizedStringsVM.cancel.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )

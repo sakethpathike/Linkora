@@ -239,6 +239,47 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     private val _areYouSureYouWantToDeleteAllFoldersAndLinks = mutableStateOf("")
     val areYouSureYouWantToDeleteAllFoldersAndLinks = _areYouSureYouWantToDeleteAllFoldersAndLinks
 
+    private val _noActivityFoundToHandleIntent = mutableStateOf("")
+    val noActivityFoundToHandleIntent = _noActivityFoundToHandleIntent
+
+    private val _linkCopiedToTheClipboard = mutableStateOf("")
+    val linkCopiedToTheClipboard = _linkCopiedToTheClipboard
+
+    private val _changePanelName = mutableStateOf("")
+    val changePanelName = _changePanelName
+
+    private val _edit = mutableStateOf("")
+    val edit = _edit
+
+    private val _newNameForPanel = mutableStateOf("")
+    val newNameForPanel = _newNameForPanel
+
+    private val _changeNoteOnly = mutableStateOf("")
+    val changeNoteOnly = _changeNoteOnly
+
+    private val _changeBothNameAndNote = mutableStateOf("")
+    val changeBothNameAndNote = _changeBothNameAndNote
+
+    private val _titleCannotBeEmpty = mutableStateOf("")
+    val titleCannotBeEmpty = _titleCannotBeEmpty
+
+    private val _changeLinkData = mutableStateOf("")
+    val changeLinkData = _changeLinkData
+
+    private val _newName = mutableStateOf("")
+    val newName = _newName
+
+    private val _newTitle = mutableStateOf("")
+    val newTitle = _newTitle
+
+    private val _newNote = mutableStateOf("")
+    val newNote = _newNote
+
+    private val _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote = mutableStateOf("")
+    val leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote =
+        _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote
+
+
     fun loadStrings(context: Context) {
         viewModelScope.launch {
             awaitAll(
