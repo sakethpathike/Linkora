@@ -176,6 +176,69 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     private val _saveInThisFolder = mutableStateOf("")
     val saveInThisFolder = _saveInThisFolder
 
+    private val _addANewPanelToTheShelf = mutableStateOf("")
+    val addANewPanelToTheShelf = _addANewPanelToTheShelf
+
+    private val _panelName = mutableStateOf("")
+    val panelName = _panelName
+
+    private val _addNewPanel = mutableStateOf("")
+    val addNewPanel = _addNewPanel
+
+    private val _folderNameCannnotBeEmpty = mutableStateOf("")
+    val folderNameCannnotBeEmpty = _folderNameCannnotBeEmpty
+
+    private val _folderName = mutableStateOf("")
+    val folderName = _folderName
+
+    private val _noteForCreatingTheFolder = mutableStateOf("")
+    val noteForCreatingTheFolder = _noteForCreatingTheFolder
+
+    private val _createANewFolderIn = mutableStateOf("")
+    val createANewFolderIn = _createANewFolderIn
+
+    private val _createANewFolder = mutableStateOf("")
+    val createANewFolder = _createANewFolder
+
+    private val _create = mutableStateOf("")
+    val create = _create
+
+    private val _areYouSureWantToDelete = mutableStateOf("")
+    val areYouSureWantToDelete = _areYouSureWantToDelete
+
+    private val _permanentlyDeleteThePanel = mutableStateOf("")
+    val permanentlyDeleteThePanel = _permanentlyDeleteThePanel
+
+    private val _onceDeletedThisPanelCannotBeRestarted = mutableStateOf("")
+    val onceDeletedThisPanelCannotBeRestarted = _onceDeletedThisPanelCannotBeRestarted
+
+    private val _deleteIt = mutableStateOf("")
+    val deleteIt = _deleteIt
+
+    private val _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders = mutableStateOf("")
+    val thisFolderDeletionWillAlsoDeleteAllItsInternalFolders = _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders
+
+    private val _areYouSureYouWantToDeleteAllSelectedLinks = mutableStateOf("")
+    val areYouSureYouWantToDeleteAllSelectedLinks = _areYouSureYouWantToDeleteAllSelectedLinks
+
+    private val _areYouSureYouWantToDeleteTheLink = mutableStateOf("")
+    val areYouSureYouWantToDeleteTheLink = _areYouSureYouWantToDeleteTheLink
+
+    private val _areYouSureYouWantToDeleteAllSelectedFolders = mutableStateOf("")
+    val areYouSureYouWantToDeleteAllSelectedFolders = _areYouSureYouWantToDeleteAllSelectedFolders
+
+    private val _areYouSureWantToDeleteThe = mutableStateOf("")
+    val areYouSureWantToDeleteThe = _areYouSureWantToDeleteThe
+
+    private val _folder = mutableStateOf("")
+    val folder = _folder
+
+    private val _areYouSureYouWantToDeleteAllSelectedItems = mutableStateOf("")
+    val areYouSureYouWantToDeleteAllSelectedItems = _areYouSureYouWantToDeleteAllSelectedItems
+
+    private val _areYouSureYouWantToDeleteAllFoldersAndLinks = mutableStateOf("")
+    val areYouSureYouWantToDeleteAllFoldersAndLinks = _areYouSureYouWantToDeleteAllFoldersAndLinks
+
     fun loadStrings(context: Context) {
         viewModelScope.launch {
             awaitAll(

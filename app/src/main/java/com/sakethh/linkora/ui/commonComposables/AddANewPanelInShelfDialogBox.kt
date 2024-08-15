@@ -12,14 +12,14 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 
 
 data class AddANewShelfParam(
     val isDialogBoxVisible: MutableState<Boolean>,
-    val onCreateClick: (shelfName: String, shelfIconName: String) -> Unit
+    val onCreateClick: (shelfName: String, shelfIconName: String) -> Unit,
+    val localizedStringsVM: LocalizedStringsVM
 )
 
 @Composable
@@ -34,7 +34,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
 
         AlertDialog(title = {
             Text(
-                text = stringResource(id = R.string.add_a_new_panel_to_the_shelf),
+                text = addANewShelfParam.localizedStringsVM.addANewPanelToTheShelf.value,
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 22.sp,
                 lineHeight = 28.sp
@@ -48,7 +48,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                     maxLines = 1,
                     label = {
                         Text(
-                            text = stringResource(id = R.string.panel_name),
+                            text = addANewShelfParam.localizedStringsVM.panelName.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
                         )
@@ -71,7 +71,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                 addANewShelfParam.isDialogBoxVisible.value = false
             }) {
                 Text(
-                    text = stringResource(id = R.string.add_new_panel),
+                    text = addANewShelfParam.localizedStringsVM.addNewPanel.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )
@@ -84,7 +84,7 @@ fun AddANewPanelInShelfDialogBox(addANewShelfParam: AddANewShelfParam) {
                     addANewShelfParam.isDialogBoxVisible.value = false
                 }) {
                 Text(
-                    text = stringResource(id = R.string.cancel),
+                    text = addANewShelfParam.localizedStringsVM.cancel.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )

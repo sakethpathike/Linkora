@@ -22,10 +22,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -35,7 +34,8 @@ data class AddNewFolderDialogBoxParam(
     val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
     val inAChildFolderScreen: Boolean,
-    val onFolderCreateClick: (folderName: String, folderNote: String) -> Unit
+    val onFolderCreateClick: (folderName: String, folderNote: String) -> Unit,
+    val localizedStringsVM: LocalizedStringsVM
 )
 
 @Composable
@@ -64,7 +64,7 @@ fun AddNewFolderDialogBox(
                             addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = stringResource(id = R.string.cancel),
+                            text = addNewFolderDialogBoxParam.localizedStringsVM.cancel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -80,7 +80,7 @@ fun AddNewFolderDialogBox(
                             if (folderNameTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.folder_name_cannnot_be_empty),
+                                    addNewFolderDialogBoxParam.localizedStringsVM.folderNameCannnotBeEmpty.value,
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 isFolderCreationInProgress.value = false
@@ -96,7 +96,7 @@ fun AddNewFolderDialogBox(
                             }
                         }) {
                             Text(
-                                text = stringResource(id = R.string.create),
+                                text = addNewFolderDialogBoxParam.localizedStringsVM.create.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -118,7 +118,7 @@ fun AddNewFolderDialogBox(
                             maxLines = 1,
                             label = {
                                 Text(
-                                    text = stringResource(id = R.string.folder_name),
+                                    text = addNewFolderDialogBoxParam.localizedStringsVM.folderName.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -134,7 +134,7 @@ fun AddNewFolderDialogBox(
                             modifier = Modifier.fillMaxWidth(),
                             label = {
                                 Text(
-                                    text = stringResource(id = R.string.note_for_creating_the_folder),
+                                    text = addNewFolderDialogBoxParam.localizedStringsVM.noteForCreatingTheFolder.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -152,11 +152,8 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) stringResource(
-                            id = R.string.create_a_new_folder_in
-                        ) + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else stringResource(
-                            id = R.string.create_a_new_folder
-                        ),
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) addNewFolderDialogBoxParam.localizedStringsVM.createANewFolderIn.value + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else
+                            addNewFolderDialogBoxParam.localizedStringsVM.createANewFolder.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp
