@@ -32,8 +32,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStringsVM
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.SortingBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
@@ -45,7 +46,8 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SortingBottomSheetUI(
-    sortingBottomSheetParam: SortingBottomSheetParam
+    sortingBottomSheetParam: SortingBottomSheetParam,
+    localizedStringsVM: LocalizedStringsVM
 ) {
     val coroutineScope = rememberCoroutineScope()
     val sortingBtmSheetVM: SortingBtmSheetVM = viewModel()
@@ -79,13 +81,13 @@ fun SortingBottomSheetUI(
                 ) {
                     androidx.compose.material3.Text(
                         text = when (sortingBottomSheetParam.sortingBtmSheetType) {
-                            SortingBtmSheetType.COLLECTIONS_SCREEN -> stringResource(id = R.string.sort_folders_by)
-                            SortingBtmSheetType.HISTORY_SCREEN -> stringResource(id = R.string.sort_history_links_by)
-                            SortingBtmSheetType.PARENT_ARCHIVE_SCREEN -> stringResource(id = R.string.sort_by)
-                            SortingBtmSheetType.SAVED_LINKS_SCREEN -> stringResource(id = R.string.sort_saved_links_by)
-                            SortingBtmSheetType.IMPORTANT_LINKS_SCREEN -> stringResource(id = R.string.sort_important_links_by)
+                            SortingBtmSheetType.COLLECTIONS_SCREEN -> localizedStringsVM.sortFoldersBy.collectAsStateWithLifecycle().value
+                            SortingBtmSheetType.HISTORY_SCREEN -> localizedStringsVM.sortHistoryLinksBy.collectAsStateWithLifecycle().value
+                            SortingBtmSheetType.PARENT_ARCHIVE_SCREEN -> localizedStringsVM.sortBy.collectAsStateWithLifecycle().value
+                            SortingBtmSheetType.SAVED_LINKS_SCREEN -> localizedStringsVM.sortSavedLinksBy.collectAsStateWithLifecycle().value
+                            SortingBtmSheetType.IMPORTANT_LINKS_SCREEN -> localizedStringsVM.sortImportantLinksBy.collectAsStateWithLifecycle().value
                             else -> {
-                                stringResource(id = R.string.sort_based_on)
+                                localizedStringsVM.sortBasedOn.collectAsStateWithLifecycle().value
                             }
                         },
                         style = MaterialTheme.typography.titleMedium,
@@ -98,7 +100,7 @@ fun SortingBottomSheetUI(
                     }
                     if ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN) && sortingBottomSheetParam.shouldFoldersSelectionBeVisible.value) {
                         FolderIndividualComponent(
-                            folderName = stringResource(id = R.string.folders),
+                            folderName = localizedStringsVM.folders.collectAsStateWithLifecycle().value,
                             folderNote = "",
                             onMoreIconClick = { },
                             onFolderClick = {
@@ -194,7 +196,7 @@ fun SortingBottomSheetUI(
                     }
                     if (((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && foldersSortingSelectedState.value) || (sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && linksSortingSelectedState.value)) || ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && foldersSortingSelectedState.value) || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && linksSortingSelectedState.value)) {
                         androidx.compose.material3.Text(
-                            text = stringResource(id = R.string.sort_by),
+                            text = localizedStringsVM.sortBy.collectAsStateWithLifecycle().value,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 14.sp,

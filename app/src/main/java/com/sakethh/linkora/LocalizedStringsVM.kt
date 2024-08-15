@@ -65,7 +65,6 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val refreshAllLinksTitlesAndImagesDesc =
         _refreshAllLinksTitlesAndImagesDesc.asStateFlow()
 
-    // TODO()
     private val _titleCopiedToClipboard = MutableStateFlow("")
     val titleCopiedToClipboard =
         _titleCopiedToClipboard.asStateFlow()
@@ -93,7 +92,6 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val deleteTheNote =
         _deleteTheNote.asStateFlow()
 
-
     private val _deleteFolder = MutableStateFlow("")
     val deleteFolder =
         _deleteFolder.asStateFlow()
@@ -114,6 +112,36 @@ class LocalizedStringsVM @Inject constructor(private val translationsRepo: Trans
     val youDidNotAddNoteForThis =
         _youDidNotAddNoteForThis.asStateFlow()
 
+
+    // TODO()
+
+    private val _sortFoldersBy = MutableStateFlow("")
+    val sortFoldersBy =
+        _sortFoldersBy.asStateFlow()
+
+    private val _sortHistoryLinksBy = MutableStateFlow("")
+    val sortHistoryLinksBy =
+        _sortHistoryLinksBy.asStateFlow()
+
+    private val _sortBy = MutableStateFlow("")
+    val sortBy =
+        _sortBy.asStateFlow()
+
+    private val _sortSavedLinksBy = MutableStateFlow("")
+    val sortSavedLinksBy =
+        _sortSavedLinksBy.asStateFlow()
+
+    private val _sortImportantLinksBy = MutableStateFlow("")
+    val sortImportantLinksBy =
+        _sortImportantLinksBy.asStateFlow()
+
+    private val _sortBasedOn = MutableStateFlow("")
+    val sortBasedOn =
+        _sortBasedOn.asStateFlow()
+
+    private val _folders = MutableStateFlow("")
+    val folders =
+        _folders.asStateFlow()
 
     fun loadStrings(context: Context) {
         viewModelScope.launch {
