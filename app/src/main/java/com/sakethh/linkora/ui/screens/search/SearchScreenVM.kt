@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.focus.FocusRequester
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -331,35 +331,35 @@ class SearchScreenVM @Inject constructor(
             SelectedLinkType.HISTORY_LINKS -> {
                 viewModelScope.launch {
                     linksRepo.deleteANoteFromRecentlyVisited(webURL = selectedWebURL)
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
 
             SelectedLinkType.SAVED_LINKS -> {
                 viewModelScope.launch {
                     linksRepo.deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
 
             SelectedLinkType.FOLDER_BASED_LINKS -> {
                 viewModelScope.launch {
                     linksRepo.deleteALinkInfoOfFolders(linkID = selectedLinkID)
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
 
             SelectedLinkType.IMP_LINKS -> {
                 viewModelScope.launch {
                     linksRepo.deleteANoteFromImportantLinks(webURL = selectedWebURL)
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
 
             SelectedLinkType.ARCHIVE_LINKS -> {
                 viewModelScope.launch {
                     linksRepo.deleteANoteFromArchiveLinks(webURL = selectedWebURL)
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
 
@@ -369,7 +369,7 @@ class SearchScreenVM @Inject constructor(
                         folderID = folderID,
                         webURL = selectedWebURL
                     )
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_note))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheNoteSuccessfully.value))
                 }
             }
         }
@@ -552,7 +552,7 @@ class SearchScreenVM @Inject constructor(
                     webURL = selectedWebURL
                 )
                 shouldDeleteBoxAppear.value = false
-                pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
             }
 
             SelectedLinkType.SAVED_LINKS -> {
@@ -561,7 +561,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
                 }
             }
 
@@ -569,7 +569,7 @@ class SearchScreenVM @Inject constructor(
                 viewModelScope.launch {
                     linksRepo.deleteALinkFromLinksTable(selectedLinkID)
                     shouldDeleteBoxAppear.value = false
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
                 }
             }
 
@@ -579,7 +579,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
                 }
             }
 
@@ -589,7 +589,7 @@ class SearchScreenVM @Inject constructor(
                         webURL = selectedWebURL
                     )
                     shouldDeleteBoxAppear.value = false
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
                 }
             }
 
@@ -600,7 +600,7 @@ class SearchScreenVM @Inject constructor(
                             webURL = selectedWebURL, archiveFolderID = folderID
                         )
                     shouldDeleteBoxAppear.value = false
-                    pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
                 }
             }
         }

@@ -449,6 +449,48 @@ object LocalizedStrings : ViewModel() {
     private val _defaultPanelDesc = mutableStateOf("")
     val defaultPanelDesc = _defaultPanelDesc
 
+    private val _archivedFolders = mutableStateOf("")
+    val archivedFolders = _archivedFolders
+
+    private val _archivedLinks = mutableStateOf("")
+    val archivedLinks = _archivedLinks
+
+    private val _history = mutableStateOf("")
+    val history = _history
+
+    private val _linksFromFolders = mutableStateOf("")
+    val linksFromFolders = _linksFromFolders
+
+    private val _searchTitlesToFindLinksAndFolders = mutableStateOf("")
+    val searchTitlesToFindLinksAndFolders = _searchTitlesToFindLinksAndFolders
+
+    private val _searchLinkoraRetrieveAllTheLinksYouSaved = mutableStateOf("")
+    val searchLinkoraRetrieveAllTheLinksYouSaved = _searchLinkoraRetrieveAllTheLinksYouSaved
+
+    private val _noMatchingItemsFoundTryADifferentSearch = mutableStateOf("")
+    val noMatchingItemsFoundTryADifferentSearch = _noMatchingItemsFoundTryADifferentSearch
+
+    private val _fromFolders = mutableStateOf("")
+    val fromFolders = _fromFolders
+
+    private val _fromSavedLinks = mutableStateOf("")
+    val fromSavedLinks = _fromSavedLinks
+
+    private val _fromImportantLinks = mutableStateOf("")
+    val fromImportantLinks = _fromImportantLinks
+
+    private val _linksFromHistory = mutableStateOf("")
+    val linksFromHistory = _linksFromHistory
+
+    private val _linksFromArchive = mutableStateOf("")
+    val linksFromArchive = _linksFromArchive
+
+    private val _fromArchivedFolders = mutableStateOf("")
+    val fromArchivedFolders = _fromArchivedFolders
+
+    private val _noLinksWereFoundInHistory = mutableStateOf("")
+    val noLinksWereFoundInHistory = _noLinksWereFoundInHistory
+
     private val _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks = mutableStateOf("")
     val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =
         _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks
