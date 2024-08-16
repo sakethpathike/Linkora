@@ -80,7 +80,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -100,7 +99,7 @@ import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -283,7 +282,7 @@ fun ParentHomeScreen(
                         }
                     } else {
                         Text(
-                            text = stringResource(id = homeScreenVM.currentPhaseOfTheDay.value),
+                            text = homeScreenVM.currentPhaseOfTheDay.value,
                             style = MaterialTheme.typography.titleLarge,
                             fontSize = 24.sp
                         )
@@ -411,7 +410,7 @@ fun ParentHomeScreen(
                                         .rotate(180f)
                                         .width(56.dp)
                                         .padding(bottom = 2.dp),
-                                    text = stringResource(id = R.string.default_shelf),
+                                    text = LocalizedStrings.defaultShelf.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     maxLines = 1,
                                     textAlign = TextAlign.Center
@@ -505,7 +504,7 @@ fun ParentHomeScreen(
                                                         }.start()
                                                     }) {
                                                     Text(
-                                                        text = stringResource(id = archiveScreenModal.name),
+                                                        text = archiveScreenModal.name,
                                                         style = MaterialTheme.typography.titleLarge,
                                                         fontSize = 18.sp,
                                                         modifier = Modifier.padding(15.dp),
@@ -678,17 +677,17 @@ fun ParentHomeScreen(
                                         Text(text = "• ")
                                         Text(
                                             text = buildAnnotatedString {
-                                                append("${stringResource(id = R.string.to_add_folders_into_this_panel_click_on_the)} ")
+                                                append("${LocalizedStrings.toAddFoldersIntoThisPanelClickOnThe.value} ")
                                                 appendInlineContent("tuneIcon")
-                                                append(" ${stringResource(id = R.string.at_the)} ")
+                                                append(" ${LocalizedStrings.atThe.value} ")
                                                 withStyle(
                                                     style = SpanStyle(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append(stringResource(id = R.string.bottom_of_the_shelf))
+                                                    append(LocalizedStrings.bottomOfTheShelf.value)
                                                 }
-                                                append(stringResource(id = R.string.period))
+                                                append(LocalizedStrings.period.value)
                                             },
                                             inlineContent = mapOf(
                                                 Pair("tuneIcon", InlineTextContent(
@@ -724,19 +723,19 @@ fun ParentHomeScreen(
                                         Text(
                                             text = buildAnnotatedString {
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(stringResource(id = R.string.saved_links))
+                                                    append(LocalizedStrings.savedLinks.value)
                                                 }
-                                                append(" ${stringResource(id = R.string.and)} ")
+                                                append(" ${LocalizedStrings.and.value} ")
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(stringResource(id = R.string.important_links))
+                                                    append(LocalizedStrings.importantLinks.value)
                                                 }
-                                                append(" ${stringResource(id = R.string.can_be_accessed_from_the)} ")
+                                                append(" ${LocalizedStrings.canBeAccessedFromThe.value} ")
                                                 withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("${stringResource(id = R.string.default_panel_desc)} ")
+                                                    append("${LocalizedStrings.defaultPanelDesc.value} ")
                                                 }
                                                 append("(")
                                                 appendInlineContent("defaultSectionIcon")
-                                                append(")${stringResource(id = R.string.period)}")
+                                                append(")${LocalizedStrings.period.value}")
                                             },
                                             inlineContent = mapOf(
                                                 Pair(

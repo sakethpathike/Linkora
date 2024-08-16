@@ -52,14 +52,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
@@ -158,7 +157,7 @@ fun SpecificCollectionScreen(navController: NavController) {
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
     val topBarText = when (SpecificCollectionsScreenVM.screenType.value) {
         SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-            stringResource(id = R.string.important_links)
+            LocalizedStrings.importantLinks.value
         }
 
         SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
@@ -166,7 +165,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         }
 
         SpecificScreenType.SAVED_LINKS_SCREEN -> {
-            stringResource(id = R.string.saved_links)
+            LocalizedStrings.savedLinks.value
         }
 
         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
@@ -698,7 +697,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = stringResource(id = R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage))
+                                DataEmptyScreen(text = LocalizedStrings.thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value)
                             }
                         }
                     }
@@ -807,7 +806,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = stringResource(id = R.string.no_links_were_found))
+                                DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
                             }
                         }
                     }
@@ -920,7 +919,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = stringResource(id = R.string.no_important_links_were_found))
+                                DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
                             }
                         }
                     }
@@ -1078,7 +1077,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             item {
-                                DataEmptyScreen(text = stringResource(id = R.string.no_links_found_in_this_archived_folder))
+                                DataEmptyScreen(text = LocalizedStrings.noLinksFoundInThisArchivedFolder.value)
                             }
                         }
                     }

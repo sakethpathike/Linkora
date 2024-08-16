@@ -68,7 +68,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -76,7 +75,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -252,7 +251,7 @@ fun CollectionsScreen(navController: NavController) {
                                     )
                                 }
                                 Text(
-                                    text = " " + stringResource(id = R.string.folders_selected),
+                                    text = " " + LocalizedStrings.foldersSelected.value,
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp
@@ -260,7 +259,7 @@ fun CollectionsScreen(navController: NavController) {
                             }
                         } else {
                             Text(
-                                text = stringResource(id = R.string.collections),
+                                text = LocalizedStrings.collections.value,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontSize = 24.sp
@@ -315,7 +314,7 @@ fun CollectionsScreen(navController: NavController) {
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Text(
-                                                text = stringResource(id = R.string.important_links),
+                                                text = LocalizedStrings.importantLinks.value,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 16.sp
                                             )
@@ -351,7 +350,7 @@ fun CollectionsScreen(navController: NavController) {
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Text(
-                                                text = stringResource(id = R.string.archive),
+                                                text = LocalizedStrings.archive.value,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 16.sp
                                             )
@@ -390,7 +389,7 @@ fun CollectionsScreen(navController: NavController) {
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Text(
-                                                text = stringResource(id = R.string.saved_links),
+                                                text = LocalizedStrings.savedLinks.value,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 16.sp
                                             )
@@ -430,7 +429,7 @@ fun CollectionsScreen(navController: NavController) {
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically) {
                         Text(
-                            text = stringResource(id = R.string.folders),
+                            text = LocalizedStrings.folders.value,
                             color = MaterialTheme.colorScheme.primary,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
@@ -451,7 +450,7 @@ fun CollectionsScreen(navController: NavController) {
                         } else if (areFoldersSelectable.value && foldersData.isNotEmpty()) {
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Text(
-                                    text = stringResource(id = R.string.select_all_folders),
+                                    text = LocalizedStrings.selectAllFolders.value,
                                     style = MaterialTheme.typography.titleSmall
                                 )
                                 Checkbox(checked = collectionsScreenVM.areAllFoldersChecked.value,
@@ -522,7 +521,7 @@ fun CollectionsScreen(navController: NavController) {
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = stringResource(id = R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links))
+                        DataEmptyScreen(text = LocalizedStrings.noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value)
                     }
                 }
                 item {

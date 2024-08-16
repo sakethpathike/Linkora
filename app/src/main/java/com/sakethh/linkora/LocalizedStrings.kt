@@ -352,6 +352,107 @@ object LocalizedStrings : ViewModel() {
     private val _noFoldersWereArchived = mutableStateOf("")
     val noFoldersWereArchived = _noFoldersWereArchived
 
+    private val _itemsSelected = mutableStateOf("")
+    val itemsSelected = _itemsSelected
+
+    private val _archive = mutableStateOf("")
+    val archive = _archive
+
+    private val _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage = mutableStateOf("")
+    val thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage =
+        _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage
+
+    private val _noLinksWereFound = mutableStateOf("")
+    val noLinksWereFound = _noLinksWereFound
+
+    private val _noImportantLinksWereFound = mutableStateOf("")
+    val noImportantLinksWereFound = _noImportantLinksWereFound
+
+    private val _noLinksFoundInThisArchivedFolder = mutableStateOf("")
+    val noLinksFoundInThisArchivedFolder = _noLinksFoundInThisArchivedFolder
+
+    private val _deletedTheLinkSuccessfully = mutableStateOf("")
+    val deletedTheLinkSuccessfully = _deletedTheLinkSuccessfully
+
+    private val _foldersSelected = mutableStateOf("")
+    val foldersSelected = _foldersSelected
+
+    private val _selectAllFolders = mutableStateOf("")
+    val selectAllFolders = _selectAllFolders
+
+    private val _selectedFoldersArchivedSuccessfully = mutableStateOf("")
+    val selectedFoldersArchivedSuccessfully = _selectedFoldersArchivedSuccessfully
+
+    private val _newLinkAddedToTheFolder = mutableStateOf("")
+    val newLinkAddedToTheFolder = _newLinkAddedToTheFolder
+
+    private val _newLinkAddedToImportantLinks = mutableStateOf("")
+    val newLinkAddedToImportantLinks = _newLinkAddedToImportantLinks
+
+    private val _newLinkAddedToSavedLinks = mutableStateOf("")
+    val newLinkAddedToSavedLinks = _newLinkAddedToSavedLinks
+
+    private val _folderArchivedSuccessfully = mutableStateOf("")
+    val folderArchivedSuccessfully = _folderArchivedSuccessfully
+
+    private val _folderCreatedSuccessfully = mutableStateOf("")
+    val folderCreatedSuccessfully = _folderCreatedSuccessfully
+
+    private val _deletedTheFolder = mutableStateOf("")
+    val deletedTheFolder = _deletedTheFolder
+
+    private val _removedLinkFromImportantLinksSuccessfully = mutableStateOf("")
+    val removedLinkFromImportantLinksSuccessfully = _removedLinkFromImportantLinksSuccessfully
+
+    private val _addedLinkToImportantLinks = mutableStateOf("")
+    val addedLinkToImportantLinks = _addedLinkToImportantLinks
+
+    private val _welcomeBackToLinkora = mutableStateOf("")
+    val welcomeBackToLinkora = _welcomeBackToLinkora
+
+    private val _goodMorning = mutableStateOf("")
+    val goodMorning = _goodMorning
+
+    private val _goodAfternoon = mutableStateOf("")
+    val goodAfternoon = _goodAfternoon
+
+    private val _goodEvening = mutableStateOf("")
+    val goodEvening = _goodEvening
+
+    private val _goodNight = mutableStateOf("")
+    val goodNight = _goodNight
+
+    private val _heyHi = mutableStateOf("")
+    val heyHi = _heyHi
+
+    private val _defaultShelf = mutableStateOf("")
+    val defaultShelf = _defaultShelf
+
+    private val _toAddFoldersIntoThisPanelClickOnThe = mutableStateOf("")
+    val toAddFoldersIntoThisPanelClickOnThe = _toAddFoldersIntoThisPanelClickOnThe
+
+    private val _atThe = mutableStateOf("")
+    val atThe = _atThe
+
+    private val _bottomOfTheShelf = mutableStateOf("")
+    val bottomOfTheShelf = _bottomOfTheShelf
+
+    private val _period = mutableStateOf("")
+    val period = _period
+
+    private val _and = mutableStateOf("")
+    val and = _and
+
+    private val _canBeAccessedFromThe = mutableStateOf("")
+    val canBeAccessedFromThe = _canBeAccessedFromThe
+
+    private val _defaultPanelDesc = mutableStateOf("")
+    val defaultPanelDesc = _defaultPanelDesc
+
+    private val _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks = mutableStateOf("")
+    val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =
+        _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks
+
 
     fun loadStrings(context: Context) {
         viewModelScope.launch {

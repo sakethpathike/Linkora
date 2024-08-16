@@ -21,12 +21,11 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -231,7 +230,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = stringResource(id = R.string.welcome_back_to_linkora))
+                        DataEmptyScreen(text = LocalizedStrings.welcomeBackToLinkora.value)
                     }
                     item {
                         Spacer(modifier = Modifier.height(165.dp))
@@ -328,7 +327,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = stringResource(id = R.string.no_important_links_were_found))
+                        DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
                     }
                 }
             } else {
@@ -484,7 +483,7 @@ fun ChildHomeScreen(
                     }
                 } else {
                     item {
-                        DataEmptyScreen(text = stringResource(id = R.string.no_links_were_found))
+                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
                     }
                 }
             }

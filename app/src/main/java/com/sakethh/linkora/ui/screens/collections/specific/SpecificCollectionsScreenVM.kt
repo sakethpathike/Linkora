@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.UriHandler
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -808,7 +808,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         }
         if (shouldShowToastOnCompletion) {
             viewModelScope.launch {
-                pushAUIEvent(CommonUiEvent.ShowToast(R.string.deleted_the_link_successfully))
+                pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deletedTheLinkSuccessfully.value))
             }
         }
 
@@ -824,7 +824,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         .deleteANoteFromImportantLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     viewModelScope.launch {
-                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deleteTheNote.value))
                     }
                 }
             }
@@ -842,7 +842,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     }
                 }.invokeOnCompletion {
                     viewModelScope.launch {
-                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deleteTheNote.value))
                     }
                 }
             }
@@ -853,7 +853,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                         .deleteALinkInfoFromSavedLinks(webURL = selectedWebURL)
                 }.invokeOnCompletion {
                     viewModelScope.launch {
-                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deleteTheNote.value))
                     }
                 }
             }
@@ -871,7 +871,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
                     }
                 }.invokeOnCompletion {
                     viewModelScope.launch {
-                        pushAUIEvent(CommonUiEvent.ShowToast(R.string.delete_the_note))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.deleteTheNote.value))
                     }
                 }
             }

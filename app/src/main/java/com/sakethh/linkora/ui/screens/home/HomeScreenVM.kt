@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -71,7 +71,7 @@ open class HomeScreenVM @Inject constructor(
     shelfRepo = shelfRepo,
     customWebTab = customWebTab
 ) {
-    val currentPhaseOfTheDay = mutableStateOf(0)
+    val currentPhaseOfTheDay = mutableStateOf("")
 
     val isSelectionModeEnabled = mutableStateOf(false)
 
@@ -135,7 +135,7 @@ open class HomeScreenVM @Inject constructor(
     }
 
     val defaultScreenData =
-        listOf(ArchiveScreenModal(name = R.string.saved_links, screen = { it, _ ->
+        listOf(ArchiveScreenModal(name = LocalizedStrings.savedLinks.value, screen = { it, _ ->
         ChildHomeScreen(
             homeScreenType = HomeScreenType.SAVED_LINKS,
             navController = it,
@@ -143,7 +143,7 @@ open class HomeScreenVM @Inject constructor(
             childFoldersData = emptyList(),
             customWebTab
         )
-        }), ArchiveScreenModal(name = R.string.important_links, screen = { it, _ ->
+        }), ArchiveScreenModal(name = LocalizedStrings.importantLinks.value, screen = { it, _ ->
         ChildHomeScreen(
             homeScreenType = HomeScreenType.IMP_LINKS,
             it,
@@ -173,23 +173,23 @@ open class HomeScreenVM @Inject constructor(
             }, async {
                 when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
                     in 0..11 -> {
-                        currentPhaseOfTheDay.value = R.string.good_morning
+                        currentPhaseOfTheDay.value = LocalizedStrings.goodMorning.value
                     }
 
                     in 12..15 -> {
-                        currentPhaseOfTheDay.value = R.string.good_afternoon
+                        currentPhaseOfTheDay.value = LocalizedStrings.goodAfternoon.value
                     }
 
                     in 16..22 -> {
-                        currentPhaseOfTheDay.value = R.string.good_evening
+                        currentPhaseOfTheDay.value = LocalizedStrings.goodEvening.value
                     }
 
                     in 23 downTo 0 -> {
-                        currentPhaseOfTheDay.value = R.string.good_night
+                        currentPhaseOfTheDay.value = LocalizedStrings.goodNight.value
                     }
 
                     else -> {
-                        currentPhaseOfTheDay.value = R.string.hey_hi
+                        currentPhaseOfTheDay.value = LocalizedStrings.heyHi.value
                     }
                 }
             })
@@ -217,7 +217,9 @@ open class HomeScreenVM @Inject constructor(
                     shouldDeleteBoxAppear.value = false
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
-                            context, R.string.deleted_the_link_successfully, Toast.LENGTH_SHORT
+                            context,
+                            LocalizedStrings.deletedTheLinkSuccessfully.value,
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 }.invokeOnCompletion {
@@ -272,7 +274,7 @@ open class HomeScreenVM @Inject constructor(
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            R.string.deleted_the_note_successfully,
+                            LocalizedStrings.deletedTheNoteSuccessfully.value,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -287,7 +289,7 @@ open class HomeScreenVM @Inject constructor(
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            R.string.deleted_the_note_successfully,
+                            LocalizedStrings.deletedTheNoteSuccessfully.value,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
@@ -302,7 +304,7 @@ open class HomeScreenVM @Inject constructor(
                     withContext(Dispatchers.Main) {
                         Toast.makeText(
                             context,
-                            R.string.deleted_the_note_successfully,
+                            LocalizedStrings.deletedTheNoteSuccessfully.value,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
