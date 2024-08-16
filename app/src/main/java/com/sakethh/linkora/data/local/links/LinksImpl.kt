@@ -1,7 +1,12 @@
 package com.sakethh.linkora.data.local.links
 
 import android.content.Context
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.addedTheUrl
+import com.sakethh.linkora.LocalizedStrings.couldNotRetrieveMetadataNowButLinkoraSavedTheLink
+import com.sakethh.linkora.LocalizedStrings.givenLinkAlreadyExists
+import com.sakethh.linkora.LocalizedStrings.invalidUrl
+import com.sakethh.linkora.LocalizedStrings.movedTheLinkToArchive
+import com.sakethh.linkora.LocalizedStrings.removedTheLinkFromArchive
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -47,7 +52,7 @@ class LinksImpl @Inject constructor(
             }
         ) {
             onTaskCompleted()
-            return CommonUiEvent.ShowToast(R.string.invalid_url)
+            return CommonUiEvent.ShowToast(invalidUrl.value)
         } else if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> linksTable!!.keyOfLinkedFolderV10?.let {
@@ -63,7 +68,7 @@ class LinksImpl @Inject constructor(
             } && !updateExistingLink
         ) {
             onTaskCompleted()
-            return CommonUiEvent.ShowToast(R.string.given_link_already_exists)
+            return CommonUiEvent.ShowToast(givenLinkAlreadyExists.value)
         } else {
 
             suspend fun saveWithGivenData(): CommonUiEvent {
@@ -125,7 +130,7 @@ class LinksImpl @Inject constructor(
                     }
                 }
                 onTaskCompleted()
-                return CommonUiEvent.ShowToast(R.string.could_not_retrieve_metadata_now_but_linkora_saved_the_link)
+                return CommonUiEvent.ShowToast(couldNotRetrieveMetadataNowButLinkoraSavedTheLink.value)
             }
 
 
@@ -295,7 +300,7 @@ class LinksImpl @Inject constructor(
                             }
                         }
                         onTaskCompleted()
-                        return CommonUiEvent.ShowToast(R.string.added_the_url)
+                        return CommonUiEvent.ShowToast(addedTheUrl.value)
                     }
                 }
             }
@@ -418,7 +423,7 @@ class LinksImpl @Inject constructor(
                     }
 
                     onTaskCompleted()
-                    return CommonUiEvent.ShowToast(R.string.added_the_url)
+                    return CommonUiEvent.ShowToast(addedTheUrl.value)
                 }
             }
         }
@@ -528,14 +533,14 @@ class LinksImpl @Inject constructor(
         context: Context,
         onTaskCompleted: () -> Unit
     ): CommonUiEvent {
-        val toastMsg: Int
+        val toastMsg: String
         if (doesThisExistsInArchiveLinks(webURL = archivedLinks.webURL)) {
             deleteALinkFromArchiveLinksV9(webURL = archivedLinks.webURL)
-            toastMsg = R.string.removed_the_link_from_archive
+            toastMsg = removedTheLinkFromArchive.value
             onTaskCompleted()
         } else {
             addANewLinkToArchiveLink(archivedLinks = archivedLinks)
-            toastMsg = R.string.moved_the_link_to_archive
+            toastMsg = movedTheLinkToArchive.value
             onTaskCompleted()
         }
         OptionsBtmSheetVM(

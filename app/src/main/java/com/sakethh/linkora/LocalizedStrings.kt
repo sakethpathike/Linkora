@@ -15,15 +15,13 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
+
 object LocalizedStrings : ViewModel() {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
     interface TranslationRepoInstance {
         fun getTranslationRepo(): TranslationsRepo
     }
-
-    private val translationsRepo =
-        EntryPoints.get(this, TranslationRepoInstance::class.java).getTranslationRepo()
 
     private val _general = mutableStateOf("")
     val general = _general
@@ -79,8 +77,27 @@ object LocalizedStrings : ViewModel() {
     private val _unarchive = mutableStateOf("")
     val unarchive = _unarchive
 
+    private val _invalidUrl = mutableStateOf("")
+    val invalidUrl = _invalidUrl
+
+    private val _givenLinkAlreadyExists = mutableStateOf("")
+    val givenLinkAlreadyExists = _givenLinkAlreadyExists
+
+    private val _couldNotRetrieveMetadataNowButLinkoraSavedTheLink = mutableStateOf("")
+    val couldNotRetrieveMetadataNowButLinkoraSavedTheLink =
+        _couldNotRetrieveMetadataNowButLinkoraSavedTheLink
+
     private val _deleteTheNote = mutableStateOf("")
     val deleteTheNote = _deleteTheNote
+
+    private val _addedTheUrl = mutableStateOf("")
+    val addedTheUrl = _addedTheUrl
+
+    private val _removedTheLinkFromArchive = mutableStateOf("")
+    val removedTheLinkFromArchive = _removedTheLinkFromArchive
+
+    private val _movedTheLinkToArchive = mutableStateOf("")
+    val movedTheLinkToArchive = _movedTheLinkToArchive
 
     private val _deleteFolder = mutableStateOf("")
     val deleteFolder = _deleteFolder
@@ -756,6 +773,10 @@ object LocalizedStrings : ViewModel() {
 
 
     fun loadStrings(context: Context) {
+
+        val translationsRepo =
+            EntryPoints.get(context.applicationContext, TranslationRepoInstance::class.java)
+                .getTranslationRepo()
         viewModelScope.launch {
             awaitAll(
                 async {
