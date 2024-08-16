@@ -491,6 +491,75 @@ object LocalizedStrings : ViewModel() {
     private val _noLinksWereFoundInHistory = mutableStateOf("")
     val noLinksWereFoundInHistory = _noLinksWereFoundInHistory
 
+    private val _headsUp = mutableStateOf("")
+    val headsUp = _headsUp
+
+    private val _youAlreadyHaveLinksSaved = mutableStateOf("")
+    val youAlreadyHaveLinksSaved = _youAlreadyHaveLinksSaved
+
+    private val _exportData = mutableStateOf("")
+    val exportData = _exportData
+
+    private val _importDataAndKeepTheExistingData = mutableStateOf("")
+    val importDataAndKeepTheExistingData = _importDataAndKeepTheExistingData
+
+    private val _importDataExportAndDeleteTheExistingData = mutableStateOf("")
+    val importDataExportAndDeleteTheExistingData = _importDataExportAndDeleteTheExistingData
+
+    private val _importDataAndDeleteTheExistingData = mutableStateOf("")
+    val importDataAndDeleteTheExistingData = _importDataAndDeleteTheExistingData
+
+    private val _incompatibleFileType = mutableStateOf("")
+    val incompatibleFileType = _incompatibleFileType
+
+    private val _dataConversionFailed = mutableStateOf("")
+    val dataConversionFailed = _dataConversionFailed
+
+    private val _selectedFileDoesNotMatchLinkoraSchema = mutableStateOf("")
+    val selectedFileDoesNotMatchLinkoraSchema = _selectedFileDoesNotMatchLinkoraSchema
+
+    private val _thereWasAnIssueImportingTheLinks = mutableStateOf("")
+    val thereWasAnIssueImportingTheLinks = _thereWasAnIssueImportingTheLinks
+
+    private val _chooseAnotherFile = mutableStateOf("")
+    val chooseAnotherFile = _chooseAnotherFile
+
+    private val _permissionDeniedTitle = mutableStateOf("")
+    val permissionDeniedTitle = _permissionDeniedTitle
+
+    private val _permissionIsDeniedDesc = mutableStateOf("")
+    val permissionIsDeniedDesc = _permissionIsDeniedDesc
+
+    private val _goToSettings = mutableStateOf("")
+    val goToSettings = _goToSettings
+
+    private val _retrievingLatestInformation = mutableStateOf("")
+    val retrievingLatestInformation = _retrievingLatestInformation
+
+    private val _newUpdateIsAvailable = mutableStateOf("")
+    val newUpdateIsAvailable = _newUpdateIsAvailable
+
+    private val _currentVersion = mutableStateOf("")
+    val currentVersion = _currentVersion
+
+    private val _latestVersion = mutableStateOf("")
+    val latestVersion = _latestVersion
+
+    private val _linkora = mutableStateOf("")
+    val linkora = _linkora
+
+    private val _releasePageOnGithub = mutableStateOf("")
+    val releasePageOnGithub = _releasePageOnGithub
+
+    private val _redirectToLatestReleasePage = mutableStateOf("")
+    val redirectToLatestReleasePage = _redirectToLatestReleasePage
+
+    private val _download = mutableStateOf("")
+    val download = _download
+
+    private val _beta = mutableStateOf("")
+    val beta = _beta
+
     private val _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks = mutableStateOf("")
     val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =
         _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks

@@ -4,22 +4,22 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.LocalizedStrings.chooseAnotherFile
+import com.sakethh.linkora.LocalizedStrings.selectedFileDoesNotMatchLinkoraSchema
+import com.sakethh.linkora.LocalizedStrings.thereWasAnIssueImportingTheLinks
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.serialization.SerializationException
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ImportExceptionDialogBox(
     isVisible: MutableState<Boolean>,
@@ -31,9 +31,9 @@ fun ImportExceptionDialogBox(
             AlertDialog(title = {
                 Text(
                     text = when (exceptionType.value) {
-                        IllegalArgumentException().toString() -> stringResource(id = R.string.incompatible_file_type)
+                        IllegalArgumentException().toString() -> LocalizedStrings.incompatibleFileType.value
 
-                        SerializationException().toString() -> stringResource(id = R.string.data_conversion_failed)
+                        SerializationException().toString() -> LocalizedStrings.dataConversionFailed.value
                         else -> ""
                     },
                     style = MaterialTheme.typography.titleMedium,
@@ -44,9 +44,9 @@ fun ImportExceptionDialogBox(
             }, text = {
                 Text(
                     text = when (exceptionType.value) {
-                        IllegalArgumentException().toString() -> stringResource(id = R.string.selected_file_does_not_match_Linkora_schema)
+                        IllegalArgumentException().toString() -> selectedFileDoesNotMatchLinkoraSchema.value
 
-                        SerializationException().toString() -> stringResource(id = R.string.there_was_an_issue_importing_the_links)
+                        SerializationException().toString() -> thereWasAnIssueImportingTheLinks.value
                         else -> ""
                     },
                     style = MaterialTheme.typography.titleSmall,
@@ -64,7 +64,7 @@ fun ImportExceptionDialogBox(
                         onClick()
                     }) {
                     Text(
-                        text = stringResource(id = R.string.choose_another_file),
+                        text = chooseAnotherFile.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -78,7 +78,7 @@ fun ImportExceptionDialogBox(
                         isVisible.value = false
                     }) {
                     Text(
-                        text = stringResource(id = R.string.cancel),
+                        text = LocalizedStrings.cancel.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )

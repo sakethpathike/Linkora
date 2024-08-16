@@ -18,11 +18,13 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.cancel
+import com.sakethh.linkora.LocalizedStrings.goToSettings
+import com.sakethh.linkora.LocalizedStrings.permissionDeniedTitle
+import com.sakethh.linkora.LocalizedStrings.permissionIsDeniedDesc
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -42,7 +44,7 @@ fun PermissionDialog(
             ) {
                 Column {
                     Text(
-                        text = stringResource(id = R.string.permission_denied_title),
+                        text = permissionDeniedTitle.value,
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
@@ -51,7 +53,7 @@ fun PermissionDialog(
                         textAlign = TextAlign.Start
                     )
                     Text(
-                        text = stringResource(id = R.string.permission_is_denied_desc),
+                        text = permissionIsDeniedDesc.value,
                         color = AlertDialogDefaults.titleContentColor,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -72,7 +74,7 @@ fun PermissionDialog(
                             onClick()
                         }) {
                         Text(
-                            text = stringResource(id = R.string.go_to_settings),
+                            text = goToSettings.value,
                             color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
@@ -95,7 +97,7 @@ fun PermissionDialog(
                             isVisible.value = false
                         }) {
                         Text(
-                            text = stringResource(id = R.string.cancel),
+                            text = cancel.value,
                             color = MaterialTheme.colorScheme.secondary,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp

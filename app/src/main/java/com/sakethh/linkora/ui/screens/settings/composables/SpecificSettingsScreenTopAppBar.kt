@@ -20,11 +20,10 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.beta
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsSections
@@ -59,7 +58,7 @@ fun SpecificSettingsScreenTopAppBar(
                         )
                         if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
                             Text(
-                                text = stringResource(id = R.string.beta),
+                                text = beta.value,
                                 color = MaterialTheme.colorScheme.onPrimary,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontSize = 15.sp,

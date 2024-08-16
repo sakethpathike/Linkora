@@ -21,12 +21,17 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.currentVersion
+import com.sakethh.linkora.LocalizedStrings.download
+import com.sakethh.linkora.LocalizedStrings.latestVersion
+import com.sakethh.linkora.LocalizedStrings.linkora
+import com.sakethh.linkora.LocalizedStrings.newUpdateIsAvailable
+import com.sakethh.linkora.LocalizedStrings.redirectToLatestReleasePage
+import com.sakethh.linkora.LocalizedStrings.releasePageOnGithub
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
@@ -48,7 +53,7 @@ fun SettingsNewVersionUpdateBtmContent(
     ) {
         item {
             Text(
-                text = stringResource(id = R.string.new_update_is_available),
+                text = newUpdateIsAvailable.value,
                 style = MaterialTheme.typography.titleLarge,
                 fontSize = 24.sp,
                 textAlign = TextAlign.Start,
@@ -58,14 +63,14 @@ fun SettingsNewVersionUpdateBtmContent(
         }
         item {
             VersionCardForBtmSheetContent(
-                title = stringResource(id = R.string.current_version),
+                title = currentVersion.value,
                 value = SettingsScreenVM.APP_VERSION_NAME
             )
         }
         if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
             item {
                 VersionCardForBtmSheetContent(
-                    title = stringResource(id = R.string.latest_version),
+                    title = latestVersion.value,
                     value = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName
                 )
             }
@@ -90,9 +95,8 @@ fun SettingsNewVersionUpdateBtmContent(
                     coroutineScope.launch {
                         settingsScreenVM.openInWeb(
                             recentlyVisitedData = RecentlyVisited(
-                                title = context.getString(R.string.app_name) + " ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} " + context.getString(
-                                    R.string.release_page_on_gitHub
-                                ),
+                                title = linkora.value + " ${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName} " +
+                                        releasePageOnGithub.value,
                                 webURL = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releasePageURL,
                                 baseURL = "github.com",
                                 imgURL = "it.imgURL",
@@ -104,7 +108,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     }
                 }) {
                 Text(
-                    text = stringResource(id = R.string.redirect_to_latest_release_page),
+                    text = redirectToLatestReleasePage.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center,
@@ -136,7 +140,7 @@ fun SettingsNewVersionUpdateBtmContent(
                     }?.directDownloadURL?.let { uriHandler.openUri(it) }
                 }) {
                 Text(
-                    text = stringResource(id = R.string.download),
+                    text = download.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Center, lineHeight = 18.sp,

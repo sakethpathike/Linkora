@@ -18,11 +18,10 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -58,7 +57,7 @@ fun ImportConflictBtmSheet(
                     }
                 }) {
                 Text(
-                    text = stringResource(id = R.string.heads_up),
+                    text = LocalizedStrings.headsUp.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     modifier = Modifier.padding(start = 20.dp, end = 20.dp),
@@ -66,7 +65,7 @@ fun ImportConflictBtmSheet(
                     textAlign = TextAlign.Start
                 )
                 Text(
-                    text = stringResource(id = R.string.you_already_have_links_saved),
+                    text = LocalizedStrings.youAlreadyHaveLinksSaved.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 20.dp, top = 20.dp, end = 20.dp),
@@ -89,7 +88,7 @@ fun ImportConflictBtmSheet(
                         )
                     }) {
                     Text(
-                        text = stringResource(id = R.string.export_data),
+                        text = LocalizedStrings.exportData.value,
                         color = MaterialTheme.colorScheme.secondary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
@@ -109,7 +108,7 @@ fun ImportConflictBtmSheet(
                         onMergeClick()
                     }) {
                     Text(
-                        text = stringResource(id = R.string.import_data_and_keep_the_existing_data),
+                        text = LocalizedStrings.importDataAndKeepTheExistingData.value,
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -131,7 +130,7 @@ fun ImportConflictBtmSheet(
                         onExportAndThenImportClick()
                     }) {
                     Text(
-                        text = stringResource(id = R.string.import_data_export_and_delete_the_existing_data),
+                        text = LocalizedStrings.importDataExportAndDeleteTheExistingData.value,
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,
@@ -154,7 +153,7 @@ fun ImportConflictBtmSheet(
                         onDeleteExistingDataClick()
                     }) {
                     Text(
-                        text = stringResource(id = R.string.import_data_and_delete_the_existing_data),
+                        text = LocalizedStrings.importDataAndDeleteTheExistingData.value,
                         color = MaterialTheme.colorScheme.onPrimary,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp,

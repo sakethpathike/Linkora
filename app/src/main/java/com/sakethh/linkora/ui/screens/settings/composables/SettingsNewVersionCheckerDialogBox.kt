@@ -19,18 +19,16 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.cancel
+import com.sakethh.linkora.LocalizedStrings.retrievingLatestInformation
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
-@Preview
 @Composable
 fun SettingsNewVersionCheckerDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean> = mutableStateOf(
@@ -58,7 +56,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             strokeWidth = 4.dp
                         )
                         Text(
-                            text = stringResource(id = R.string.retrieving_latest_information),
+                            text = retrievingLatestInformation.value,
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
@@ -76,7 +74,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = stringResource(id = R.string.cancel),
+                            text = cancel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
