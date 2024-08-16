@@ -24,7 +24,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -34,8 +34,7 @@ data class AddNewFolderDialogBoxParam(
     val newFolderData: (String, Long) -> Unit = { folderName, folderID -> },
     val onCreated: () -> Unit = {},
     val inAChildFolderScreen: Boolean,
-    val onFolderCreateClick: (folderName: String, folderNote: String) -> Unit,
-    val localizedStringsVM: LocalizedStringsVM
+    val onFolderCreateClick: (folderName: String, folderNote: String) -> Unit
 )
 
 @Composable
@@ -64,7 +63,7 @@ fun AddNewFolderDialogBox(
                             addNewFolderDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = addNewFolderDialogBoxParam.localizedStringsVM.cancel.value,
+                            text = LocalizedStrings.cancel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -80,7 +79,7 @@ fun AddNewFolderDialogBox(
                             if (folderNameTextFieldValue.value.isEmpty()) {
                                 Toast.makeText(
                                     context,
-                                    addNewFolderDialogBoxParam.localizedStringsVM.folderNameCannnotBeEmpty.value,
+                                    LocalizedStrings.folderNameCannnotBeEmpty.value,
                                     Toast.LENGTH_SHORT
                                 ).show()
                                 isFolderCreationInProgress.value = false
@@ -96,7 +95,7 @@ fun AddNewFolderDialogBox(
                             }
                         }) {
                             Text(
-                                text = addNewFolderDialogBoxParam.localizedStringsVM.create.value,
+                                text = LocalizedStrings.create.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 16.sp
                             )
@@ -118,7 +117,7 @@ fun AddNewFolderDialogBox(
                             maxLines = 1,
                             label = {
                                 Text(
-                                    text = addNewFolderDialogBoxParam.localizedStringsVM.folderName.value,
+                                    text = LocalizedStrings.folderName.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -134,7 +133,7 @@ fun AddNewFolderDialogBox(
                             modifier = Modifier.fillMaxWidth(),
                             label = {
                                 Text(
-                                    text = addNewFolderDialogBoxParam.localizedStringsVM.noteForCreatingTheFolder.value,
+                                    text = LocalizedStrings.noteForCreatingTheFolder.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 12.sp
                                 )
@@ -152,8 +151,8 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) addNewFolderDialogBoxParam.localizedStringsVM.createANewFolderIn.value + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else
-                            addNewFolderDialogBoxParam.localizedStringsVM.createANewFolder.value,
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewFolderIn.value + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else
+                            LocalizedStrings.createANewFolder.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp

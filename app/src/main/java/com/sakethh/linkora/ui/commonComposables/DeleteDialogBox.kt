@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -31,8 +31,7 @@ data class DeleteDialogBoxParam(
     val onDeleted: () -> Unit = {},
     val totalIds: MutableLongState = mutableLongStateOf(0),
     val folderName: MutableState<String> = mutableStateOf(CollectionsScreenVM.selectedFolderData.value.folderName),
-    val areFoldersSelectable: Boolean = false,
-    val localizedStringsVM: LocalizedStringsVM
+    val areFoldersSelectable: Boolean = false
 )
 
 @Composable
@@ -53,7 +52,7 @@ fun DeleteDialogBox(
                             deleteDialogBoxParam.onDeleted()
                         }) {
                         Text(
-                            text = deleteDialogBoxParam.localizedStringsVM.deleteIt.value,
+                            text = LocalizedStrings.deleteIt.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -67,7 +66,7 @@ fun DeleteDialogBox(
                             deleteDialogBoxParam.shouldDialogBoxAppear.value = false
                         }) {
                         Text(
-                            text = deleteDialogBoxParam.localizedStringsVM.cancel.value,
+                            text = LocalizedStrings.cancel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -75,16 +74,16 @@ fun DeleteDialogBox(
                 }, title = {
                     Text(
                         text = if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK && deleteDialogBoxParam.areFoldersSelectable)
-                            deleteDialogBoxParam.localizedStringsVM.areYouSureYouWantToDeleteAllSelectedLinks.value
+                            LocalizedStrings.areYouSureYouWantToDeleteAllSelectedLinks.value
                         else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.LINK)
-                            deleteDialogBoxParam.localizedStringsVM.areYouSureYouWantToDeleteTheLink.value
+                            LocalizedStrings.areYouSureYouWantToDeleteTheLink.value
                         else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable)
-                            deleteDialogBoxParam.localizedStringsVM.areYouSureYouWantToDeleteAllSelectedFolders.value
+                            LocalizedStrings.areYouSureYouWantToDeleteAllSelectedFolders.value
                         else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER)
-                            deleteDialogBoxParam.localizedStringsVM.areYouSureWantToDeleteThe.value
-                                    + " \"${deleteDialogBoxParam.folderName.value}\" " + deleteDialogBoxParam.localizedStringsVM.folder + "?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA)
-                            deleteDialogBoxParam.localizedStringsVM.areYouSureYouWantToDeleteAllSelectedItems.value
-                        else deleteDialogBoxParam.localizedStringsVM.areYouSureYouWantToDeleteAllFoldersAndLinks.value,
+                            LocalizedStrings.areYouSureWantToDeleteThe.value
+                                    + " \"${deleteDialogBoxParam.folderName.value}\" " + LocalizedStrings.folder + "?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA)
+                            LocalizedStrings.areYouSureYouWantToDeleteAllSelectedItems.value
+                        else LocalizedStrings.areYouSureYouWantToDeleteAllFoldersAndLinks.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 27.sp,
@@ -94,7 +93,7 @@ fun DeleteDialogBox(
                     if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.totalIds.longValue > 0
                     ) {
                         Text(
-                            text = deleteDialogBoxParam.localizedStringsVM.thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value,
+                            text = LocalizedStrings.thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
                             lineHeight = 18.sp,

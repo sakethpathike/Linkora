@@ -78,7 +78,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
@@ -100,7 +100,7 @@ fun AddANewLinkDialogBox(
     onSaveClick: (isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolder: String?, selectedNonDefaultFolderID: Long?) -> Unit,
     isDataExtractingForTheLink: Boolean,
     onFolderCreateClick: (folderName: String, folderNote: String) -> Unit,
-    localizedStringsVM: LocalizedStringsVM
+    localizedStrings: LocalizedStrings
 ) {
     val addANewLinkDialogBoxVM: AddANewLinkDialogBoxVM = hiltViewModel()
     val parentFoldersData = addANewLinkDialogBoxVM.foldersRepo.getAllRootFolders().collectAsState(
@@ -195,10 +195,10 @@ fun AddANewLinkDialogBox(
                             Text(
                                 text =
                                 when (screenType) {
-                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> localizedStringsVM.addANewLinkInImportantLinks.value
-                                    SpecificScreenType.SAVED_LINKS_SCREEN -> localizedStringsVM.addANewLinkInSavedLinks.value
-                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> localizedStringsVM.addANewLinkIn.value
-                                    else -> localizedStringsVM.addANewLink.value
+                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> localizedStrings.addANewLinkInImportantLinks.value
+                                    SpecificScreenType.SAVED_LINKS_SCREEN -> localizedStrings.addANewLinkInSavedLinks.value
+                                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> localizedStrings.addANewLinkIn.value
+                                    else -> localizedStrings.addANewLink.value
                                 } + if (screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else "",
                                 color = AlertDialogDefaults.titleContentColor,
                                 style = MaterialTheme.typography.titleMedium,
@@ -220,7 +220,7 @@ fun AddANewLinkDialogBox(
                                     .fillMaxWidth(),
                                 label = {
                                     Text(
-                                        text = localizedStringsVM.linkAddress.value,
+                                        text = localizedStrings.linkAddress.value,
                                         color = AlertDialogDefaults.textContentColor,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 12.sp
@@ -245,7 +245,7 @@ fun AddANewLinkDialogBox(
                                             .fillMaxWidth(),
                                         label = {
                                             Text(
-                                                text = localizedStringsVM.titleForTheLink.value,
+                                                text = localizedStrings.titleForTheLink.value,
                                                 color = AlertDialogDefaults.textContentColor,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 12.sp
@@ -270,7 +270,7 @@ fun AddANewLinkDialogBox(
                                     .fillMaxWidth(),
                                 label = {
                                     Text(
-                                        text = localizedStringsVM.noteForSavingTheLink.value,
+                                        text = localizedStrings.noteForSavingTheLink.value,
                                         color = AlertDialogDefaults.textContentColor,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 12.sp
@@ -317,7 +317,7 @@ fun AddANewLinkDialogBox(
                                             )
                                         }
                                         Text(
-                                            text = localizedStringsVM.titleWillBeAutomaticallyDetected.value,
+                                            text = localizedStrings.titleWillBeAutomaticallyDetected.value,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 14.sp,
                                             lineHeight = 18.sp,
@@ -332,7 +332,7 @@ fun AddANewLinkDialogBox(
                         item {
                             if (screenType == SpecificScreenType.ROOT_SCREEN || screenType == SpecificScreenType.INTENT_ACTIVITY) {
                                 Text(
-                                    text = localizedStringsVM.addIn.value,
+                                    text = localizedStrings.addIn.value,
                                     color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 18.sp,
@@ -392,7 +392,7 @@ fun AddANewLinkDialogBox(
                                         isDropDownMenuIconClicked.value = false
                                         selectedFolderName.value = "Saved Links"
                                     },
-                                    folderName = localizedStringsVM.savedLinks.value,
+                                    folderName = localizedStrings.savedLinks.value,
                                     imageVector = Icons.Outlined.Link,
                                     isComponentSelected = selectedFolderName.value == "Saved Links"
                                 )
@@ -403,7 +403,7 @@ fun AddANewLinkDialogBox(
                                         selectedFolderName.value = "Important Links"
                                         isDropDownMenuIconClicked.value = false
                                     },
-                                    folderName = localizedStringsVM.importantLinks.value,
+                                    folderName = localizedStrings.importantLinks.value,
                                     imageVector = Icons.Outlined.StarOutline,
                                     isComponentSelected = selectedFolderName.value == "Important Links"
                                 )
@@ -457,7 +457,7 @@ fun AddANewLinkDialogBox(
                                             isAutoDetectTitleEnabled.value = it
                                         })
                                     Text(
-                                        text = localizedStringsVM.forceAutoDetectTitle.value,
+                                        text = localizedStrings.forceAutoDetectTitle.value,
                                         color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
@@ -481,7 +481,7 @@ fun AddANewLinkDialogBox(
                                         shouldDialogBoxAppear.value = false
                                     }) {
                                     Text(
-                                        text = localizedStringsVM.cancel.value,
+                                        text = localizedStrings.cancel.value,
                                         color = MaterialTheme.colorScheme.secondary,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
@@ -508,7 +508,7 @@ fun AddANewLinkDialogBox(
                                         )
                                     }) {
                                     Text(
-                                        text = localizedStringsVM.save.value,
+                                        text = localizedStrings.save.value,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
                                     )
@@ -634,7 +634,7 @@ fun AddANewLinkDialogBox(
                             } else {
                                 item {
                                     Text(
-                                        text = localizedStringsVM.thisFolderHasNoSubfolders.value,
+                                        text = localizedStrings.thisFolderHasNoSubfolders.value,
                                         color = MaterialTheme.colorScheme.onSurface,
                                         style = MaterialTheme.typography.titleMedium,
                                         fontSize = 24.sp,
@@ -659,7 +659,7 @@ fun AddANewLinkDialogBox(
                                             isChildFoldersBottomSheetExpanded.value = false
                                         }) {
                                         Text(
-                                            text = localizedStringsVM.saveInThisFolder.value,
+                                            text = localizedStrings.saveInThisFolder.value,
                                             style = MaterialTheme.typography.titleSmall
                                         )
                                     }

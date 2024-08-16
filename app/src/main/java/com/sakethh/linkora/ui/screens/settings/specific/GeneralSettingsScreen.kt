@@ -58,7 +58,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -76,7 +76,7 @@ import kotlinx.coroutines.flow.collectLatest
 fun GeneralSettingsScreen(
     navController: NavController,
     settingsScreenVM: SettingsScreenVM,
-    localizedStringsVM: LocalizedStringsVM
+    localizedStrings: LocalizedStrings
 ) {
     val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
@@ -89,7 +89,7 @@ fun GeneralSettingsScreen(
         }
     }
     LaunchedEffect(key1 = Unit) {
-        localizedStringsVM.loadStrings(context)
+        localizedStrings.loadStrings(context)
     }
     val successfulRefreshLinkCount =
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
@@ -102,7 +102,7 @@ fun GeneralSettingsScreen(
         RefreshLinksWorker.successfulRefreshLinksCount.collectAsStateWithLifecycle()
 
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = localizedStringsVM.general.collectAsStateWithLifecycle().value,
+        topAppBarText = localizedStrings.general.collectAsStateWithLifecycle().value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -128,9 +128,9 @@ fun GeneralSettingsScreen(
                     if (!SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) {
                         RegularSettingComponent(
                             settingsUIElement = SettingsUIElement(
-                                title = localizedStringsVM.refreshAllLinksTitlesAndImages.collectAsStateWithLifecycle().value,
+                                title = localizedStrings.refreshAllLinksTitlesAndImages.collectAsStateWithLifecycle().value,
                                 doesDescriptionExists = true,
-                                description = localizedStringsVM.refreshAllLinksTitlesAndImagesDesc.collectAsStateWithLifecycle().value,
+                                description = localizedStrings.refreshAllLinksTitlesAndImagesDesc.collectAsStateWithLifecycle().value,
                                 isSwitchNeeded = false,
                                 isIconNeeded = rememberSaveable {
                                     mutableStateOf(true)
@@ -155,9 +155,9 @@ fun GeneralSettingsScreen(
                 ) {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
-                            title = localizedStringsVM.useLanguageStringsFetchedFromTheServer.collectAsStateWithLifecycle().value,
+                            title = localizedStrings.useLanguageStringsFetchedFromTheServer.collectAsStateWithLifecycle().value,
                             doesDescriptionExists = true,
-                            description = localizedStringsVM.useLanguageStringsFetchedFromTheServerDesc.collectAsStateWithLifecycle().value,
+                            description = localizedStrings.useLanguageStringsFetchedFromTheServerDesc.collectAsStateWithLifecycle().value,
                             isSwitchNeeded = true,
                             isIconNeeded = rememberSaveable {
                                 mutableStateOf(true)
@@ -172,7 +172,7 @@ fun GeneralSettingsScreen(
                                 )
                                 SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value =
                                     it
-                                localizedStringsVM.loadStrings(context)
+                                localizedStrings.loadStrings(context)
                             })
                     )
                 }
@@ -190,7 +190,7 @@ fun GeneralSettingsScreen(
                         OutlinedTextField(
                             supportingText = {
                                 Text(
-                                    text = localizedStringsVM.userAgentDesc.collectAsStateWithLifecycle().value,
+                                    text = localizedStrings.userAgentDesc.collectAsStateWithLifecycle().value,
                                     style = MaterialTheme.typography.titleSmall,
                                     lineHeight = 18.sp,
                                     modifier = Modifier.padding(
@@ -209,7 +209,7 @@ fun GeneralSettingsScreen(
                                 .focusRequester(focusRequester),
                             label = {
                                 Text(
-                                    text = localizedStringsVM.userAgent.collectAsStateWithLifecycle().value,
+                                    text = localizedStrings.userAgent.collectAsStateWithLifecycle().value,
                                     style = MaterialTheme.typography.titleSmall
                                 )
                             }
@@ -282,7 +282,7 @@ fun GeneralSettingsScreen(
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                             Text(
-                                text = localizedStringsVM.userAgent.collectAsStateWithLifecycle().value,
+                                text = localizedStrings.userAgent.collectAsStateWithLifecycle().value,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(
                                     start = 15.dp,
@@ -322,7 +322,7 @@ fun GeneralSettingsScreen(
                                 Spacer(modifier = Modifier.height(15.dp))
                             }
                             Text(
-                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) localizedStringsVM.workManagerDesc.collectAsStateWithLifecycle().value else "${successfulRefreshLinkCount.value} " + localizedStringsVM.of.collectAsStateWithLifecycle().value + " ${RefreshLinksWorker.totalLinksCount.intValue} " + localizedStringsVM.linksRefreshed.collectAsStateWithLifecycle().value,
+                                text = if (successfulRefreshLinkCount.value == 0 && RefreshLinksWorker.totalLinksCount.intValue == 0) localizedStrings.workManagerDesc.collectAsStateWithLifecycle().value else "${successfulRefreshLinkCount.value} " + localizedStrings.of.collectAsStateWithLifecycle().value + " ${RefreshLinksWorker.totalLinksCount.intValue} " + localizedStrings.linksRefreshed.collectAsStateWithLifecycle().value,
                                 style = MaterialTheme.typography.titleSmall,
                                 modifier = Modifier.padding(
                                     start = 15.dp,
@@ -363,7 +363,7 @@ fun GeneralSettingsScreen(
                                             )
                                     )
                                     Text(
-                                        text = localizedStringsVM.refreshingLinksInfo.collectAsStateWithLifecycle().value,
+                                        text = localizedStrings.refreshingLinksInfo.collectAsStateWithLifecycle().value,
                                         style = MaterialTheme.typography.titleSmall,
                                         lineHeight = 18.sp,
                                         modifier = Modifier.padding(end = 15.dp)

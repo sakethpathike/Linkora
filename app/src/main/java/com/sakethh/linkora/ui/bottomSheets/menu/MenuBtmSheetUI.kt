@@ -60,7 +60,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -171,7 +171,7 @@ fun MenuBtmSheetUI(
                             localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
                             Toast.makeText(
                                 context,
-                                menuBtmSheetParam.localizedStringsVM.titleCopiedToClipboard.value,
+                                LocalizedStrings.titleCopiedToClipboard.value,
                                 Toast.LENGTH_SHORT
                             )
                                 .show()
@@ -197,7 +197,7 @@ fun MenuBtmSheetUI(
                                 }
                             }
                         },
-                        elementName = menuBtmSheetParam.localizedStringsVM.viewNote.value,
+                        elementName = LocalizedStrings.viewNote.value,
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
                     IndividualMenuComponent(
@@ -211,7 +211,7 @@ fun MenuBtmSheetUI(
                             }
                             menuBtmSheetParam.onRenameClick()
                         },
-                        elementName = menuBtmSheetParam.localizedStringsVM.rename.value,
+                        elementName = LocalizedStrings.rename.value,
                         elementImageVector = Icons.Outlined.DriveFileRenameOutline
                     )
                     if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
@@ -219,7 +219,7 @@ fun MenuBtmSheetUI(
                             onOptionClick = {
                                 Toast.makeText(
                                     context,
-                                    menuBtmSheetParam.localizedStringsVM.refreshingTitleAndImage.value,
+                                    LocalizedStrings.refreshingTitleAndImage.value,
                                     Toast.LENGTH_SHORT
                                 )
                                     .show()
@@ -232,7 +232,7 @@ fun MenuBtmSheetUI(
                                     menuBtmSheetParam.shouldBtmModalSheetBeVisible.value = false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.refreshImageAndTitle.value,
+                            elementName = LocalizedStrings.refreshImageAndTitle.value,
                             elementImageVector = Icons.Outlined.Refresh
                         )
                     }
@@ -283,7 +283,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.unarchive.value,
+                            elementName = LocalizedStrings.unarchive.value,
                             elementImageVector = Icons.Outlined.Unarchive
                         )
                     }
@@ -300,7 +300,7 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = menuBtmSheetParam.localizedStringsVM.deleteTheNote.value,
+                            elementName = LocalizedStrings.deleteTheNote.value,
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
@@ -317,14 +317,14 @@ fun MenuBtmSheetUI(
                                         false
                                 }
                             },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.localizedStringsVM.deleteFolder.value else menuBtmSheetParam.localizedStringsVM.deleteLink.value,
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) LocalizedStrings.deleteFolder.value else LocalizedStrings.deleteLink.value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderDelete else Icons.Outlined.DeleteForever
                         )
                     }
                 } else {
                     if (mutableStateNote.value.isNotEmpty()) {
                         Text(
-                            text = menuBtmSheetParam.localizedStringsVM.savedNote.value,
+                            text = LocalizedStrings.savedNote.value,
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.primary,
                             fontSize = 16.sp,
@@ -342,7 +342,7 @@ fun MenuBtmSheetUI(
                                     Toast
                                         .makeText(
                                             context,
-                                            menuBtmSheetParam.localizedStringsVM.noteCopiedToClipboard.value,
+                                            LocalizedStrings.noteCopiedToClipboard.value,
                                             Toast.LENGTH_SHORT
                                         )
                                         .show()
@@ -361,7 +361,7 @@ fun MenuBtmSheetUI(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = menuBtmSheetParam.localizedStringsVM.youDidNotAddNoteForThis.value,
+                                text = LocalizedStrings.youDidNotAddNoteForThis.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 15.sp,
                                 textAlign = TextAlign.Start,

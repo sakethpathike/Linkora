@@ -21,7 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
@@ -35,7 +35,6 @@ data class FloatingActionBtnParam @OptIn(ExperimentalMaterial3Api::class) constr
     val isMainFabRotated: MutableState<Boolean>,
     val rotationAnimation: Animatable<Float, AnimationVector1D>,
     val inASpecificScreen: Boolean,
-    val localizedStringsVM: LocalizedStringsVM
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -104,7 +103,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = floatingActionBtnParam.localizedStringsVM.createANewFolder.value,
+                            text = LocalizedStrings.createANewFolder.value,
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
@@ -166,7 +165,7 @@ fun FloatingActionBtn(
                         )
                     ) {
                         androidx.compose.material3.Text(
-                            text = floatingActionBtnParam.localizedStringsVM.addANewLink.value,
+                            text = LocalizedStrings.addANewLink.value,
                             color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,

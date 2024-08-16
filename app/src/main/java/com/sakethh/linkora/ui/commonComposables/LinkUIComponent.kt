@@ -46,7 +46,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.CoilImage
 
 
@@ -60,8 +60,7 @@ data class LinkUIComponentParam(
     val onForceOpenInExternalBrowserClicked: () -> Unit,
     val isSelectionModeEnabled: MutableState<Boolean>,
     val isItemSelected: MutableState<Boolean>,
-    val onLongClick: () -> Unit,
-    val localizedStringsVM: LocalizedStringsVM
+    val onLongClick: () -> Unit
 )
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -190,7 +189,7 @@ fun LinkUIComponent(
                             } catch (_: android.content.ActivityNotFoundException) {
                                 Toast.makeText(
                                     context,
-                                    linkUIComponentParam.localizedStringsVM.noActivityFoundToHandleIntent.value,
+                                    LocalizedStrings.noActivityFoundToHandleIntent.value,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -206,7 +205,7 @@ fun LinkUIComponent(
                             )
                             Toast.makeText(
                                 context,
-                                linkUIComponentParam.localizedStringsVM.linkCopiedToTheClipboard.value,
+                                LocalizedStrings.linkCopiedToTheClipboard.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }) {

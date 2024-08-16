@@ -14,13 +14,13 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @Composable
-fun BottomNavigationBar(navController: NavController, localizedStringsVM: LocalizedStringsVM) {
+fun BottomNavigationBar(navController: NavController) {
     val navigationVM: NavigationVM = viewModel()
     val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
     LinkoraTheme {
@@ -48,13 +48,13 @@ fun BottomNavigationBar(navController: NavController, localizedStringsVM: Locali
                     },
                     label = {
                         Text(
-                            text = localizedStringsVM.home.value,
+                            text = LocalizedStrings.home.value,
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )
                     })
             }
-            navigationVM.btmBarList(localizedStringsVM).forEach {
+            navigationVM.btmBarList.forEach {
                 NavigationBarItem(
                     selected = currentRoute == it.navigationRoute.name, onClick = {
                         if (currentRoute != it.navigationRoute.name) {

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
@@ -20,10 +20,10 @@ class SortingBtmSheetVM :
         val sortingType: SortingPreferences,
     )
 
-    val sortingBottomSheetData: (context: Context, localizedStringsVM: LocalizedStringsVM) -> List<SortingBtmSheet> =
-        { context, localizedStringsVM ->
+    val sortingBottomSheetData: (context: Context) -> List<SortingBtmSheet> =
+        { context ->
         listOf(
-            SortingBtmSheet(sortingName = localizedStringsVM.newestToOldest.value, onClick = {
+            SortingBtmSheet(sortingName = LocalizedStrings.newestToOldest.value, onClick = {
                 SettingsPreference.selectedSortingType.value =
                     SortingPreferences.NEW_TO_OLD.name
                 viewModelScope.launch {
@@ -36,7 +36,7 @@ class SortingBtmSheetVM :
                     )
                 }
             }, sortingType = SortingPreferences.NEW_TO_OLD),
-            SortingBtmSheet(sortingName = localizedStringsVM.oldestToNewest.value, onClick = {
+            SortingBtmSheet(sortingName = LocalizedStrings.oldestToNewest.value, onClick = {
                 SettingsPreference.selectedSortingType.value =
                     SortingPreferences.OLD_TO_NEW.name
                 viewModelScope.launch {
@@ -49,7 +49,7 @@ class SortingBtmSheetVM :
                     )
                 }
             }, sortingType = SortingPreferences.OLD_TO_NEW),
-            SortingBtmSheet(sortingName = localizedStringsVM.aToZSequence.value, onClick = {
+            SortingBtmSheet(sortingName = LocalizedStrings.aToZSequence.value, onClick = {
                 SettingsPreference.selectedSortingType.value =
                     SortingPreferences.A_TO_Z.name
                 viewModelScope.launch {
@@ -64,7 +64,7 @@ class SortingBtmSheetVM :
             }, sortingType = SortingPreferences.A_TO_Z),
             SortingBtmSheet(
                 sortingType = SortingPreferences.Z_TO_A,
-                sortingName = localizedStringsVM.ztoASequence.value,
+                sortingName = LocalizedStrings.ztoASequence.value,
                 onClick = {
                     SettingsPreference.selectedSortingType.value =
                         SortingPreferences.Z_TO_A.name

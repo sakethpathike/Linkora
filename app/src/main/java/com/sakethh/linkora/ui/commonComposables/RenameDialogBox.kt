@@ -35,7 +35,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -44,8 +44,7 @@ data class RenameDialogBoxParam(
     val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     val onNoteChangeClick: ((newNote: String) -> Unit),
     val onTitleChangeClick: ((newTitle: String) -> Unit),
-    val existingFolderName: String?,
-    val localizedStringsVM: LocalizedStringsVM
+    val existingFolderName: String?
 )
 
 @Composable
@@ -69,7 +68,7 @@ fun RenameDialogBox(
                     renameDialogBoxParam.onNoteChangeClick(newNote.value)
                 }) {
                     Text(
-                        text = renameDialogBoxParam.localizedStringsVM.changeNoteOnly.value,
+                        text = LocalizedStrings.changeNoteOnly.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -87,13 +86,13 @@ fun RenameDialogBox(
                     } else {
                         Toast.makeText(
                             localContext,
-                            renameDialogBoxParam.localizedStringsVM.titleCannotBeEmpty.value,
+                            LocalizedStrings.titleCannotBeEmpty.value,
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 }) {
                     Text(
-                        text = renameDialogBoxParam.localizedStringsVM.changeBothNameAndNote.value,
+                        text = LocalizedStrings.changeBothNameAndNote.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -105,7 +104,7 @@ fun RenameDialogBox(
                     renameDialogBoxParam.shouldDialogBoxAppear.value = false
                 }) {
                     Text(
-                        text = renameDialogBoxParam.localizedStringsVM.cancel.value,
+                        text = LocalizedStrings.cancel.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -113,9 +112,9 @@ fun RenameDialogBox(
             }, title = {
                 Text(
                     text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK)
-                        renameDialogBoxParam.localizedStringsVM.rename.value
-                                + " \"${renameDialogBoxParam.existingFolderName}\" " + renameDialogBoxParam.localizedStringsVM.folder.value + ":" else
-                        renameDialogBoxParam.localizedStringsVM.changeLinkData.value,
+                        LocalizedStrings.rename.value
+                                + " \"${renameDialogBoxParam.existingFolderName}\" " + LocalizedStrings.folder.value + ":" else
+                        LocalizedStrings.changeLinkData.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
@@ -127,8 +126,8 @@ fun RenameDialogBox(
                         label = {
                             Text(
                                 text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER)
-                                    renameDialogBoxParam.localizedStringsVM.newName.value
-                                else renameDialogBoxParam.localizedStringsVM.newTitle.value,
+                                    LocalizedStrings.newName.value
+                                else LocalizedStrings.newTitle.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 12.sp
                             )
@@ -142,7 +141,7 @@ fun RenameDialogBox(
                     Spacer(modifier = Modifier.height(10.dp))
                     OutlinedTextField(label = {
                         Text(
-                            text = renameDialogBoxParam.localizedStringsVM.newNote.value,
+                            text = LocalizedStrings.newNote.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
                         )
@@ -180,7 +179,7 @@ fun RenameDialogBox(
                                 )
                             }
                             Text(
-                                text = renameDialogBoxParam.localizedStringsVM.leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value,
+                                text = LocalizedStrings.leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 14.sp,
                                 lineHeight = 18.sp,

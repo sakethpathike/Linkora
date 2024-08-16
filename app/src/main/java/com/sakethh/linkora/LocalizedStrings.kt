@@ -7,16 +7,23 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.ifNullOrBlank
-import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-open class LocalizedStringsVM @Inject constructor(private val translationsRepo: TranslationsRepo) :
-    ViewModel() {
+object LocalizedStrings : ViewModel() {
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface TranslationRepoInstance {
+        fun getTranslationRepo(): TranslationsRepo
+    }
 
+    private val translationsRepo =
+        EntryPoints.get(this, TranslationRepoInstance::class.java).getTranslationRepo()
     private val _general = mutableStateOf("")
     val general = _general
 
@@ -305,6 +312,45 @@ open class LocalizedStringsVM @Inject constructor(private val translationsRepo: 
 
     private val _settings = mutableStateOf("")
     val settings = _settings
+
+    private val _links = mutableStateOf("")
+    val links = _links
+
+    private val _selectedFoldersUnarchivedSuccessfully = mutableStateOf("")
+    val selectedFoldersUnarchivedSuccessfully = _selectedFoldersUnarchivedSuccessfully
+
+    private val _selectedLinksDeletedSuccessfully = mutableStateOf("")
+    val selectedLinksDeletedSuccessfully = _selectedLinksDeletedSuccessfully
+
+    private val _selectedFoldersDeletedSuccessfully = mutableStateOf("")
+    val selectedFoldersDeletedSuccessfully = _selectedFoldersDeletedSuccessfully
+
+    private val _selectedLinksUnarchivedSuccessfully = mutableStateOf("")
+    val selectedLinksUnarchivedSuccessfully = _selectedLinksUnarchivedSuccessfully
+
+    private val _linkUnarchivedSuccessfully = mutableStateOf("")
+    val linkUnarchivedSuccessfully = _linkUnarchivedSuccessfully
+
+    private val _linkInfoUpdatedSuccessfully = mutableStateOf("")
+    val linkInfoUpdatedSuccessfully = _linkInfoUpdatedSuccessfully
+
+    private val _folderInfoUpdatedSuccessfully = mutableStateOf("")
+    val folderInfoUpdatedSuccessfully = _folderInfoUpdatedSuccessfully
+
+    private val _archivedLinkDeletedSuccessfully = mutableStateOf("")
+    val archivedLinkDeletedSuccessfully = _archivedLinkDeletedSuccessfully
+
+    private val _deletedTheNoteSuccessfully = mutableStateOf("")
+    val deletedTheNoteSuccessfully = _deletedTheNoteSuccessfully
+
+    private val _folderUnarchivedSuccessfully = mutableStateOf("")
+    val folderUnarchivedSuccessfully = _folderUnarchivedSuccessfully
+
+    private val _noLinksWereArchived = mutableStateOf("")
+    val noLinksWereArchived = _noLinksWereArchived
+
+    private val _noFoldersWereArchived = mutableStateOf("")
+    val noFoldersWereArchived = _noFoldersWereArchived
 
 
     fun loadStrings(context: Context) {

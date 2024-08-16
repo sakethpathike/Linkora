@@ -10,7 +10,7 @@ import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.lifecycle.ViewModel
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 
 
 data class BtmNavigationItem(
@@ -23,28 +23,26 @@ data class BtmNavigationItem(
 class NavigationVM : ViewModel() {
 
 
-    val btmBarList: (localizedStringsVM: LocalizedStringsVM) -> List<BtmNavigationItem> = {
-        listOf(
+    val btmBarList = listOf(
             BtmNavigationItem(
-                itemName = it.search.value,
+                itemName = LocalizedStrings.search.value,
                 selectedIcon = Icons.Filled.Search,
                 nonSelectedIcon = Icons.Outlined.Search,
                 navigationRoute = NavigationRoutes.SEARCH_SCREEN
             ),
             BtmNavigationItem(
-                itemName = it.collections.value,
+                itemName = LocalizedStrings.collections.value,
                 selectedIcon = Icons.Filled.Folder,
                 nonSelectedIcon = Icons.Outlined.Folder,
                 navigationRoute = NavigationRoutes.COLLECTIONS_SCREEN
             ),
             BtmNavigationItem(
-                itemName = it.settings.value,
+                itemName = LocalizedStrings.settings.value,
                 selectedIcon = Icons.Filled.Settings,
                 nonSelectedIcon = Icons.Outlined.Settings,
                 navigationRoute = NavigationRoutes.SETTINGS_SCREEN
             ),
         )
-    }
 
 
     companion object {

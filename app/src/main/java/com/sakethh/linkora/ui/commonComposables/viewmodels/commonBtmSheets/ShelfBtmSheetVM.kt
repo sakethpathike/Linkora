@@ -1,7 +1,7 @@
 package com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets
 
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.data.local.folders.FoldersRepo
@@ -57,7 +57,7 @@ class ShelfBtmSheetVM @Inject constructor(
             Shelf(id = 0L, shelfName = "", shelfIconName = "", folderIds = listOf())
     }
 
-    fun onShelfUiEvent(shelfUIEvent: ShelfUIEvent, localizedStringsVM: LocalizedStringsVM) {
+    fun onShelfUiEvent(shelfUIEvent: ShelfUIEvent) {
         when (shelfUIEvent) {
             is ShelfUIEvent.DeleteAShelfFolder -> {
                 viewModelScope.launch {
@@ -87,7 +87,7 @@ class ShelfBtmSheetVM @Inject constructor(
             is ShelfUIEvent.AddANewShelf -> {
                 viewModelScope.launch {
                     if (shelfRepo.doesThisShelfExists(shelfUIEvent.shelf.shelfName)) {
-                        pushAUIEvent(CommonUiEvent.ShowToast(localizedStringsVM.shelfNameAlreadyExists.value))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.shelfNameAlreadyExists.value))
                     } else {
                         shelfRepo.addANewShelf(shelfUIEvent.shelf)
                     }

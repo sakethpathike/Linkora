@@ -13,21 +13,20 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 data class DeleteAShelfDialogBoxParam(
     val isDialogBoxVisible: MutableState<Boolean>,
-    val onDeleteClick: () -> Unit,
-    val localizedStringsVM: LocalizedStringsVM
+    val onDeleteClick: () -> Unit
 )
 
 @Composable
 fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam) {
     if (deleteAShelfDialogBoxParam.isDialogBoxVisible.value) {
         val title =
-            deleteAShelfDialogBoxParam.localizedStringsVM.areYouSureWantToDelete.value + rememberSaveable(
+            LocalizedStrings.areYouSureWantToDelete.value + rememberSaveable(
             ShelfBtmSheetVM.selectedShelfData.shelfName
         ) {
             mutableStateOf(" \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
@@ -44,7 +43,7 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                             deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                         }) {
                         Text(
-                            text = deleteAShelfDialogBoxParam.localizedStringsVM.permanentlyDeleteThePanel.value,
+                            text = LocalizedStrings.permanentlyDeleteThePanel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -58,7 +57,7 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                             deleteAShelfDialogBoxParam.isDialogBoxVisible.value = false
                         }) {
                         Text(
-                            text = deleteAShelfDialogBoxParam.localizedStringsVM.cancel.value,
+                            text = LocalizedStrings.cancel.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -72,7 +71,7 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                     )
                 }, text = {
                     Text(
-                        text = deleteAShelfDialogBoxParam.localizedStringsVM.onceDeletedThisPanelCannotBeRestarted.value,
+                        text = LocalizedStrings.onceDeletedThisPanelCannotBeRestarted.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 14.sp,
                         lineHeight = 18.sp,

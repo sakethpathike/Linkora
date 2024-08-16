@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
@@ -28,7 +28,7 @@ fun MainNavigation(
     navController: NavHostController,
     customWebTab: CustomWebTab,
     settingsScreenVM: SettingsScreenVM,
-    localizedStringsVM: LocalizedStringsVM
+    localizedStrings: LocalizedStrings
 ) {
 
     NavHost(
@@ -76,7 +76,7 @@ fun MainNavigation(
             GeneralSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
-                localizedStringsVM
+                localizedStrings
             )
         }
         composable(route = NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name) {
@@ -98,7 +98,7 @@ fun MainNavigation(
             )
         }
         composable(route = NavigationRoutes.SHELF_SCREEN.name) {
-            ShelfPanelsScreen(navController, localizedStringsVM)
+            ShelfPanelsScreen(navController, localizedStrings)
         }
         composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
             SpecificPanelScreen(navController)

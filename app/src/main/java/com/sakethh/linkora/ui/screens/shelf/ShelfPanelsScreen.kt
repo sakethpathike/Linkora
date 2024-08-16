@@ -32,7 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.LocalizedStringsVM
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
@@ -49,7 +49,7 @@ import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShelfPanelsScreen(navController: NavController, localizedStringsVM: LocalizedStringsVM) {
+fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedStrings) {
     val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
     val shelfData = shelfBtmSheetVM.shelfData.collectAsStateWithLifecycle().value
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
@@ -145,9 +145,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStringsVM: Localize
                             folderIds = emptyList()
                         )
                     ),
-                    localizedStringsVM
+                    localizedStrings
                 )
-            }, localizedStringsVM
+            }, localizedStrings
         )
     )
 
@@ -158,9 +158,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStringsVM: Localize
                 shelfBtmSheetVM.onShelfUiEvent(
                     ShelfUIEvent.DeleteAShelf(
                         ShelfBtmSheetVM.selectedShelfData
-                    ), localizedStringsVM
+                    ), localizedStrings
                 )
-            }, localizedStringsVM
+            }, localizedStrings
         )
     )
     RenameAShelfPanelDialogBox(
@@ -169,9 +169,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStringsVM: Localize
             shelfBtmSheetVM.onShelfUiEvent(
                 ShelfUIEvent.UpdateAShelfName(
                     it, ShelfBtmSheetVM.selectedShelfData.id
-                ), localizedStringsVM
+                ), localizedStrings
             )
-        }, localizedStringsVM
+        }, localizedStrings
     )
     BackHandler {
         HomeScreenVM.initialStart = true
