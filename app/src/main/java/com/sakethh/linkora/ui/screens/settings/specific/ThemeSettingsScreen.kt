@@ -17,11 +17,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -40,13 +39,13 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.theme),
+        topAppBarText = LocalizedStrings.theme.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -61,7 +60,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                 item(key = "Follow System Theme") {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
-                            title = stringResource(id = R.string.follow_system_theme),
+                            title = LocalizedStrings.followSystemTheme.value,
                             doesDescriptionExists = false,
                             isSwitchNeeded = true,
                             description = null,
@@ -86,7 +85,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                 item(key = "Use Dark Mode") {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
-                            title = stringResource(id = R.string.use_dark_mode),
+                            title = LocalizedStrings.useDarkMode.value,
                             doesDescriptionExists = false,
                             description = null,
                             isSwitchNeeded = true,
@@ -111,9 +110,9 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                 item(key = "Use dynamic theming") {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
-                            title = stringResource(id = R.string.use_dynamic_theming),
+                            title = LocalizedStrings.useDynamicTheming.value,
                             doesDescriptionExists = true,
-                            description = stringResource(id = R.string.use_dynamic_theming_desc),
+                            description = LocalizedStrings.useDynamicThemingDesc.value,
                             isSwitchNeeded = true,
                             isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                             onSwitchStateChange = {

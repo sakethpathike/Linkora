@@ -27,13 +27,16 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.data
+import com.sakethh.linkora.LocalizedStrings.deletedEntireDataFromTheLocalDatabase
+import com.sakethh.linkora.LocalizedStrings.importFeatureIsPolishedNotPerfectDesc
+import com.sakethh.linkora.LocalizedStrings.permissionRequiredToWriteTheData
+import com.sakethh.linkora.LocalizedStrings.successfullyExported
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
@@ -55,7 +58,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -91,7 +94,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             file.delete()
         }
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.data),
+        topAppBarText = data.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -107,7 +110,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             }
             item {
                 Text(
-                    text = stringResource(id = R.string.import_feature_is_polished_not_perfect_desc),
+                    text = importFeatureIsPolishedNotPerfectDesc.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 15.sp,
                     lineHeight = 20.sp,
@@ -179,7 +182,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                             )
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.successfully_exported),
+                                successfullyExported.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -188,7 +191,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                             runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.successfully_exported),
+                                successfullyExported.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -204,7 +207,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                     )
                     Toast.makeText(
                         context,
-                        context.getString(R.string.successfully_exported),
+                        successfullyExported.value,
                         Toast.LENGTH_SHORT
                     ).show()
                     settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
@@ -225,7 +228,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                             runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.permission_required_to_write_the_data),
+                                permissionRequiredToWriteTheData.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -239,7 +242,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                     settingsScreenVM.deleteEntireLinksAndFoldersData()
                     Toast.makeText(
                         context,
-                        context.getString(R.string.deleted_entire_data_from_the_local_database),
+                        deletedEntireDataFromTheLocalDatabase.value,
                         Toast.LENGTH_SHORT
                     ).show()
                 })

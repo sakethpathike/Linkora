@@ -17,12 +17,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.acknowledgments
+import com.sakethh.linkora.LocalizedStrings.linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
@@ -40,13 +40,13 @@ fun AcknowledgmentsSettingsScreen(
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.acknowledgments),
+        topAppBarText = acknowledgments.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -59,7 +59,7 @@ fun AcknowledgmentsSettingsScreen(
         ) {
             item {
                 Text(
-                    text = stringResource(id = R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries),
+                    text = linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 15.sp,
                     lineHeight = 20.sp,
@@ -67,11 +67,7 @@ fun AcknowledgmentsSettingsScreen(
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp)
                 )
             }
-            items(
-                settingsScreenVM.acknowledgmentsSection(
-                    context
-                )
-            ) {
+            items(settingsScreenVM.acknowledgmentsSection) {
                 RegularSettingComponent(
                     settingsUIElement = it
                 )

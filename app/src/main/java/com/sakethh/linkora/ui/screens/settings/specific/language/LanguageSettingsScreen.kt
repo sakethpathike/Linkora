@@ -39,14 +39,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.intl.Locale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.appLanguage
+import com.sakethh.linkora.LocalizedStrings.availableLanguages
+import com.sakethh.linkora.LocalizedStrings.contributingToTheLanguageStrings
+import com.sakethh.linkora.LocalizedStrings.language
+import com.sakethh.linkora.LocalizedStrings.representsSwitchingToTheRespectiveLanguage
+import com.sakethh.linkora.LocalizedStrings.resetAppLanguage
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
@@ -74,7 +78,7 @@ fun LanguageSettingsScreen(
         languageSettingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -92,7 +96,7 @@ fun LanguageSettingsScreen(
     }
 
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.language),
+        topAppBarText = language.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -108,7 +112,7 @@ fun LanguageSettingsScreen(
             }
             item {
                 Text(
-                    text = stringResource(id = R.string.app_language),
+                    text = appLanguage.value,
                     style = MaterialTheme.typography.titleSmall
                 )
                 Spacer(modifier = Modifier.height(15.dp))
@@ -140,7 +144,7 @@ fun LanguageSettingsScreen(
                             )
                         }) {
                             Text(
-                                text = stringResource(id = R.string.reset_app_language),
+                                text = resetAppLanguage.value,
                                 style = MaterialTheme.typography.titleSmall
                             )
                         }
@@ -165,7 +169,7 @@ fun LanguageSettingsScreen(
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
-                            text = stringResource(id = R.string.available_languages),
+                            text = availableLanguages.value,
                             style = MaterialTheme.typography.titleSmall
                         )
                         Icon(
@@ -189,7 +193,7 @@ fun LanguageSettingsScreen(
                                 Spacer(modifier = Modifier.width(15.dp))
                                 Column {
                                     Text(
-                                        text = stringResource(id = R.string.represents_switching_to_the_respective_language),
+                                        text = representsSwitchingToTheRespectiveLanguage.value,
                                         style = MaterialTheme.typography.titleSmall,
                                         lineHeight = 20.sp
                                     )
@@ -201,7 +205,7 @@ fun LanguageSettingsScreen(
                                 Spacer(modifier = Modifier.width(15.dp))
                                 Column {
                                     Text(
-                                        text = stringResource(id = R.string.contributing_to_the_language_strings),
+                                        text = contributingToTheLanguageStrings.value,
                                         style = MaterialTheme.typography.titleSmall,
                                         lineHeight = 20.sp
                                     )

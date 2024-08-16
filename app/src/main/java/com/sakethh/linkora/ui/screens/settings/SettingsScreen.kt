@@ -24,13 +24,12 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -47,7 +46,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             Column {
                 LargeTopAppBar(scrollBehavior = topAppBarScrollState, title = {
                     Text(
-                        text = stringResource(id = R.string.settings),
+                        text = LocalizedStrings.settings.value,
                         color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 24.sp
@@ -68,7 +67,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.THEME
                             navController.navigate(NavigationRoutes.THEME_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.theme),
+                        sectionTitle = LocalizedStrings.theme.value,
                         sectionIcon = Icons.Default.ColorLens
                     )
                 }
@@ -79,7 +78,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.GENERAL
                             navController.navigate(NavigationRoutes.GENERAL_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.general),
+                        sectionTitle = LocalizedStrings.general.value,
                         sectionIcon = Icons.Default.SettingsInputSvideo
                     )
                 }
@@ -90,7 +89,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.LANGUAGE
                             navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.language),
+                        sectionTitle = LocalizedStrings.language.value,
                         sectionIcon = Icons.Default.Language
                     )
                 }
@@ -101,7 +100,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.DATA
                             navController.navigate(NavigationRoutes.DATA_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.data),
+                        sectionTitle = LocalizedStrings.data.value,
                         sectionIcon = Icons.Default.Storage
                     )
                 }
@@ -112,7 +111,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.PRIVACY
                             navController.navigate(NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.privacy),
+                        sectionTitle = LocalizedStrings.privacy.value,
                         sectionIcon = Icons.Default.PrivacyTip
                     )
                 }
@@ -123,7 +122,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.ABOUT
                             navController.navigate(NavigationRoutes.ABOUT_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.about),
+                        sectionTitle = LocalizedStrings.about.value,
                         sectionIcon = Icons.Default.Info
                     )
                 }
@@ -134,7 +133,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                                 SettingsSections.ACKNOWLEDGMENT
                             navController.navigate(NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name)
                         },
-                        sectionTitle = stringResource(id = R.string.acknowledgments),
+                        sectionTitle = LocalizedStrings.acknowledgments.value,
                         sectionIcon = Icons.Default.Group
                     )
                 }

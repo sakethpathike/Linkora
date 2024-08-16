@@ -39,7 +39,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -50,6 +49,18 @@ import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdates
+import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdatesDesc
+import com.sakethh.linkora.LocalizedStrings.checkForLatestVersion
+import com.sakethh.linkora.LocalizedStrings.follow
+import com.sakethh.linkora.LocalizedStrings.github
+import com.sakethh.linkora.LocalizedStrings.githubDesc
+import com.sakethh.linkora.LocalizedStrings.isNowAvailable
+import com.sakethh.linkora.LocalizedStrings.networkError
+import com.sakethh.linkora.LocalizedStrings.twitter
+import com.sakethh.linkora.LocalizedStrings.twitterDesc
+import com.sakethh.linkora.LocalizedStrings.youAreUsingLatestVersionOfLinkora
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
@@ -87,7 +98,7 @@ fun AboutSettingsScreen(
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
-                    Toast.makeText(context, context.getString(it.msg), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
             }
         }
@@ -96,7 +107,7 @@ fun AboutSettingsScreen(
         mutableStateOf(false)
     }
     SpecificSettingsScreenTopAppBar(
-        topAppBarText = stringResource(id = R.string.about),
+        topAppBarText = LocalizedStrings.about.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
@@ -110,7 +121,7 @@ fun AboutSettingsScreen(
             item(key = "settingsCard") {
                 Row {
                     Text(
-                        text = stringResource(id = R.string.app_name),
+                        text = LocalizedStrings.linkora.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 18.sp,
                         modifier = Modifier
@@ -131,7 +142,7 @@ fun AboutSettingsScreen(
                     SettingsAppInfoComponent(hasDescription = false,
                         description = "",
                         icon = Icons.Outlined.Refresh,
-                        title = stringResource(id = R.string.check_for_latest_version),
+                        title = checkForLatestVersion.value,
                         onClick = {
                             shouldVersionCheckerDialogAppear.value = true
                             if (isNetworkAvailable(context)) {
@@ -150,7 +161,7 @@ fun AboutSettingsScreen(
                                 shouldVersionCheckerDialogAppear.value = false
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.network_error),
+                                    networkError.value,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -167,9 +178,8 @@ fun AboutSettingsScreen(
                     SettingsAppInfoComponent(hasDescription = false,
                         description = "",
                         icon = Icons.Outlined.GetApp,
-                        title = "${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName} " + stringResource(
-                            id = R.string.is_now_available
-                        ),
+                        title = "${SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsStateWithLifecycle().value.releaseName} " +
+                                isNowAvailable.value,
                         onClick = {
                             shouldVersionCheckerDialogAppear.value = true
                             if (isNetworkAvailable(context)) {
@@ -189,7 +199,7 @@ fun AboutSettingsScreen(
                                 shouldVersionCheckerDialogAppear.value = false
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.network_error),
+                                    networkError.value,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }
@@ -225,7 +235,7 @@ fun AboutSettingsScreen(
                                     )
                                 }
                                 Text(
-                                    text = stringResource(id = R.string.you_are_using_latest_version_of_linkora),
+                                    text = youAreUsingLatestVersionOfLinkora.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 14.sp,
                                     lineHeight = 18.sp,
@@ -242,10 +252,10 @@ fun AboutSettingsScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
                 SettingsAppInfoComponent(
-                    description = stringResource(id = R.string.github_desc),
+                    description = githubDesc.value,
                     icon = null,
                     usingLocalIcon = true,
-                    title = stringResource(id = R.string.github),
+                    title = github.value,
                     localIcon = R.drawable.github_logo,
                     onClick = {
                         customWebTab.openInWeb(
@@ -269,11 +279,11 @@ fun AboutSettingsScreen(
                 )
                 Text(
                     text = buildAnnotatedString {
-                        append(stringResource(id = R.string.follow))
+                        append(follow.value)
                         withStyle(SpanStyle(fontWeight = SemiBold)) {
                             append(" @LinkoraApp ")
                         }
-                        append(stringResource(id = R.string.twitter_desc))
+                        append(twitterDesc.value)
                     }, style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp,
                     textAlign = TextAlign.Start,
@@ -287,7 +297,7 @@ fun AboutSettingsScreen(
                     hasDescription = false,
                     usingLocalIcon = true,
                     localIcon = R.drawable.twitter_logo,
-                    title = stringResource(id = R.string.twitter),
+                    title = twitter.value,
                     onClick = {
                         customWebTab.openInWeb(
                             recentlyVisitedData = RecentlyVisited(
@@ -316,9 +326,9 @@ fun AboutSettingsScreen(
             item {
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
-                        title = stringResource(id = R.string.auto_check_for_updates),
+                        title = autoCheckForUpdates.value,
                         doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
-                        description = stringResource(id = R.string.auto_check_for_updates_desc),
+                        description = autoCheckForUpdatesDesc.value,
                         isIconNeeded = rememberSaveable {
                             mutableStateOf(true)
                         },

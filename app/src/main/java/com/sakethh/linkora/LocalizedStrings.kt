@@ -24,6 +24,7 @@ object LocalizedStrings : ViewModel() {
 
     private val translationsRepo =
         EntryPoints.get(this, TranslationRepoInstance::class.java).getTranslationRepo()
+
     private val _general = mutableStateOf("")
     val general = _general
 
@@ -559,6 +560,168 @@ object LocalizedStrings : ViewModel() {
 
     private val _beta = mutableStateOf("")
     val beta = _beta
+
+    private val _language = mutableStateOf("")
+    val language = _language
+
+    private val _appLanguage = mutableStateOf("")
+    val appLanguage = _appLanguage
+
+    private val _resetAppLanguage = mutableStateOf("")
+    val resetAppLanguage = _resetAppLanguage
+
+    private val _availableLanguages = mutableStateOf("")
+    val availableLanguages = _availableLanguages
+
+    private val _representsSwitchingToTheRespectiveLanguage = mutableStateOf("")
+    val representsSwitchingToTheRespectiveLanguage = _representsSwitchingToTheRespectiveLanguage
+
+    private val _contributingToTheLanguageStrings = mutableStateOf("")
+    val contributingToTheLanguageStrings = _contributingToTheLanguageStrings
+
+    private val _about = mutableStateOf("")
+    val about = _about
+
+    private val _checkForLatestVersion = mutableStateOf("")
+    val checkForLatestVersion = _checkForLatestVersion
+
+    private val _networkError = mutableStateOf("")
+    val networkError = _networkError
+
+    private val _isNowAvailable = mutableStateOf("")
+    val isNowAvailable = _isNowAvailable
+
+    private val _youAreUsingLatestVersionOfLinkora = mutableStateOf("")
+    val youAreUsingLatestVersionOfLinkora = _youAreUsingLatestVersionOfLinkora
+
+    private val _githubDesc = mutableStateOf("")
+    val githubDesc = _githubDesc
+
+    private val _github = mutableStateOf("")
+    val github = _github
+
+    private val _follow = mutableStateOf("")
+    val follow = _follow
+
+    private val _twitterDesc = mutableStateOf("")
+    val twitterDesc = _twitterDesc
+
+    private val _twitter = mutableStateOf("")
+    val twitter = _twitter
+
+    private val _autoCheckForUpdates = mutableStateOf("")
+    val autoCheckForUpdates = _autoCheckForUpdates
+
+    private val _autoCheckForUpdatesDesc = mutableStateOf("")
+    val autoCheckForUpdatesDesc = _autoCheckForUpdatesDesc
+
+    private val _acknowledgments = mutableStateOf("")
+    val acknowledgments = _acknowledgments
+
+    private val _data = mutableStateOf("")
+    val data = _data
+
+    private val _importFeatureIsPolishedNotPerfectDesc = mutableStateOf("")
+    val importFeatureIsPolishedNotPerfectDesc = _importFeatureIsPolishedNotPerfectDesc
+
+    private val _successfullyExported = mutableStateOf("")
+    val successfullyExported = _successfullyExported
+
+    private val _privacy = mutableStateOf("")
+    val privacy = _privacy
+
+    private val _theme = mutableStateOf("")
+    val theme = _theme
+
+    private val _followSystemTheme = mutableStateOf("")
+    val followSystemTheme = _followSystemTheme
+
+    private val _useDarkMode = mutableStateOf("")
+    val useDarkMode = _useDarkMode
+
+    private val _useDynamicTheming = mutableStateOf("")
+    val useDynamicTheming = _useDynamicTheming
+
+    private val _useDynamicThemingDesc = mutableStateOf("")
+    val useDynamicThemingDesc = _useDynamicThemingDesc
+
+    private val _kotlin = mutableStateOf("")
+    val kotlin = _kotlin
+
+    private val _apacheLicense = mutableStateOf("")
+    val apacheLicense = _apacheLicense
+
+    private val _androidJetpack = mutableStateOf("")
+    val androidJetpack = _apacheLicense
+
+    private val _coil = mutableStateOf("")
+    val coil = _coil
+
+    private val _materialDesign3 = mutableStateOf("")
+    val materialDesign3 = _materialDesign3
+
+    private val _materialIcons = mutableStateOf("")
+    val materialIcons = _materialIcons
+
+    private val _sendCrashReports = mutableStateOf("")
+    val sendCrashReports = _sendCrashReports
+
+    private val _useInAppBrowser = mutableStateOf("")
+    val useInAppBrowser = _useInAppBrowser
+
+    private val _useInAppBrowserDesc = mutableStateOf("")
+    val useInAppBrowserDesc = _useInAppBrowserDesc
+
+    private val _enableHomeScreen = mutableStateOf("")
+    val enableHomeScreen = _enableHomeScreen
+
+    private val _enableHomeScreenDesc = mutableStateOf("")
+    val enableHomeScreenDesc = _enableHomeScreenDesc
+
+    private val _autoDetectTitle = mutableStateOf("")
+    val autoDetectTitle = _autoDetectTitle
+
+    private val _autoDetectTitleDesc = mutableStateOf("")
+    val autoDetectTitleDesc = _autoDetectTitleDesc
+
+    private val _showDescriptionForSettings = mutableStateOf("")
+    val showDescriptionForSettings = _showDescriptionForSettings
+
+    private val _showDescriptionForSettingsDesc = mutableStateOf("")
+    val showDescriptionForSettingsDesc = _showDescriptionForSettingsDesc
+
+    private val _importData = mutableStateOf("")
+    val importData = _importData
+
+    private val _importDataFromExternalJsonFile = mutableStateOf("")
+    val importDataFromExternalJsonFile = _importDataFromExternalJsonFile
+
+    private val _exportDataDesc = mutableStateOf("")
+    val exportDataDesc = _exportDataDesc
+
+    private val _deleteEntireDataPermanently = mutableStateOf("")
+    val deleteEntireDataPermanently = _deleteEntireDataPermanently
+
+    private val _deleteEntireDataPermanentlyDesc = mutableStateOf("")
+    val deleteEntireDataPermanentlyDesc = _deleteEntireDataPermanentlyDesc
+
+    private val _everySingleBitOfDataIsStoredLocallyOnYourDevice = mutableStateOf("")
+    val everySingleBitOfDataIsStoredLocallyOnYourDevice =
+        _everySingleBitOfDataIsStoredLocallyOnYourDevice
+
+    private val _linkoraCollectsDataRelatedToAppCrashes = mutableStateOf("")
+    val linkoraCollectsDataRelatedToAppCrashes = _linkoraCollectsDataRelatedToAppCrashes
+
+    private val _permissionRequiredToWriteTheData = mutableStateOf("")
+    val permissionRequiredToWriteTheData = _permissionRequiredToWriteTheData
+
+    private val _deletedEntireDataFromTheLocalDatabase = mutableStateOf("")
+    val deletedEntireDataFromTheLocalDatabase = _deletedEntireDataFromTheLocalDatabase
+
+    private val _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries =
+        mutableStateOf("")
+    val linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries =
+        _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries
 
     private val _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks = mutableStateOf("")
     val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =

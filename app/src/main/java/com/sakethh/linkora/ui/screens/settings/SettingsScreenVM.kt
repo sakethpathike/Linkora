@@ -25,7 +25,33 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.androidJetpack
+import com.sakethh.linkora.LocalizedStrings.apacheLicense
+import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdates
+import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdatesDesc
+import com.sakethh.linkora.LocalizedStrings.autoDetectTitle
+import com.sakethh.linkora.LocalizedStrings.autoDetectTitleDesc
+import com.sakethh.linkora.LocalizedStrings.coil
+import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanently
+import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanentlyDesc
+import com.sakethh.linkora.LocalizedStrings.enableHomeScreen
+import com.sakethh.linkora.LocalizedStrings.enableHomeScreenDesc
+import com.sakethh.linkora.LocalizedStrings.everySingleBitOfDataIsStoredLocallyOnYourDevice
+import com.sakethh.linkora.LocalizedStrings.exportData
+import com.sakethh.linkora.LocalizedStrings.exportDataDesc
+import com.sakethh.linkora.LocalizedStrings.importData
+import com.sakethh.linkora.LocalizedStrings.importDataFromExternalJsonFile
+import com.sakethh.linkora.LocalizedStrings.kotlin
+import com.sakethh.linkora.LocalizedStrings.linkoraCollectsDataRelatedToAppCrashes
+import com.sakethh.linkora.LocalizedStrings.materialDesign3
+import com.sakethh.linkora.LocalizedStrings.materialIcons
+import com.sakethh.linkora.LocalizedStrings.permissionDeniedTitle
+import com.sakethh.linkora.LocalizedStrings.sendCrashReports
+import com.sakethh.linkora.LocalizedStrings.showDescriptionForSettings
+import com.sakethh.linkora.LocalizedStrings.showDescriptionForSettingsDesc
+import com.sakethh.linkora.LocalizedStrings.successfullyExported
+import com.sakethh.linkora.LocalizedStrings.useInAppBrowser
+import com.sakethh.linkora.LocalizedStrings.useInAppBrowserDesc
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.backup.ExportRepo
@@ -120,12 +146,11 @@ open class SettingsScreenVM @Inject constructor(
         val latestReleaseInfoFromGitHubReleases = _latestReleaseInfoFromGitHubReleases.asStateFlow()
     }
 
-    val acknowledgmentsSection: (context: Context) -> List<SettingsUIElement> = {
-        listOf(
+    val acknowledgmentsSection = listOf(
             SettingsUIElement(
-                title = it.getString(R.string.kotlin),
+                title = kotlin.value,
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {},
@@ -149,9 +174,9 @@ open class SettingsScreenVM @Inject constructor(
                 shouldArrowIconBeAppear = mutableStateOf(true)
             ),
             SettingsUIElement(
-                title = it.getString(R.string.android_Jetpack),
+                title = androidJetpack.value,
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {},
@@ -175,9 +200,9 @@ open class SettingsScreenVM @Inject constructor(
                 isIconNeeded = mutableStateOf(false)
             ),
             SettingsUIElement(
-                title = it.getString(R.string.coil),
+                title = coil.value,
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
@@ -231,9 +256,9 @@ open class SettingsScreenVM @Inject constructor(
                 isIconNeeded = mutableStateOf(false)
             ),
             SettingsUIElement(
-                title = it.getString(R.string.material_design_3),
+                title = materialDesign3.value,
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
@@ -261,7 +286,7 @@ open class SettingsScreenVM @Inject constructor(
             SettingsUIElement(
                 title = "Accompanist",
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
@@ -289,7 +314,7 @@ open class SettingsScreenVM @Inject constructor(
             SettingsUIElement(
                 title = "kotlinx.serialization",
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
@@ -315,9 +340,9 @@ open class SettingsScreenVM @Inject constructor(
                 isIconNeeded = mutableStateOf(false)
             ),
             SettingsUIElement(
-                title = it.getString(R.string.material_icons),
+                title = materialIcons.value,
                 doesDescriptionExists = true,
-                description = it.getString(R.string.apache_license),
+                description = apacheLicense.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = mutableStateOf(false),
                 onSwitchStateChange = {
@@ -343,16 +368,13 @@ open class SettingsScreenVM @Inject constructor(
                 shouldArrowIconBeAppear = mutableStateOf(true)
             ),
         )
-    }
 
 
     val privacySection: (context: Context) -> SettingsUIElement = { context ->
         SettingsUIElement(
-            title = context.getString(R.string.send_crash_reports),
+            title = sendCrashReports.value,
             doesDescriptionExists = true,
-            description = if (!isSendCrashReportsEnabled.value) mutableStateOf(context.getString(R.string.every_single_bit_of_data_is_stored_locally_on_your_device)).value else mutableStateOf(
-                context.getString(R.string.linkora_collects_data_related_to_app_crashes)
-            ).value,
+            description = if (!isSendCrashReportsEnabled.value) everySingleBitOfDataIsStoredLocallyOnYourDevice.value else linkoraCollectsDataRelatedToAppCrashes.value,
             isSwitchNeeded = true,
             isSwitchEnabled = isSendCrashReportsEnabled,
             isIconNeeded = mutableStateOf(true),
@@ -375,9 +397,10 @@ open class SettingsScreenVM @Inject constructor(
     }
     val generalSection: (context: Context) -> List<SettingsUIElement> = { context ->
         listOf(
-            SettingsUIElement(title = context.getString(R.string.use_in_app_browser),
+            SettingsUIElement(
+                title = useInAppBrowser.value,
                 doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
-                description = context.getString(R.string.use_in_app_browser_desc),
+                description = useInAppBrowserDesc.value,
                 isSwitchNeeded = true,
                 isSwitchEnabled = SettingsPreference.isInAppWebTabEnabled,
                 isIconNeeded = mutableStateOf(true),
@@ -392,9 +415,9 @@ open class SettingsScreenVM @Inject constructor(
                         SettingsPreference.isInAppWebTabEnabled.value = it
                     }
                 }), SettingsUIElement(
-                title = context.getString(R.string.enable_home_screen),
+                title = enableHomeScreen.value,
                 doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
-                description = context.getString(R.string.enable_home_screen_desc),
+                description = enableHomeScreenDesc.value,
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Home,
@@ -409,9 +432,9 @@ open class SettingsScreenVM @Inject constructor(
                         SettingsPreference.isHomeScreenEnabled.value = it
                     }
                 }), SettingsUIElement(
-                title = context.getString(R.string.auto_detect_title),
+                title = autoDetectTitle.value,
                 doesDescriptionExists = true,
-                description = context.getString(R.string.auto_detect_title_desc),
+                description = autoDetectTitleDesc.value,
                 isSwitchNeeded = true,
                 isSwitchEnabled = SettingsPreference.isAutoDetectTitleForLinksEnabled,
                 isIconNeeded = mutableStateOf(true),
@@ -425,9 +448,10 @@ open class SettingsScreenVM @Inject constructor(
                         )
                         SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
                     }
-                }), SettingsUIElement(title = context.getString(R.string.auto_check_for_updates),
+                }), SettingsUIElement(
+                title = autoCheckForUpdates.value,
                 doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
-                description = context.getString(R.string.auto_check_for_updates_desc),
+                description = autoCheckForUpdatesDesc.value,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.SystemUpdateAlt,
                 isSwitchNeeded = true,
@@ -442,9 +466,9 @@ open class SettingsScreenVM @Inject constructor(
                         SettingsPreference.isAutoCheckUpdatesEnabled.value = it
                     }
                 }), SettingsUIElement(
-                title = context.getString(R.string.show_description_for_settings),
+                title = showDescriptionForSettings.value,
                 doesDescriptionExists = true,
-                description = context.getString(R.string.show_description_for_settings_desc),
+                description = showDescriptionForSettingsDesc.value,
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.AutoMirrored.Default.ShortText,
@@ -491,7 +515,7 @@ open class SettingsScreenVM @Inject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModelScope.launch {
                 exportRepo.exportToAFile()
-                pushUiEvent(CommonUiEvent.ShowToast(R.string.successfully_exported))
+                pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
             }
         } else {
             when (ContextCompat.checkSelfPermission(
@@ -500,7 +524,7 @@ open class SettingsScreenVM @Inject constructor(
                 PackageManager.PERMISSION_GRANTED -> {
                     viewModelScope.launch {
                         exportRepo.exportToAFile()
-                        pushUiEvent(CommonUiEvent.ShowToast(R.string.successfully_exported))
+                        pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
                     }
                     isDialogBoxVisible.value = false
                 }
@@ -509,7 +533,7 @@ open class SettingsScreenVM @Inject constructor(
                     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                         runtimePermission.launch(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
                         viewModelScope.launch {
-                            pushUiEvent(CommonUiEvent.ShowToast(R.string.permission_denied_title))
+                            pushUiEvent(CommonUiEvent.ShowToast(permissionDeniedTitle.value))
                         }
                     }
                 }
@@ -527,9 +551,9 @@ open class SettingsScreenVM @Inject constructor(
         return listOf(
             SettingsUIElement(
                 isIconNeeded = mutableStateOf(true),
-                title = context.getString(R.string.import_data),
+                title = importData.value,
                 doesDescriptionExists = true,
-                description = context.getString(R.string.import_data_from_external_JSON_file),
+                description = importDataFromExternalJsonFile.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -553,9 +577,9 @@ open class SettingsScreenVM @Inject constructor(
             ),
             SettingsUIElement(
                 isIconNeeded = mutableStateOf(true),
-                title = context.getString(R.string.export_data),
+                title = exportData.value,
                 doesDescriptionExists = true,
-                description = context.getString(R.string.export_data_desc),
+                description = exportDataDesc.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
@@ -566,9 +590,9 @@ open class SettingsScreenVM @Inject constructor(
             ),
             SettingsUIElement(
                 isIconNeeded = mutableStateOf(true),
-                title = context.getString(R.string.delete_entire_data_permanently),
+                title = deleteEntireDataPermanently.value,
                 doesDescriptionExists = true,
-                description = context.getString(R.string.delete_entire_data_permanently_desc),
+                description = deleteEntireDataPermanentlyDesc.value,
                 isSwitchNeeded = false,
                 isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                 onSwitchStateChange = {
