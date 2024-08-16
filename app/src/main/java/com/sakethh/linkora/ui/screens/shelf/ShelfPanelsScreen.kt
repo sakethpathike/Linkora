@@ -26,14 +26,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.noPanelsFound
+import com.sakethh.linkora.LocalizedStrings.panelsInTheShelf
 import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.ui.bottomSheets.menu.IndividualMenuComponent
 import com.sakethh.linkora.ui.commonComposables.AddANewPanelInShelfDialogBox
@@ -49,7 +49,7 @@ import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedStrings) {
+fun ShelfPanelsScreen(navController: NavController) {
     val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
     val shelfData = shelfBtmSheetVM.shelfData.collectAsStateWithLifecycle().value
     val isDeleteAShelfDialogBoxVisible = rememberSaveable {
@@ -74,7 +74,7 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
                     isAddANewShelfDialogBoxVisible.value = true
                 }) {
                 Text(
-                    text = stringResource(id = R.string.add_new_panel_to_shelf),
+                    text = LocalizedStrings.addNewPanelToShelf.value,
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 16.sp
                 )
@@ -89,7 +89,7 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
             }
         }, scrollBehavior = topAppBarState, title = {
             Text(
-                text = stringResource(id = R.string.panels_in_the_shelf),
+                text = panelsInTheShelf.value,
                 fontSize = 18.sp,
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -128,7 +128,7 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
                 }
             } else {
                 item {
-                    DataEmptyScreen(text = stringResource(id = R.string.no_panels_found))
+                    DataEmptyScreen(text = noPanelsFound.value)
                 }
             }
         }
@@ -144,10 +144,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
                             shelfIconName = shelfIconName,
                             folderIds = emptyList()
                         )
-                    ),
-                    localizedStrings
+                    )
                 )
-            }, localizedStrings
+            }
         )
     )
 
@@ -158,9 +157,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
                 shelfBtmSheetVM.onShelfUiEvent(
                     ShelfUIEvent.DeleteAShelf(
                         ShelfBtmSheetVM.selectedShelfData
-                    ), localizedStrings
+                    )
                 )
-            }, localizedStrings
+            }
         )
     )
     RenameAShelfPanelDialogBox(
@@ -169,9 +168,9 @@ fun ShelfPanelsScreen(navController: NavController, localizedStrings: LocalizedS
             shelfBtmSheetVM.onShelfUiEvent(
                 ShelfUIEvent.UpdateAShelfName(
                     it, ShelfBtmSheetVM.selectedShelfData.id
-                ), localizedStrings
+                )
             )
-        }, localizedStrings
+        }
     )
     BackHandler {
         HomeScreenVM.initialStart = true

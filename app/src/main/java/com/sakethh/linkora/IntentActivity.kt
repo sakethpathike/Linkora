@@ -41,6 +41,9 @@ class IntentActivity : ComponentActivity() {
                     }
                 }
             }
+            LaunchedEffect(key1 = Unit) {
+                LocalizedStrings.loadStrings(this@IntentActivity)
+            }
             LinkoraTheme {
                 AddANewLinkDialogBox(
                     shouldDialogBoxAppear = shouldUIBeVisible,

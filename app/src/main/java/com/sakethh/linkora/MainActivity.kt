@@ -58,6 +58,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
             SettingsPreference.readAllPreferencesValues(this@MainActivity)
+            LocalizedStrings.loadStrings(this@MainActivity)
         }.invokeOnCompletion {
             val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
             firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
@@ -106,8 +107,7 @@ class MainActivity : ComponentActivity() {
                         when (it) {
                             is CommonUiEvent.ShowToast -> {
                                 Toast.makeText(
-                                    context,
-                                    context.getString(it.msg),
+                                    context, it.msg,
                                     Toast.LENGTH_SHORT
                                 ).show()
                             }

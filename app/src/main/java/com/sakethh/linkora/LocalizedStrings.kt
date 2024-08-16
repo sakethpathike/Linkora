@@ -699,6 +699,33 @@ object LocalizedStrings : ViewModel() {
     private val _exportDataDesc = mutableStateOf("")
     val exportDataDesc = _exportDataDesc
 
+    private val _addNewPanelToShelf = mutableStateOf("")
+    val addNewPanelToShelf = _addNewPanelToShelf
+
+    private val _panelsInTheShelf = mutableStateOf("")
+    val panelsInTheShelf = _panelsInTheShelf
+
+    private val _noPanelsFound = mutableStateOf("")
+    val noPanelsFound = _noPanelsFound
+
+    private val _shelf = mutableStateOf("")
+    val shelf = _shelf
+
+    private val _foldersListedInThisPanel = mutableStateOf("")
+    val foldersListedInThisPanel = _foldersListedInThisPanel
+
+    private val _noFoldersFoundInThisPanel = mutableStateOf("")
+    val noFoldersFoundInThisPanel = _noFoldersFoundInThisPanel
+
+    private val _youCanAddTheFollowingFoldersToThisPanel = mutableStateOf("")
+    val youCanAddTheFollowingFoldersToThisPanel = _youCanAddTheFollowingFoldersToThisPanel
+
+    private val _archivedFoldersDataMigratedSuccessfully = mutableStateOf("")
+    val archivedFoldersDataMigratedSuccessfully = _archivedFoldersDataMigratedSuccessfully
+
+    private val _rootFoldersDataMigratedSuccessfully = mutableStateOf("")
+    val rootFoldersDataMigratedSuccessfully = _rootFoldersDataMigratedSuccessfully
+
     private val _deleteEntireDataPermanently = mutableStateOf("")
     val deleteEntireDataPermanently = _deleteEntireDataPermanently
 

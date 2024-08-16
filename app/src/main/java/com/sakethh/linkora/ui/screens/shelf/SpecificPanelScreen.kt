@@ -42,14 +42,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
-import com.sakethh.linkora.R
+import com.sakethh.linkora.LocalizedStrings.foldersListedInThisPanel
+import com.sakethh.linkora.LocalizedStrings.noFoldersFoundInThisPanel
+import com.sakethh.linkora.LocalizedStrings.shelf
+import com.sakethh.linkora.LocalizedStrings.youCanAddTheFollowingFoldersToThisPanel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -106,7 +108,7 @@ fun SpecificPanelScreen(navController: NavController) {
                         .padding(15.dp)
                 ) {
                     Text(
-                        text = stringResource(id = R.string.shelf),
+                        text = shelf.value,
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 16.sp,
                         modifier = Modifier.clickable {
@@ -127,7 +129,7 @@ fun SpecificPanelScreen(navController: NavController) {
                 item {
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
-                        text = stringResource(id = R.string.folders_listed_in_this_panel),
+                        text = foldersListedInThisPanel.value,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.primary,
                         style = MaterialTheme.typography.titleSmall,
@@ -152,7 +154,7 @@ fun SpecificPanelScreen(navController: NavController) {
                 }
             } else {
                 item {
-                    DataEmptyScreen(text = stringResource(id = R.string.no_folders_found_in_this_panel))
+                    DataEmptyScreen(text = noFoldersFoundInThisPanel.value)
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
@@ -164,7 +166,7 @@ fun SpecificPanelScreen(navController: NavController) {
             if (rootFolders.value.size != panelData.value.distinct().size) {
                 item {
                     Text(
-                        text = stringResource(id = R.string.you_can_add_the_following_folders_to_this_panel),
+                        text = youCanAddTheFollowingFoldersToThisPanel.value,
                         lineHeight = 20.sp,
                         fontSize = 16.sp,
                         color = MaterialTheme.colorScheme.primary,
