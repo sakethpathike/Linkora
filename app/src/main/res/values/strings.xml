@@ -151,7 +151,7 @@
     <string name="import_data_and_delete_the_existing_data">Import data, and delete the existing data.</string>
     <string name="incompatible_file_type">Incompatible File Type</string>
     <string name="data_conversion_failed">Data Conversion Failed</string>
-    <string name="selected_file_does_not_match_Linkora_schema">Selected file doesn\'t match Linkora\'s Schema for JSON files. Please choose a compatible file to import your links.</string>
+    <string name="selected_file_does_not_match_linkora_schema">Selected file doesn\'t match Linkora\'s Schema for JSON files. Please choose a compatible file to import your links.</string>
     <string name="there_was_an_issue_importing_the_links">Apologies, but there was an issue importing the links. Please try again with a different file.</string>
     <string name="choose_another_file">Choose another file</string>
     <string name="permission_denied_title">Permission Denied</string>
@@ -161,7 +161,7 @@
     <string name="new_update_is_available">Linkora just got better,\\nnew update is available.</string>
     <string name="current_version">version you\'re using</string>
     <string name="latest_version">latest version which you should be using</string>
-    <string name="release_page_on_gitHub">release page on GitHub</string>
+    <string name="release_page_on_github">release page on GitHub</string>
     <string name="redirect_to_latest_release_page">Redirect to latest release page</string>
     <string name="download">Download</string>
     <string name="theme">Theme</string>
@@ -172,7 +172,7 @@
     <string name="acknowledgments">Acknowledgments</string>
     <string name="kotlin">Kotlin</string>
     <string name="apache_license">Apache License (Version 2.0)</string>
-    <string name="android_Jetpack">Android Jetpack</string>
+    <string name="android_jetpack">Android Jetpack</string>
     <string name="coil">Coil</string>
     <string name="material_design_3">Material Design 3</string>
     <string name="material_icons">Material Icons</string>
@@ -191,7 +191,7 @@
     <string name="show_description_for_settings_desc">If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you\'re reading now. If it is disabled, only the titles will be shown.</string>
     <string name="successfully_exported">Successfully Exported</string>
     <string name="import_data">Import Data</string>
-    <string name="import_data_from_external_JSON_file">Import Data from external JSON file.\"</string>
+    <string name="import_data_from_external_json_file">Import Data from external JSON file.\"</string>
     <string name="export_data_desc">Export all of your data in JSON format.</string>
     <string name="delete_entire_data_permanently">Delete entire data permanently</string>
     <string name="delete_entire_data_permanently_desc">Delete all links and folders permanently including archives.</string>

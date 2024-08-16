@@ -152,7 +152,7 @@
     <string name="import_data_and_delete_the_existing_data">डेटा आयात करें और मौजूदा डेटा हटा दें।</string>
     <string name="incompatible_file_type">असंगत फ़ाइल प्रकार</string>
     <string name="data_conversion_failed">डेटा रूपांतरण विफल रहा</string>
-    <string name="selected_file_does_not_match_Linkora_schema">चयनित फ़ाइल JSON फ़ाइलों के लिए लिंकोरा की स्कीमा से मेल नहीं खाती है। कृपया अपने लिंक आयात करने के लिए एक संगत फ़ाइल चुनें।</string>
+    <string name="selected_file_does_not_match_linkora_schema">चयनित फ़ाइल JSON फ़ाइलों के लिए लिंकोरा की स्कीमा से मेल नहीं खाती है। कृपया अपने लिंक आयात करने के लिए एक संगत फ़ाइल चुनें।</string>
     <string name="there_was_an_issue_importing_the_links">क्षमा करें, लिंक आयात करने में कोई समस्या थी। कृपया एक अलग फ़ाइल के साथ पुनः प्रयास करें।</string>
     <string name="choose_another_file">दूसरी फ़ाइल चुनें</string>
     <string name="permission_denied_title">अनुमति अस्वीकार</string>
@@ -162,7 +162,7 @@
     <string name="new_update_is_available">नया अपडेट उपलब्ध है।</string>
     <string name="current_version">वर्तमान संस्करण</string>
     <string name="latest_version">नवीनतम संस्करण</string>
-    <string name="release_page_on_gitHub">GitHub पर रिलीज़ पेज</string>
+    <string name="release_page_on_github">GitHub पर रिलीज़ पेज</string>
     <string name="redirect_to_latest_release_page">नवीनतम रिलीज़ पेज पर पुनर्निर्देशित करें</string>
     <string name="download">डाउनलोड</string>
     <string name="theme">थीम</string>
@@ -173,7 +173,7 @@
     <string name="acknowledgments">अनुज्ञापत्र</string>
     <string name="kotlin">कोटलिन</string>
     <string name="apache_license">Apache License (Version 2.0)</string>
-    <string name="android_Jetpack">Android जेटपैक</string>
+    <string name="android_jetpack">Android जेटपैक</string>
     <string name="coil">कएल</string>
     <string name="material_design_3">Material Design ३</string>
     <string name="material_icons">Material Icons</string>
@@ -192,7 +192,7 @@
     <string name="show_description_for_settings_desc">यदि यह सेटिंग सक्षम है, तो कुछ सेटिंग्स के लिए विस्तृत विवरण दिखाई देंगे, जैसे कि आप अभी पढ़ रहे हैं। यदि इसे अक्षम किया गया है, तो केवल शीर्षक दिखाए जाएंगे।</string>
     <string name="successfully_exported">सफलतापूर्वक निर्यात किया गया</string>
     <string name="import_data">डेटा आयात करें</string>
-    <string name="import_data_from_external_JSON_file">बाह्य JSON फ़ाइल से डेटा आयात करें।</string>
+    <string name="import_data_from_external_json_file">बाह्य JSON फ़ाइल से डेटा आयात करें।</string>
     <string name="export_data_desc">अपने सभी डेटा को JSON फॉर्मेट में निर्यात करें।</string>
     <string name="delete_entire_data_permanently">सभी डेटा को स्थायी रूप से हटाएं</string>
     <string name="delete_entire_data_permanently_desc">सभी लिंक और फ़ोल्डरों को आर्काइव सहित स्थायी रूप से हटाएं</string>

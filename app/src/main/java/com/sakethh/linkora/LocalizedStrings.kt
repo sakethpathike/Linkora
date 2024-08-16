@@ -114,9 +114,6 @@ object LocalizedStrings : ViewModel() {
     private val _youDidNotAddNoteForThis = mutableStateOf("")
     val youDidNotAddNoteForThis = _youDidNotAddNoteForThis
 
-
-    // TODO()
-
     private val _sortFoldersBy = mutableStateOf("")
     val sortFoldersBy =
         _sortFoldersBy
@@ -144,7 +141,6 @@ object LocalizedStrings : ViewModel() {
     private val _folders = mutableStateOf("")
     val folders =
         _folders
-
     private val _addANewLinkInImportantLinks = mutableStateOf("")
     val addANewLinkInImportantLinks =
         _addANewLinkInImportantLinks
@@ -669,7 +665,7 @@ object LocalizedStrings : ViewModel() {
     val apacheLicense = _apacheLicense
 
     private val _androidJetpack = mutableStateOf("")
-    val androidJetpack = _apacheLicense
+    val androidJetpack = _androidJetpack
 
     private val _coil = mutableStateOf("")
     val coil = _coil
@@ -779,6 +775,3229 @@ object LocalizedStrings : ViewModel() {
                 .getTranslationRepo()
         viewModelScope.launch {
             awaitAll(
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortHistoryLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_history_links_by",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_history_links_by)
+                            }
+                        })
+                    } else {
+                        _sortHistoryLinksBy.value =
+                            context.getString(R.string.sort_history_links_by)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortBy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_by", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_by)
+                            }
+                        })
+                    } else {
+                        _sortBy.value = context.getString(R.string.sort_by)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortSavedLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_saved_links_by", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_saved_links_by)
+                            }
+                        })
+                    } else {
+                        _sortSavedLinksBy.value = context.getString(R.string.sort_saved_links_by)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortImportantLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_important_links_by",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_important_links_by)
+                            }
+                        })
+                    } else {
+                        _sortImportantLinksBy.value =
+                            context.getString(R.string.sort_important_links_by)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortBasedOn.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_based_on", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_based_on)
+                            }
+                        })
+                    } else {
+                        _sortBasedOn.value = context.getString(R.string.sort_based_on)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "folders", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.folders)
+                            }
+                        })
+                    } else {
+                        _folders.value = context.getString(R.string.folders)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addANewLinkInImportantLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "add_a_new_link_in_important_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.add_a_new_link_in_important_links)
+                                }
+                            })
+                    } else {
+                        _addANewLinkInImportantLinks.value =
+                            context.getString(R.string.add_a_new_link_in_important_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addANewLinkInSavedLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "add_a_new_link_in_saved_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.add_a_new_link_in_saved_links)
+                                }
+                            })
+                    } else {
+                        _addANewLinkInSavedLinks.value =
+                            context.getString(R.string.add_a_new_link_in_saved_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addANewLinkIn.value = (translationsRepo.getLocalizedStringValueFor(
+                            "add_a_new_link_in", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.add_a_new_link_in)
+                            }
+                        })
+                    } else {
+                        _addANewLinkIn.value = context.getString(R.string.add_a_new_link_in)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addANewLink.value = (translationsRepo.getLocalizedStringValueFor(
+                            "add_a_new_link", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.add_a_new_link)
+                            }
+                        })
+                    } else {
+                        _addANewLink.value = context.getString(R.string.add_a_new_link)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkAddress.value = (translationsRepo.getLocalizedStringValueFor(
+                            "link_address", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.link_address)
+                            }
+                        })
+                    } else {
+                        _linkAddress.value = context.getString(R.string.link_address)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _titleForTheLink.value = (translationsRepo.getLocalizedStringValueFor(
+                            "title_for_the_link", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.title_for_the_link)
+                            }
+                        })
+                    } else {
+                        _titleForTheLink.value = context.getString(R.string.title_for_the_link)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noteForSavingTheLink.value = (translationsRepo.getLocalizedStringValueFor(
+                            "note_for_saving_the_link",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.note_for_saving_the_link)
+                            }
+                        })
+                    } else {
+                        _noteForSavingTheLink.value =
+                            context.getString(R.string.note_for_saving_the_link)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _titleWillBeAutomaticallyDetected.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "title_will_be_automatically_detected",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.title_will_be_automatically_detected)
+                                }
+                            })
+                    } else {
+                        _titleWillBeAutomaticallyDetected.value =
+                            context.getString(R.string.title_will_be_automatically_detected)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addIn.value = (translationsRepo.getLocalizedStringValueFor(
+                            "add_in", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.add_in)
+                            }
+                        })
+                    } else {
+                        _addIn.value = context.getString(R.string.add_in)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _savedLinks.value = (translationsRepo.getLocalizedStringValueFor(
+                            "saved_links", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.saved_links)
+                            }
+                        })
+                    } else {
+                        _savedLinks.value = context.getString(R.string.saved_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importantLinks.value = (translationsRepo.getLocalizedStringValueFor(
+                            "important_links", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.important_links)
+                            }
+                        })
+                    } else {
+                        _importantLinks.value = context.getString(R.string.important_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _forceAutoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
+                            "force_auto_detect_title",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.force_auto_detect_title)
+                            }
+                        })
+                    } else {
+                        _forceAutoDetectTitle.value =
+                            context.getString(R.string.force_auto_detect_title)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _cancel.value = (translationsRepo.getLocalizedStringValueFor(
+                            "cancel", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.cancel)
+                            }
+                        })
+                    } else {
+                        _cancel.value = context.getString(R.string.cancel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _save.value = (translationsRepo.getLocalizedStringValueFor(
+                            "save", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.save)
+                            }
+                        })
+                    } else {
+                        _save.value = context.getString(R.string.save)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _thisFolderHasNoSubfolders.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "this_folder_has_no_subfolders",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.this_folder_has_no_subfolders)
+                                }
+                            })
+                    } else {
+                        _thisFolderHasNoSubfolders.value =
+                            context.getString(R.string.this_folder_has_no_subfolders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _saveInThisFolder.value = (translationsRepo.getLocalizedStringValueFor(
+                            "save_in_this_folder", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.save_in_this_folder)
+                            }
+                        })
+                    } else {
+                        _saveInThisFolder.value = context.getString(R.string.save_in_this_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addANewPanelToTheShelf.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "add_a_new_panel_to_the_shelf",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.add_a_new_panel_to_the_shelf)
+                                }
+                            })
+                    } else {
+                        _addANewPanelToTheShelf.value =
+                            context.getString(R.string.add_a_new_panel_to_the_shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _panelName.value = (translationsRepo.getLocalizedStringValueFor(
+                            "panel_name", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.panel_name)
+                            }
+                        })
+                    } else {
+                        _panelName.value = context.getString(R.string.panel_name)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addNewPanel.value = (translationsRepo.getLocalizedStringValueFor(
+                            "add_new_panel", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.add_new_panel)
+                            }
+                        })
+                    } else {
+                        _addNewPanel.value = context.getString(R.string.add_new_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderNameCannnotBeEmpty.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folder_name_cannnot_be_empty",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folder_name_cannnot_be_empty)
+                                }
+                            })
+                    } else {
+                        _folderNameCannnotBeEmpty.value =
+                            context.getString(R.string.folder_name_cannnot_be_empty)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderName.value = (translationsRepo.getLocalizedStringValueFor(
+                            "folder_name", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.folder_name)
+                            }
+                        })
+                    } else {
+                        _folderName.value = context.getString(R.string.folder_name)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noteForCreatingTheFolder.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "note_for_creating_the_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.note_for_creating_the_folder)
+                                }
+                            })
+                    } else {
+                        _noteForCreatingTheFolder.value =
+                            context.getString(R.string.note_for_creating_the_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _createANewFolderIn.value = (translationsRepo.getLocalizedStringValueFor(
+                            "create_a_new_folder_in",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.create_a_new_folder_in)
+                            }
+                        })
+                    } else {
+                        _createANewFolderIn.value =
+                            context.getString(R.string.create_a_new_folder_in)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _createANewFolder.value = (translationsRepo.getLocalizedStringValueFor(
+                            "create_a_new_folder", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.create_a_new_folder)
+                            }
+                        })
+                    } else {
+                        _createANewFolder.value = context.getString(R.string.create_a_new_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _create.value = (translationsRepo.getLocalizedStringValueFor(
+                            "create", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.create)
+                            }
+                        })
+                    } else {
+                        _create.value = context.getString(R.string.create)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureWantToDelete.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_want_to_delete",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_want_to_delete)
+                                }
+                            })
+                    } else {
+                        _areYouSureWantToDelete.value =
+                            context.getString(R.string.are_you_sure_want_to_delete)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _permanentlyDeleteThePanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "permanently_delete_the_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.permanently_delete_the_panel)
+                                }
+                            })
+                    } else {
+                        _permanentlyDeleteThePanel.value =
+                            context.getString(R.string.permanently_delete_the_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _onceDeletedThisPanelCannotBeRestarted.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "once_deleted_this_panel_cannot_be_restarted",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.once_deleted_this_panel_cannot_be_restarted)
+                                }
+                            })
+                    } else {
+                        _onceDeletedThisPanelCannotBeRestarted.value =
+                            context.getString(R.string.once_deleted_this_panel_cannot_be_restarted)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteIt.value = (translationsRepo.getLocalizedStringValueFor(
+                            "delete_it", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.delete_it)
+                            }
+                        })
+                    } else {
+                        _deleteIt.value = context.getString(R.string.delete_it)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "this_folder_deletion_will_also_delete_all_its_internal_folders",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.this_folder_deletion_will_also_delete_all_its_internal_folders)
+                                }
+                            })
+                    } else {
+                        _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value =
+                            context.getString(R.string.this_folder_deletion_will_also_delete_all_its_internal_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureYouWantToDeleteAllSelectedLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_you_want_to_delete_all_selected_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_links)
+                                }
+                            })
+                    } else {
+                        _areYouSureYouWantToDeleteAllSelectedLinks.value =
+                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureYouWantToDeleteTheLink.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_you_want_to_delete_the_link",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_you_want_to_delete_the_link)
+                                }
+                            })
+                    } else {
+                        _areYouSureYouWantToDeleteTheLink.value =
+                            context.getString(R.string.are_you_sure_you_want_to_delete_the_link)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureYouWantToDeleteAllSelectedFolders.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_you_want_to_delete_all_selected_folders",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_folders)
+                                }
+                            })
+                    } else {
+                        _areYouSureYouWantToDeleteAllSelectedFolders.value =
+                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureWantToDeleteThe.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_want_to_delete_the",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_want_to_delete_the)
+                                }
+                            })
+                    } else {
+                        _areYouSureWantToDeleteThe.value =
+                            context.getString(R.string.are_you_sure_want_to_delete_the)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folder.value = (translationsRepo.getLocalizedStringValueFor(
+                            "folder", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.folder)
+                            }
+                        })
+                    } else {
+                        _folder.value = context.getString(R.string.folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureYouWantToDeleteAllSelectedItems.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_you_want_to_delete_all_selected_items",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_items)
+                                }
+                            })
+                    } else {
+                        _areYouSureYouWantToDeleteAllSelectedItems.value =
+                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_items)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureYouWantToDeleteAllFoldersAndLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_you_want_to_delete_all_folders_and_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_folders_and_links)
+                                }
+                            })
+                    } else {
+                        _areYouSureYouWantToDeleteAllFoldersAndLinks.value =
+                            context.getString(R.string.are_you_sure_you_want_to_delete_all_folders_and_links)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noActivityFoundToHandleIntent.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_activity_found_to_handle_intent",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_activity_found_to_handle_intent)
+                                }
+                            })
+                    } else {
+                        _noActivityFoundToHandleIntent.value =
+                            context.getString(R.string.no_activity_found_to_handle_intent)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkCopiedToTheClipboard.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "link_copied_to_the_clipboard",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.link_copied_to_the_clipboard)
+                                }
+                            })
+                    } else {
+                        _linkCopiedToTheClipboard.value =
+                            context.getString(R.string.link_copied_to_the_clipboard)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _changePanelName.value = (translationsRepo.getLocalizedStringValueFor(
+                            "change_panel_name", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.change_panel_name)
+                            }
+                        })
+                    } else {
+                        _changePanelName.value = context.getString(R.string.change_panel_name)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _edit.value = (translationsRepo.getLocalizedStringValueFor(
+                            "edit", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.edit)
+                            }
+                        })
+                    } else {
+                        _edit.value = context.getString(R.string.edit)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newNameForPanel.value = (translationsRepo.getLocalizedStringValueFor(
+                            "new_name_for_panel", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.new_name_for_panel)
+                            }
+                        })
+                    } else {
+                        _newNameForPanel.value = context.getString(R.string.new_name_for_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _changeNoteOnly.value = (translationsRepo.getLocalizedStringValueFor(
+                            "change_note_only", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.change_note_only)
+                            }
+                        })
+                    } else {
+                        _changeNoteOnly.value = context.getString(R.string.change_note_only)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _changeBothNameAndNote.value = (translationsRepo.getLocalizedStringValueFor(
+                            "change_both_name_and_note",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.change_both_name_and_note)
+                            }
+                        })
+                    } else {
+                        _changeBothNameAndNote.value =
+                            context.getString(R.string.change_both_name_and_note)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _titleCannotBeEmpty.value = (translationsRepo.getLocalizedStringValueFor(
+                            "title_cannot_be_empty",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.title_cannot_be_empty)
+                            }
+                        })
+                    } else {
+                        _titleCannotBeEmpty.value =
+                            context.getString(R.string.title_cannot_be_empty)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _changeLinkData.value = (translationsRepo.getLocalizedStringValueFor(
+                            "change_link_data", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.change_link_data)
+                            }
+                        })
+                    } else {
+                        _changeLinkData.value = context.getString(R.string.change_link_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newName.value = (translationsRepo.getLocalizedStringValueFor(
+                            "new_name", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.new_name)
+                            }
+                        })
+                    } else {
+                        _newName.value = context.getString(R.string.new_name)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newTitle.value = (translationsRepo.getLocalizedStringValueFor(
+                            "new_title", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.new_title)
+                            }
+                        })
+                    } else {
+                        _newTitle.value = context.getString(R.string.new_title)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newNote.value = (translationsRepo.getLocalizedStringValueFor(
+                            "new_note", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.new_note)
+                            }
+                        })
+                    } else {
+                        _newNote.value = context.getString(R.string.new_note)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "leave_above_field_empty_if_you_do_not_want_to_change_the_note",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note)
+                                }
+                            })
+                    } else {
+                        _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value =
+                            context.getString(R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _home.value = (translationsRepo.getLocalizedStringValueFor(
+                            "home", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.home)
+                            }
+                        })
+                    } else {
+                        _home.value = context.getString(R.string.home)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _shelfNameAlreadyExists.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "shelf_name_already_exists",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.shelf_name_already_exists)
+                                }
+                            })
+                    } else {
+                        _shelfNameAlreadyExists.value =
+                            context.getString(R.string.shelf_name_already_exists)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newestToOldest.value = (translationsRepo.getLocalizedStringValueFor(
+                            "newest_to_oldest", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.newest_to_oldest)
+                            }
+                        })
+                    } else {
+                        _newestToOldest.value = context.getString(R.string.newest_to_oldest)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _oldestToNewest.value = (translationsRepo.getLocalizedStringValueFor(
+                            "oldest_to_newest", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.oldest_to_newest)
+                            }
+                        })
+                    } else {
+                        _oldestToNewest.value = context.getString(R.string.oldest_to_newest)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _aToZSequence.value = (translationsRepo.getLocalizedStringValueFor(
+                            "a_to_z_sequence", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.a_to_z_sequence)
+                            }
+                        })
+                    } else {
+                        _aToZSequence.value = context.getString(R.string.a_to_z_sequence)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _ztoASequence.value = (translationsRepo.getLocalizedStringValueFor(
+                            "z_to_a_sequence", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.z_to_a_sequence)
+                            }
+                        })
+                    } else {
+                        _ztoASequence.value = context.getString(R.string.z_to_a_sequence)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _search.value = (translationsRepo.getLocalizedStringValueFor(
+                            "search", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.search)
+                            }
+                        })
+                    } else {
+                        _search.value = context.getString(R.string.search)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _collections.value = (translationsRepo.getLocalizedStringValueFor(
+                            "collections", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.collections)
+                            }
+                        })
+                    } else {
+                        _collections.value = context.getString(R.string.collections)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _settings.value = (translationsRepo.getLocalizedStringValueFor(
+                            "settings", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.settings)
+                            }
+                        })
+                    } else {
+                        _settings.value = context.getString(R.string.settings)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _links.value = (translationsRepo.getLocalizedStringValueFor(
+                            "links", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.links)
+                            }
+                        })
+                    } else {
+                        _links.value = context.getString(R.string.links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedFoldersUnarchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_folders_unarchived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_folders_unarchived_successfully)
+                                }
+                            })
+                    } else {
+                        _selectedFoldersUnarchivedSuccessfully.value =
+                            context.getString(R.string.selected_folders_unarchived_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedLinksDeletedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_links_deleted_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_links_deleted_successfully)
+                                }
+                            })
+                    } else {
+                        _selectedLinksDeletedSuccessfully.value =
+                            context.getString(R.string.selected_links_deleted_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedFoldersDeletedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_folders_deleted_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_folders_deleted_successfully)
+                                }
+                            })
+                    } else {
+                        _selectedFoldersDeletedSuccessfully.value =
+                            context.getString(R.string.selected_folders_deleted_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedLinksUnarchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_links_unarchived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_links_unarchived_successfully)
+                                }
+                            })
+                    } else {
+                        _selectedLinksUnarchivedSuccessfully.value =
+                            context.getString(R.string.selected_links_unarchived_successfully)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkUnarchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "link_unarchived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.link_unarchived_successfully)
+                                }
+                            })
+                    } else {
+                        _linkUnarchivedSuccessfully.value =
+                            context.getString(R.string.link_unarchived_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkInfoUpdatedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "link_info_updated_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.link_info_updated_successfully)
+                                }
+                            })
+                    } else {
+                        _linkInfoUpdatedSuccessfully.value =
+                            context.getString(R.string.link_info_updated_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderInfoUpdatedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folder_info_updated_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folder_info_updated_successfully)
+                                }
+                            })
+                    } else {
+                        _folderInfoUpdatedSuccessfully.value =
+                            context.getString(R.string.folder_info_updated_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _archivedLinkDeletedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "archived_link_deleted_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.archived_link_deleted_successfully)
+                                }
+                            })
+                    } else {
+                        _archivedLinkDeletedSuccessfully.value =
+                            context.getString(R.string.archived_link_deleted_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deletedTheNoteSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "deleted_the_note_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.deleted_the_note_successfully)
+                                }
+                            })
+                    } else {
+                        _deletedTheNoteSuccessfully.value =
+                            context.getString(R.string.deleted_the_note_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderUnarchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folder_unarchived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folder_unarchived_successfully)
+                                }
+                            })
+                    } else {
+                        _folderUnarchivedSuccessfully.value =
+                            context.getString(R.string.folder_unarchived_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noLinksWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
+                            "no_links_were_archived",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.no_links_were_archived)
+                            }
+                        })
+                    } else {
+                        _noLinksWereArchived.value =
+                            context.getString(R.string.no_links_were_archived)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noFoldersWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
+                            "no_folders_were_archived",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.no_folders_were_archived)
+                            }
+                        })
+                    } else {
+                        _noFoldersWereArchived.value =
+                            context.getString(R.string.no_folders_were_archived)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _itemsSelected.value = (translationsRepo.getLocalizedStringValueFor(
+                            "items_selected", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.items_selected)
+                            }
+                        })
+                    } else {
+                        _itemsSelected.value = context.getString(R.string.items_selected)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _archive.value = (translationsRepo.getLocalizedStringValueFor(
+                            "archive", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.archive)
+                            }
+                        })
+                    } else {
+                        _archive.value = context.getString(R.string.archive)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "this_folder_does_not_contain_any_links_add_links_for_further_usage",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage)
+                                }
+                            })
+                    } else {
+                        _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value =
+                            context.getString(R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noLinksWereFound.value = (translationsRepo.getLocalizedStringValueFor(
+                            "no_links_were_found", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.no_links_were_found)
+                            }
+                        })
+                    } else {
+                        _noLinksWereFound.value = context.getString(R.string.no_links_were_found)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noImportantLinksWereFound.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_important_links_were_found",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_important_links_were_found)
+                                }
+                            })
+                    } else {
+                        _noImportantLinksWereFound.value =
+                            context.getString(R.string.no_important_links_were_found)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noLinksFoundInThisArchivedFolder.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_links_found_in_this_archived_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_links_found_in_this_archived_folder)
+                                }
+                            })
+                    } else {
+                        _noLinksFoundInThisArchivedFolder.value =
+                            context.getString(R.string.no_links_found_in_this_archived_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deletedTheLinkSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "deleted_the_link_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.deleted_the_link_successfully)
+                                }
+                            })
+                    } else {
+                        _deletedTheLinkSuccessfully.value =
+                            context.getString(R.string.deleted_the_link_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _foldersSelected.value = (translationsRepo.getLocalizedStringValueFor(
+                            "folders_selected", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.folders_selected)
+                            }
+                        })
+                    } else {
+                        _foldersSelected.value = context.getString(R.string.folders_selected)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectAllFolders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "select_all_folders", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.select_all_folders)
+                            }
+                        })
+                    } else {
+                        _selectAllFolders.value = context.getString(R.string.select_all_folders)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedFoldersArchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_folders_archived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_folders_archived_successfully)
+                                }
+                            })
+                    } else {
+                        _selectedFoldersArchivedSuccessfully.value =
+                            context.getString(R.string.selected_folders_archived_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newLinkAddedToTheFolder.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "new_link_added_to_the_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.new_link_added_to_the_folder)
+                                }
+                            })
+                    } else {
+                        _newLinkAddedToTheFolder.value =
+                            context.getString(R.string.new_link_added_to_the_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newLinkAddedToImportantLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "new_link_added_to_important_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.new_link_added_to_important_links)
+                                }
+                            })
+                    } else {
+                        _newLinkAddedToImportantLinks.value =
+                            context.getString(R.string.new_link_added_to_important_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newLinkAddedToSavedLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "new_link_added_to_saved_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.new_link_added_to_saved_links)
+                                }
+                            })
+                    } else {
+                        _newLinkAddedToSavedLinks.value =
+                            context.getString(R.string.new_link_added_to_saved_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderArchivedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folder_archived_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folder_archived_successfully)
+                                }
+                            })
+                    } else {
+                        _folderArchivedSuccessfully.value =
+                            context.getString(R.string.folder_archived_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _folderCreatedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folder_created_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folder_created_successfully)
+                                }
+                            })
+                    } else {
+                        _folderCreatedSuccessfully.value =
+                            context.getString(R.string.folder_created_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deletedTheFolder.value = (translationsRepo.getLocalizedStringValueFor(
+                            "deleted_the_folder", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.deleted_the_folder)
+                            }
+                        })
+                    } else {
+                        _deletedTheFolder.value = context.getString(R.string.deleted_the_folder)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _removedLinkFromImportantLinksSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "removed_link_from_important_links_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.removed_link_from_important_links_successfully)
+                                }
+                            })
+                    } else {
+                        _removedLinkFromImportantLinksSuccessfully.value =
+                            context.getString(R.string.removed_link_from_important_links_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addedLinkToImportantLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "added_link_to_important_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.added_link_to_important_links)
+                                }
+                            })
+                    } else {
+                        _addedLinkToImportantLinks.value =
+                            context.getString(R.string.added_link_to_important_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _welcomeBackToLinkora.value = (translationsRepo.getLocalizedStringValueFor(
+                            "welcome_back_to_linkora",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.welcome_back_to_linkora)
+                            }
+                        })
+                    } else {
+                        _welcomeBackToLinkora.value =
+                            context.getString(R.string.welcome_back_to_linkora)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _goodMorning.value = (translationsRepo.getLocalizedStringValueFor(
+                            "good_morning", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.good_morning)
+                            }
+                        })
+                    } else {
+                        _goodMorning.value = context.getString(R.string.good_morning)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _goodAfternoon.value = (translationsRepo.getLocalizedStringValueFor(
+                            "good_afternoon", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.good_afternoon)
+                            }
+                        })
+                    } else {
+                        _goodAfternoon.value = context.getString(R.string.good_afternoon)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _goodEvening.value = (translationsRepo.getLocalizedStringValueFor(
+                            "good_evening", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.good_evening)
+                            }
+                        })
+                    } else {
+                        _goodEvening.value = context.getString(R.string.good_evening)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _goodNight.value = (translationsRepo.getLocalizedStringValueFor(
+                            "good_night", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.good_night)
+                            }
+                        })
+                    } else {
+                        _goodNight.value = context.getString(R.string.good_night)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _heyHi.value = (translationsRepo.getLocalizedStringValueFor(
+                            "hey_hi", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.hey_hi)
+                            }
+                        })
+                    } else {
+                        _heyHi.value = context.getString(R.string.hey_hi)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _defaultShelf.value = (translationsRepo.getLocalizedStringValueFor(
+                            "default_shelf", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.default_shelf)
+                            }
+                        })
+                    } else {
+                        _defaultShelf.value = context.getString(R.string.default_shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _toAddFoldersIntoThisPanelClickOnThe.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "to_add_folders_into_this_panel_click_on_the",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.to_add_folders_into_this_panel_click_on_the)
+                                }
+                            })
+                    } else {
+                        _toAddFoldersIntoThisPanelClickOnThe.value =
+                            context.getString(R.string.to_add_folders_into_this_panel_click_on_the)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _atThe.value = (translationsRepo.getLocalizedStringValueFor(
+                            "at_the", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.at_the)
+                            }
+                        })
+                    } else {
+                        _atThe.value = context.getString(R.string.at_the)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _bottomOfTheShelf.value = (translationsRepo.getLocalizedStringValueFor(
+                            "bottom_of_the_shelf", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.bottom_of_the_shelf)
+                            }
+                        })
+                    } else {
+                        _bottomOfTheShelf.value = context.getString(R.string.bottom_of_the_shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _period.value = (translationsRepo.getLocalizedStringValueFor(
+                            "period", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.period)
+                            }
+                        })
+                    } else {
+                        _period.value = context.getString(R.string.period)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _and.value = (translationsRepo.getLocalizedStringValueFor(
+                            "and", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.and)
+                            }
+                        })
+                    } else {
+                        _and.value = context.getString(R.string.and)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _canBeAccessedFromThe.value = (translationsRepo.getLocalizedStringValueFor(
+                            "can_be_accessed_from_the",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.can_be_accessed_from_the)
+                            }
+                        })
+                    } else {
+                        _canBeAccessedFromThe.value =
+                            context.getString(R.string.can_be_accessed_from_the)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _defaultPanelDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "default_panel_desc", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.default_panel_desc)
+                            }
+                        })
+                    } else {
+                        _defaultPanelDesc.value = context.getString(R.string.default_panel_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _archivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "archived_folders", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.archived_folders)
+                            }
+                        })
+                    } else {
+                        _archivedFolders.value = context.getString(R.string.archived_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _archivedLinks.value = (translationsRepo.getLocalizedStringValueFor(
+                            "archived_links", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.archived_links)
+                            }
+                        })
+                    } else {
+                        _archivedLinks.value = context.getString(R.string.archived_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _history.value = (translationsRepo.getLocalizedStringValueFor(
+                            "history", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.history)
+                            }
+                        })
+                    } else {
+                        _history.value = context.getString(R.string.history)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linksFromFolders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "links_from_folders", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.links_from_folders)
+                            }
+                        })
+                    } else {
+                        _linksFromFolders.value = context.getString(R.string.links_from_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _searchTitlesToFindLinksAndFolders.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "search_titles_to_find_links_and_folders",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.search_titles_to_find_links_and_folders)
+                                }
+                            })
+                    } else {
+                        _searchTitlesToFindLinksAndFolders.value =
+                            context.getString(R.string.search_titles_to_find_links_and_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _searchLinkoraRetrieveAllTheLinksYouSaved.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "search_linkora_retrieve_all_the_links_you_saved",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.search_linkora_retrieve_all_the_links_you_saved)
+                                }
+                            })
+                    } else {
+                        _searchLinkoraRetrieveAllTheLinksYouSaved.value =
+                            context.getString(R.string.search_linkora_retrieve_all_the_links_you_saved)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noMatchingItemsFoundTryADifferentSearch.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_matching_items_found_try_a_different_search",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_matching_items_found_try_a_different_search)
+                                }
+                            })
+                    } else {
+                        _noMatchingItemsFoundTryADifferentSearch.value =
+                            context.getString(R.string.no_matching_items_found_try_a_different_search)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _fromFolders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "from_folders", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.from_folders)
+                            }
+                        })
+                    } else {
+                        _fromFolders.value = context.getString(R.string.from_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _fromSavedLinks.value = (translationsRepo.getLocalizedStringValueFor(
+                            "from_saved_links", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.from_saved_links)
+                            }
+                        })
+                    } else {
+                        _fromSavedLinks.value = context.getString(R.string.from_saved_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _fromImportantLinks.value = (translationsRepo.getLocalizedStringValueFor(
+                            "from_important_links",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.from_important_links)
+                            }
+                        })
+                    } else {
+                        _fromImportantLinks.value = context.getString(R.string.from_important_links)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linksFromHistory.value = (translationsRepo.getLocalizedStringValueFor(
+                            "links_from_history", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.links_from_history)
+                            }
+                        })
+                    } else {
+                        _linksFromHistory.value = context.getString(R.string.links_from_history)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linksFromArchive.value = (translationsRepo.getLocalizedStringValueFor(
+                            "links_from_archive", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.links_from_archive)
+                            }
+                        })
+                    } else {
+                        _linksFromArchive.value = context.getString(R.string.links_from_archive)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _fromArchivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
+                            "from_archived_folders",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.from_archived_folders)
+                            }
+                        })
+                    } else {
+                        _fromArchivedFolders.value =
+                            context.getString(R.string.from_archived_folders)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noLinksWereFoundInHistory.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_links_were_found_in_history",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_links_were_found_in_history)
+                                }
+                            })
+                    } else {
+                        _noLinksWereFoundInHistory.value =
+                            context.getString(R.string.no_links_were_found_in_history)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _headsUp.value = (translationsRepo.getLocalizedStringValueFor(
+                            "heads_up", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.heads_up)
+                            }
+                        })
+                    } else {
+                        _headsUp.value = context.getString(R.string.heads_up)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _youAlreadyHaveLinksSaved.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "you_already_have_links_saved",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.you_already_have_links_saved)
+                                }
+                            })
+                    } else {
+                        _youAlreadyHaveLinksSaved.value =
+                            context.getString(R.string.you_already_have_links_saved)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _exportData.value = (translationsRepo.getLocalizedStringValueFor(
+                            "export_data", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.export_data)
+                            }
+                        })
+                    } else {
+                        _exportData.value = context.getString(R.string.export_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importDataAndKeepTheExistingData.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "import_data_and_keep_the_existing_data",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.import_data_and_keep_the_existing_data)
+                                }
+                            })
+                    } else {
+                        _importDataAndKeepTheExistingData.value =
+                            context.getString(R.string.import_data_and_keep_the_existing_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importDataExportAndDeleteTheExistingData.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "import_data_export_and_delete_the_existing_data",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.import_data_export_and_delete_the_existing_data)
+                                }
+                            })
+                    } else {
+                        _importDataExportAndDeleteTheExistingData.value =
+                            context.getString(R.string.import_data_export_and_delete_the_existing_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importDataAndDeleteTheExistingData.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "import_data_and_delete_the_existing_data",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.import_data_and_delete_the_existing_data)
+                                }
+                            })
+                    } else {
+                        _importDataAndDeleteTheExistingData.value =
+                            context.getString(R.string.import_data_and_delete_the_existing_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _incompatibleFileType.value = (translationsRepo.getLocalizedStringValueFor(
+                            "incompatible_file_type",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.incompatible_file_type)
+                            }
+                        })
+                    } else {
+                        _incompatibleFileType.value =
+                            context.getString(R.string.incompatible_file_type)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _dataConversionFailed.value = (translationsRepo.getLocalizedStringValueFor(
+                            "data_conversion_failed",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.data_conversion_failed)
+                            }
+                        })
+                    } else {
+                        _dataConversionFailed.value =
+                            context.getString(R.string.data_conversion_failed)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _selectedFileDoesNotMatchLinkoraSchema.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "selected_file_does_not_match_linkora_schema",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.selected_file_does_not_match_linkora_schema)
+                                }
+                            })
+                    } else {
+                        _selectedFileDoesNotMatchLinkoraSchema.value =
+                            context.getString(R.string.selected_file_does_not_match_linkora_schema)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _thereWasAnIssueImportingTheLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "there_was_an_issue_importing_the_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.there_was_an_issue_importing_the_links)
+                                }
+                            })
+                    } else {
+                        _thereWasAnIssueImportingTheLinks.value =
+                            context.getString(R.string.there_was_an_issue_importing_the_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _chooseAnotherFile.value = (translationsRepo.getLocalizedStringValueFor(
+                            "choose_another_file", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.choose_another_file)
+                            }
+                        })
+                    } else {
+                        _chooseAnotherFile.value = context.getString(R.string.choose_another_file)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _permissionDeniedTitle.value = (translationsRepo.getLocalizedStringValueFor(
+                            "permission_denied_title",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.permission_denied_title)
+                            }
+                        })
+                    } else {
+                        _permissionDeniedTitle.value =
+                            context.getString(R.string.permission_denied_title)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _permissionIsDeniedDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "permission_is_denied_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.permission_is_denied_desc)
+                                }
+                            })
+                    } else {
+                        _permissionIsDeniedDesc.value =
+                            context.getString(R.string.permission_is_denied_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _goToSettings.value = (translationsRepo.getLocalizedStringValueFor(
+                            "go_to_settings", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.go_to_settings)
+                            }
+                        })
+                    } else {
+                        _goToSettings.value = context.getString(R.string.go_to_settings)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _retrievingLatestInformation.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "retrieving_latest_information",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.retrieving_latest_information)
+                                }
+                            })
+                    } else {
+                        _retrievingLatestInformation.value =
+                            context.getString(R.string.retrieving_latest_information)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _newUpdateIsAvailable.value = (translationsRepo.getLocalizedStringValueFor(
+                            "new_update_is_available",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.new_update_is_available)
+                            }
+                        })
+                    } else {
+                        _newUpdateIsAvailable.value =
+                            context.getString(R.string.new_update_is_available)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _currentVersion.value = (translationsRepo.getLocalizedStringValueFor(
+                            "current_version", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.current_version)
+                            }
+                        })
+                    } else {
+                        _currentVersion.value = context.getString(R.string.current_version)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _latestVersion.value = (translationsRepo.getLocalizedStringValueFor(
+                            "latest_version", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.latest_version)
+                            }
+                        })
+                    } else {
+                        _latestVersion.value = context.getString(R.string.latest_version)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkora.value = (translationsRepo.getLocalizedStringValueFor(
+                            "linkora", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.app_name)
+                            }
+                        })
+                    } else {
+                        _linkora.value = context.getString(R.string.app_name)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _releasePageOnGithub.value = (translationsRepo.getLocalizedStringValueFor(
+                            "release_page_on_github",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.release_page_on_github)
+                            }
+                        })
+                    } else {
+                        _releasePageOnGithub.value =
+                            context.getString(R.string.release_page_on_github)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _redirectToLatestReleasePage.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "redirect_to_latest_release_page",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.redirect_to_latest_release_page)
+                                }
+                            })
+                    } else {
+                        _redirectToLatestReleasePage.value =
+                            context.getString(R.string.redirect_to_latest_release_page)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _download.value = (translationsRepo.getLocalizedStringValueFor(
+                            "download", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.download)
+                            }
+                        })
+                    } else {
+                        _download.value = context.getString(R.string.download)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _beta.value = (translationsRepo.getLocalizedStringValueFor(
+                            "beta", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.beta)
+                            }
+                        })
+                    } else {
+                        _beta.value = context.getString(R.string.beta)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _language.value = (translationsRepo.getLocalizedStringValueFor(
+                            "language", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.language)
+                            }
+                        })
+                    } else {
+                        _language.value = context.getString(R.string.language)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _appLanguage.value = (translationsRepo.getLocalizedStringValueFor(
+                            "app_language", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.app_language)
+                            }
+                        })
+                    } else {
+                        _appLanguage.value = context.getString(R.string.app_language)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _resetAppLanguage.value = (translationsRepo.getLocalizedStringValueFor(
+                            "reset_app_language", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.reset_app_language)
+                            }
+                        })
+                    } else {
+                        _resetAppLanguage.value = context.getString(R.string.reset_app_language)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _availableLanguages.value = (translationsRepo.getLocalizedStringValueFor(
+                            "available_languages", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.available_languages)
+                            }
+                        })
+                    } else {
+                        _availableLanguages.value = context.getString(R.string.available_languages)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _representsSwitchingToTheRespectiveLanguage.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "represents_switching_to_the_respective_language",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.represents_switching_to_the_respective_language)
+                                }
+                            })
+                    } else {
+                        _representsSwitchingToTheRespectiveLanguage.value =
+                            context.getString(R.string.represents_switching_to_the_respective_language)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _contributingToTheLanguageStrings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "contributing_to_the_language_strings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.contributing_to_the_language_strings)
+                                }
+                            })
+                    } else {
+                        _contributingToTheLanguageStrings.value =
+                            context.getString(R.string.contributing_to_the_language_strings)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _about.value = (translationsRepo.getLocalizedStringValueFor(
+                            "about", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.about)
+                            }
+                        })
+                    } else {
+                        _about.value = context.getString(R.string.about)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _checkForLatestVersion.value = (translationsRepo.getLocalizedStringValueFor(
+                            "check_for_latest_version",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.check_for_latest_version)
+                            }
+                        })
+                    } else {
+                        _checkForLatestVersion.value =
+                            context.getString(R.string.check_for_latest_version)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _networkError.value = (translationsRepo.getLocalizedStringValueFor(
+                            "network_error", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.network_error)
+                            }
+                        })
+                    } else {
+                        _networkError.value = context.getString(R.string.network_error)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _isNowAvailable.value = (translationsRepo.getLocalizedStringValueFor(
+                            "is_now_available", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.is_now_available)
+                            }
+                        })
+                    } else {
+                        _isNowAvailable.value = context.getString(R.string.is_now_available)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _youAreUsingLatestVersionOfLinkora.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "you_are_using_latest_version_of_linkora",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.you_are_using_latest_version_of_linkora)
+                                }
+                            })
+                    } else {
+                        _youAreUsingLatestVersionOfLinkora.value =
+                            context.getString(R.string.you_are_using_latest_version_of_linkora)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _githubDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "github_desc", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.github_desc)
+                            }
+                        })
+                    } else {
+                        _githubDesc.value = context.getString(R.string.github_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _github.value = (translationsRepo.getLocalizedStringValueFor(
+                            "github", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.github)
+                            }
+                        })
+                    } else {
+                        _github.value = context.getString(R.string.github)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _follow.value = (translationsRepo.getLocalizedStringValueFor(
+                            "follow", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.follow)
+                            }
+                        })
+                    } else {
+                        _follow.value = context.getString(R.string.follow)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _twitterDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "twitter_desc", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.twitter_desc)
+                            }
+                        })
+                    } else {
+                        _twitterDesc.value = context.getString(R.string.twitter_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _twitter.value = (translationsRepo.getLocalizedStringValueFor(
+                            "twitter", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.twitter)
+                            }
+                        })
+                    } else {
+                        _twitter.value = context.getString(R.string.twitter)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _autoCheckForUpdates.value = (translationsRepo.getLocalizedStringValueFor(
+                            "auto_check_for_updates",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.auto_check_for_updates)
+                            }
+                        })
+                    } else {
+                        _autoCheckForUpdates.value =
+                            context.getString(R.string.auto_check_for_updates)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _autoCheckForUpdatesDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "auto_check_for_updates_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.auto_check_for_updates_desc)
+                                }
+                            })
+                    } else {
+                        _autoCheckForUpdatesDesc.value =
+                            context.getString(R.string.auto_check_for_updates_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _acknowledgments.value = (translationsRepo.getLocalizedStringValueFor(
+                            "acknowledgments", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.acknowledgments)
+                            }
+                        })
+                    } else {
+                        _acknowledgments.value = context.getString(R.string.acknowledgments)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _data.value = (translationsRepo.getLocalizedStringValueFor(
+                            "data", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.data)
+                            }
+                        })
+                    } else {
+                        _data.value = context.getString(R.string.data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importFeatureIsPolishedNotPerfectDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "import_feature_is_polished_not_perfect_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.import_feature_is_polished_not_perfect_desc)
+                                }
+                            })
+                    } else {
+                        _importFeatureIsPolishedNotPerfectDesc.value =
+                            context.getString(R.string.import_feature_is_polished_not_perfect_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _successfullyExported.value = (translationsRepo.getLocalizedStringValueFor(
+                            "successfully_exported",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.successfully_exported)
+                            }
+                        })
+                    } else {
+                        _successfullyExported.value =
+                            context.getString(R.string.successfully_exported)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _privacy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "privacy", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.privacy)
+                            }
+                        })
+                    } else {
+                        _privacy.value = context.getString(R.string.privacy)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _theme.value = (translationsRepo.getLocalizedStringValueFor(
+                            "theme", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.theme)
+                            }
+                        })
+                    } else {
+                        _theme.value = context.getString(R.string.theme)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _followSystemTheme.value = (translationsRepo.getLocalizedStringValueFor(
+                            "follow_system_theme", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.follow_system_theme)
+                            }
+                        })
+                    } else {
+                        _followSystemTheme.value = context.getString(R.string.follow_system_theme)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useDarkMode.value = (translationsRepo.getLocalizedStringValueFor(
+                            "use_dark_mode", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.use_dark_mode)
+                            }
+                        })
+                    } else {
+                        _useDarkMode.value = context.getString(R.string.use_dark_mode)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useDynamicTheming.value = (translationsRepo.getLocalizedStringValueFor(
+                            "use_dynamic_theming", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.use_dynamic_theming)
+                            }
+                        })
+                    } else {
+                        _useDynamicTheming.value = context.getString(R.string.use_dynamic_theming)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useDynamicThemingDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "use_dynamic_theming_desc",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.use_dynamic_theming_desc)
+                            }
+                        })
+                    } else {
+                        _useDynamicThemingDesc.value =
+                            context.getString(R.string.use_dynamic_theming_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _kotlin.value = (translationsRepo.getLocalizedStringValueFor(
+                            "kotlin", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.kotlin)
+                            }
+                        })
+                    } else {
+                        _kotlin.value = context.getString(R.string.kotlin)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _apacheLicense.value = (translationsRepo.getLocalizedStringValueFor(
+                            "apache_license", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.apache_license)
+                            }
+                        })
+                    } else {
+                        _apacheLicense.value = context.getString(R.string.apache_license)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _androidJetpack.value = (translationsRepo.getLocalizedStringValueFor(
+                            "android_jetpack", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.android_jetpack)
+                            }
+                        })
+                    } else {
+                        _androidJetpack.value = context.getString(R.string.android_jetpack)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _coil.value = (translationsRepo.getLocalizedStringValueFor(
+                            "coil", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.coil)
+                            }
+                        })
+                    } else {
+                        _coil.value = context.getString(R.string.coil)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _materialDesign3.value = (translationsRepo.getLocalizedStringValueFor(
+                            "material_design_3", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.material_design_3)
+                            }
+                        })
+                    } else {
+                        _materialDesign3.value = context.getString(R.string.material_design_3)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _materialIcons.value = (translationsRepo.getLocalizedStringValueFor(
+                            "material_icons", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.material_icons)
+                            }
+                        })
+                    } else {
+                        _materialIcons.value = context.getString(R.string.material_icons)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sendCrashReports.value = (translationsRepo.getLocalizedStringValueFor(
+                            "send_crash_reports", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.send_crash_reports)
+                            }
+                        })
+                    } else {
+                        _sendCrashReports.value = context.getString(R.string.send_crash_reports)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useInAppBrowser.value = (translationsRepo.getLocalizedStringValueFor(
+                            "use_in_app_browser", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.use_in_app_browser)
+                            }
+                        })
+                    } else {
+                        _useInAppBrowser.value = context.getString(R.string.use_in_app_browser)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _useInAppBrowserDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "use_in_app_browser_desc",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.use_in_app_browser_desc)
+                            }
+                        })
+                    } else {
+                        _useInAppBrowserDesc.value =
+                            context.getString(R.string.use_in_app_browser_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _enableHomeScreen.value = (translationsRepo.getLocalizedStringValueFor(
+                            "enable_home_screen", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.enable_home_screen)
+                            }
+                        })
+                    } else {
+                        _enableHomeScreen.value = context.getString(R.string.enable_home_screen)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _enableHomeScreenDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "enable_home_screen_desc",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.enable_home_screen_desc)
+                            }
+                        })
+                    } else {
+                        _enableHomeScreenDesc.value =
+                            context.getString(R.string.enable_home_screen_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _autoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
+                            "auto_detect_title", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.auto_detect_title)
+                            }
+                        })
+                    } else {
+                        _autoDetectTitle.value = context.getString(R.string.auto_detect_title)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _autoDetectTitleDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "auto_detect_title_desc",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.auto_detect_title_desc)
+                            }
+                        })
+                    } else {
+                        _autoDetectTitleDesc.value =
+                            context.getString(R.string.auto_detect_title_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showDescriptionForSettings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_description_for_settings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_description_for_settings)
+                                }
+                            })
+                    } else {
+                        _showDescriptionForSettings.value =
+                            context.getString(R.string.show_description_for_settings)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showDescriptionForSettingsDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_description_for_settings_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_description_for_settings_desc)
+                                }
+                            })
+                    } else {
+                        _showDescriptionForSettingsDesc.value =
+                            context.getString(R.string.show_description_for_settings_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importData.value = (translationsRepo.getLocalizedStringValueFor(
+                            "import_data", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.import_data)
+                            }
+                        })
+                    } else {
+                        _importData.value = context.getString(R.string.import_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _importDataFromExternalJsonFile.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "import_data_from_external_json_file",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.import_data_from_external_json_file)
+                                }
+                            })
+                    } else {
+                        _importDataFromExternalJsonFile.value =
+                            context.getString(R.string.import_data_from_external_json_file)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _exportDataDesc.value = (translationsRepo.getLocalizedStringValueFor(
+                            "export_data_desc", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.export_data_desc)
+                            }
+                        })
+                    } else {
+                        _exportDataDesc.value = context.getString(R.string.export_data_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _addNewPanelToShelf.value = (translationsRepo.getLocalizedStringValueFor(
+                            "add_new_panel_to_shelf",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.add_new_panel_to_shelf)
+                            }
+                        })
+                    } else {
+                        _addNewPanelToShelf.value =
+                            context.getString(R.string.add_new_panel_to_shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _panelsInTheShelf.value = (translationsRepo.getLocalizedStringValueFor(
+                            "panels_in_the_shelf", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.panels_in_the_shelf)
+                            }
+                        })
+                    } else {
+                        _panelsInTheShelf.value = context.getString(R.string.panels_in_the_shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noPanelsFound.value = (translationsRepo.getLocalizedStringValueFor(
+                            "no_panels_found", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.no_panels_found)
+                            }
+                        })
+                    } else {
+                        _noPanelsFound.value = context.getString(R.string.no_panels_found)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _shelf.value = (translationsRepo.getLocalizedStringValueFor(
+                            "shelf", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.shelf)
+                            }
+                        })
+                    } else {
+                        _shelf.value = context.getString(R.string.shelf)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _foldersListedInThisPanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folders_listed_in_this_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folders_listed_in_this_panel)
+                                }
+                            })
+                    } else {
+                        _foldersListedInThisPanel.value =
+                            context.getString(R.string.folders_listed_in_this_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noFoldersFoundInThisPanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_folders_found_in_this_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_folders_found_in_this_panel)
+                                }
+                            })
+                    } else {
+                        _noFoldersFoundInThisPanel.value =
+                            context.getString(R.string.no_folders_found_in_this_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _youCanAddTheFollowingFoldersToThisPanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "you_can_add_the_following_folders_to_this_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.you_can_add_the_following_folders_to_this_panel)
+                                }
+                            })
+                    } else {
+                        _youCanAddTheFollowingFoldersToThisPanel.value =
+                            context.getString(R.string.you_can_add_the_following_folders_to_this_panel)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _archivedFoldersDataMigratedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "archived_folders_data_migrated_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.archived_folders_data_migrated_successfully)
+                                }
+                            })
+                    } else {
+                        _archivedFoldersDataMigratedSuccessfully.value =
+                            context.getString(R.string.archived_folders_data_migrated_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _rootFoldersDataMigratedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "root_folders_data_migrated_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.root_folders_data_migrated_successfully)
+                                }
+                            })
+                    } else {
+                        _rootFoldersDataMigratedSuccessfully.value =
+                            context.getString(R.string.root_folders_data_migrated_successfully)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteEntireDataPermanently.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "delete_entire_data_permanently",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.delete_entire_data_permanently)
+                                }
+                            })
+                    } else {
+                        _deleteEntireDataPermanently.value =
+                            context.getString(R.string.delete_entire_data_permanently)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deleteEntireDataPermanentlyDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "delete_entire_data_permanently_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.delete_entire_data_permanently_desc)
+                                }
+                            })
+                    } else {
+                        _deleteEntireDataPermanentlyDesc.value =
+                            context.getString(R.string.delete_entire_data_permanently_desc)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _everySingleBitOfDataIsStoredLocallyOnYourDevice.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "every_single_bit_of_data_is_stored_locally_on_your_device",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.every_single_bit_of_data_is_stored_locally_on_your_device)
+                                }
+                            })
+                    } else {
+                        _everySingleBitOfDataIsStoredLocallyOnYourDevice.value =
+                            context.getString(R.string.every_single_bit_of_data_is_stored_locally_on_your_device)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkoraCollectsDataRelatedToAppCrashes.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "linkora_collects_data_related_to_app_crashes",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.linkora_collects_data_related_to_app_crashes)
+                                }
+                            })
+                    } else {
+                        _linkoraCollectsDataRelatedToAppCrashes.value =
+                            context.getString(R.string.linkora_collects_data_related_to_app_crashes)
+                    }
+                },
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _permissionRequiredToWriteTheData.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "permission_required_to_write_the_data",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.permission_required_to_write_the_data)
+                                }
+                            })
+                    } else {
+                        _permissionRequiredToWriteTheData.value =
+                            context.getString(R.string.permission_required_to_write_the_data)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _deletedEntireDataFromTheLocalDatabase.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "deleted_entire_data_from_the_local_database",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.deleted_entire_data_from_the_local_database)
+                                }
+                            })
+                    } else {
+                        _deletedEntireDataFromTheLocalDatabase.value =
+                            context.getString(R.string.deleted_entire_data_from_the_local_database)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "linkora_would_not_be_possible_without_the_following_open_source_software_libraries",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries)
+                                }
+                            })
+                    } else {
+                        _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value =
+                            context.getString(R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_folders_are_found_create_folders_for_better_organization_of_your_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links)
+                                }
+                            })
+                    } else {
+                        _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value =
+                            context.getString(R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links)
+                    }
+                },
+
+                async {
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _sortFoldersBy.value = (translationsRepo.getLocalizedStringValueFor(
+                            "sort_folders_by", SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.sort_folders_by)
+                            }
+                        })
+                    } else {
+                        _sortFoldersBy.value = context.getString(R.string.sort_folders_by)
+                    }
+                },
                 async {
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _general.value =
