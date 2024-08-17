@@ -43,6 +43,8 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingImpl
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.data.remote.localization.LocalizationImpl
+import com.sakethh.linkora.data.remote.localization.LocalizationRepo
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataImpl
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesImpl
@@ -196,6 +198,12 @@ object AppModule {
     @Singleton
     fun provideTwitterMetaDataRepo(ktorClient: HttpClient): TwitterMetaDataRepo {
         return TwitterMetaDataImpl(ktorClient)
+    }
+
+    @Provides
+    @Singleton
+    fun provideLocalizationRepo(ktorClient: HttpClient): LocalizationRepo {
+        return LocalizationImpl(ktorClient)
     }
 
     @Provides
