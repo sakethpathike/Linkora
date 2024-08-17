@@ -136,22 +136,22 @@ open class HomeScreenVM @Inject constructor(
 
     val defaultScreenData =
         listOf(ArchiveScreenModal(name = LocalizedStrings.savedLinks.value, screen = { it, _ ->
-        ChildHomeScreen(
-            homeScreenType = HomeScreenType.SAVED_LINKS,
-            navController = it,
-            folderLinksData = emptyList(),
-            childFoldersData = emptyList(),
-            customWebTab
-        )
+            ChildHomeScreen(
+                homeScreenType = HomeScreenType.SAVED_LINKS,
+                navController = it,
+                folderLinksData = emptyList(),
+                childFoldersData = emptyList(),
+                customWebTab
+            )
         }), ArchiveScreenModal(name = LocalizedStrings.importantLinks.value, screen = { it, _ ->
-        ChildHomeScreen(
-            homeScreenType = HomeScreenType.IMP_LINKS,
-            it,
-            emptyList(),
-            emptyList(),
-            customWebTab
-        )
-    }))
+            ChildHomeScreen(
+                homeScreenType = HomeScreenType.IMP_LINKS,
+                it,
+                emptyList(),
+                emptyList(),
+                customWebTab
+            )
+        }))
 
     companion object {
         var currentHomeScreenType = HomeScreenType.SAVED_LINKS

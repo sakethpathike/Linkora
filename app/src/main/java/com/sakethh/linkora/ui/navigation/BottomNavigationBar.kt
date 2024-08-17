@@ -71,7 +71,7 @@ fun BottomNavigationBar(navController: NavController) {
                         )
                     }, label = {
                         Text(
-                            text = it.itemName,
+                            text = it.itemName.value,
                             style = MaterialTheme.typography.titleSmall,
                             maxLines = 1
                         )

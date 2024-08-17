@@ -134,63 +134,63 @@ fun SortingBottomSheetUI(
                     fun SortByUI() {
                         sortingBtmSheetVM.sortingBottomSheetData(context)
                             .forEach {
-                            Column(
-                                modifier = Modifier
-                                    .combinedClickable(interactionSource = remember {
-                                        MutableInteractionSource()
-                                    }, indication = null,
-                                        onClick = {
-                                            sortingBottomSheetParam.onSelectedAComponent(
-                                                it.sortingType, linksSortingSelectedState.value,
-                                                foldersSortingSelectedState.value
-                                            )
-                                            it.onClick()
-                                            coroutineScope.launch {
-                                                sortingBottomSheetParam.bottomModalSheetState.hide()
-                                                sortingBottomSheetParam.shouldBottomSheetVisible.value =
-                                                    false
-                                            }
-                                        },
-                                        onLongClick = {})
-                                    .pulsateEffect()
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            ) {
-                                Row(
+                                Column(
                                     modifier = Modifier
-                                        .padding(start = 15.dp)
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                sortingBottomSheetParam.onSelectedAComponent(
+                                                    it.sortingType, linksSortingSelectedState.value,
+                                                    foldersSortingSelectedState.value
+                                                )
+                                                it.onClick()
+                                                coroutineScope.launch {
+                                                    sortingBottomSheetParam.bottomModalSheetState.hide()
+                                                    sortingBottomSheetParam.shouldBottomSheetVisible.value =
+                                                        false
+                                                }
+                                            },
+                                            onLongClick = {})
+                                        .pulsateEffect()
                                         .fillMaxWidth()
-                                        .wrapContentHeight(),
-                                    horizontalArrangement = Arrangement.SpaceBetween,
-                                    verticalAlignment = Alignment.CenterVertically
+                                        .wrapContentHeight()
                                 ) {
-                                    androidx.compose.material3.Text(
-                                        text = it.sortingName,
-                                        fontSize = 16.sp,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        color = if (it.sortingType == SortingPreferences.valueOf(
-                                                SettingsPreference.selectedSortingType.value
-                                            ) && !didAnyCheckBoxStateChanged.value
-                                        ) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color
-                                    )
-                                    RadioButton(
-                                        selected = it.sortingType.name == SettingsPreference.selectedSortingType.value && !didAnyCheckBoxStateChanged.value,
-                                        onClick = {
-                                            sortingBottomSheetParam.onSelectedAComponent(
-                                                it.sortingType, linksSortingSelectedState.value,
-                                                foldersSortingSelectedState.value
-                                            )
-                                            it.onClick()
-                                            coroutineScope.launch {
-                                                sortingBottomSheetParam.bottomModalSheetState.hide()
-                                                sortingBottomSheetParam.shouldBottomSheetVisible.value =
-                                                    false
-                                            }
-                                        }, modifier = Modifier.padding(end = 5.dp)
-                                    )
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(start = 15.dp)
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        androidx.compose.material3.Text(
+                                            text = it.sortingName,
+                                            fontSize = 16.sp,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            color = if (it.sortingType == SortingPreferences.valueOf(
+                                                    SettingsPreference.selectedSortingType.value
+                                                ) && !didAnyCheckBoxStateChanged.value
+                                            ) MaterialTheme.colorScheme.primary else LocalTextStyle.current.color
+                                        )
+                                        RadioButton(
+                                            selected = it.sortingType.name == SettingsPreference.selectedSortingType.value && !didAnyCheckBoxStateChanged.value,
+                                            onClick = {
+                                                sortingBottomSheetParam.onSelectedAComponent(
+                                                    it.sortingType, linksSortingSelectedState.value,
+                                                    foldersSortingSelectedState.value
+                                                )
+                                                it.onClick()
+                                                coroutineScope.launch {
+                                                    sortingBottomSheetParam.bottomModalSheetState.hide()
+                                                    sortingBottomSheetParam.shouldBottomSheetVisible.value =
+                                                        false
+                                                }
+                                            }, modifier = Modifier.padding(end = 5.dp)
+                                        )
+                                    }
                                 }
                             }
-                        }
                     }
                     if (((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && foldersSortingSelectedState.value) || (sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN && linksSortingSelectedState.value)) || ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && foldersSortingSelectedState.value) || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN && linksSortingSelectedState.value)) {
                         androidx.compose.material3.Text(

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.ifNullOrBlank
+import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -237,7 +238,8 @@ object LocalizedStrings : ViewModel() {
     val deleteIt = _deleteIt
 
     private val _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders = mutableStateOf("")
-    val thisFolderDeletionWillAlsoDeleteAllItsInternalFolders = _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders
+    val thisFolderDeletionWillAlsoDeleteAllItsInternalFolders =
+        _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders
 
     private val _areYouSureYouWantToDeleteAllSelectedLinks = mutableStateOf("")
     val areYouSureYouWantToDeleteAllSelectedLinks = _areYouSureYouWantToDeleteAllSelectedLinks
@@ -589,6 +591,10 @@ object LocalizedStrings : ViewModel() {
     private val _representsSwitchingToTheRespectiveLanguage = mutableStateOf("")
     val representsSwitchingToTheRespectiveLanguage = _representsSwitchingToTheRespectiveLanguage
 
+    private val _representsDownloadingLanguageStringsFromRemoteServer = mutableStateOf("")
+    val representsDownloadingLanguageStringsFromRemoteServer =
+        _representsDownloadingLanguageStringsFromRemoteServer
+
     private val _contributingToTheLanguageStrings = mutableStateOf("")
     val contributingToTheLanguageStrings = _contributingToTheLanguageStrings
 
@@ -767,7 +773,7 @@ object LocalizedStrings : ViewModel() {
     val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =
         _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks
 
-
+    private var count = 0
     fun loadStrings(context: Context) {
 
         val translationsRepo =
@@ -776,6 +782,7 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             awaitAll(
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortHistoryLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_history_links_by",
@@ -792,6 +799,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortBy.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_by", SettingsPreference.preferredAppLanguageCode.value
@@ -805,6 +813,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortSavedLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_saved_links_by", SettingsPreference.preferredAppLanguageCode.value
@@ -819,6 +828,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortImportantLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_important_links_by",
@@ -835,6 +845,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortBasedOn.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_based_on", SettingsPreference.preferredAppLanguageCode.value
@@ -849,6 +860,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folders.value = (translationsRepo.getLocalizedStringValueFor(
                             "folders", SettingsPreference.preferredAppLanguageCode.value
@@ -862,6 +874,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addANewLinkInImportantLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -879,6 +892,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addANewLinkInSavedLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -896,6 +910,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addANewLinkIn.value = (translationsRepo.getLocalizedStringValueFor(
                             "add_a_new_link_in", SettingsPreference.preferredAppLanguageCode.value
@@ -910,6 +925,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addANewLink.value = (translationsRepo.getLocalizedStringValueFor(
                             "add_a_new_link", SettingsPreference.preferredAppLanguageCode.value
@@ -924,6 +940,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkAddress.value = (translationsRepo.getLocalizedStringValueFor(
                             "link_address", SettingsPreference.preferredAppLanguageCode.value
@@ -938,6 +955,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _titleForTheLink.value = (translationsRepo.getLocalizedStringValueFor(
                             "title_for_the_link", SettingsPreference.preferredAppLanguageCode.value
@@ -952,6 +970,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noteForSavingTheLink.value = (translationsRepo.getLocalizedStringValueFor(
                             "note_for_saving_the_link",
@@ -967,6 +986,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _titleWillBeAutomaticallyDetected.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -984,6 +1004,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addIn.value = (translationsRepo.getLocalizedStringValueFor(
                             "add_in", SettingsPreference.preferredAppLanguageCode.value
@@ -998,6 +1019,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _savedLinks.value = (translationsRepo.getLocalizedStringValueFor(
                             "saved_links", SettingsPreference.preferredAppLanguageCode.value
@@ -1012,6 +1034,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importantLinks.value = (translationsRepo.getLocalizedStringValueFor(
                             "important_links", SettingsPreference.preferredAppLanguageCode.value
@@ -1026,6 +1049,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _forceAutoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
                             "force_auto_detect_title",
@@ -1042,6 +1066,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _cancel.value = (translationsRepo.getLocalizedStringValueFor(
                             "cancel", SettingsPreference.preferredAppLanguageCode.value
@@ -1056,6 +1081,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _save.value = (translationsRepo.getLocalizedStringValueFor(
                             "save", SettingsPreference.preferredAppLanguageCode.value
@@ -1070,6 +1096,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _thisFolderHasNoSubfolders.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1087,6 +1114,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _saveInThisFolder.value = (translationsRepo.getLocalizedStringValueFor(
                             "save_in_this_folder", SettingsPreference.preferredAppLanguageCode.value
@@ -1101,6 +1129,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addANewPanelToTheShelf.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1118,6 +1147,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _panelName.value = (translationsRepo.getLocalizedStringValueFor(
                             "panel_name", SettingsPreference.preferredAppLanguageCode.value
@@ -1132,6 +1162,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addNewPanel.value = (translationsRepo.getLocalizedStringValueFor(
                             "add_new_panel", SettingsPreference.preferredAppLanguageCode.value
@@ -1146,6 +1177,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderNameCannnotBeEmpty.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1163,6 +1195,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderName.value = (translationsRepo.getLocalizedStringValueFor(
                             "folder_name", SettingsPreference.preferredAppLanguageCode.value
@@ -1176,6 +1209,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noteForCreatingTheFolder.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1193,6 +1227,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _createANewFolderIn.value = (translationsRepo.getLocalizedStringValueFor(
                             "create_a_new_folder_in",
@@ -1209,6 +1244,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _createANewFolder.value = (translationsRepo.getLocalizedStringValueFor(
                             "create_a_new_folder", SettingsPreference.preferredAppLanguageCode.value
@@ -1223,6 +1259,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _create.value = (translationsRepo.getLocalizedStringValueFor(
                             "create", SettingsPreference.preferredAppLanguageCode.value
@@ -1237,6 +1274,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureWantToDelete.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1254,6 +1292,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _permanentlyDeleteThePanel.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1271,6 +1310,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _onceDeletedThisPanelCannotBeRestarted.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1288,6 +1328,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteIt.value = (translationsRepo.getLocalizedStringValueFor(
                             "delete_it", SettingsPreference.preferredAppLanguageCode.value
@@ -1302,6 +1343,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1319,6 +1361,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureYouWantToDeleteAllSelectedLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1336,6 +1379,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureYouWantToDeleteTheLink.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1353,6 +1397,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureYouWantToDeleteAllSelectedFolders.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1370,6 +1415,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureWantToDeleteThe.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1387,6 +1433,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folder.value = (translationsRepo.getLocalizedStringValueFor(
                             "folder", SettingsPreference.preferredAppLanguageCode.value
@@ -1401,6 +1448,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureYouWantToDeleteAllSelectedItems.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1418,6 +1466,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _areYouSureYouWantToDeleteAllFoldersAndLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1434,6 +1483,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noActivityFoundToHandleIntent.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1451,6 +1501,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkCopiedToTheClipboard.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1468,6 +1519,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _changePanelName.value = (translationsRepo.getLocalizedStringValueFor(
                             "change_panel_name", SettingsPreference.preferredAppLanguageCode.value
@@ -1482,6 +1534,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _edit.value = (translationsRepo.getLocalizedStringValueFor(
                             "edit", SettingsPreference.preferredAppLanguageCode.value
@@ -1496,6 +1549,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newNameForPanel.value = (translationsRepo.getLocalizedStringValueFor(
                             "new_name_for_panel", SettingsPreference.preferredAppLanguageCode.value
@@ -1510,6 +1564,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _changeNoteOnly.value = (translationsRepo.getLocalizedStringValueFor(
                             "change_note_only", SettingsPreference.preferredAppLanguageCode.value
@@ -1524,6 +1579,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _changeBothNameAndNote.value = (translationsRepo.getLocalizedStringValueFor(
                             "change_both_name_and_note",
@@ -1540,6 +1596,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _titleCannotBeEmpty.value = (translationsRepo.getLocalizedStringValueFor(
                             "title_cannot_be_empty",
@@ -1556,6 +1613,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _changeLinkData.value = (translationsRepo.getLocalizedStringValueFor(
                             "change_link_data", SettingsPreference.preferredAppLanguageCode.value
@@ -1570,6 +1628,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newName.value = (translationsRepo.getLocalizedStringValueFor(
                             "new_name", SettingsPreference.preferredAppLanguageCode.value
@@ -1584,6 +1643,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newTitle.value = (translationsRepo.getLocalizedStringValueFor(
                             "new_title", SettingsPreference.preferredAppLanguageCode.value
@@ -1598,6 +1658,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newNote.value = (translationsRepo.getLocalizedStringValueFor(
                             "new_note", SettingsPreference.preferredAppLanguageCode.value
@@ -1611,6 +1672,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1628,6 +1690,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _home.value = (translationsRepo.getLocalizedStringValueFor(
                             "home", SettingsPreference.preferredAppLanguageCode.value
@@ -1642,6 +1705,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _shelfNameAlreadyExists.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1659,6 +1723,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newestToOldest.value = (translationsRepo.getLocalizedStringValueFor(
                             "newest_to_oldest", SettingsPreference.preferredAppLanguageCode.value
@@ -1673,6 +1738,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _oldestToNewest.value = (translationsRepo.getLocalizedStringValueFor(
                             "oldest_to_newest", SettingsPreference.preferredAppLanguageCode.value
@@ -1687,6 +1753,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _aToZSequence.value = (translationsRepo.getLocalizedStringValueFor(
                             "a_to_z_sequence", SettingsPreference.preferredAppLanguageCode.value
@@ -1701,6 +1768,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _ztoASequence.value = (translationsRepo.getLocalizedStringValueFor(
                             "z_to_a_sequence", SettingsPreference.preferredAppLanguageCode.value
@@ -1715,6 +1783,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _search.value = (translationsRepo.getLocalizedStringValueFor(
                             "search", SettingsPreference.preferredAppLanguageCode.value
@@ -1729,6 +1798,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _collections.value = (translationsRepo.getLocalizedStringValueFor(
                             "collections", SettingsPreference.preferredAppLanguageCode.value
@@ -1743,6 +1813,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _settings.value = (translationsRepo.getLocalizedStringValueFor(
                             "settings", SettingsPreference.preferredAppLanguageCode.value
@@ -1757,6 +1828,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _links.value = (translationsRepo.getLocalizedStringValueFor(
                             "links", SettingsPreference.preferredAppLanguageCode.value
@@ -1771,6 +1843,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedFoldersUnarchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1788,6 +1861,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedLinksDeletedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1805,6 +1879,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedFoldersDeletedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1822,6 +1897,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedLinksUnarchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1838,6 +1914,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkUnarchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1855,6 +1932,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkInfoUpdatedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1872,6 +1950,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderInfoUpdatedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1889,6 +1968,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _archivedLinkDeletedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1906,6 +1986,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deletedTheNoteSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1923,6 +2004,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderUnarchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -1940,6 +2022,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noLinksWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
                             "no_links_were_archived",
@@ -1956,6 +2039,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noFoldersWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
                             "no_folders_were_archived",
@@ -1972,6 +2056,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _itemsSelected.value = (translationsRepo.getLocalizedStringValueFor(
                             "items_selected", SettingsPreference.preferredAppLanguageCode.value
@@ -1986,6 +2071,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _archive.value = (translationsRepo.getLocalizedStringValueFor(
                             "archive", SettingsPreference.preferredAppLanguageCode.value
@@ -2000,6 +2086,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2017,6 +2104,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noLinksWereFound.value = (translationsRepo.getLocalizedStringValueFor(
                             "no_links_were_found", SettingsPreference.preferredAppLanguageCode.value
@@ -2031,6 +2119,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noImportantLinksWereFound.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2048,6 +2137,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noLinksFoundInThisArchivedFolder.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2065,6 +2155,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deletedTheLinkSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2082,6 +2173,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _foldersSelected.value = (translationsRepo.getLocalizedStringValueFor(
                             "folders_selected", SettingsPreference.preferredAppLanguageCode.value
@@ -2096,6 +2188,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectAllFolders.value = (translationsRepo.getLocalizedStringValueFor(
                             "select_all_folders", SettingsPreference.preferredAppLanguageCode.value
@@ -2109,6 +2202,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedFoldersArchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2126,6 +2220,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newLinkAddedToTheFolder.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2143,6 +2238,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newLinkAddedToImportantLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2160,6 +2256,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newLinkAddedToSavedLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2177,6 +2274,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderArchivedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2194,6 +2292,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _folderCreatedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2211,6 +2310,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deletedTheFolder.value = (translationsRepo.getLocalizedStringValueFor(
                             "deleted_the_folder", SettingsPreference.preferredAppLanguageCode.value
@@ -2225,6 +2325,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _removedLinkFromImportantLinksSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2242,6 +2343,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addedLinkToImportantLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2259,6 +2361,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _welcomeBackToLinkora.value = (translationsRepo.getLocalizedStringValueFor(
                             "welcome_back_to_linkora",
@@ -2275,6 +2378,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _goodMorning.value = (translationsRepo.getLocalizedStringValueFor(
                             "good_morning", SettingsPreference.preferredAppLanguageCode.value
@@ -2289,6 +2393,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _goodAfternoon.value = (translationsRepo.getLocalizedStringValueFor(
                             "good_afternoon", SettingsPreference.preferredAppLanguageCode.value
@@ -2303,6 +2408,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _goodEvening.value = (translationsRepo.getLocalizedStringValueFor(
                             "good_evening", SettingsPreference.preferredAppLanguageCode.value
@@ -2317,6 +2423,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _goodNight.value = (translationsRepo.getLocalizedStringValueFor(
                             "good_night", SettingsPreference.preferredAppLanguageCode.value
@@ -2331,6 +2438,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _heyHi.value = (translationsRepo.getLocalizedStringValueFor(
                             "hey_hi", SettingsPreference.preferredAppLanguageCode.value
@@ -2344,6 +2452,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _defaultShelf.value = (translationsRepo.getLocalizedStringValueFor(
                             "default_shelf", SettingsPreference.preferredAppLanguageCode.value
@@ -2358,6 +2467,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _toAddFoldersIntoThisPanelClickOnThe.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2375,6 +2485,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _atThe.value = (translationsRepo.getLocalizedStringValueFor(
                             "at_the", SettingsPreference.preferredAppLanguageCode.value
@@ -2389,6 +2500,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _bottomOfTheShelf.value = (translationsRepo.getLocalizedStringValueFor(
                             "bottom_of_the_shelf", SettingsPreference.preferredAppLanguageCode.value
@@ -2403,6 +2515,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _period.value = (translationsRepo.getLocalizedStringValueFor(
                             "period", SettingsPreference.preferredAppLanguageCode.value
@@ -2417,6 +2530,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _and.value = (translationsRepo.getLocalizedStringValueFor(
                             "and", SettingsPreference.preferredAppLanguageCode.value
@@ -2431,6 +2545,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _canBeAccessedFromThe.value = (translationsRepo.getLocalizedStringValueFor(
                             "can_be_accessed_from_the",
@@ -2447,6 +2562,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _defaultPanelDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "default_panel_desc", SettingsPreference.preferredAppLanguageCode.value
@@ -2461,6 +2577,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _archivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
                             "archived_folders", SettingsPreference.preferredAppLanguageCode.value
@@ -2475,6 +2592,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _archivedLinks.value = (translationsRepo.getLocalizedStringValueFor(
                             "archived_links", SettingsPreference.preferredAppLanguageCode.value
@@ -2489,6 +2607,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _history.value = (translationsRepo.getLocalizedStringValueFor(
                             "history", SettingsPreference.preferredAppLanguageCode.value
@@ -2503,6 +2622,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linksFromFolders.value = (translationsRepo.getLocalizedStringValueFor(
                             "links_from_folders", SettingsPreference.preferredAppLanguageCode.value
@@ -2517,6 +2637,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _searchTitlesToFindLinksAndFolders.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2534,6 +2655,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _searchLinkoraRetrieveAllTheLinksYouSaved.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2551,6 +2673,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noMatchingItemsFoundTryADifferentSearch.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2568,6 +2691,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _fromFolders.value = (translationsRepo.getLocalizedStringValueFor(
                             "from_folders", SettingsPreference.preferredAppLanguageCode.value
@@ -2582,6 +2706,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _fromSavedLinks.value = (translationsRepo.getLocalizedStringValueFor(
                             "from_saved_links", SettingsPreference.preferredAppLanguageCode.value
@@ -2596,6 +2721,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _fromImportantLinks.value = (translationsRepo.getLocalizedStringValueFor(
                             "from_important_links",
@@ -2610,6 +2736,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linksFromHistory.value = (translationsRepo.getLocalizedStringValueFor(
                             "links_from_history", SettingsPreference.preferredAppLanguageCode.value
@@ -2624,6 +2751,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linksFromArchive.value = (translationsRepo.getLocalizedStringValueFor(
                             "links_from_archive", SettingsPreference.preferredAppLanguageCode.value
@@ -2638,6 +2766,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _fromArchivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
                             "from_archived_folders",
@@ -2654,6 +2783,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noLinksWereFoundInHistory.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2671,6 +2801,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _headsUp.value = (translationsRepo.getLocalizedStringValueFor(
                             "heads_up", SettingsPreference.preferredAppLanguageCode.value
@@ -2685,6 +2816,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _youAlreadyHaveLinksSaved.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2702,6 +2834,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _exportData.value = (translationsRepo.getLocalizedStringValueFor(
                             "export_data", SettingsPreference.preferredAppLanguageCode.value
@@ -2716,6 +2849,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importDataAndKeepTheExistingData.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2733,6 +2867,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importDataExportAndDeleteTheExistingData.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2750,6 +2885,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importDataAndDeleteTheExistingData.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2767,6 +2903,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _incompatibleFileType.value = (translationsRepo.getLocalizedStringValueFor(
                             "incompatible_file_type",
@@ -2783,6 +2920,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _dataConversionFailed.value = (translationsRepo.getLocalizedStringValueFor(
                             "data_conversion_failed",
@@ -2799,6 +2937,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _selectedFileDoesNotMatchLinkoraSchema.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2816,6 +2955,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _thereWasAnIssueImportingTheLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2833,6 +2973,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _chooseAnotherFile.value = (translationsRepo.getLocalizedStringValueFor(
                             "choose_another_file", SettingsPreference.preferredAppLanguageCode.value
@@ -2846,6 +2987,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _permissionDeniedTitle.value = (translationsRepo.getLocalizedStringValueFor(
                             "permission_denied_title",
@@ -2862,6 +3004,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _permissionIsDeniedDesc.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2879,6 +3022,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _goToSettings.value = (translationsRepo.getLocalizedStringValueFor(
                             "go_to_settings", SettingsPreference.preferredAppLanguageCode.value
@@ -2893,6 +3037,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _retrievingLatestInformation.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -2910,6 +3055,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _newUpdateIsAvailable.value = (translationsRepo.getLocalizedStringValueFor(
                             "new_update_is_available",
@@ -2926,6 +3072,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _currentVersion.value = (translationsRepo.getLocalizedStringValueFor(
                             "current_version", SettingsPreference.preferredAppLanguageCode.value
@@ -2940,6 +3087,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _latestVersion.value = (translationsRepo.getLocalizedStringValueFor(
                             "latest_version", SettingsPreference.preferredAppLanguageCode.value
@@ -2954,6 +3102,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkora.value = (translationsRepo.getLocalizedStringValueFor(
                             "linkora", SettingsPreference.preferredAppLanguageCode.value
@@ -2968,6 +3117,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _releasePageOnGithub.value = (translationsRepo.getLocalizedStringValueFor(
                             "release_page_on_github",
@@ -2984,6 +3134,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _redirectToLatestReleasePage.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3001,6 +3152,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _download.value = (translationsRepo.getLocalizedStringValueFor(
                             "download", SettingsPreference.preferredAppLanguageCode.value
@@ -3015,6 +3167,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _beta.value = (translationsRepo.getLocalizedStringValueFor(
                             "beta", SettingsPreference.preferredAppLanguageCode.value
@@ -3029,6 +3182,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _language.value = (translationsRepo.getLocalizedStringValueFor(
                             "language", SettingsPreference.preferredAppLanguageCode.value
@@ -3043,6 +3197,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _appLanguage.value = (translationsRepo.getLocalizedStringValueFor(
                             "app_language", SettingsPreference.preferredAppLanguageCode.value
@@ -3057,6 +3212,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _resetAppLanguage.value = (translationsRepo.getLocalizedStringValueFor(
                             "reset_app_language", SettingsPreference.preferredAppLanguageCode.value
@@ -3071,6 +3227,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _availableLanguages.value = (translationsRepo.getLocalizedStringValueFor(
                             "available_languages", SettingsPreference.preferredAppLanguageCode.value
@@ -3085,6 +3242,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _representsSwitchingToTheRespectiveLanguage.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3102,6 +3260,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _contributingToTheLanguageStrings.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3119,6 +3278,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _about.value = (translationsRepo.getLocalizedStringValueFor(
                             "about", SettingsPreference.preferredAppLanguageCode.value
@@ -3132,6 +3292,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _checkForLatestVersion.value = (translationsRepo.getLocalizedStringValueFor(
                             "check_for_latest_version",
@@ -3148,6 +3309,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _networkError.value = (translationsRepo.getLocalizedStringValueFor(
                             "network_error", SettingsPreference.preferredAppLanguageCode.value
@@ -3162,6 +3324,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _isNowAvailable.value = (translationsRepo.getLocalizedStringValueFor(
                             "is_now_available", SettingsPreference.preferredAppLanguageCode.value
@@ -3176,6 +3339,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _youAreUsingLatestVersionOfLinkora.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3193,6 +3357,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _githubDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "github_desc", SettingsPreference.preferredAppLanguageCode.value
@@ -3207,6 +3372,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _github.value = (translationsRepo.getLocalizedStringValueFor(
                             "github", SettingsPreference.preferredAppLanguageCode.value
@@ -3221,6 +3387,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _follow.value = (translationsRepo.getLocalizedStringValueFor(
                             "follow", SettingsPreference.preferredAppLanguageCode.value
@@ -3235,6 +3402,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _twitterDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "twitter_desc", SettingsPreference.preferredAppLanguageCode.value
@@ -3249,6 +3417,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _twitter.value = (translationsRepo.getLocalizedStringValueFor(
                             "twitter", SettingsPreference.preferredAppLanguageCode.value
@@ -3263,6 +3432,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _autoCheckForUpdates.value = (translationsRepo.getLocalizedStringValueFor(
                             "auto_check_for_updates",
@@ -3279,6 +3449,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _autoCheckForUpdatesDesc.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3296,6 +3467,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _acknowledgments.value = (translationsRepo.getLocalizedStringValueFor(
                             "acknowledgments", SettingsPreference.preferredAppLanguageCode.value
@@ -3310,6 +3482,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _data.value = (translationsRepo.getLocalizedStringValueFor(
                             "data", SettingsPreference.preferredAppLanguageCode.value
@@ -3324,6 +3497,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importFeatureIsPolishedNotPerfectDesc.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3341,6 +3515,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _successfullyExported.value = (translationsRepo.getLocalizedStringValueFor(
                             "successfully_exported",
@@ -3357,6 +3532,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _privacy.value = (translationsRepo.getLocalizedStringValueFor(
                             "privacy", SettingsPreference.preferredAppLanguageCode.value
@@ -3370,6 +3546,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _theme.value = (translationsRepo.getLocalizedStringValueFor(
                             "theme", SettingsPreference.preferredAppLanguageCode.value
@@ -3384,6 +3561,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _followSystemTheme.value = (translationsRepo.getLocalizedStringValueFor(
                             "follow_system_theme", SettingsPreference.preferredAppLanguageCode.value
@@ -3398,6 +3576,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useDarkMode.value = (translationsRepo.getLocalizedStringValueFor(
                             "use_dark_mode", SettingsPreference.preferredAppLanguageCode.value
@@ -3412,6 +3591,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useDynamicTheming.value = (translationsRepo.getLocalizedStringValueFor(
                             "use_dynamic_theming", SettingsPreference.preferredAppLanguageCode.value
@@ -3426,6 +3606,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useDynamicThemingDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "use_dynamic_theming_desc",
@@ -3442,6 +3623,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _kotlin.value = (translationsRepo.getLocalizedStringValueFor(
                             "kotlin", SettingsPreference.preferredAppLanguageCode.value
@@ -3456,6 +3638,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _apacheLicense.value = (translationsRepo.getLocalizedStringValueFor(
                             "apache_license", SettingsPreference.preferredAppLanguageCode.value
@@ -3470,6 +3653,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _androidJetpack.value = (translationsRepo.getLocalizedStringValueFor(
                             "android_jetpack", SettingsPreference.preferredAppLanguageCode.value
@@ -3484,6 +3668,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _coil.value = (translationsRepo.getLocalizedStringValueFor(
                             "coil", SettingsPreference.preferredAppLanguageCode.value
@@ -3498,6 +3683,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _materialDesign3.value = (translationsRepo.getLocalizedStringValueFor(
                             "material_design_3", SettingsPreference.preferredAppLanguageCode.value
@@ -3512,6 +3698,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _materialIcons.value = (translationsRepo.getLocalizedStringValueFor(
                             "material_icons", SettingsPreference.preferredAppLanguageCode.value
@@ -3526,6 +3713,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sendCrashReports.value = (translationsRepo.getLocalizedStringValueFor(
                             "send_crash_reports", SettingsPreference.preferredAppLanguageCode.value
@@ -3540,6 +3728,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useInAppBrowser.value = (translationsRepo.getLocalizedStringValueFor(
                             "use_in_app_browser", SettingsPreference.preferredAppLanguageCode.value
@@ -3554,6 +3743,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useInAppBrowserDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "use_in_app_browser_desc",
@@ -3570,6 +3760,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _enableHomeScreen.value = (translationsRepo.getLocalizedStringValueFor(
                             "enable_home_screen", SettingsPreference.preferredAppLanguageCode.value
@@ -3584,6 +3775,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _enableHomeScreenDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "enable_home_screen_desc",
@@ -3600,6 +3792,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _autoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
                             "auto_detect_title", SettingsPreference.preferredAppLanguageCode.value
@@ -3614,6 +3807,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _autoDetectTitleDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "auto_detect_title_desc",
@@ -3630,6 +3824,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _showDescriptionForSettings.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3646,6 +3841,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _showDescriptionForSettingsDesc.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3663,6 +3859,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importData.value = (translationsRepo.getLocalizedStringValueFor(
                             "import_data", SettingsPreference.preferredAppLanguageCode.value
@@ -3677,6 +3874,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _importDataFromExternalJsonFile.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3694,6 +3892,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _exportDataDesc.value = (translationsRepo.getLocalizedStringValueFor(
                             "export_data_desc", SettingsPreference.preferredAppLanguageCode.value
@@ -3708,6 +3907,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _addNewPanelToShelf.value = (translationsRepo.getLocalizedStringValueFor(
                             "add_new_panel_to_shelf",
@@ -3724,6 +3924,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _panelsInTheShelf.value = (translationsRepo.getLocalizedStringValueFor(
                             "panels_in_the_shelf", SettingsPreference.preferredAppLanguageCode.value
@@ -3738,6 +3939,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noPanelsFound.value = (translationsRepo.getLocalizedStringValueFor(
                             "no_panels_found", SettingsPreference.preferredAppLanguageCode.value
@@ -3752,6 +3954,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _shelf.value = (translationsRepo.getLocalizedStringValueFor(
                             "shelf", SettingsPreference.preferredAppLanguageCode.value
@@ -3766,6 +3969,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _foldersListedInThisPanel.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3783,6 +3987,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noFoldersFoundInThisPanel.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3800,6 +4005,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _youCanAddTheFollowingFoldersToThisPanel.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3817,6 +4023,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _archivedFoldersDataMigratedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3834,6 +4041,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _rootFoldersDataMigratedSuccessfully.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3851,6 +4059,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteEntireDataPermanently.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3868,6 +4077,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteEntireDataPermanentlyDesc.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3885,6 +4095,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _everySingleBitOfDataIsStoredLocallyOnYourDevice.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3902,6 +4113,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkoraCollectsDataRelatedToAppCrashes.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3918,6 +4130,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _permissionRequiredToWriteTheData.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3935,6 +4148,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deletedEntireDataFromTheLocalDatabase.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3952,6 +4166,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3969,6 +4184,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value =
                             (translationsRepo.getLocalizedStringValueFor(
@@ -3986,6 +4202,7 @@ object LocalizedStrings : ViewModel() {
                 },
 
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _sortFoldersBy.value = (translationsRepo.getLocalizedStringValueFor(
                             "sort_folders_by", SettingsPreference.preferredAppLanguageCode.value
@@ -3999,6 +4216,7 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _general.value =
                             translationsRepo.getLocalizedStringValueFor(
@@ -4016,384 +4234,409 @@ object LocalizedStrings : ViewModel() {
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useLanguageStringsFetchedFromTheServer.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "use_language_strings_fetched_from_the_server",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.use_language_strings_fetched_from_the_server)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "use_language_strings_fetched_from_the_server",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.use_language_strings_fetched_from_the_server)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _useLanguageStringsFetchedFromTheServer.value =
                             (context.getString(R.string.use_language_strings_fetched_from_the_server))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _useLanguageStringsFetchedFromTheServerDesc.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "use_language_strings_fetched_from_the_server_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.use_language_strings_fetched_from_the_server_desc)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "use_language_strings_fetched_from_the_server_desc",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.use_language_strings_fetched_from_the_server_desc)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _useLanguageStringsFetchedFromTheServerDesc.value =
                             (context.getString(R.string.use_language_strings_fetched_from_the_server_desc))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _userAgentDesc.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "user_agent_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.user_agent_desc)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "user_agent_desc",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.user_agent_desc)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _userAgentDesc.value = (context.getString(R.string.user_agent_desc))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _userAgent.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "user_agent",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.user_agent)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "user_agent",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.user_agent)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _userAgent.value = (context.getString(R.string.user_agent))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshingLinks.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refreshing_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refreshing_links)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refreshing_links",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refreshing_links)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshingLinks.value = (context.getString(R.string.refreshing_links))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _workManagerDesc.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "work_manager_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.work_manager_desc)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "work_manager_desc",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.work_manager_desc)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _workManagerDesc.value = (context.getString(R.string.work_manager_desc))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _linksRefreshed.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "links_refreshed",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.links_refreshed)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "links_refreshed",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.links_refreshed)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _linksRefreshed.value = (context.getString(R.string.links_refreshed))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshingLinksInfo.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refreshing_links_info",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refreshing_links_info)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refreshing_links_info",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refreshing_links_info)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshingLinksInfo.value =
                             (context.getString(R.string.refreshing_links_info))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshAllLinksTitlesAndImages.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refresh_all_links_titles_and_images",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refresh_all_links_titles_and_images)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refresh_all_links_titles_and_images",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refresh_all_links_titles_and_images)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshAllLinksTitlesAndImages.value =
                             (context.getString(R.string.refresh_all_links_titles_and_images))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshAllLinksTitlesAndImagesDesc.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refresh_all_links_titles_and_images_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refresh_all_links_titles_and_images_desc)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refresh_all_links_titles_and_images_desc",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refresh_all_links_titles_and_images_desc)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshAllLinksTitlesAndImagesDesc.value =
                             (context.getString(R.string.refresh_all_links_titles_and_images_desc))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _of.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "of",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.of)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "of",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.of)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _of.value = (context.getString(R.string.of))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _titleCopiedToClipboard.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "title_copied_to_clipboard",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.title_copied_to_clipboard)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "title_copied_to_clipboard",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.title_copied_to_clipboard)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _titleCopiedToClipboard.value =
                             (context.getString(R.string.title_copied_to_clipboard))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _viewNote.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "view_note",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.view_note)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "view_note",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.view_note)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _viewNote.value = (context.getString(R.string.view_note))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _rename.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "rename",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.rename)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "rename",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.rename)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _rename.value = (context.getString(R.string.rename))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshingTitleAndImage.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refreshing_title_and_image",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refreshing_title_and_image)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refreshing_title_and_image",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refreshing_title_and_image)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshingTitleAndImage.value =
                             (context.getString(R.string.refreshing_title_and_image))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _refreshImageAndTitle.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "refresh_image_and_title",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.refresh_image_and_title)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "refresh_image_and_title",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.refresh_image_and_title)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _refreshImageAndTitle.value =
                             (context.getString(R.string.refresh_image_and_title))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _unarchive.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "unarchive",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.unarchive)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "unarchive",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.unarchive)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _unarchive.value = (context.getString(R.string.unarchive))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteTheNote.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "delete_the_note",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.delete_the_note)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "delete_the_note",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.delete_the_note)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _deleteTheNote.value = (context.getString(R.string.delete_the_note))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteFolder.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "delete_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.delete_folder)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "delete_folder",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.delete_folder)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _deleteFolder.value = (context.getString(R.string.delete_folder))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _deleteLink.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "delete_link",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.delete_link)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "delete_link",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.delete_link)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _deleteLink.value = (context.getString(R.string.delete_link))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _savedNote.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "saved_note",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.saved_note)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "saved_note",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.saved_note)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _savedNote.value = (context.getString(R.string.saved_note))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _noteCopiedToClipboard.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "note_copied_to_clipboard",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.note_copied_to_clipboard)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "note_copied_to_clipboard",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.note_copied_to_clipboard)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _noteCopiedToClipboard.value =
                             (context.getString(R.string.note_copied_to_clipboard))
                     }
                 },
                 async {
+                    count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _youDidNotAddNoteForThis.value = (
-                            translationsRepo.getLocalizedStringValueFor(
-                                "you_did_not_add_note_for_this",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.you_did_not_add_note_for_this)
+                                translationsRepo.getLocalizedStringValueFor(
+                                    "you_did_not_add_note_for_this",
+                                    SettingsPreference.preferredAppLanguageCode.value
+                                ).let {
+                                    it.ifNullOrBlank {
+                                        context.getString(R.string.you_did_not_add_note_for_this)
+                                    }
                                 }
-                            }
-                        )
+                                )
                     } else {
                         _youDidNotAddNoteForThis.value =
                             (context.getString(R.string.you_did_not_add_note_for_this))
                     }
                 },
             )
+        }.invokeOnCompletion {
+            linkoraLog(count.toString())
         }
     }
 }

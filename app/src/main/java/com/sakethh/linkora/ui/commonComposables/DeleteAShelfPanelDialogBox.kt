@@ -27,10 +27,10 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
     if (deleteAShelfDialogBoxParam.isDialogBoxVisible.value) {
         val title =
             LocalizedStrings.areYouSureWantToDelete.value + rememberSaveable(
-            ShelfBtmSheetVM.selectedShelfData.shelfName
-        ) {
-            mutableStateOf(" \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
-        }
+                ShelfBtmSheetVM.selectedShelfData.shelfName
+            ) {
+                mutableStateOf(" \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
+            }
         LinkoraTheme {
             AlertDialog(
                 confirmButton = {

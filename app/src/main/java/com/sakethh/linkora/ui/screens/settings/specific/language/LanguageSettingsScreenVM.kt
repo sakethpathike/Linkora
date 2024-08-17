@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.LocaleManager
 import android.content.Intent
 import android.os.Build
-import android.os.LocaleList
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.work.WorkManager
 import com.sakethh.linkora.MainActivity
@@ -49,13 +48,7 @@ class LanguageSettingsScreenVM @Inject constructor(
 
     fun onClick(languageSettingsScreenUIEvent: LanguageSettingsScreenUIEvent) {
         when (languageSettingsScreenUIEvent) {
-            is LanguageSettingsScreenUIEvent.ChangeLocalLanguage -> {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    languageSettingsScreenUIEvent.context.getSystemService(LocaleManager::class.java).applicationLocales =
-                        LocaleList(
-                            Locale.forLanguageTag(languageSettingsScreenUIEvent.languageCode)
-                        )
-                }
+            is LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage -> {
                 SettingsPreference.preferredAppLanguageCode.value =
                     languageSettingsScreenUIEvent.languageCode
 
@@ -71,6 +64,13 @@ class LanguageSettingsScreenVM @Inject constructor(
                     languageSettingsScreenUIEvent.context.dataStore,
                     SettingsPreference.preferredAppLanguageName.value
                 )
+
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    languageSettingsScreenUIEvent.context.getSystemService(LocaleManager::class.java).applicationLocales =
+                        android.os.LocaleList(
+                            Locale.forLanguageTag(languageSettingsScreenUIEvent.languageCode)
+                        )
+                }
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
                     val intent =
                         Intent(languageSettingsScreenUIEvent.context, MainActivity::class.java)
