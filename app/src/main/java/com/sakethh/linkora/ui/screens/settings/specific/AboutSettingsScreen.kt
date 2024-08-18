@@ -74,7 +74,7 @@ import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingCompone
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -106,7 +106,7 @@ fun AboutSettingsScreen(
     val shouldBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    SpecificSettingsScreenTopAppBar(
+    SpecificSettingsScreenScaffold(
         topAppBarText = LocalizedStrings.about.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

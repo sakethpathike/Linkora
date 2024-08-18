@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.settings.specific.language
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -16,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -24,15 +26,19 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.outlined.Info
+import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -43,13 +49,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.appLanguage
 import com.sakethh.linkora.LocalizedStrings.availableLanguages
 import com.sakethh.linkora.LocalizedStrings.language
@@ -62,7 +67,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
@@ -106,7 +111,7 @@ fun LanguageSettingsScreen(
         mutableStateOf("")
     }
     val languageSelectionBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    SpecificSettingsScreenTopAppBar(
+    SpecificSettingsScreenScaffold(
         topAppBarText = language.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
@@ -133,6 +138,54 @@ fun LanguageSettingsScreen(
                     text = preferredAppLanguageName.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 18.sp
+                )
+            }
+            item {
+                Card(
+                    border = BorderStroke(
+                        1.dp,
+                        contentColorFor(MaterialTheme.colorScheme.surface)
+                    ),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .padding(
+                                top = 10.dp, bottom = 10.dp
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            contentAlignment = Alignment.CenterStart
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Info,
+                                contentDescription = null,
+                                modifier = Modifier
+                                    .padding(
+                                        start = 10.dp, end = 10.dp
+                                    )
+                            )
+                        }
+                        Text(
+                            text = if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) "" else "Using compiled strings",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 14.sp,
+                            lineHeight = 18.sp,
+                            textAlign = TextAlign.Start,
+                            modifier = Modifier
+                                .padding(end = 10.dp)
+                        )
+                    }
+                }
+                HorizontalDivider(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = 15.dp)
                 )
             }
             item {
@@ -247,13 +300,28 @@ fun LanguageSettingsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
+                        .clickable {
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
+                                    context = context,
+                                    languageCode = currentlySelectedLanguageCode.value,
+                                    languageName = currentlySelectedLanguageName.value
+                                )
+                            )
+                        }
                         .fillMaxWidth()
                         .padding(top = 15.dp, start = 10.dp, end = 15.dp)
                 ) {
                     FilledTonalIconButton(
                         modifier = Modifier.pulsateEffect(),
                         onClick = {
-
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
+                                    context = context,
+                                    languageCode = currentlySelectedLanguageCode.value,
+                                    languageName = currentlySelectedLanguageName.value
+                                )
+                            )
                         }) {
                         Icon(imageVector = Icons.Default.Cloud, contentDescription = "")
                     }
@@ -268,6 +336,15 @@ fun LanguageSettingsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
+                        .clickable {
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.UseCompiledStrings(
+                                    context = context,
+                                    languageCode = currentlySelectedLanguageCode.value,
+                                    languageName = currentlySelectedLanguageName.value
+                                )
+                            )
+                        }
                         .fillMaxWidth()
                         .padding(top = 15.dp, start = 10.dp, end = 15.dp)
                 ) {
@@ -275,20 +352,12 @@ fun LanguageSettingsScreen(
                         modifier = Modifier.pulsateEffect(),
                         onClick = {
                             languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                                LanguageSettingsScreenUIEvent.UseCompiledStrings(
                                     context = context,
                                     languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value,
+                                    languageName = currentlySelectedLanguageName.value
                                 )
                             )
-                            SettingsPreference.changeSettingPreferenceValue(
-                                booleanPreferencesKey(
-                                    SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
-                                ), context.dataStore, newValue = false
-                            )
-                            SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value =
-                                false
-                            LocalizedStrings.loadStrings(context)
                         }) {
                         Icon(imageVector = Icons.Default.Code, contentDescription = "")
                     }
@@ -303,13 +372,26 @@ fun LanguageSettingsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
+                        .clickable {
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
+                                    languageCode = currentlySelectedLanguageCode.value,
+                                    languageName = currentlySelectedLanguageName.value
+                                )
+                            )
+                        }
                         .fillMaxWidth()
                         .padding(top = 15.dp, start = 10.dp, end = 15.dp)
                 ) {
                     FilledTonalIconButton(
                         modifier = Modifier.pulsateEffect(),
                         onClick = {
-
+                            languageSettingsScreenVM.onClick(
+                                LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
+                                    languageCode = currentlySelectedLanguageCode.value,
+                                    languageName = currentlySelectedLanguageName.value
+                                )
+                            )
                         }) {
                         Icon(
                             imageVector = Icons.Default.DownloadForOffline,

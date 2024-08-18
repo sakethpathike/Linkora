@@ -4,33 +4,41 @@ import android.app.Activity
 import android.app.LocaleManager
 import android.content.Intent
 import android.os.Build
+import android.os.LocaleList
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.MainActivity
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
 
 
 @HiltViewModel
 class LanguageSettingsScreenVM @Inject constructor(
-    private val linksRepo: LinksRepo,
-    private val importRepo: ImportRepo,
-    private val localDatabase: LocalDatabase,
-    private val exportRepo: ExportRepo,
-    private val gitHubReleasesRepo: GitHubReleasesRepo,
-    private val refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
-    private val workManager: WorkManager
+    linksRepo: LinksRepo,
+    importRepo: ImportRepo,
+    localDatabase: LocalDatabase,
+    exportRepo: ExportRepo,
+    gitHubReleasesRepo: GitHubReleasesRepo,
+    refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
+    workManager: WorkManager,
+    private val translationsRepo: TranslationsRepo
 ) : SettingsScreenVM(
     linksRepo,
     importRepo,
@@ -65,13 +73,13 @@ class LanguageSettingsScreenVM @Inject constructor(
                     SettingsPreference.preferredAppLanguageName.value
                 )
 
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                     languageSettingsScreenUIEvent.context.getSystemService(LocaleManager::class.java).applicationLocales =
-                        android.os.LocaleList(
+                        LocaleList(
                             Locale.forLanguageTag(languageSettingsScreenUIEvent.languageCode)
                         )
                 }
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU && !useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                     val intent =
                         Intent(languageSettingsScreenUIEvent.context, MainActivity::class.java)
                     languageSettingsScreenUIEvent.context.startActivity(intent)
@@ -81,6 +89,47 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.Contribute -> TODO()
+            is LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings -> {
+                viewModelScope.launch {
+                    translationsRepo.addLocalizedStrings(languageSettingsScreenUIEvent.languageCode)
+                }
+            }
+
+            is LanguageSettingsScreenUIEvent.UseCompiledStrings -> {
+                SettingsPreference.changeSettingPreferenceValue(
+                    booleanPreferencesKey(
+                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                    ), languageSettingsScreenUIEvent.context.dataStore, newValue = false
+                )
+                useLanguageStringsBasedOnFetchedValuesFromServer.value =
+                    false
+                onClick(
+                    LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                        context = languageSettingsScreenUIEvent.context,
+                        languageCode = languageSettingsScreenUIEvent.languageCode,
+                        languageName = languageSettingsScreenUIEvent.languageName,
+                    )
+                )
+                LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
+            }
+
+            is LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer -> {
+                SettingsPreference.changeSettingPreferenceValue(
+                    booleanPreferencesKey(
+                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                    ), languageSettingsScreenUIEvent.context.dataStore, newValue = true
+                )
+                useLanguageStringsBasedOnFetchedValuesFromServer.value =
+                    true
+                onClick(
+                    LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                        context = languageSettingsScreenUIEvent.context,
+                        languageCode = languageSettingsScreenUIEvent.languageCode,
+                        languageName = languageSettingsScreenUIEvent.languageName,
+                    )
+                )
+                LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
+            }
         }
     }
 }

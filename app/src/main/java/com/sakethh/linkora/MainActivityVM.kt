@@ -6,6 +6,7 @@ import com.sakethh.linkora.LocalizedStrings.archivedFoldersDataMigratedSuccessfu
 import com.sakethh.linkora.LocalizedStrings.rootFoldersDataMigratedSuccessfully
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
+import com.sakethh.linkora.data.remote.localization.LocalizationRepo
 import com.sakethh.linkora.ui.CommonUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class MainActivityVM @Inject constructor(
     private val foldersRepo: FoldersRepo,
     private val importRepo: ImportRepo,
+    private val localizationRepo: LocalizationRepo
 ) : ViewModel() {
 
     private val _channelEvent = Channel<CommonUiEvent>()

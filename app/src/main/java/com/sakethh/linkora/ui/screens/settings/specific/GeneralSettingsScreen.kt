@@ -66,7 +66,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenTopAppBar
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import com.sakethh.linkora.ui.theme.fonts
 import com.sakethh.linkora.worker.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
@@ -97,7 +97,7 @@ fun GeneralSettingsScreen(
     val successfulRefreshLinksCount =
         RefreshLinksWorker.successfulRefreshLinksCount
 
-    SpecificSettingsScreenTopAppBar(
+    SpecificSettingsScreenScaffold(
         topAppBarText = LocalizedStrings.general.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

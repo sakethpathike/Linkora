@@ -9,21 +9,22 @@ import javax.inject.Inject
 class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
     LocalizationRepo {
     private val localizationServerURL = "https://linkoralocalizationserver.onrender.com/"
-    override suspend fun retrieveLanguageStrings(languageCode: String): LocalizationResult {
+    override suspend fun getRemoteStrings(languageCode: String): LocalizationResult {
         return try {
             val localizedStrings = mutableListOf<Translation>()
             ktorClient.get(localizationServerURL + languageCode).bodyAsText()
                 .substringAfter("<resources>")
                 .substringBefore("</resources>")
-                .split("\n").forEach {
-                    if (it.isNotBlank()) {
+                .split("<string").forEach {
+                    if (it.substringAfter("name=\"").substringBefore("\">").trim().isNotBlank()) {
                         localizedStrings.add(
                             Translation(
                                 languageCode = languageCode,
-                                stringName = it.substringAfter("<string name=\"")
-                                    .substringBefore("\">"),
-                                stringValue = it.substringAfter("<string name=\"")
-                                    .substringAfter("\">").substringBefore("</string>")
+                                stringName = it.substringAfter("name=\"").substringBefore("\">")
+                                    .substringBefore("\"/>").trim(),
+                                stringValue = it.substringAfter("\">").substringAfter("\"/>")
+                                    .substringBefore("</string>")
+                                    .trim()
                             )
                         )
                     }

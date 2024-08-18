@@ -245,8 +245,11 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideTranslationRepo(localDatabase: LocalDatabase): TranslationsRepo {
-        return TranslationsImpl(localDatabase)
+    fun provideTranslationRepo(
+        localDatabase: LocalDatabase,
+        localizationRepo: LocalizationRepo
+    ): TranslationsRepo {
+        return TranslationsImpl(localDatabase, localizationRepo)
     }
 
     @Provides

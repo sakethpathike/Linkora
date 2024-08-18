@@ -31,7 +31,7 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SpecificSettingsScreenTopAppBar(
+fun SpecificSettingsScreenScaffold(
     topAppBarText: String,
     navController: NavController,
     content: @Composable (paddingValues: PaddingValues, topAppBarScrollBehaviour: TopAppBarScrollBehavior) -> Unit
