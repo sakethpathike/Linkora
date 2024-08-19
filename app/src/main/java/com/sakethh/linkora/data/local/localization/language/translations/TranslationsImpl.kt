@@ -15,10 +15,18 @@ class TranslationsImpl @Inject constructor(
         when (val localizedData = localizationRepo.getRemoteStrings(languageCode)) {
             is LocalizationResult.Failure -> TODO()
             is LocalizationResult.Success -> {
+                localDatabase.translationDao()
+                    .deleteAllLocalizedStringsForThisLanguage(languageCode)
+                linkoraLog("deleted localized strings for $languageCode")
                 localDatabase.translationDao().addLocalizedStrings(localizedData.data)
-                linkoraLog("added localized string for $languageCode")
+                linkoraLog("added localized strings for $languageCode")
             }
         }
+    }
+
+    override suspend fun doesStringsPackForThisLanguageExists(languageCode: String): Boolean {
+        return localDatabase.translationDao()
+            .doesStringsPackForThisLanguageExists(languageCode) != null
     }
 
     override suspend fun getLocalizedStringValueFor(
@@ -26,5 +34,9 @@ class TranslationsImpl @Inject constructor(
         languageCode: String
     ): String? {
         return localDatabase.translationDao().getLocalizedStringValueFor(stringName, languageCode)
+    }
+
+    override suspend fun deleteAllLocalizedStringsForThisLanguage(languageCode: String) {
+        localDatabase.translationDao().deleteAllLocalizedStringsForThisLanguage(languageCode)
     }
 }

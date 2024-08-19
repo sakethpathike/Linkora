@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Translate
@@ -44,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -68,7 +70,9 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLa
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
 @Composable
@@ -111,6 +115,10 @@ fun LanguageSettingsScreen(
         mutableStateOf("")
     }
     val languageSelectionBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val coroutineScope = rememberCoroutineScope()
     SpecificSettingsScreenScaffold(
         topAppBarText = language.value,
         navController = navController
@@ -237,8 +245,20 @@ fun LanguageSettingsScreen(
                         .clickable(interactionSource = remember {
                             MutableInteractionSource()
                         }, indication = null, onClick = {
-                            isLanguageSelectionBtmSheetVisible.value =
-                                !isLanguageSelectionBtmSheetVisible.value
+                            coroutineScope.launch {
+                                async {
+                                    doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
+                                        languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
+                                            currentlySelectedLanguageCode.value
+                                        )
+                                }.await()
+                                currentlySelectedLanguageCode.value = it.languageCode
+                                currentlySelectedLanguageName.value = it.languageName
+                                currentlySelectedLanguageContributionLink.value =
+                                    it.languageContributionLink
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }
                         })
                         .pulsateEffect(),
                     verticalAlignment = Alignment.CenterVertically,
@@ -267,12 +287,20 @@ fun LanguageSettingsScreen(
                         IconButton(
                             modifier = Modifier.pulsateEffect(),
                             onClick = {
-                                currentlySelectedLanguageCode.value = it.languageCode
-                                currentlySelectedLanguageName.value = it.languageName
-                                currentlySelectedLanguageContributionLink.value =
-                                    it.languageContributionLink
-                                isLanguageSelectionBtmSheetVisible.value =
-                                    !isLanguageSelectionBtmSheetVisible.value
+                                coroutineScope.launch {
+                                    async {
+                                        doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
+                                            languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
+                                                currentlySelectedLanguageCode.value
+                                            )
+                                    }.await()
+                                    currentlySelectedLanguageCode.value = it.languageCode
+                                    currentlySelectedLanguageName.value = it.languageName
+                                    currentlySelectedLanguageContributionLink.value =
+                                        it.languageContributionLink
+                                    isLanguageSelectionBtmSheetVisible.value =
+                                        !isLanguageSelectionBtmSheetVisible.value
+                                }
                             }) {
                             Icon(
                                 imageVector = Icons.Default.MoreVert,
@@ -297,40 +325,42 @@ fun LanguageSettingsScreen(
                     fontSize = 16.sp,
                     modifier = Modifier.padding(start = 15.dp)
                 )
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable {
-                            languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
-                                    context = context,
-                                    languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
+                if (doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
+                                        context = context,
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        languageName = currentlySelectedLanguageName.value
+                                    )
                                 )
-                            )
+                            }
+                            .fillMaxWidth()
+                            .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                    ) {
+                        FilledTonalIconButton(
+                            modifier = Modifier.pulsateEffect(),
+                            onClick = {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
+                                        context = context,
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        languageName = currentlySelectedLanguageName.value
+                                    )
+                                )
+                            }) {
+                            Icon(imageVector = Icons.Default.Cloud, contentDescription = "")
                         }
-                        .fillMaxWidth()
-                        .padding(top = 15.dp, start = 10.dp, end = 15.dp)
-                ) {
-                    FilledTonalIconButton(
-                        modifier = Modifier.pulsateEffect(),
-                        onClick = {
-                            languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
-                                    context = context,
-                                    languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
-                                )
-                            )
-                        }) {
-                        Icon(imageVector = Icons.Default.Cloud, contentDescription = "")
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = "Use strings fetched from the server",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = "Use strings fetched from the server",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 16.sp
-                    )
                 }
 
                 Row(
@@ -404,6 +434,43 @@ fun LanguageSettingsScreen(
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
+                }
+                if (doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        languageName = currentlySelectedLanguageName.value
+                                    )
+                                )
+                            }
+                            .fillMaxWidth()
+                            .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                    ) {
+                        FilledTonalIconButton(
+                            modifier = Modifier.pulsateEffect(),
+                            onClick = {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
+                                        languageCode = currentlySelectedLanguageCode.value
+                                    )
+                                )
+                            }) {
+                            Icon(
+                                imageVector = Icons.Default.DeleteForever,
+                                contentDescription = ""
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = "Delete this language strings",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
+                    }
                 }
 
                 Row(

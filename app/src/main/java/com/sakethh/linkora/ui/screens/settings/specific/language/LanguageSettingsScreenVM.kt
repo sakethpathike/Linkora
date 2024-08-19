@@ -38,7 +38,7 @@ class LanguageSettingsScreenVM @Inject constructor(
     gitHubReleasesRepo: GitHubReleasesRepo,
     refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
     workManager: WorkManager,
-    private val translationsRepo: TranslationsRepo
+    val translationsRepo: TranslationsRepo
 ) : SettingsScreenVM(
     linksRepo,
     importRepo,
@@ -129,6 +129,14 @@ class LanguageSettingsScreenVM @Inject constructor(
                     )
                 )
                 LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
+            }
+
+            is LanguageSettingsScreenUIEvent.DeleteLanguageStrings -> {
+                viewModelScope.launch {
+                    translationsRepo.deleteAllLocalizedStringsForThisLanguage(
+                        languageSettingsScreenUIEvent.languageCode
+                    )
+                }
             }
         }
     }
