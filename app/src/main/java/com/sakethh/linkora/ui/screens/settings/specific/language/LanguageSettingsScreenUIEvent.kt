@@ -22,7 +22,8 @@ sealed class LanguageSettingsScreenUIEvent {
 
     data class DeleteLanguageStrings(
         val context: Context,
-        val languageCode: String
+        val languageCode: String,
+        val languageName: String
     ) :
         LanguageSettingsScreenUIEvent()
 

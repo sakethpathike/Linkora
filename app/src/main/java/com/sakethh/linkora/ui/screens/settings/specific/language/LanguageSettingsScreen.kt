@@ -291,11 +291,17 @@ fun LanguageSettingsScreen(
                         }
                     },
                     text = it.languageName,
-                    isRemoteLanguage = false
+                    isRemoteLanguage = false,
+                    localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
+                        ?: 0 else it.localizedStringsCount).toString() + "/" + SettingsPreference.totalAppStrings.intValue + " strings localized",
+                    localizationStatusFraction = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
+                        ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / SettingsPreference.totalAppStrings.intValue.toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
-            items(remotelyAvailableLanguages) {
+            items(remotelyAvailableLanguages.filterNot { remoteLanguage ->
+                languageSettingsScreenVM.compiledLanguages.any { remoteLanguage.languageCode == it.languageCode }
+            }) {
                 LanguageUIComponent(
                     onClick = {
                         isSelectedLanguageAvailableOnlyRemotely.value = true
@@ -316,7 +322,9 @@ fun LanguageSettingsScreen(
                         }
                     },
                     text = it.languageName,
-                    isRemoteLanguage = true
+                    isRemoteLanguage = true,
+                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalAppStrings.intValue + " strings localized",
+                    localizationStatusFraction = it.localizedStringsCount.toFloat() / SettingsPreference.totalAppStrings.intValue.toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
@@ -476,6 +484,7 @@ fun LanguageSettingsScreen(
                             .clickable(onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
+                                        languageName = currentlySelectedLanguageName.value,
                                         languageCode = currentlySelectedLanguageCode.value,
                                         context = context
                                     )
@@ -494,6 +503,7 @@ fun LanguageSettingsScreen(
                             onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
+                                        languageName = currentlySelectedLanguageName.value,
                                         context = context,
                                         languageCode = currentlySelectedLanguageCode.value
                                     )
@@ -549,7 +559,13 @@ fun LanguageSettingsScreen(
 }
 
 @Composable
-private fun LanguageUIComponent(onClick: () -> Unit, text: String, isRemoteLanguage: Boolean) {
+private fun LanguageUIComponent(
+    onClick: () -> Unit,
+    text: String,
+    isRemoteLanguage: Boolean,
+    localizationStatus: String,
+    localizationStatusFraction: Float
+) {
     Row(
         Modifier
             .fillMaxWidth()
@@ -577,12 +593,12 @@ private fun LanguageUIComponent(onClick: () -> Unit, text: String, isRemoteLangu
                 )
             }
             LinearProgressIndicator(
-                progress = { 0.75f }, modifier = Modifier
+                progress = { localizationStatusFraction }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 10.dp, bottom = 10.dp)
             )
             Text(
-                text = "9 of 12 strings localized",
+                text = localizationStatus,
                 style = MaterialTheme.typography.titleSmall
             )
         }

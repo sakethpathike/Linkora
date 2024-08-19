@@ -25,8 +25,10 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
+import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
@@ -58,8 +60,18 @@ class LanguageSettingsScreenVM @Inject constructor(
 ) {
 
     val compiledLanguages = listOf(
-        Language(languageName = "English", languageCode = "en", languageContributionLink = ""),
-        Language(languageName = "हिंदी", languageCode = "hi", languageContributionLink = ""),
+        Language(
+            languageName = "English",
+            languageCode = "en",
+            languageContributionLink = "",
+            localizedStringsCount = SettingsPreference.totalAppStrings.intValue
+        ),
+        Language(
+            languageName = "हिंदी",
+            languageCode = "hi",
+            languageContributionLink = "",
+            localizedStringsCount = 247
+        ),
     )
 
     private val _remotelyAvailableLanguages =
@@ -157,14 +169,34 @@ class LanguageSettingsScreenVM @Inject constructor(
                     translationsRepo.deleteAllLocalizedStringsForThisLanguage(
                         languageSettingsScreenUIEvent.languageCode
                     )
+                    SettingsPreference.changeSettingPreferenceValue(
+                        booleanPreferencesKey(
+                            SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                        ), languageSettingsScreenUIEvent.context.dataStore, false
+                    )
+                    useLanguageStringsBasedOnFetchedValuesFromServer.value = false
+                    linkoraLog(languageSettingsScreenUIEvent.languageName + ":" + languageSettingsScreenUIEvent.languageCode)
+                    async {
+                        if (compiledLanguages.find { languageSettingsScreenUIEvent.languageCode == it.languageCode } != null) {
+                            onClick(
+                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                                    context = languageSettingsScreenUIEvent.context,
+                                    languageCode = languageSettingsScreenUIEvent.languageCode,
+                                    languageName = languageSettingsScreenUIEvent.languageName
+                                )
+                            )
+                        } else {
+                            onClick(
+                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                                    context = languageSettingsScreenUIEvent.context,
+                                    languageCode = "en",
+                                    languageName = "English"
+                                )
+                            )
+                        }
+                    }.await()
+                    LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
                 }
-                SettingsPreference.changeSettingPreferenceValue(
-                    booleanPreferencesKey(
-                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
-                    ), languageSettingsScreenUIEvent.context.dataStore, false
-                )
-                useLanguageStringsBasedOnFetchedValuesFromServer.value = false
-                LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
             }
 
             is LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
@@ -178,17 +210,17 @@ class LanguageSettingsScreenVM @Inject constructor(
                         )
                         SettingsPreference.totalAppStrings.intValue = it
                     }
-                    remoteLanguagesData.availableLanguages.filterNot { remoteLanguage ->
-                        compiledLanguages.any { remoteLanguage.languageCode == it.languageCode }
-                    }.let {
-                        languageRepo.addNewLanguages(it.map {
+                    remoteLanguagesData.let {
+                        linkoraLog(it.toString())
+                    }
+
+                    languageRepo.addNewLanguages(remoteLanguagesData.availableLanguages.map {
                             com.sakethh.linkora.data.local.localization.language.Language(
                                 it.languageCode,
                                 it.languageName,
                                 it.localizedStringsCount
                             )
                         })
-                    }
                 }
             }
         }
