@@ -773,6 +773,38 @@ object LocalizedStrings : ViewModel() {
     val noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks =
         _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks
 
+    private val _displayingRemoteStrings = mutableStateOf("")
+    val displayingRemoteStrings =
+        _displayingRemoteStrings
+
+    private val _displayingCompiledStrings = mutableStateOf("")
+    val displayingCompiledStrings =
+        _displayingCompiledStrings
+
+    private val _retrieveLanguageInfoFromServer = mutableStateOf("")
+    val retrieveLanguageInfoFromServer =
+        _retrieveLanguageInfoFromServer
+
+    private val _loadServerStrings = mutableStateOf("")
+    val loadServerStrings =
+        _loadServerStrings
+
+    private val _loadCompiledStrings = mutableStateOf("")
+    val loadCompiledStrings =
+        _loadCompiledStrings
+
+    private val _updateRemoteLanguageStrings = mutableStateOf("")
+    val updateRemoteLanguageStrings =
+        _updateRemoteLanguageStrings
+
+    private val _removeLanguageStrings = mutableStateOf("")
+    val removeLanguageStrings =
+        _removeLanguageStrings
+
+    private val _helpImproveLanguageStrings = mutableStateOf("")
+    val helpImproveLanguageStrings =
+        _helpImproveLanguageStrings
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -781,6 +813,139 @@ object LocalizedStrings : ViewModel() {
                 .getTranslationRepo()
         viewModelScope.launch {
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        helpImproveLanguageStrings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "help_improve_language_strings",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.help_improve_language_strings)
+                            }
+                        })
+                    } else {
+                        helpImproveLanguageStrings.value =
+                            context.getString(R.string.help_improve_language_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _removeLanguageStrings.value = (translationsRepo.getLocalizedStringValueFor(
+                            "remove_language_strings",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.remove_language_strings)
+                            }
+                        })
+                    } else {
+                        _removeLanguageStrings.value =
+                            context.getString(R.string.remove_language_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _loadCompiledStrings.value = (translationsRepo.getLocalizedStringValueFor(
+                            "load_compiled_strings",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.load_compiled_strings)
+                            }
+                        })
+                    } else {
+                        _loadCompiledStrings.value =
+                            context.getString(R.string.load_compiled_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _updateRemoteLanguageStrings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "update_remote_language_strings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.update_remote_language_strings)
+                                }
+                            })
+                    } else {
+                        _updateRemoteLanguageStrings.value =
+                            context.getString(R.string.update_remote_language_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _loadServerStrings.value = (translationsRepo.getLocalizedStringValueFor(
+                            "load_server_strings",
+                            SettingsPreference.preferredAppLanguageCode.value
+                        ).let {
+                            it.ifNullOrBlank {
+                                context.getString(R.string.load_server_strings)
+                            }
+                        })
+                    } else {
+                        _loadServerStrings.value =
+                            context.getString(R.string.load_server_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _retrieveLanguageInfoFromServer.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "retrieve_language_info_from_server",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.retrieve_language_info_from_server)
+                                }
+                            })
+                    } else {
+                        _retrieveLanguageInfoFromServer.value =
+                            context.getString(R.string.retrieve_language_info_from_server)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _displayingRemoteStrings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "displaying_remote_strings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.displaying_remote_strings)
+                                }
+                            })
+                    } else {
+                        _displayingRemoteStrings.value =
+                            context.getString(R.string.displaying_remote_strings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _displayingCompiledStrings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "displaying_compiled_strings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.displaying_compiled_strings)
+                                }
+                            })
+                    } else {
+                        _displayingCompiledStrings.value =
+                            context.getString(R.string.displaying_compiled_strings)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {

@@ -42,7 +42,7 @@ fun SpecificSettingsScreenScaffold(
     LinkoraTheme {
         Scaffold(floatingActionButton = {
             floatingActionButton()
-        }, floatingActionButtonPosition = FabPosition.End, topBar = {
+        }, floatingActionButtonPosition = FabPosition.Center, topBar = {
             Column {
                 LargeTopAppBar(navigationIcon = {
                     IconButton(modifier = Modifier.pulsateEffect(), onClick = {

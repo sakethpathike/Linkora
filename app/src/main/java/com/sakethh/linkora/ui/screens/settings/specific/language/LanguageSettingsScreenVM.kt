@@ -157,6 +157,13 @@ class LanguageSettingsScreenVM @Inject constructor(
                         languageSettingsScreenUIEvent.languageCode
                     )
                 }
+                SettingsPreference.changeSettingPreferenceValue(
+                    booleanPreferencesKey(
+                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                    ), languageSettingsScreenUIEvent.context.dataStore, false
+                )
+                useLanguageStringsBasedOnFetchedValuesFromServer.value = false
+                LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
             }
 
             LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {

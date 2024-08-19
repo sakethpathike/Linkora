@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -60,15 +61,18 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.appLanguage
 import com.sakethh.linkora.LocalizedStrings.availableLanguages
 import com.sakethh.linkora.LocalizedStrings.language
 import com.sakethh.linkora.LocalizedStrings.resetAppLanguage
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageCode
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
@@ -101,7 +105,7 @@ fun LanguageSettingsScreen(
             context.dataStore
         ) ?: "English"
 
-        SettingsPreference.preferredAppLanguageCode.value = readSettingPreferenceValue(
+        preferredAppLanguageCode.value = readSettingPreferenceValue(
             stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
             context.dataStore
         ) ?: "en"
@@ -137,7 +141,7 @@ fun LanguageSettingsScreen(
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
-                    text = "Retrieve remote strings info",
+                    text = LocalizedStrings.retrieveLanguageInfoFromServer.value,
                     style = MaterialTheme.typography.titleSmall
                 )
             }
@@ -200,7 +204,9 @@ fun LanguageSettingsScreen(
                             )
                         }
                         Text(
-                            text = if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) "" else "Using compiled strings",
+                            text = if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value)
+                                LocalizedStrings.displayingRemoteStrings.value else
+                                LocalizedStrings.displayingCompiledStrings.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 14.sp,
                             lineHeight = 18.sp,
@@ -222,7 +228,7 @@ fun LanguageSettingsScreen(
                         .fillMaxWidth()
                         .animateContentSize()
                 ) {
-                    if (preferredAppLanguageName.value != "English") {
+                    if (preferredAppLanguageCode.value != "en") {
                         FilledTonalButton(modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 15.dp, bottom = 15.dp)
@@ -364,7 +370,7 @@ fun LanguageSettingsScreen(
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
-                            text = "Use strings fetched from the server",
+                            text = LocalizedStrings.loadServerStrings.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -408,7 +414,7 @@ fun LanguageSettingsScreen(
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
-                            text = "Use compiled strings",
+                            text = LocalizedStrings.loadCompiledStrings.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -454,7 +460,7 @@ fun LanguageSettingsScreen(
                     }
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Download latest language strings",
+                        text = LocalizedStrings.updateRemoteLanguageStrings.value,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
@@ -466,7 +472,8 @@ fun LanguageSettingsScreen(
                             .clickable(onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
-                                        languageCode = currentlySelectedLanguageCode.value
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        context = context
                                     )
                                 )
                                 isLanguageSelectionBtmSheetVisible.value =
@@ -483,6 +490,7 @@ fun LanguageSettingsScreen(
                             onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
+                                        context = context,
                                         languageCode = currentlySelectedLanguageCode.value
                                     )
                                 )
@@ -496,7 +504,7 @@ fun LanguageSettingsScreen(
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
-                            text = "Delete this language strings",
+                            text = LocalizedStrings.removeLanguageStrings.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
@@ -525,7 +533,7 @@ fun LanguageSettingsScreen(
                     }
                     Spacer(modifier = Modifier.width(5.dp))
                     Text(
-                        text = "Contribute",
+                        text = stringResource(R.string.help_improve_language_strings),
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 16.sp
                     )
