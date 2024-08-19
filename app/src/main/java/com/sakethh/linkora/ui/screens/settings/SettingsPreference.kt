@@ -47,6 +47,7 @@ object SettingsPreference : ViewModel() {
     val lastSelectedPanelID = mutableLongStateOf(-1)
     val preferredAppLanguageName = mutableStateOf("English")
     val preferredAppLanguageCode = mutableStateOf("en")
+    val totalAppStrings = mutableIntStateOf(0)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -137,6 +138,12 @@ object SettingsPreference : ViewModel() {
                     ) ?: false
                 },
                 async {
+                    totalAppStrings.intValue = readSettingPreferenceValue(
+                        preferenceKey = intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
+                        dataStore = context.dataStore
+                    ) ?: 0
+                },
+                async {
                     isHomeScreenEnabled.value = if (readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
                             dataStore = context.dataStore
@@ -149,12 +156,6 @@ object SettingsPreference : ViewModel() {
                             dataStore = context.dataStore
                         ) == true
                     }
-                },
-                async {
-                    isBtmSheetEnabledForSavingLinks.value =/* readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BTM_SHEET_FOR_SAVING_LINKS.name),
-                        dataStore = context.dataStore
-                    ) ?:*/ false
                 },
                 async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(

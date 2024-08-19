@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class Language(
     @PrimaryKey
     val languageCode: String,
-    val languageName: String
+    val languageName: String,
+    val localizedStringsCount: Int
 )

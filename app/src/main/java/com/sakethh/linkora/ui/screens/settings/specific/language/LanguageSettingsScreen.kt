@@ -136,7 +136,11 @@ fun LanguageSettingsScreen(
         navController = navController,
         floatingActionButton = {
             ExtendedFloatingActionButton(onClick = {
-                languageSettingsScreenVM.onClick(LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo)
+                languageSettingsScreenVM.onClick(
+                    LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(
+                        context
+                    )
+                )
             }) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
                 Spacer(modifier = Modifier.width(5.dp))

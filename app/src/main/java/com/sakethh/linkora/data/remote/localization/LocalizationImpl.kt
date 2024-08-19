@@ -43,7 +43,11 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
             ktorClient.get(localizationServerURL + "info").body<RemoteLanguageDTO>()
         } catch (e: Exception) {
             e.printStackTrace()
-            RemoteLanguageDTO(availableLanguages = listOf(), totalAvailableLanguages = 0)
+            RemoteLanguageDTO(
+                availableLanguages = listOf(),
+                totalAvailableLanguages = 0,
+                totalStrings = 0
+            )
         }
     }
 }

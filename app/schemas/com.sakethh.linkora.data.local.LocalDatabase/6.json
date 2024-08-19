@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 6,
-    "identityHash": "264207bb320729c9165a6918f7b5dd44",
+    "identityHash": "e8faf7fe256ef8207bc691d61f56b976",
     "entities": [
       {
         "tableName": "shelf",
@@ -468,7 +468,7 @@
       },
       {
         "tableName": "language",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`languageCode` TEXT NOT NULL, `languageName` TEXT NOT NULL, PRIMARY KEY(`languageCode`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`languageCode` TEXT NOT NULL, `languageName` TEXT NOT NULL, `localizedStringsCount` INTEGER NOT NULL, PRIMARY KEY(`languageCode`))",
         "fields": [
           {
             "fieldPath": "languageCode",
@@ -480,6 +480,12 @@
             "fieldPath": "languageName",
             "columnName": "languageName",
             "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localizedStringsCount",
+            "columnName": "localizedStringsCount",
+            "affinity": "INTEGER",
             "notNull": true
           }
         ],
@@ -534,7 +540,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '264207bb320729c9165a6918f7b5dd44')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e8faf7fe256ef8207bc691d61f56b976')"
     ]
   }
 }

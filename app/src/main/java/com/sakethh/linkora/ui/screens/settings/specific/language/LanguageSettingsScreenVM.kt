@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.LocaleList
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
@@ -166,15 +167,25 @@ class LanguageSettingsScreenVM @Inject constructor(
                 LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
             }
 
-            LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
+            is LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
                 viewModelScope.launch {
-                    localizationRepo.getRemoteLanguages().availableLanguages.filterNot { remoteLanguage ->
+                    val remoteLanguagesData = localizationRepo.getRemoteLanguages()
+                    remoteLanguagesData.totalStrings.let {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
+                            languageSettingsScreenUIEvent.context.dataStore,
+                            it
+                        )
+                        SettingsPreference.totalAppStrings.intValue = it
+                    }
+                    remoteLanguagesData.availableLanguages.filterNot { remoteLanguage ->
                         compiledLanguages.any { remoteLanguage.languageCode == it.languageCode }
                     }.let {
                         languageRepo.addNewLanguages(it.map {
                             com.sakethh.linkora.data.local.localization.language.Language(
                                 it.languageCode,
-                                it.languageName
+                                it.languageName,
+                                it.localizedStringsCount
                             )
                         })
                     }
