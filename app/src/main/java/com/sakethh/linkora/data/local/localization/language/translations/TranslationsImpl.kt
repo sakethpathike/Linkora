@@ -26,7 +26,7 @@ class TranslationsImpl @Inject constructor(
 
     override suspend fun doesStringsPackForThisLanguageExists(languageCode: String): Boolean {
         return localDatabase.translationDao()
-            .doesStringsPackForThisLanguageExists(languageCode) != null
+            .doesStringsPackForThisLanguageExists(languageCode)
     }
 
     override suspend fun getLocalizedStringValueFor(

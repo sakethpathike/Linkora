@@ -70,6 +70,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLa
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -246,14 +247,14 @@ fun LanguageSettingsScreen(
                             MutableInteractionSource()
                         }, indication = null, onClick = {
                             coroutineScope.launch {
+                                currentlySelectedLanguageCode.value = it.languageCode
+                                currentlySelectedLanguageName.value = it.languageName
                                 async {
                                     doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
                                         languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
                                             currentlySelectedLanguageCode.value
                                         )
                                 }.await()
-                                currentlySelectedLanguageCode.value = it.languageCode
-                                currentlySelectedLanguageName.value = it.languageName
                                 currentlySelectedLanguageContributionLink.value =
                                     it.languageContributionLink
                                 isLanguageSelectionBtmSheetVisible.value =
@@ -288,14 +289,17 @@ fun LanguageSettingsScreen(
                             modifier = Modifier.pulsateEffect(),
                             onClick = {
                                 coroutineScope.launch {
+                                    currentlySelectedLanguageCode.value = it.languageCode
+                                    currentlySelectedLanguageName.value = it.languageName
                                     async {
                                         doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
                                             languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
                                                 currentlySelectedLanguageCode.value
                                             )
                                     }.await()
-                                    currentlySelectedLanguageCode.value = it.languageCode
-                                    currentlySelectedLanguageName.value = it.languageName
+                                    linkoraLog(
+                                        doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value.toString()
+                                    )
                                     currentlySelectedLanguageContributionLink.value =
                                         it.languageContributionLink
                                     isLanguageSelectionBtmSheetVisible.value =
@@ -403,6 +407,7 @@ fun LanguageSettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .clickable {
+                            linkoraLog(currentlySelectedLanguageCode.value)
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
                                     languageCode = currentlySelectedLanguageCode.value,
@@ -441,9 +446,8 @@ fun LanguageSettingsScreen(
                         modifier = Modifier
                             .clickable {
                                 languageSettingsScreenVM.onClick(
-                                    LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
-                                        languageCode = currentlySelectedLanguageCode.value,
-                                        languageName = currentlySelectedLanguageName.value
+                                    LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
+                                        languageCode = currentlySelectedLanguageCode.value
                                     )
                                 )
                             }
