@@ -717,16 +717,10 @@ class SettingsScreenVM @Inject constructor(
                     ) ?:*/ false
                     },
                     async {
-                        isSendCrashReportsEnabled.value = readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
-                            dataStore = context.dataStore
-                        ) ?: true
-                    },
-                    async {
                         isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
                             dataStore = context.dataStore
-                        ) ?: true
+                        ) ?: false
                     },
                     async {
                         selectedSortingType.value = readSortingPreferenceValue(
