@@ -49,7 +49,7 @@ class LanguageSettingsScreenVM @Inject constructor(
     workManager
 ) {
 
-    val availableLanguages = listOf(
+    val compiledLanguages = listOf(
         Language(languageName = "English", languageCode = "en", languageContributionLink = ""),
         Language(languageName = "हिंदी", languageCode = "hi", languageContributionLink = ""),
     )

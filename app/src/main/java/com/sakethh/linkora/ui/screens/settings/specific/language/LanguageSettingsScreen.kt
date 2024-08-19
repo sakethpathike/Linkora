@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
@@ -26,10 +27,12 @@ import androidx.compose.material.icons.filled.Code
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.DownloadForOffline
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -122,7 +125,17 @@ fun LanguageSettingsScreen(
     val coroutineScope = rememberCoroutineScope()
     SpecificSettingsScreenScaffold(
         topAppBarText = language.value,
-        navController = navController
+        navController = navController,
+        floatingActionButton = {
+            ExtendedFloatingActionButton(onClick = { /*TODO*/ }) {
+                Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = "Retrieve remote strings info",
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+        }
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(
             modifier = Modifier
@@ -206,7 +219,7 @@ fun LanguageSettingsScreen(
                     if (preferredAppLanguageName.value != "English") {
                         FilledTonalButton(modifier = Modifier
                             .fillMaxWidth()
-                            .padding(top = 15.dp, bottom = 15.dp, start = 10.dp, end = 10.dp)
+                            .padding(top = 15.dp, bottom = 15.dp)
                             .pulsateEffect(), onClick = {
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
@@ -239,7 +252,7 @@ fun LanguageSettingsScreen(
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
-            items(languageSettingsScreenVM.availableLanguages) {
+            items(languageSettingsScreenVM.compiledLanguages) {
                 Row(
                     Modifier
                         .fillMaxWidth()
@@ -266,11 +279,19 @@ fun LanguageSettingsScreen(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Column(Modifier.fillMaxWidth(0.8f)) {
-                        Text(
-                            text = it.languageName,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Code,
+                                contentDescription = "",
+                                modifier = Modifier.size(16.dp)
+                            )
+                            Spacer(modifier = Modifier.width(5.dp))
+                            Text(
+                                text = it.languageName,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
+                            )
+                        }
                         LinearProgressIndicator(
                             progress = { 0.75f }, modifier = Modifier
                                 .fillMaxWidth()
@@ -315,6 +336,9 @@ fun LanguageSettingsScreen(
                 }
                 Spacer(modifier = Modifier.height(15.dp))
             }
+            item {
+                Spacer(modifier = Modifier.height(200.dp))
+            }
         }
     }
     if (isLanguageSelectionBtmSheetVisible.value) {
@@ -326,14 +350,13 @@ fun LanguageSettingsScreen(
                 Text(
                     text = currentlySelectedLanguageName.value,
                     style = MaterialTheme.typography.titleMedium,
-                    fontSize = 16.sp,
-                    modifier = Modifier.padding(start = 15.dp)
+                    fontSize = 16.sp, modifier = Modifier.padding(start = 15.dp, bottom = 7.5.dp)
                 )
                 if (doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clickable {
+                            .clickable(onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer(
                                         context = context,
@@ -341,9 +364,14 @@ fun LanguageSettingsScreen(
                                         languageName = currentlySelectedLanguageName.value
                                     )
                                 )
-                            }
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }, indication = null, interactionSource = remember {
+                                MutableInteractionSource()
+                            })
+                            .pulsateEffect()
                             .fillMaxWidth()
-                            .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                            .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
                     ) {
                         FilledTonalIconButton(
                             modifier = Modifier.pulsateEffect(),
@@ -355,6 +383,8 @@ fun LanguageSettingsScreen(
                                         languageName = currentlySelectedLanguageName.value
                                     )
                                 )
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
                             }) {
                             Icon(imageVector = Icons.Default.Cloud, contentDescription = "")
                         }
@@ -370,7 +400,7 @@ fun LanguageSettingsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clickable {
+                        .clickable(onClick = {
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.UseCompiledStrings(
                                     context = context,
@@ -378,9 +408,14 @@ fun LanguageSettingsScreen(
                                     languageName = currentlySelectedLanguageName.value
                                 )
                             )
-                        }
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
+                        }, indication = null, interactionSource = remember {
+                            MutableInteractionSource()
+                        })
+                        .pulsateEffect()
                         .fillMaxWidth()
-                        .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                        .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
                 ) {
                     FilledTonalIconButton(
                         modifier = Modifier.pulsateEffect(),
@@ -392,6 +427,8 @@ fun LanguageSettingsScreen(
                                     languageName = currentlySelectedLanguageName.value
                                 )
                             )
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
                         }) {
                         Icon(imageVector = Icons.Default.Code, contentDescription = "")
                     }
@@ -406,7 +443,7 @@ fun LanguageSettingsScreen(
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
-                        .clickable {
+                        .clickable(onClick = {
                             linkoraLog(currentlySelectedLanguageCode.value)
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
@@ -414,9 +451,14 @@ fun LanguageSettingsScreen(
                                     languageName = currentlySelectedLanguageName.value
                                 )
                             )
-                        }
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
+                        }, indication = null, interactionSource = remember {
+                            MutableInteractionSource()
+                        })
+                        .pulsateEffect()
                         .fillMaxWidth()
-                        .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                        .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
                 ) {
                     FilledTonalIconButton(
                         modifier = Modifier.pulsateEffect(),
@@ -427,6 +469,8 @@ fun LanguageSettingsScreen(
                                     languageName = currentlySelectedLanguageName.value
                                 )
                             )
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
                         }) {
                         Icon(
                             imageVector = Icons.Default.DownloadForOffline,
@@ -444,15 +488,20 @@ fun LanguageSettingsScreen(
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
-                            .clickable {
+                            .clickable(onClick = {
                                 languageSettingsScreenVM.onClick(
                                     LanguageSettingsScreenUIEvent.DeleteLanguageStrings(
                                         languageCode = currentlySelectedLanguageCode.value
                                     )
                                 )
-                            }
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }, indication = null, interactionSource = remember {
+                                MutableInteractionSource()
+                            })
+                            .pulsateEffect()
                             .fillMaxWidth()
-                            .padding(top = 15.dp, start = 10.dp, end = 15.dp)
+                            .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
                     ) {
                         FilledTonalIconButton(
                             modifier = Modifier.pulsateEffect(),
@@ -462,6 +511,8 @@ fun LanguageSettingsScreen(
                                         languageCode = currentlySelectedLanguageCode.value
                                     )
                                 )
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
                             }) {
                             Icon(
                                 imageVector = Icons.Default.DeleteForever,
@@ -481,7 +532,14 @@ fun LanguageSettingsScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(start = 10.dp, top = 15.dp, bottom = 30.dp, end = 15.dp)
+                        .clickable(onClick = {
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
+                        }, indication = null, interactionSource = remember {
+                            MutableInteractionSource()
+                        })
+                        .pulsateEffect()
+                        .padding(start = 10.dp, top = 7.5.dp, bottom = 7.5.dp, end = 15.dp)
                 ) {
                     FilledTonalIconButton(
                         modifier = Modifier.pulsateEffect(),
@@ -497,6 +555,7 @@ fun LanguageSettingsScreen(
                         fontSize = 16.sp
                     )
                 }
+                Spacer(modifier = Modifier.height(22.5.dp))
             }
         }
     }

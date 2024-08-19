@@ -9,6 +9,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LargeTopAppBar
@@ -34,11 +35,14 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun SpecificSettingsScreenScaffold(
     topAppBarText: String,
     navController: NavController,
+    floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (paddingValues: PaddingValues, topAppBarScrollBehaviour: TopAppBarScrollBehavior) -> Unit
 ) {
     val topAppBarScrollBehaviour = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LinkoraTheme {
-        Scaffold(topBar = {
+        Scaffold(floatingActionButton = {
+            floatingActionButton()
+        }, floatingActionButtonPosition = FabPosition.End, topBar = {
             Column {
                 LargeTopAppBar(navigationIcon = {
                     IconButton(modifier = Modifier.pulsateEffect(), onClick = {
