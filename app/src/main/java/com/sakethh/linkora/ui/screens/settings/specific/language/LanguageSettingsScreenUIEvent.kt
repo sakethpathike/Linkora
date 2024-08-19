@@ -17,6 +17,9 @@ sealed class LanguageSettingsScreenUIEvent {
     ) :
         LanguageSettingsScreenUIEvent()
 
+    data object RetrieveRemoteLanguagesInfo :
+        LanguageSettingsScreenUIEvent()
+
     data class DeleteLanguageStrings(
         val languageCode: String
     ) :

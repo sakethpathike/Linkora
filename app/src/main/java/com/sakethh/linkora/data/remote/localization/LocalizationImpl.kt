@@ -1,7 +1,9 @@
 package com.sakethh.linkora.data.remote.localization
 
 import com.sakethh.linkora.data.local.localization.language.translations.Translation
+import com.sakethh.linkora.data.remote.localization.model.RemoteLanguageDTO
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.statement.bodyAsText
 import javax.inject.Inject
@@ -33,6 +35,15 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
         } catch (e: Exception) {
             e.printStackTrace()
             LocalizationResult.Failure("")
+        }
+    }
+
+    override suspend fun getRemoteLanguages(): RemoteLanguageDTO {
+        return try {
+            ktorClient.get(localizationServerURL + "info").body<RemoteLanguageDTO>()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            RemoteLanguageDTO(availableLanguages = listOf(), totalAvailableLanguages = 0)
         }
     }
 }

@@ -43,7 +43,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.contentColorFor
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -59,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings.appLanguage
 import com.sakethh.linkora.LocalizedStrings.availableLanguages
@@ -118,8 +118,12 @@ fun LanguageSettingsScreen(
     val currentlySelectedLanguageContributionLink = rememberSaveable {
         mutableStateOf("")
     }
-    val languageSelectionBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val remotelyAvailableLanguages =
+        languageSettingsScreenVM.remotelyAvailableLanguages.collectAsStateWithLifecycle().value
     val doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val isSelectedLanguageAvailableOnlyRemotely = rememberSaveable {
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
@@ -127,7 +131,9 @@ fun LanguageSettingsScreen(
         topAppBarText = language.value,
         navController = navController,
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = { /*TODO*/ }) {
+            ExtendedFloatingActionButton(onClick = {
+                languageSettingsScreenVM.onClick(LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo)
+            }) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
                 Spacer(modifier = Modifier.width(5.dp))
                 Text(
@@ -253,87 +259,55 @@ fun LanguageSettingsScreen(
                 }
             }
             items(languageSettingsScreenVM.compiledLanguages) {
-                Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .clickable(interactionSource = remember {
-                            MutableInteractionSource()
-                        }, indication = null, onClick = {
-                            coroutineScope.launch {
-                                currentlySelectedLanguageCode.value = it.languageCode
-                                currentlySelectedLanguageName.value = it.languageName
-                                async {
-                                    doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
-                                        languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
-                                            currentlySelectedLanguageCode.value
-                                        )
-                                }.await()
-                                currentlySelectedLanguageContributionLink.value =
-                                    it.languageContributionLink
-                                isLanguageSelectionBtmSheetVisible.value =
-                                    !isLanguageSelectionBtmSheetVisible.value
-                            }
-                        })
-                        .pulsateEffect(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column(Modifier.fillMaxWidth(0.8f)) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = Icons.Default.Code,
-                                contentDescription = "",
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(5.dp))
-                            Text(
-                                text = it.languageName,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                        LinearProgressIndicator(
-                            progress = { 0.75f }, modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 10.dp, bottom = 10.dp)
-                        )
-                        Text(
-                            text = "9 of 12 strings localized",
-                            style = MaterialTheme.typography.titleSmall
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        IconButton(
-                            modifier = Modifier.pulsateEffect(),
-                            onClick = {
-                                coroutineScope.launch {
-                                    currentlySelectedLanguageCode.value = it.languageCode
-                                    currentlySelectedLanguageName.value = it.languageName
-                                    async {
-                                        doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
-                                            languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
-                                                currentlySelectedLanguageCode.value
-                                            )
-                                    }.await()
-                                    linkoraLog(
-                                        doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value.toString()
+                LanguageUIComponent(
+                    onClick = {
+                        coroutineScope.launch {
+                            isSelectedLanguageAvailableOnlyRemotely.value = false
+                            currentlySelectedLanguageCode.value = it.languageCode
+                            currentlySelectedLanguageName.value = it.languageName
+                            async {
+                                doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
+                                    languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
+                                        currentlySelectedLanguageCode.value
                                     )
-                                    currentlySelectedLanguageContributionLink.value =
-                                        it.languageContributionLink
-                                    isLanguageSelectionBtmSheetVisible.value =
-                                        !isLanguageSelectionBtmSheetVisible.value
-                                }
-                            }) {
-                            Icon(
-                                imageVector = Icons.Default.MoreVert,
-                                contentDescription = ""
+                            }.await()
+                            linkoraLog(
+                                doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value.toString()
                             )
+                            currentlySelectedLanguageContributionLink.value =
+                                it.languageContributionLink
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
                         }
-                    }
-                }
+                    },
+                    text = it.languageName,
+                    isRemoteLanguage = false
+                )
+                Spacer(modifier = Modifier.height(15.dp))
+            }
+            items(remotelyAvailableLanguages.availableLanguages.filterNot { availableLanguage -> languageSettingsScreenVM.compiledLanguages.any { availableLanguage.languageCode == it.languageCode } }) {
+                LanguageUIComponent(
+                    onClick = {
+                        isSelectedLanguageAvailableOnlyRemotely.value = true
+                        coroutineScope.launch {
+                            currentlySelectedLanguageCode.value = it.languageCode
+                            currentlySelectedLanguageName.value = it.languageName
+                            async {
+                                doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
+                                    languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
+                                        currentlySelectedLanguageCode.value
+                                    )
+                            }.await()
+                            linkoraLog(
+                                doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value.toString()
+                            )
+                            isLanguageSelectionBtmSheetVisible.value =
+                                !isLanguageSelectionBtmSheetVisible.value
+                        }
+                    },
+                    text = it.languageName,
+                    isRemoteLanguage = true
+                )
                 Spacer(modifier = Modifier.height(15.dp))
             }
             item {
@@ -396,48 +370,49 @@ fun LanguageSettingsScreen(
                         )
                     }
                 }
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .clickable(onClick = {
-                            languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UseCompiledStrings(
-                                    context = context,
-                                    languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
+                if (!isSelectedLanguageAvailableOnlyRemotely.value) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .clickable(onClick = {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.UseCompiledStrings(
+                                        context = context,
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        languageName = currentlySelectedLanguageName.value
+                                    )
                                 )
-                            )
-                            isLanguageSelectionBtmSheetVisible.value =
-                                !isLanguageSelectionBtmSheetVisible.value
-                        }, indication = null, interactionSource = remember {
-                            MutableInteractionSource()
-                        })
-                        .pulsateEffect()
-                        .fillMaxWidth()
-                        .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
-                ) {
-                    FilledTonalIconButton(
-                        modifier = Modifier.pulsateEffect(),
-                        onClick = {
-                            languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UseCompiledStrings(
-                                    context = context,
-                                    languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }, indication = null, interactionSource = remember {
+                                MutableInteractionSource()
+                            })
+                            .pulsateEffect()
+                            .fillMaxWidth()
+                            .padding(top = 7.5.dp, bottom = 7.5.dp, start = 10.dp, end = 15.dp)
+                    ) {
+                        FilledTonalIconButton(
+                            modifier = Modifier.pulsateEffect(),
+                            onClick = {
+                                languageSettingsScreenVM.onClick(
+                                    LanguageSettingsScreenUIEvent.UseCompiledStrings(
+                                        context = context,
+                                        languageCode = currentlySelectedLanguageCode.value,
+                                        languageName = currentlySelectedLanguageName.value
+                                    )
                                 )
-                            )
-                            isLanguageSelectionBtmSheetVisible.value =
-                                !isLanguageSelectionBtmSheetVisible.value
-                        }) {
-                        Icon(imageVector = Icons.Default.Code, contentDescription = "")
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }) {
+                            Icon(imageVector = Icons.Default.Code, contentDescription = "")
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = "Use compiled strings",
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = "Use compiled strings",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 16.sp
-                    )
                 }
 
                 Row(
@@ -556,6 +531,62 @@ fun LanguageSettingsScreen(
                     )
                 }
                 Spacer(modifier = Modifier.height(22.5.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun LanguageUIComponent(onClick: () -> Unit, text: String, isRemoteLanguage: Boolean) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .clickable(interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null, onClick = {
+                onClick()
+            })
+            .pulsateEffect(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(Modifier.fillMaxWidth(0.8f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(
+                    imageVector = if (isRemoteLanguage) Icons.Default.Cloud else Icons.Default.Code,
+                    contentDescription = "",
+                    modifier = Modifier.size(16.dp)
+                )
+                Spacer(modifier = Modifier.width(5.dp))
+                Text(
+                    text = text,
+                    style = MaterialTheme.typography.titleSmall,
+                    fontSize = 16.sp
+                )
+            }
+            LinearProgressIndicator(
+                progress = { 0.75f }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 10.dp, bottom = 10.dp)
+            )
+            Text(
+                text = "9 of 12 strings localized",
+                style = MaterialTheme.typography.titleSmall
+            )
+        }
+        Box(
+            modifier = Modifier.fillMaxWidth(),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            IconButton(
+                modifier = Modifier.pulsateEffect(),
+                onClick = {
+                    onClick()
+                }) {
+                Icon(
+                    imageVector = Icons.Default.MoreVert,
+                    contentDescription = ""
+                )
             }
         }
     }
