@@ -14,10 +14,10 @@ import com.sakethh.linkora.MainActivity
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.localization.language.LanguageRepo
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
-import com.sakethh.linkora.data.remote.localization.model.RemoteLanguageDTO
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -28,6 +28,7 @@ import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -43,7 +44,8 @@ class LanguageSettingsScreenVM @Inject constructor(
     refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
     workManager: WorkManager,
     val translationsRepo: TranslationsRepo,
-    private val localizationRepo: LocalizationRepo
+    private val localizationRepo: LocalizationRepo,
+    private val languageRepo: LanguageRepo
 ) : SettingsScreenVM(
     linksRepo,
     importRepo,
@@ -59,14 +61,19 @@ class LanguageSettingsScreenVM @Inject constructor(
         Language(languageName = "हिंदी", languageCode = "hi", languageContributionLink = ""),
     )
 
-    private val _remotelyAvailableLanguages = MutableStateFlow(
-        RemoteLanguageDTO(
-            availableLanguages = listOf(),
-            totalAvailableLanguages = 0
-        )
+    private val _remotelyAvailableLanguages =
+        MutableStateFlow<List<com.sakethh.linkora.data.local.localization.language.Language>>(
+            emptyList()
     )
     val remotelyAvailableLanguages = _remotelyAvailableLanguages.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            languageRepo.getAllLanguages().collectLatest {
+                _remotelyAvailableLanguages.emit(it)
+            }
+        }
+    }
     fun onClick(languageSettingsScreenUIEvent: LanguageSettingsScreenUIEvent) {
         when (languageSettingsScreenUIEvent) {
             is LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage -> {
@@ -154,8 +161,15 @@ class LanguageSettingsScreenVM @Inject constructor(
 
             LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
                 viewModelScope.launch {
-                    localizationRepo.getRemoteLanguages().let {
-                        _remotelyAvailableLanguages.emit(it)
+                    localizationRepo.getRemoteLanguages().availableLanguages.filterNot { remoteLanguage ->
+                        compiledLanguages.any { remoteLanguage.languageCode == it.languageCode }
+                    }.let {
+                        languageRepo.addNewLanguages(it.map {
+                            com.sakethh.linkora.data.local.localization.language.Language(
+                                it.languageCode,
+                                it.languageName
+                            )
+                        })
                     }
                 }
             }

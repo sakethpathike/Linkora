@@ -1,11 +1,16 @@
 package com.sakethh.linkora.data.local.localization.language
 
 import com.sakethh.linkora.data.local.LocalDatabase
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class LanguageImpl @Inject constructor(private val localDatabase: LocalDatabase) : LanguageRepo {
     override suspend fun addANewLanguage(language: Language) {
         localDatabase.languageDao().addANewLanguage(language)
+    }
+
+    override suspend fun addNewLanguages(languages: List<Language>) {
+        localDatabase.languageDao().addNewLanguages(languages)
     }
 
     override suspend fun deleteALanguage(language: Language) {
@@ -18,6 +23,10 @@ class LanguageImpl @Inject constructor(private val localDatabase: LocalDatabase)
 
     override suspend fun deleteALanguageBasedOnLanguageCode(languageCode: String) {
         localDatabase.languageDao().deleteALanguageBasedOnLanguageCode(languageCode)
+    }
+
+    override fun getAllLanguages(): Flow<List<Language>> {
+        return localDatabase.languageDao().getAllLanguages()
     }
 
     override suspend fun getLanguageNameForTheCode(languageCode: String): String {

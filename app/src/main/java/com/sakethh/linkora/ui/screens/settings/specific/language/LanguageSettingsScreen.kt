@@ -285,7 +285,7 @@ fun LanguageSettingsScreen(
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
-            items(remotelyAvailableLanguages.availableLanguages.filterNot { availableLanguage -> languageSettingsScreenVM.compiledLanguages.any { availableLanguage.languageCode == it.languageCode } }) {
+            items(remotelyAvailableLanguages) {
                 LanguageUIComponent(
                     onClick = {
                         isSelectedLanguageAvailableOnlyRemotely.value = true

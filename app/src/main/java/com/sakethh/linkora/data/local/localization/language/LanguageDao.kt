@@ -4,11 +4,15 @@ import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface LanguageDao {
     @Insert
     suspend fun addANewLanguage(language: Language)
+
+    @Insert
+    suspend fun addNewLanguages(languages: List<Language>)
 
     @Delete
     suspend fun deleteALanguage(language: Language)
@@ -25,4 +29,7 @@ interface LanguageDao {
 
     @Query("SELECT languageCode FROM language WHERE languageName=:languageName")
     suspend fun getLanguageCodeForTheLanguageNamed(languageName: String): String
+
+    @Query("SELECT * from language")
+    fun getAllLanguages(): Flow<List<Language>>
 }
