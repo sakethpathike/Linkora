@@ -64,8 +64,8 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.isSendCrashReportsEnabled
-import com.sakethh.linkora.worker.RefreshLinksWorker
-import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
+import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
+import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

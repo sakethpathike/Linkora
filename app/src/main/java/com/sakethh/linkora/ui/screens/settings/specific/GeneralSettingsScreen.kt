@@ -68,7 +68,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import com.sakethh.linkora.ui.theme.fonts
-import com.sakethh.linkora.worker.RefreshLinksWorker
+import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)

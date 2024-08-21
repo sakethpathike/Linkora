@@ -293,9 +293,9 @@ fun LanguageSettingsScreen(
                     text = it.languageName,
                     isRemoteLanguage = false,
                     localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
-                        ?: 0 else it.localizedStringsCount).toString() + "/" + SettingsPreference.totalAppStrings.intValue + " strings localized",
+                        ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " strings localized",
                     localizationStatusFraction = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
-                        ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / SettingsPreference.totalAppStrings.intValue.toFloat(),
+                        ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalRemoteStrings.intValue else SettingsPreference.totalLocalAppStrings.intValue).toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
@@ -323,8 +323,8 @@ fun LanguageSettingsScreen(
                     },
                     text = it.languageName,
                     isRemoteLanguage = true,
-                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalAppStrings.intValue + " strings localized",
-                    localizationStatusFraction = it.localizedStringsCount.toFloat() / SettingsPreference.totalAppStrings.intValue.toFloat(),
+                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalLocalAppStrings.intValue + " strings localized",
+                    localizationStatusFraction = it.localizedStringsCount.toFloat() / SettingsPreference.totalLocalAppStrings.intValue.toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }

@@ -1,4 +1,4 @@
-package com.sakethh.linkora.worker
+package com.sakethh.linkora.worker.refreshLinks
 
 import android.content.Context
 import android.util.Log
@@ -60,7 +60,6 @@ class RefreshLinksWorkerRequestBuilder @Inject constructor(
         Log.d("Linkora Log", "In Builder")
         Log.d("Linkora Log", request.id.toString())
         REFRESH_LINKS_WORKER_TAG.emit(request.id)
-        workManager.cancelAllWork()
         RefreshLinksWorker.superVisorJob?.cancel()
         workManager.enqueueUniqueWork(
             REFRESH_LINKS_WORKER_TAG.value.toString(),

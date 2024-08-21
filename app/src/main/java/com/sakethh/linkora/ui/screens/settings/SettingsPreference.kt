@@ -14,7 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.APP_VERSION_CODE
-import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
+import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.first
@@ -47,7 +47,8 @@ object SettingsPreference : ViewModel() {
     val lastSelectedPanelID = mutableLongStateOf(-1)
     val preferredAppLanguageName = mutableStateOf("English")
     val preferredAppLanguageCode = mutableStateOf("en")
-    val totalAppStrings = mutableIntStateOf(0)
+    val totalLocalAppStrings = mutableIntStateOf(249)
+    val totalRemoteStrings = mutableIntStateOf(0)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -138,7 +139,7 @@ object SettingsPreference : ViewModel() {
                     ) ?: false
                 },
                 async {
-                    totalAppStrings.intValue = readSettingPreferenceValue(
+                    totalRemoteStrings.intValue = readSettingPreferenceValue(
                         preferenceKey = intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
                         dataStore = context.dataStore
                     ) ?: 0

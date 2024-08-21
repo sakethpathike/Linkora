@@ -2,6 +2,7 @@ package com.sakethh.linkora.data.remote.localization
 
 import com.sakethh.linkora.data.local.localization.language.translations.Translation
 import com.sakethh.linkora.data.remote.localization.model.RemoteLanguageDTO
+import com.sakethh.linkora.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -10,11 +11,10 @@ import javax.inject.Inject
 
 class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
     LocalizationRepo {
-    private val localizationServerURL = "https://linkoralocalizationserver.onrender.com/"
     override suspend fun getRemoteStrings(languageCode: String): LocalizationResult {
         return try {
             val localizedStrings = mutableListOf<Translation>()
-            ktorClient.get(localizationServerURL + languageCode).bodyAsText()
+            ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + languageCode).bodyAsText()
                 .substringAfter("<resources>")
                 .substringBefore("</resources>")
                 .split("<string").forEach {
@@ -40,7 +40,7 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
 
     override suspend fun getRemoteLanguages(): RemoteLanguageDTO {
         return try {
-            ktorClient.get(localizationServerURL + "info").body<RemoteLanguageDTO>()
+            ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + "info").body<RemoteLanguageDTO>()
         } catch (e: Exception) {
             e.printStackTrace()
             RemoteLanguageDTO(

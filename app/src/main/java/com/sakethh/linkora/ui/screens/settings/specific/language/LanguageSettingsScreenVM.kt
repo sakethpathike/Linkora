@@ -26,7 +26,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.useLanguageStr
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.linkoraLog
-import com.sakethh.linkora.worker.RefreshLinksWorkerRequestBuilder
+import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -45,7 +45,7 @@ class LanguageSettingsScreenVM @Inject constructor(
     exportRepo: ExportRepo,
     gitHubReleasesRepo: GitHubReleasesRepo,
     refreshLinksWorkerRequestBuilder: RefreshLinksWorkerRequestBuilder,
-    workManager: WorkManager,
+    val workManager: WorkManager,
     val translationsRepo: TranslationsRepo,
     private val localizationRepo: LocalizationRepo,
     private val languageRepo: LanguageRepo
@@ -64,7 +64,7 @@ class LanguageSettingsScreenVM @Inject constructor(
             languageName = "English",
             languageCode = "en",
             languageContributionLink = "",
-            localizedStringsCount = SettingsPreference.totalAppStrings.intValue
+            localizedStringsCount = SettingsPreference.totalLocalAppStrings.intValue
         ),
         Language(
             languageName = "हिंदी",
@@ -87,6 +87,7 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
         }
     }
+
     fun onClick(languageSettingsScreenUIEvent: LanguageSettingsScreenUIEvent) {
         when (languageSettingsScreenUIEvent) {
             is LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage -> {
@@ -208,7 +209,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                             languageSettingsScreenUIEvent.context.dataStore,
                             it
                         )
-                        SettingsPreference.totalAppStrings.intValue = it
+                        SettingsPreference.totalRemoteStrings.intValue = it
                     }
                     remoteLanguagesData.let {
                         linkoraLog(it.toString())
