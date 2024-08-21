@@ -14,6 +14,7 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
     override suspend fun getRemoteStrings(languageCode: String): LocalizationResult {
         return try {
             val localizedStrings = mutableListOf<Translation>()
+            LocalizationResult.updateState(RequestState.REQUESTING)
             ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + languageCode).bodyAsText()
                 .substringAfter("<resources>")
                 .substringBefore("</resources>")
@@ -31,8 +32,10 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
                         )
                     }
                 }
+            LocalizationResult.updateState(RequestState.SUCCESS)
             LocalizationResult.Success(localizedStrings)
         } catch (e: Exception) {
+            LocalizationResult.updateState(RequestState.FAILED)
             e.printStackTrace()
             LocalizationResult.Failure("")
         }
@@ -40,8 +43,13 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
 
     override suspend fun getRemoteLanguages(): RemoteLanguageDTO {
         return try {
-            ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + "info").body<RemoteLanguageDTO>()
+            LocalizationResult.updateState(RequestState.REQUESTING)
+            val remoteLanguageData = ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + "info")
+                .body<RemoteLanguageDTO>()
+            LocalizationResult.updateState(RequestState.SUCCESS)
+            remoteLanguageData
         } catch (e: Exception) {
+            LocalizationResult.updateState(RequestState.FAILED)
             e.printStackTrace()
             RemoteLanguageDTO(
                 availableLanguages = listOf(),

@@ -76,6 +76,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLa
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
@@ -555,6 +556,13 @@ fun LanguageSettingsScreen(
                 Spacer(modifier = Modifier.height(22.5.dp))
             }
         }
+    }
+
+    if (languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear.value) {
+        SettingsNewVersionCheckerDialogBox(
+            text = "Retrieving latest information",
+            shouldCancelButtonBeVisible = false
+        )
     }
 }
 

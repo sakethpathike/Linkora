@@ -5,6 +5,7 @@ import android.app.LocaleManager
 import android.content.Intent
 import android.os.Build
 import android.os.LocaleList
+import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
@@ -19,6 +20,8 @@ import com.sakethh.linkora.data.local.localization.language.LanguageRepo
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
+import com.sakethh.linkora.data.remote.localization.LocalizationResult
+import com.sakethh.linkora.data.remote.localization.RequestState
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -80,10 +83,18 @@ class LanguageSettingsScreenVM @Inject constructor(
     )
     val remotelyAvailableLanguages = _remotelyAvailableLanguages.asStateFlow()
 
+    val shouldRequestingDataFromServerDialogBoxShouldAppear = mutableStateOf(false)
+
     init {
         viewModelScope.launch {
             languageRepo.getAllLanguages().collectLatest {
                 _remotelyAvailableLanguages.emit(it)
+            }
+        }
+        viewModelScope.launch {
+            LocalizationResult.currentState.collectLatest {
+                shouldRequestingDataFromServerDialogBoxShouldAppear.value =
+                    it == RequestState.REQUESTING
             }
         }
     }

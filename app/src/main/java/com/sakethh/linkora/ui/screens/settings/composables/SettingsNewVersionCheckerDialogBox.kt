@@ -33,7 +33,9 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun SettingsNewVersionCheckerDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean> = mutableStateOf(
         true
-    )
+    ),
+    text: String = retrievingLatestInformation.value,
+    shouldCancelButtonBeVisible: Boolean = true
 ) {
     if (shouldDialogBoxAppear.value && !SettingsPreference.didServerTimeOutErrorOccurred.value) {
         LinkoraTheme {
@@ -56,7 +58,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             strokeWidth = 4.dp
                         )
                         Text(
-                            text = retrievingLatestInformation.value,
+                            text = text,
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
@@ -65,19 +67,21 @@ fun SettingsNewVersionCheckerDialogBox(
                             modifier = Modifier.fillMaxWidth()
                         )
                     }
-                    Button(
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth()
-                            .pulsateEffect(),
-                        onClick = {
-                            shouldDialogBoxAppear.value = false
-                        }) {
-                        Text(
-                            text = cancel.value,
-                            style = MaterialTheme.typography.titleSmall,
-                            fontSize = 16.sp
-                        )
+                    if (shouldCancelButtonBeVisible) {
+                        Button(
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth()
+                                .pulsateEffect(),
+                            onClick = {
+                                shouldDialogBoxAppear.value = false
+                            }) {
+                            Text(
+                                text = cancel.value,
+                                style = MaterialTheme.typography.titleSmall,
+                                fontSize = 16.sp
+                            )
+                        }
                     }
                 }
             }
