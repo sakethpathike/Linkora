@@ -209,7 +209,7 @@
     <string name="github_desc">The source code for Linkora is public and open-source; feel free to check out what Linkora does under the hood.</string>
     <string name="github">Github</string>
     <string name="follow">Follow</string>
-    <string name="twitter_desc">on the bird app to get the latest information about releases and everything in between about Linkora.\"</string>
+    <string name="twitter_desc">on the bird app to get the latest information about releases and everything in between about Linkora.</string>
     <string name="twitter">Twitter</string>
     <string name="refresh_all_links_titles_and_images">Refresh All Links\' Titles and Images</string>
     <string name="refresh_all_links_titles_and_images_desc">Manually entered titles will be replaced with detected titles.</string>
@@ -256,4 +256,5 @@
     <string name="update_remote_language_strings">Update Remote Language Strings</string>
     <string name="remove_language_strings">Remove Language Strings</string>
     <string name="help_improve_language_strings">Help Improve Language Strings</string>
+    <string name="discord">Discord</string>
 </resources>

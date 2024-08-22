@@ -257,4 +257,5 @@
     <string name="load_compiled_strings">Load Compiled Strings</string>
     <string name="remove_language_strings">Remove Language Strings</string>
     <string name="help_improve_language_strings">Help Improve Language Strings</string>
+    <string name="discord">Discord</string>
 </resources>

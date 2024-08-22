@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
@@ -75,7 +76,7 @@ fun SettingsAppInfoComponent(
                 Icon(
                     painter = painterResource(id = localIcon),
                     contentDescription = null,
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier.padding(20.dp).size(24.dp)
                 )
             } else {
                 if (icon != null) {

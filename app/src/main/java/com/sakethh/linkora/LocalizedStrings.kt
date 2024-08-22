@@ -622,9 +622,6 @@ object LocalizedStrings : ViewModel() {
     private val _follow = mutableStateOf("")
     val follow = _follow
 
-    private val _twitterDesc = mutableStateOf("")
-    val twitterDesc = _twitterDesc
-
     private val _twitter = mutableStateOf("")
     val twitter = _twitter
 
@@ -805,6 +802,10 @@ object LocalizedStrings : ViewModel() {
     val helpImproveLanguageStrings =
         _helpImproveLanguageStrings
 
+    private val _discord = mutableStateOf("")
+    val discord =
+        _discord
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -816,7 +817,24 @@ object LocalizedStrings : ViewModel() {
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        helpImproveLanguageStrings.value =
+                        _discord.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "discord",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.discord)
+                                }
+                            })
+                    } else {
+                        _discord.value =
+                            context.getString(R.string.discord)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _helpImproveLanguageStrings.value =
                             (translationsRepo.getLocalizedStringValueFor(
                                 "help_improve_language_strings",
                             SettingsPreference.preferredAppLanguageCode.value
@@ -826,7 +844,7 @@ object LocalizedStrings : ViewModel() {
                             }
                         })
                     } else {
-                        helpImproveLanguageStrings.value =
+                        _helpImproveLanguageStrings.value =
                             context.getString(R.string.help_improve_language_strings)
                     }
                 },
@@ -3565,22 +3583,6 @@ object LocalizedStrings : ViewModel() {
                         _follow.value = context.getString(R.string.follow)
                     }
                 },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _twitterDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "twitter_desc", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.twitter_desc)
-                            }
-                        })
-                    } else {
-                        _twitterDesc.value = context.getString(R.string.twitter_desc)
-                    }
-                },
-
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {

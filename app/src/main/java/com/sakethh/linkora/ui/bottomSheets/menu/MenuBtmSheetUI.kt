@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -54,6 +55,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -387,6 +389,7 @@ fun IndividualMenuComponent(
     onOptionClick: () -> Unit,
     elementName: String,
     elementImageVector: ImageVector,
+    elementImageRes: Int = 0,
     inShelfUI: Boolean = false,
     onDeleteIconClick: () -> Unit = {},
     onTuneIconClick: () -> Unit = {},
@@ -415,7 +418,15 @@ fun IndividualMenuComponent(
                 modifier = Modifier.padding(10.dp), onClick = { onOptionClick() },
                 colors = IconButtonDefaults.filledTonalIconButtonColors()
             ) {
-                Icon(imageVector = elementImageVector, contentDescription = null)
+                if (elementImageRes != 0) {
+                    Icon(
+                        painter = painterResource(id = elementImageRes),
+                        modifier = Modifier.size(24.dp),
+                        contentDescription = null
+                    )
+                } else {
+                    Icon(imageVector = elementImageVector, contentDescription = null)
+                }
             }
             Text(
                 text = elementName,

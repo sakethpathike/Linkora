@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.SystemUpdateAlt
+import androidx.compose.material.icons.filled.Construction
+import androidx.compose.material.icons.filled.Language
+import androidx.compose.material.icons.filled.TrackChanges
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Refresh
@@ -39,38 +41,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdates
-import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdatesDesc
 import com.sakethh.linkora.LocalizedStrings.checkForLatestVersion
-import com.sakethh.linkora.LocalizedStrings.follow
 import com.sakethh.linkora.LocalizedStrings.github
 import com.sakethh.linkora.LocalizedStrings.githubDesc
 import com.sakethh.linkora.LocalizedStrings.isNowAvailable
 import com.sakethh.linkora.LocalizedStrings.networkError
 import com.sakethh.linkora.LocalizedStrings.twitter
-import com.sakethh.linkora.LocalizedStrings.twitterDesc
 import com.sakethh.linkora.LocalizedStrings.youAreUsingLatestVersionOfLinkora
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
-import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
@@ -251,45 +240,12 @@ fun AboutSettingsScreen(
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )
-                SettingsAppInfoComponent(
-                    description = githubDesc.value,
-                    icon = null,
-                    usingLocalIcon = true,
-                    title = github.value,
-                    localIcon = R.drawable.github_logo,
-                    onClick = {
-                        customWebTab.openInWeb(
-                            recentlyVisitedData = RecentlyVisited(
-                                title = "Linkora on Github",
-                                webURL = "https://www.github.com/sakethpathike/Linkora",
-                                baseURL = "github.com",
-                                imgURL = "it.imgURL",
-                                infoForSaving = "Linkora on Github"
-                            ),
-                            context = context,
-                            uriHandler = uriHandler,
-                            forceOpenInExternalBrowser = false
-                        )
-                    })
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(20.dp),
-                    thickness = 0.5.dp,
-                    color = MaterialTheme.colorScheme.outline
-                )
                 Text(
-                    text = buildAnnotatedString {
-                        append(follow.value)
-                        withStyle(SpanStyle(fontWeight = SemiBold)) {
-                            append(" @LinkoraApp ")
-                        }
-                        append(twitterDesc.value)
-                    }, style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Start,
-                    lineHeight = 20.sp,
-                    modifier = Modifier
-                        .padding(start = 15.dp, end = 15.dp)
+                    text = "Socials",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 15.dp),
+                    color = MaterialTheme.colorScheme.primary
                 )
                 SettingsAppInfoComponent(
                     description = "",
@@ -312,6 +268,36 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+                /*HorizontalDivider(
+                    modifier = Modifier.padding(
+                        start = 20.dp,
+                        top = 20.dp,
+                        end = 20.dp
+                    ),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline
+                )*/
+                SettingsAppInfoComponent(
+                    description = "",
+                    icon = null,
+                    hasDescription = false,
+                    usingLocalIcon = true,
+                    localIcon = R.drawable.discord_logo,
+                    title = LocalizedStrings.discord.value,
+                    onClick = {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Linkora on Discord",
+                                webURL = "https://discord.gg/ZDBXNtv8MD",
+                                baseURL = "discord.gg",
+                                imgURL = "https://cdn.discordapp.com/assets/og_img_discord_home.png",
+                                infoForSaving = "Linkora on Discord"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
+                    })
                 HorizontalDivider(
                     modifier = Modifier.padding(
                         start = 20.dp,
@@ -321,38 +307,119 @@ fun AboutSettingsScreen(
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )
-            }
+                Text(
+                    text = "Development",
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 20.dp),
+                    color = MaterialTheme.colorScheme.primary
+                )
 
-            item {
-                RegularSettingComponent(
-                    settingsUIElement = SettingsUIElement(
-                        title = autoCheckForUpdates.value,
-                        doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
-                        description = autoCheckForUpdatesDesc.value,
-                        isIconNeeded = rememberSaveable {
-                            mutableStateOf(true)
-                        },
-                        icon = Icons.Default.SystemUpdateAlt,
-                        isSwitchNeeded = true,
-                        isSwitchEnabled = SettingsPreference.isAutoCheckUpdatesEnabled,
-                        onSwitchStateChange = {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                preferenceKey = booleanPreferencesKey(
-                                    SettingsPreferences.AUTO_CHECK_UPDATES.name
-                                ),
-                                dataStore = context.dataStore,
-                                newValue = it
-                            )
-                            coroutineScope.launch {
-                                SettingsPreference.isAutoCheckUpdatesEnabled.value =
-                                    SettingsPreference.readSettingPreferenceValue(
-                                        preferenceKey = booleanPreferencesKey(
-                                            SettingsPreferences.AUTO_CHECK_UPDATES.name
-                                        ),
-                                        dataStore = context.dataStore
-                                    ) == true
-                            }
-                        })
+                SettingsAppInfoComponent(
+                    description = githubDesc.value,
+                    icon = null,
+                    usingLocalIcon = true,
+                    title = github.value,
+                    localIcon = R.drawable.github_logo,
+                    onClick = {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Linkora on Github",
+                                webURL = "https://www.github.com/sakethpathike/Linkora",
+                                baseURL = "github.com",
+                                imgURL = "https://repository-images.githubusercontent.com/648784316/d178070a-d517-47b5-bd0c-232568df2f77",
+                                infoForSaving = "Linkora on Github"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
+                    })
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(20.dp),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                SettingsAppInfoComponent(
+                    description = "Have a suggestion? Create an issue on GitHub to improve Linkora.",
+                    icon = Icons.Default.Construction,
+                    usingLocalIcon = false,
+                    title = "Open a GitHub Issue",
+                    localIcon = R.drawable.github_logo,
+                    onClick = {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Issues · sakethpathike/Linkora",
+                                webURL = "https://github.com/sakethpathike/Linkora/issues/new",
+                                baseURL = "github.com",
+                                imgURL = "https://repository-images.githubusercontent.com/648784316/d178070a-d517-47b5-bd0c-232568df2f77",
+                                infoForSaving = "Issues · sakethpathike/Linkora on Github"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
+                    })
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(20.dp),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                SettingsAppInfoComponent(
+                    description = "Track recent changes and updates to Linkora.",
+                    icon = Icons.Default.TrackChanges,
+                    usingLocalIcon = false,
+                    title = "Changelog",
+                    localIcon = R.drawable.github_logo,
+                    onClick = {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Releases · sakethpathike/Linkora",
+                                webURL = "https://github.com/sakethpathike/Linkora/releases",
+                                baseURL = "github.com",
+                                imgURL = "https://repository-images.githubusercontent.com/648784316/d178070a-d517-47b5-bd0c-232568df2f77",
+                                infoForSaving = "Releases · sakethpathike/Linkora on Github"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
+                    })
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(20.dp),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline
+                )
+
+                SettingsAppInfoComponent(
+                    description = "Help make Linkora accessible in more languages by contributing translations.",
+                    icon = Icons.Default.Language,
+                    usingLocalIcon = false,
+                    title = "Help Translate Linkora",
+                    localIcon = R.drawable.github_logo,
+                    onClick = {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Linkora on Github",
+                                webURL = "https://www.github.com/sakethpathike/Linkora",
+                                baseURL = "github.com",
+                                imgURL = "it.imgURL",
+                                infoForSaving = "Linkora on Github"
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
+                    })
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(20.dp),
+                    thickness = 0.5.dp,
+                    color = MaterialTheme.colorScheme.outline
                 )
             }
             item {
