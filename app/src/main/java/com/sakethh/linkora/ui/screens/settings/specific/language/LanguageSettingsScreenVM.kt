@@ -136,6 +136,9 @@ class LanguageSettingsScreenVM @Inject constructor(
             is LanguageSettingsScreenUIEvent.Contribute -> TODO()
             is LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings -> {
                 viewModelScope.launch {
+                    async {
+                        onClick(LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(languageSettingsScreenUIEvent.context))
+                    }.await()
                     translationsRepo.addLocalizedStrings(languageSettingsScreenUIEvent.languageCode)
                 }
             }

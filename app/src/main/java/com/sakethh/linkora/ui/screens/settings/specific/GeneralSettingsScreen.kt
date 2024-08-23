@@ -148,37 +148,6 @@ fun GeneralSettingsScreen(
                     }
                 }
             }
-            item(key = "use_language_strings_fetched_from_the_server") {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .animateContentSize()
-                ) {
-                    RegularSettingComponent(
-                        settingsUIElement = SettingsUIElement(
-                            title = LocalizedStrings.useLanguageStringsFetchedFromTheServer.value,
-                            doesDescriptionExists = true,
-                            description = LocalizedStrings.useLanguageStringsFetchedFromTheServerDesc.value,
-                            isSwitchNeeded = true,
-                            isIconNeeded = rememberSaveable {
-                                mutableStateOf(true)
-                            },
-                            icon = Icons.Default.Translate,
-                            isSwitchEnabled = SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer,
-                            onSwitchStateChange = {
-                                SettingsPreference.changeSettingPreferenceValue(
-                                    preferenceKey = booleanPreferencesKey(
-                                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
-                                    ), dataStore = context.dataStore, newValue = it
-                                )
-                                SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value =
-                                    it
-                                LocalizedStrings.loadStrings(context)
-                            })
-                    )
-                }
-            }
 
             item(key = "JsoupUserAgent") {
                 TextFieldForPreferenceComposable(

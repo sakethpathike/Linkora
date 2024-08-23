@@ -13,7 +13,8 @@ sealed class LanguageSettingsScreenUIEvent {
 
     data class DownloadLatestLanguageStrings(
         val languageCode: String,
-        val languageName: String
+        val languageName: String,
+        val context: Context
     ) :
         LanguageSettingsScreenUIEvent()
 

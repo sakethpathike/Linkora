@@ -444,7 +444,8 @@ fun LanguageSettingsScreen(
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
                                     languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
+                                    languageName = currentlySelectedLanguageName.value,
+                                    context
                                 )
                             )
                             isLanguageSelectionBtmSheetVisible.value =
@@ -462,7 +463,8 @@ fun LanguageSettingsScreen(
                             languageSettingsScreenVM.onClick(
                                 LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings(
                                     languageCode = currentlySelectedLanguageCode.value,
-                                    languageName = currentlySelectedLanguageName.value
+                                    languageName = currentlySelectedLanguageName.value,
+                                    context
                                 )
                             )
                             isLanguageSelectionBtmSheetVisible.value =
