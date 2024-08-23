@@ -254,7 +254,12 @@
     <string name="load_server_strings">Load Server Strings</string>
     <string name="load_compiled_strings">Load Compiled Strings</string>
     <string name="update_remote_language_strings">Update Remote Language Strings</string>
-    <string name="remove_language_strings">Remove Language Strings</string>
+    <string name="remove_remote_language_strings">Remove Remote Language Strings</string>
     <string name="help_improve_language_strings">Help Improve Language Strings</string>
     <string name="discord">Discord</string>
+    <string name="strings_localized">Strings localized</string>
+    <string name="localization_server_desc">Linkora’s localization server allows string updates without app updates. By default, Linkora uses its server. You can use your own server if available. Changes will be reflected in Linkora’s network requests for language or string updates. Only modify this if you know what you are doing.</string>
+    <string name="localization_server">Localization Server</string>
+    <string name="no_folders_available_in_this_panel_add_folders_to_begin">No folders available in this panel. Add folders to begin.</string>
+    <string name="you_can_find_saved_links_and_important_links_in_the_default_panel">You can find \"Saved Links\" and \"Important Links\" in the \"Default\" panel.</string>
 </resources>

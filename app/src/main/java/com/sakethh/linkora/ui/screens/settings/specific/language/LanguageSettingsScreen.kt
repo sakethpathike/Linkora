@@ -295,7 +295,7 @@ fun LanguageSettingsScreen(
                     text = it.languageName,
                     isRemoteLanguage = false,
                     localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
-                        ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " strings localized",
+                        ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " " + LocalizedStrings.stringsLocalized.value,
                     localizationStatusFraction = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
                         ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalRemoteStrings.intValue else SettingsPreference.totalLocalAppStrings.intValue).toFloat(),
                 )

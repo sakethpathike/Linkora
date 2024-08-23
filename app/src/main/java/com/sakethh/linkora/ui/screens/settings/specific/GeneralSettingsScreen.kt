@@ -62,12 +62,14 @@ import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.localizationServerURL
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
 import com.sakethh.linkora.ui.theme.fonts
+import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
 
@@ -93,7 +95,11 @@ fun GeneralSettingsScreen(
     val isReadOnlyTextFieldForUserAgent = rememberSaveable {
         mutableStateOf(true)
     }
-    val focusRequester = remember { FocusRequester() }
+    val isReadOnlyTextFieldForLocalizationServer = rememberSaveable {
+        mutableStateOf(true)
+    }
+    val jsoupUserAgentFocusRequester = remember { FocusRequester() }
+    val localizationServerTextFieldFocusRequester = remember { FocusRequester() }
     val successfulRefreshLinksCount =
         RefreshLinksWorker.successfulRefreshLinksCount
 
@@ -175,85 +181,81 @@ fun GeneralSettingsScreen(
             }
 
             item(key = "JsoupUserAgent") {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 25.dp, end = 15.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    ProvideTextStyle(value = TextStyle(fontFamily = fonts)) {
-                        OutlinedTextField(
-                            supportingText = {
-                                Text(
-                                    text = LocalizedStrings.userAgentDesc.value,
-                                    style = MaterialTheme.typography.titleSmall,
-                                    lineHeight = 18.sp,
-                                    modifier = Modifier.padding(
-                                        top = 5.dp,
-                                        bottom = 5.dp
-                                    )
-                                )
-                            },
-                            value = jsoupStringAgent.value,
-                            onValueChange = {
-                                jsoupStringAgent.value = it
-                            },
-                            readOnly = isReadOnlyTextFieldForUserAgent.value,
-                            modifier = Modifier
-                                .fillMaxWidth(0.8f)
-                                .focusRequester(focusRequester),
-                            label = {
-                                Text(
-                                    text = LocalizedStrings.userAgent.value,
-                                    style = MaterialTheme.typography.titleSmall
-                                )
-                            }
+                TextFieldForPreferenceComposable(
+                    textFieldDescText = LocalizedStrings.userAgentDesc.value,
+                    textFieldLabel = LocalizedStrings.userAgent.value,
+                    textFieldValue = jsoupStringAgent.value,
+                    onResetButtonClick = {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                            context.dataStore,
+                            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
                         )
-                    }
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FilledTonalIconToggleButton(
-                            checked = !isReadOnlyTextFieldForUserAgent.value,
-                            onCheckedChange = {
-                                isReadOnlyTextFieldForUserAgent.value =
-                                    !isReadOnlyTextFieldForUserAgent.value
-                                if (!isReadOnlyTextFieldForUserAgent.value) {
-                                    focusRequester.requestFocus()
-                                } else {
-                                    focusRequester.freeFocus()
-                                }
-                                if (isReadOnlyTextFieldForUserAgent.value) {
-                                    SettingsPreference.changeSettingPreferenceValue(
-                                        stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
-                                        context.dataStore,
-                                        jsoupStringAgent.value
-                                    )
-                                    SettingsPreference.jsoupUserAgent.value =
-                                        jsoupStringAgent.value
-                                }
-                            }) {
-                            Icon(
-                                imageVector = if (isReadOnlyTextFieldForUserAgent.value) Icons.Default.Edit else Icons.Default.Check,
-                                contentDescription = ""
-                            )
+                        SettingsPreference.jsoupUserAgent.value =
+                            "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                    },
+                    onTextFieldValueChange = {
+                        jsoupStringAgent.value = it
+                    },
+                    onConfirmButtonClick = {
+                        isReadOnlyTextFieldForUserAgent.value =
+                            !isReadOnlyTextFieldForUserAgent.value
+                        if (!isReadOnlyTextFieldForUserAgent.value) {
+                            jsoupUserAgentFocusRequester.requestFocus()
+                        } else {
+                            jsoupUserAgentFocusRequester.freeFocus()
                         }
-                        Spacer(modifier = Modifier.height(15.dp))
-                        FilledTonalIconButton(onClick = {
+                        if (isReadOnlyTextFieldForUserAgent.value) {
                             SettingsPreference.changeSettingPreferenceValue(
                                 stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                                 context.dataStore,
-                                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                                jsoupStringAgent.value
                             )
                             SettingsPreference.jsoupUserAgent.value =
-                                "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
-                        }) {
-                            Icon(
-                                imageVector = Icons.Default.Restore,
-                                contentDescription = ""
+                                jsoupStringAgent.value
+                        }
+                    },
+                    focusRequester = jsoupUserAgentFocusRequester,
+                    readonly = isReadOnlyTextFieldForUserAgent.value
+                )
+            }
+
+            item(key = "LinkoraLocalizationServerURL") {
+                TextFieldForPreferenceComposable(
+                    textFieldDescText = LocalizedStrings.localizationServerDesc.value,
+                    textFieldLabel = LocalizedStrings.localizationServer.value,
+                    textFieldValue = localizationServerURL.value,
+                    onResetButtonClick = {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
+                            context.dataStore,
+                            Constants.LINKORA_LOCALIZATION_SERVER
+                        )
+                        localizationServerURL.value =
+                            Constants.LINKORA_LOCALIZATION_SERVER
+                    },
+                    onTextFieldValueChange = {
+                        localizationServerURL.value = it
+                    },
+                    onConfirmButtonClick = {
+                        isReadOnlyTextFieldForLocalizationServer.value =
+                            !isReadOnlyTextFieldForLocalizationServer.value
+                        if (!isReadOnlyTextFieldForLocalizationServer.value) {
+                            localizationServerTextFieldFocusRequester.requestFocus()
+                        } else {
+                            localizationServerTextFieldFocusRequester.freeFocus()
+                        }
+                        if (isReadOnlyTextFieldForLocalizationServer.value) {
+                            SettingsPreference.changeSettingPreferenceValue(
+                                stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
+                                context.dataStore,
+                                localizationServerURL.value
                             )
                         }
-                    }
-                }
+                    },
+                    focusRequester = localizationServerTextFieldFocusRequester,
+                    readonly = isReadOnlyTextFieldForLocalizationServer.value
+                )
             }
             item {
                 Box(
@@ -278,7 +280,7 @@ fun GeneralSettingsScreen(
                             )
                             Spacer(modifier = Modifier.height(15.dp))
                             Text(
-                                text = LocalizedStrings.userAgent.value,
+                                text = LocalizedStrings.refreshingLinks.value,
                                 style = MaterialTheme.typography.titleMedium,
                                 modifier = Modifier.padding(
                                     start = 15.dp,
@@ -372,6 +374,77 @@ fun GeneralSettingsScreen(
             }
             item {
                 Spacer(modifier = Modifier.height(100.dp))
+            }
+        }
+    }
+}
+
+@Composable
+private fun TextFieldForPreferenceComposable(
+    textFieldDescText: String,
+    textFieldLabel: String,
+    textFieldValue: String,
+    onResetButtonClick: () -> Unit,
+    onTextFieldValueChange: (String) -> Unit,
+    onConfirmButtonClick: () -> Unit,
+    focusRequester: FocusRequester,
+    readonly: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 25.dp, end = 15.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        ProvideTextStyle(value = TextStyle(fontFamily = fonts)) {
+            OutlinedTextField(
+                supportingText = {
+                    Text(
+                        text = textFieldDescText,
+                        style = MaterialTheme.typography.titleSmall,
+                        lineHeight = 18.sp,
+                        modifier = Modifier.padding(
+                            top = 5.dp,
+                            bottom = 5.dp
+                        )
+                    )
+                },
+                value = textFieldValue,
+                onValueChange = {
+                    onTextFieldValueChange(it)
+                },
+                readOnly = readonly,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .focusRequester(focusRequester),
+                label = {
+                    Text(
+                        text = textFieldLabel,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                }
+            )
+        }
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            FilledTonalIconToggleButton(
+                checked = !readonly,
+                onCheckedChange = {
+                    onConfirmButtonClick()
+                }) {
+                Icon(
+                    imageVector = if (readonly) Icons.Default.Edit else Icons.Default.Check,
+                    contentDescription = ""
+                )
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            FilledTonalIconButton(onClick = {
+                onResetButtonClick()
+            }) {
+                Icon(
+                    imageVector = Icons.Default.Restore,
+                    contentDescription = ""
+                )
             }
         }
     }

@@ -36,6 +36,9 @@ object LocalizedStrings : ViewModel() {
     private val _userAgentDesc = mutableStateOf("")
     val userAgentDesc = _userAgentDesc
 
+    private val _localizationServerDesc = mutableStateOf("")
+    val localizationServerDesc = _localizationServerDesc
+
     private val _userAgent = mutableStateOf("")
     val userAgent = _userAgent
 
@@ -806,6 +809,22 @@ object LocalizedStrings : ViewModel() {
     val discord =
         _discord
 
+    private val _stringsLocalized = mutableStateOf("")
+    val stringsLocalized =
+        _stringsLocalized
+
+    private val _localizationServer = mutableStateOf("")
+    val localizationServer =
+        _localizationServer
+
+    private val _noFoldersAvailableInThisPanelAddFoldersToBegin = mutableStateOf("")
+    val noFoldersAvailableInThisPanelAddFoldersToBegin =
+        _noFoldersAvailableInThisPanelAddFoldersToBegin
+
+    private val _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel = mutableStateOf("")
+    val youCanFindSavedLinksAndImportantLinksInTheDefaultPanel =
+        _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -814,6 +833,91 @@ object LocalizedStrings : ViewModel() {
                 .getTranslationRepo()
         viewModelScope.launch {
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "you_can_find_saved_links_and_important_links_in_the_default_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.you_can_find_saved_links_and_important_links_in_the_default_panel)
+                                }
+                            })
+                    } else {
+                        _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel.value =
+                            context.getString(R.string.you_can_find_saved_links_and_important_links_in_the_default_panel)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _noFoldersAvailableInThisPanelAddFoldersToBegin.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "no_folders_available_in_this_panel_add_folders_to_begin",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.no_folders_available_in_this_panel_add_folders_to_begin)
+                                }
+                            })
+                    } else {
+                        _noFoldersAvailableInThisPanelAddFoldersToBegin.value =
+                            context.getString(R.string.no_folders_available_in_this_panel_add_folders_to_begin)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _localizationServer.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "localization_server",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.localization_server)
+                                }
+                            })
+                    } else {
+                        _localizationServer.value =
+                            context.getString(R.string.localization_server)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _localizationServerDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "localization_server_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.localization_server_desc)
+                                }
+                            })
+                    } else {
+                        _localizationServerDesc.value =
+                            context.getString(R.string.localization_server_desc)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _stringsLocalized.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "strings_localized",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.strings_localized)
+                                }
+                            })
+                    } else {
+                        _stringsLocalized.value =
+                            context.getString(R.string.strings_localized)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
@@ -852,16 +956,16 @@ object LocalizedStrings : ViewModel() {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _removeLanguageStrings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "remove_language_strings",
+                            "remove_remote_language_strings",
                             SettingsPreference.preferredAppLanguageCode.value
                         ).let {
                             it.ifNullOrBlank {
-                                context.getString(R.string.remove_language_strings)
+                                context.getString(R.string.remove_remote_language_strings)
                             }
                         })
                     } else {
                         _removeLanguageStrings.value =
-                            context.getString(R.string.remove_language_strings)
+                            context.getString(R.string.remove_remote_language_strings)
                     }
                 },
                 async {

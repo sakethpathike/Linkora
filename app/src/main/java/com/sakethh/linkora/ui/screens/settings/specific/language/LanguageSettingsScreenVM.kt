@@ -190,7 +190,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                     linkoraLog(languageSettingsScreenUIEvent.languageName + ":" + languageSettingsScreenUIEvent.languageCode)
                     async {
                         if (compiledLanguages.map { it.languageCode }
-                                .contains(languageSettingsScreenUIEvent.languageCode)) {
+                                .contains(languageSettingsScreenUIEvent.languageCode) && SettingsPreference.preferredAppLanguageCode.value == languageSettingsScreenUIEvent.languageCode) {
                             onClick(
                                 LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
                                     context = languageSettingsScreenUIEvent.context,

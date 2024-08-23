@@ -667,7 +667,7 @@ fun ParentHomeScreen(
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = "No folders available in this panel. Add folders to begin.",
+                                            text = LocalizedStrings.noFoldersAvailableInThisPanelAddFoldersToBegin.value,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -687,7 +687,7 @@ fun ParentHomeScreen(
                                         Text(text = "• ")
                                         Text(
                                             style = MaterialTheme.typography.titleSmall,
-                                            text = "You can find \"Saved Links\" and \"Important Links\" in the \"Default\" panel.",
+                                            text = LocalizedStrings.youCanFindSavedLinksAndImportantLinksInTheDefaultPanel.value,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
                                             textAlign = TextAlign.Start,
