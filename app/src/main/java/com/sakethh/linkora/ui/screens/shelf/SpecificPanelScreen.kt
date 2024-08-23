@@ -158,12 +158,12 @@ fun SpecificPanelScreen(navController: NavController) {
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
-            item {
-                HorizontalDivider(
-                    color = LocalContentColor.current.copy(0.1f)
-                )
-            }
             if (rootFolders.value.size != panelData.value.distinct().size) {
+                item {
+                    HorizontalDivider(
+                        color = LocalContentColor.current.copy(0.1f)
+                    )
+                }
                 item {
                     Text(
                         text = youCanAddTheFollowingFoldersToThisPanel.value,

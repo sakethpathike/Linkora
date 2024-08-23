@@ -72,7 +72,7 @@ fun RegularSettingComponent(
                     .fillMaxWidth(if (settingsUIElement.shouldArrowIconBeAppear.value || settingsUIElement.isSwitchNeeded) 0.75f else 1f)
                     .padding(
                         start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
-                        end = if (!settingsUIElement.isSwitchNeeded) 15.dp else 0.dp
+                        end = if (!settingsUIElement.isSwitchNeeded) 25.dp else 0.dp
                     ),
                 lineHeight = 20.sp
             )
@@ -88,7 +88,7 @@ fun RegularSettingComponent(
                         .padding(
                             start = if (settingsUIElement.isIconNeeded.value) 0.dp else 15.dp,
                             top = 10.dp,
-                            end = if (!settingsUIElement.isSwitchNeeded) 15.dp else 0.dp
+                            end = if (!settingsUIElement.isSwitchNeeded) 25.dp else 15.dp
                         )
                 )
             }

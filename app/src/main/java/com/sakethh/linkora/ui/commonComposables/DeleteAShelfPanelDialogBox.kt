@@ -30,7 +30,7 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                 ShelfBtmSheetVM.selectedShelfData.shelfName
             ) {
                 mutableStateOf(" \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
-            }
+            }.value
         LinkoraTheme {
             AlertDialog(
                 confirmButton = {
@@ -66,7 +66,7 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                     Text(
                         text = title, style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
-                        lineHeight = 27.sp,
+                        lineHeight = 28.sp,
                         textAlign = TextAlign.Start
                     )
                 }, text = {

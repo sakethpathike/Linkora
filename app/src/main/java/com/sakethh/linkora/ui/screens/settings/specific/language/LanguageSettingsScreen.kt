@@ -239,11 +239,7 @@ fun LanguageSettingsScreen(
                             .padding(top = 15.dp, bottom = 15.dp)
                             .pulsateEffect(), onClick = {
                             languageSettingsScreenVM.onClick(
-                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
-                                    context,
-                                    languageCode = "en",
-                                    languageName = "English"
-                                )
+                                LanguageSettingsScreenUIEvent.ResetAppLanguage(context)
                             )
                         }) {
                             Text(

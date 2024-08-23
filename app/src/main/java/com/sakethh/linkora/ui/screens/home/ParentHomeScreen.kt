@@ -38,15 +38,12 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.InlineTextContent
-import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Maximize
 import androidx.compose.material.icons.filled.Minimize
-import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.filled.ViewArray
 import androidx.compose.material.icons.outlined.Archive
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -80,14 +77,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.Placeholder
-import androidx.compose.ui.text.PlaceholderVerticalAlign
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -676,32 +667,7 @@ fun ParentHomeScreen(
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = buildAnnotatedString {
-                                                append("${LocalizedStrings.toAddFoldersIntoThisPanelClickOnThe.value} ")
-                                                appendInlineContent("tuneIcon")
-                                                append(" ${LocalizedStrings.atThe.value} ")
-                                                withStyle(
-                                                    style = SpanStyle(
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                ) {
-                                                    append(LocalizedStrings.bottomOfTheShelf.value)
-                                                }
-                                                append(LocalizedStrings.period.value)
-                                            },
-                                            inlineContent = mapOf(
-                                                Pair("tuneIcon", InlineTextContent(
-                                                    Placeholder(
-                                                        22.sp, 22.sp,
-                                                        PlaceholderVerticalAlign.TextCenter
-                                                    )
-                                                ) {
-                                                    Icon(
-                                                        imageVector = Icons.Default.Tune,
-                                                        contentDescription = null
-                                                    )
-                                                })
-                                            ),
+                                            text = "No folders available in this panel. Add folders to begin.",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
@@ -709,7 +675,6 @@ fun ParentHomeScreen(
                                             modifier = Modifier
                                                 .padding(end = 10.dp)
                                         )
-
                                     }
                                     Row(
                                         modifier = Modifier
@@ -721,40 +686,8 @@ fun ParentHomeScreen(
                                     ) {
                                         Text(text = "• ")
                                         Text(
-                                            text = buildAnnotatedString {
-                                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(LocalizedStrings.savedLinks.value)
-                                                }
-                                                append(" ${LocalizedStrings.and.value} ")
-                                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append(LocalizedStrings.importantLinks.value)
-                                                }
-                                                append(" ${LocalizedStrings.canBeAccessedFromThe.value} ")
-                                                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) {
-                                                    append("${LocalizedStrings.defaultPanelDesc.value} ")
-                                                }
-                                                append("(")
-                                                appendInlineContent("defaultSectionIcon")
-                                                append(")${LocalizedStrings.period.value}")
-                                            },
-                                            inlineContent = mapOf(
-                                                Pair(
-                                                    "defaultSectionIcon",
-                                                    InlineTextContent(
-                                                        Placeholder(
-                                                            22.sp, 22.sp,
-                                                            PlaceholderVerticalAlign.TextCenter
-                                                        )
-                                                    ) {
-                                                        Icon(
-                                                            modifier = Modifier.rotate(-90f),
-                                                            imageVector = Icons.Outlined.Layers,
-                                                            contentDescription = null
-                                                        )
-                                                    }
-                                                )
-                                            ),
                                             style = MaterialTheme.typography.titleSmall,
+                                            text = "You can find \"Saved Links\" and \"Important Links\" in the \"Default\" panel.",
                                             fontSize = 18.sp,
                                             lineHeight = 24.sp,
                                             textAlign = TextAlign.Start,
@@ -773,7 +706,7 @@ fun ParentHomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                        .background(MaterialTheme.colorScheme.background.copy(0.95f))
                         .clickable {
                             shouldScreenTransparencyDecreasedBoxVisible.value = false
                             coroutineScope

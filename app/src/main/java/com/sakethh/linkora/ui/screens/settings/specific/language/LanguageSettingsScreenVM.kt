@@ -189,7 +189,8 @@ class LanguageSettingsScreenVM @Inject constructor(
                     useLanguageStringsBasedOnFetchedValuesFromServer.value = false
                     linkoraLog(languageSettingsScreenUIEvent.languageName + ":" + languageSettingsScreenUIEvent.languageCode)
                     async {
-                        if (compiledLanguages.find { languageSettingsScreenUIEvent.languageCode == it.languageCode } != null) {
+                        if (compiledLanguages.map { it.languageCode }
+                                .contains(languageSettingsScreenUIEvent.languageCode)) {
                             onClick(
                                 LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
                                     context = languageSettingsScreenUIEvent.context,
@@ -234,6 +235,17 @@ class LanguageSettingsScreenVM @Inject constructor(
                             )
                         })
                 }
+            }
+
+            is LanguageSettingsScreenUIEvent.ResetAppLanguage -> {
+                onClick(
+                    LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                        languageSettingsScreenUIEvent.context,
+                        "en",
+                        "English"
+                    )
+                )
+                LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
             }
         }
     }

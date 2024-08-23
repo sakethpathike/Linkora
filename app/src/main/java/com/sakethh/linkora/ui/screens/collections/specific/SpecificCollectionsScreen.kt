@@ -1091,7 +1091,7 @@ fun SpecificCollectionScreen(navController: NavController) {
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
                 Box(modifier = Modifier
                     .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.background.copy(0.85f))
+                    .background(MaterialTheme.colorScheme.background.copy(0.95f))
                     .clickable {
                         shouldScreenTransparencyDecreasedBoxVisible.value = false
                         coroutineScope

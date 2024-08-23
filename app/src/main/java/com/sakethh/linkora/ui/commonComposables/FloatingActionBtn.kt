@@ -22,7 +22,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
@@ -37,7 +36,6 @@ data class FloatingActionBtnParam @OptIn(ExperimentalMaterial3Api::class) constr
     val inASpecificScreen: Boolean,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FloatingActionBtn(
     floatingActionBtnParam: FloatingActionBtnParam
@@ -52,33 +50,6 @@ fun FloatingActionBtn(
         )
     }
     val coroutineScope = rememberCoroutineScope()
-    if (SettingsPreference.isBtmSheetEnabledForSavingLinks.value) {
-        androidx.compose.foundation.layout.Column(
-            modifier = Modifier.padding(
-                bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
-            )
-        ) {
-            androidx.compose.material3.FloatingActionButton(
-                modifier = Modifier.pulsateEffect(),
-                onClick = {
-                    coroutineScope.launch {
-                        kotlinx.coroutines.awaitAll(
-                            async {
-                                floatingActionBtnParam.newLinkBottomModalSheetState.expand()
-                            },
-                            async {
-                                floatingActionBtnParam.shouldBtmSheetForNewLinkAdditionBeEnabled.value =
-                                    true
-                            })
-                    }
-                }) {
-                androidx.compose.material3.Icon(
-                    imageVector = Icons.Default.AddLink,
-                    contentDescription = null
-                )
-            }
-        }
-    } else {
         androidx.compose.foundation.layout.Column(
             modifier = Modifier.padding(
                 bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
@@ -86,7 +57,8 @@ fun FloatingActionBtn(
         ) {
             androidx.compose.foundation.layout.Row(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (floatingActionBtnParam.isMainFabRotated.value) {
                     AnimatedVisibility(
@@ -108,7 +80,6 @@ fun FloatingActionBtn(
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(
-                                top = 20.dp,
                                 end = 15.dp
                             )
                         )
@@ -148,7 +119,8 @@ fun FloatingActionBtn(
             )
             androidx.compose.foundation.layout.Row(
                 horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = Modifier.align(Alignment.End)
+                modifier = Modifier.align(Alignment.End),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 if (floatingActionBtnParam.isMainFabRotated.value) {
                     AnimatedVisibility(
@@ -170,7 +142,6 @@ fun FloatingActionBtn(
                             style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp,
                             modifier = Modifier.padding(
-                                top = 20.dp,
                                 end = 15.dp
                             )
                         )
@@ -215,5 +186,4 @@ fun FloatingActionBtn(
                 }
             }
         }
-    }
 }

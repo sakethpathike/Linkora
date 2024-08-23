@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Construction
-import androidx.compose.material.icons.filled.Language
 import androidx.compose.material.icons.filled.TrackChanges
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.outlined.CheckCircle
 import androidx.compose.material.icons.outlined.GetApp
 import androidx.compose.material.icons.outlined.Refresh
@@ -397,7 +397,7 @@ fun AboutSettingsScreen(
 
                 SettingsAppInfoComponent(
                     description = "Help make Linkora accessible in more languages by contributing translations.",
-                    icon = Icons.Default.Language,
+                    icon = Icons.Default.Translate,
                     usingLocalIcon = false,
                     title = "Help Translate Linkora",
                     localIcon = R.drawable.github_logo,
