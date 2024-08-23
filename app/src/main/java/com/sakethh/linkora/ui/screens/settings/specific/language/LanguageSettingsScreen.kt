@@ -132,11 +132,15 @@ fun LanguageSettingsScreen(
         mutableStateOf(false)
     }
     val coroutineScope = rememberCoroutineScope()
+    val isRetrieveLanguageInfoFABTriggered = rememberSaveable {
+        mutableStateOf(false)
+    }
     SpecificSettingsScreenScaffold(
         topAppBarText = language.value,
         navController = navController,
         floatingActionButton = {
             ExtendedFloatingActionButton(onClick = {
+                isRetrieveLanguageInfoFABTriggered.value = true
                 languageSettingsScreenVM.onClick(
                     LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(
                         context
@@ -268,6 +272,7 @@ fun LanguageSettingsScreen(
             items(languageSettingsScreenVM.compiledLanguages) {
                 LanguageUIComponent(
                     onClick = {
+                        isRetrieveLanguageInfoFABTriggered.value = false
                         coroutineScope.launch {
                             isSelectedLanguageAvailableOnlyRemotely.value = false
                             currentlySelectedLanguageCode.value = it.languageCode
@@ -301,6 +306,7 @@ fun LanguageSettingsScreen(
             }) {
                 LanguageUIComponent(
                     onClick = {
+                        isRetrieveLanguageInfoFABTriggered.value = false
                         isSelectedLanguageAvailableOnlyRemotely.value = true
                         coroutineScope.launch {
                             currentlySelectedLanguageCode.value = it.languageCode
@@ -553,13 +559,12 @@ fun LanguageSettingsScreen(
             }
         }
     }
-
-    if (languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear.value) {
         SettingsNewVersionCheckerDialogBox(
-            text = "Retrieving latest information",
-            shouldCancelButtonBeVisible = false
+            text = if (isRetrieveLanguageInfoFABTriggered.value)
+                "Syncing language details. This may take some time." else "Syncing translations for \"${currentlySelectedLanguageName.value}\". This may take some time.",
+            shouldCancelButtonBeVisible = false,
+            shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
         )
-    }
 }
 
 @Composable

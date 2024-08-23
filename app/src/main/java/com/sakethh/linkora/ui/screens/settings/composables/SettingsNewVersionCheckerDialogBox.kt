@@ -47,7 +47,11 @@ fun SettingsNewVersionCheckerDialogBox(
                 Column {
                     Row(
                         verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                            .padding(top = 20.dp, end = 20.dp)
+                            .then(
+                                if (shouldCancelButtonBeVisible)
+                                    Modifier.padding(top = 20.dp, end = 20.dp)
+                                else Modifier.padding(20.dp)
+                            )
                             .fillMaxWidth()
                     ) {
                         CircularProgressIndicator(
@@ -62,7 +66,7 @@ fun SettingsNewVersionCheckerDialogBox(
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 20.sp,
-                            lineHeight = 22.sp,
+                            lineHeight = 28.sp,
                             textAlign = TextAlign.Start,
                             modifier = Modifier.fillMaxWidth()
                         )
