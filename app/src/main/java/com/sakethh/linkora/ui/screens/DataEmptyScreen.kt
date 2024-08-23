@@ -28,7 +28,6 @@ fun DataEmptyScreen(text: String) {
                     color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 32.sp,
-                    lineHeight = 44.sp,
                     textAlign = TextAlign.Start,
                     modifier = Modifier
                         .fillMaxSize()

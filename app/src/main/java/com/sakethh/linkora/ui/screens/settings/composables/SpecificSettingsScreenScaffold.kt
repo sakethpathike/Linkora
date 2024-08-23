@@ -4,7 +4,9 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -60,7 +62,8 @@ fun SpecificSettingsScreenScaffold(
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 18.sp
                         )
-                        if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA) {
+                        Spacer(modifier = Modifier.width(2.dp))
+                        if (SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.DATA || SettingsScreenVM.currentSelectedSettingSection.value == SettingsSections.LANGUAGE) {
                             Text(
                                 text = beta.value,
                                 color = MaterialTheme.colorScheme.onPrimary,
@@ -68,13 +71,13 @@ fun SpecificSettingsScreenScaffold(
                                 fontSize = 15.sp,
                                 modifier = Modifier
                                     .padding(
-                                        start = 5.dp
+                                        start = 4.dp
                                     )
                                     .background(
                                         color = MaterialTheme.colorScheme.primary,
                                         shape = RoundedCornerShape(5.dp)
                                     )
-                                    .padding(5.dp)
+                                    .padding(4.dp)
                             )
                         }
                     }
