@@ -8,6 +8,7 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,10 +34,10 @@ class OptionsBtmSheetVM @Inject constructor(
                 .doesThisExistsInImpLinks(webURL = url)
         ) {
             importantCardIcon.value = Icons.Outlined.DeleteForever
-            importantCardText.value = "Remove from Important Links"
+            importantCardText.value = LocalizedStrings.removeFromImportantLinks.value
         } else {
             importantCardIcon.value = Icons.Outlined.StarOutline
-            importantCardText.value = "Add to Important Links"
+            importantCardText.value = LocalizedStrings.addToImportantLinks.value
         }
     }
 
@@ -45,10 +46,10 @@ class OptionsBtmSheetVM @Inject constructor(
                 .doesThisExistsInArchiveLinks(webURL = url)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
-            archiveCardText.value = "Remove from Archive"
+            archiveCardText.value = LocalizedStrings.removeFromArchive.value
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Move to Archive"
+            archiveCardText.value = LocalizedStrings.moveToArchive.value
         }
     }
 
@@ -57,10 +58,10 @@ class OptionsBtmSheetVM @Inject constructor(
                 .doesThisArchiveFolderExistsV10(folderID)
         ) {
             archiveCardIcon.value = Icons.Outlined.Unarchive
-            archiveCardText.value = "Remove from Archive"
+            archiveCardText.value = LocalizedStrings.removeFromArchive.value
         } else {
             archiveCardIcon.value = Icons.Outlined.Archive
-            archiveCardText.value = "Move to Archive"
+            archiveCardText.value = LocalizedStrings.moveToArchive.value
         }
     }
 }

@@ -259,8 +259,10 @@
     <string name="help_improve_language_strings">भाषा स्ट्रिंग्स सुधारने में मदद करें</string>
     <string name="discord">डिस्कॉर्ड</string>
     <string name="strings_localized">लोकलाइज़्ड स्ट्रिंग्स</string>
-    <string name="localization_server_desc">लिंकॉरा का स्थानीयकरण सर्वर ऐप अपडेट किए बिना स्ट्रिंग अपडेट की अनुमति देता है। डिफ़ॉल्ट रूप से, लिंकॉरा अपना सर्वर उपयोग करता है। यदि आपके पास अपना सर्वर है, तो आप इसका उपयोग कर सकते हैं। परिवर्तन लिंकॉरा की नेटवर्क रिक्वेस्ट में दिखेंगे। इसे केवल तभी बदलें जब आप सुनिश्चित हों कि आप क्या कर रहे हैं।</string>
+    <string name="localization_server_desc">लिंकॉरा का स्थानीयकरण सर्वर ऐप अपडेट किए बिना स्ट्रिंग अपडेट की अनुमति देता है। डिफ़ॉल्ट रूप से, लिंकॉरा अपना सर्वर उपयोग करता है।\n\nयदि आपके पास अपना सर्वर है, तो आप इसका उपयोग कर सकते हैं। परिवर्तन लिंकॉरा की नेटवर्क रिक्वेस्ट में दिखेंगे।\n\nइसे केवल तभी बदलें जब आप सुनिश्चित हों कि आप क्या कर रहे हैं।</string>
     <string name="localization_server">लोकलाइजेशन सर्वर</string>
     <string name="no_folders_available_in_this_panel_add_folders_to_begin">इस पैनल में कोई फ़ोल्डर उपलब्ध नहीं हैं। शुरू करने के लिए फ़ोल्डर ऐड करे।</string>
     <string name="you_can_find_saved_links_and_important_links_in_the_default_panel">आप \"डिफ़ॉल्ट\" पैनल में \"सेव्ड लिंक्स\" और \"इम्पोर्टेंट लिंक्स\" पा सकते हैं।</string>
+    <string name="syncing_language_details_this_may_take_some_time">भाषा विवरण सिंक किया जा रहा है। इसमें कुछ समय लग सकता है।</string>
+    <string name="syncing_translations_for_this_may_take_some_time">\"$$$$\" के लिए अनुवाद सिंक किया जा रहा है। इसमें कुछ समय लग सकता है।</string>
 </resources>

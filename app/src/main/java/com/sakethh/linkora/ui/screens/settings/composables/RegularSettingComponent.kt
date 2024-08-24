@@ -78,7 +78,7 @@ fun RegularSettingComponent(
             )
             if (settingsUIElement.doesDescriptionExists) {
                 Text(
-                    text = settingsUIElement.description.toString(),
+                    text = settingsUIElement.description ?: "",
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 14.sp,
                     lineHeight = 18.sp,

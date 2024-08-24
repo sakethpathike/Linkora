@@ -258,8 +258,10 @@
     <string name="help_improve_language_strings">Help Improve Language Strings</string>
     <string name="discord">Discord</string>
     <string name="strings_localized">Strings localized</string>
-    <string name="localization_server_desc">Linkora’s localization server allows string updates without app updates. By default, Linkora uses its server. You can use your own server if available. Changes will be reflected in Linkora’s network requests for language or string updates. Only modify this if you know what you are doing.</string>
+    <string name="localization_server_desc">Linkora’s localization server allows string updates without app updates. By default, Linkora uses its server.\n\nYou can use your own server if available. Changes will be reflected in Linkora’s network requests for language or string updates.\n\nOnly modify this if you know what you are doing.</string>
     <string name="localization_server">Localization Server</string>
     <string name="no_folders_available_in_this_panel_add_folders_to_begin">No folders available in this panel. Add folders to begin.</string>
     <string name="you_can_find_saved_links_and_important_links_in_the_default_panel">You can find \"Saved Links\" and \"Important Links\" in the \"Default\" panel.</string>
+    <string name="syncing_language_details_this_may_take_some_time">Syncing language details. This may take some time.</string>
+    <string name="syncing_translations_for_this_may_take_some_time">Syncing translations for \"$$$$\". This may take some time.</string>
 </resources>

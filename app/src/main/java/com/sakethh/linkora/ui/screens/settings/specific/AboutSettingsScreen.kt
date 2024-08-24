@@ -34,6 +34,7 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
@@ -95,6 +96,7 @@ fun AboutSettingsScreen(
     val shouldBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+    val typography = MaterialTheme.typography
     SpecificSettingsScreenScaffold(
         topAppBarText = LocalizedStrings.about.value,
         navController = navController
@@ -111,7 +113,10 @@ fun AboutSettingsScreen(
                 Row {
                     Text(
                         text = LocalizedStrings.linkora.value,
-                        style = MaterialTheme.typography.titleMedium,
+                        style =
+                        remember {
+                            typography.bodyMedium
+                        },
                         fontSize = 18.sp,
                         modifier = Modifier
                             .padding(start = 15.dp)

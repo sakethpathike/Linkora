@@ -563,7 +563,10 @@ fun LanguageSettingsScreen(
     }
         SettingsNewVersionCheckerDialogBox(
             text = if (isRetrieveLanguageInfoFABTriggered.value)
-                "Syncing language details. This may take some time." else "Syncing translations for \"${currentlySelectedLanguageName.value}\". This may take some time.",
+                LocalizedStrings.syncingLanguageDetailsThisMayTakeSomeTime.value else LocalizedStrings.syncingTranslationsForCurrentlySelectedLanguage.value.replace(
+                "\$\$\$\$",
+                currentlySelectedLanguageName.value
+            ),
             shouldCancelButtonBeVisible = false,
             shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
         )
