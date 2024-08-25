@@ -1,12 +1,11 @@
-package com.sakethh.linkora.data.remote.localization
+package com.sakethh.linkora.data
 
-import com.sakethh.linkora.data.local.localization.language.translations.Translation
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-open class LocalizationResult {
-    data class Success(val data: List<Translation>) : LocalizationResult()
-    data class Failure(val message: String) : LocalizationResult()
+sealed interface RequestResult<out T> {
+    data class Success<out T>(val data: T) : RequestResult<T>
+    data class Failure<T>(val msg: String) : RequestResult<T>
 
     companion object {
         private val _currentState = MutableStateFlow(RequestState.IDLE)

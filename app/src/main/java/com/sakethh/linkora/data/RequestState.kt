@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.remote.localization
+package com.sakethh.linkora.data
 
 enum class RequestState {
     REQUESTING, FAILED, SUCCESS, IDLE

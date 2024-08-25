@@ -13,6 +13,8 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkManager
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.MainActivity
+import com.sakethh.linkora.data.RequestResult
+import com.sakethh.linkora.data.RequestState
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
@@ -20,8 +22,6 @@ import com.sakethh.linkora.data.local.localization.language.LanguageRepo
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
-import com.sakethh.linkora.data.remote.localization.LocalizationResult
-import com.sakethh.linkora.data.remote.localization.RequestState
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -92,7 +92,7 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
         }
         viewModelScope.launch {
-            LocalizationResult.currentState.collectLatest {
+            RequestResult.currentState.collectLatest {
                 shouldRequestingDataFromServerDialogBoxShouldAppear.value =
                     it == RequestState.REQUESTING
             }

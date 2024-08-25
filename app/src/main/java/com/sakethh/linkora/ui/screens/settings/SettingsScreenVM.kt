@@ -53,13 +53,13 @@ import com.sakethh.linkora.LocalizedStrings.showDescriptionForSettingsDesc
 import com.sakethh.linkora.LocalizedStrings.successfullyExported
 import com.sakethh.linkora.LocalizedStrings.useInAppBrowser
 import com.sakethh.linkora.LocalizedStrings.useInAppBrowserDesc
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.backup.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
-import com.sakethh.linkora.data.remote.releases.GitHubReleasesResult
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
@@ -681,11 +681,11 @@ open class SettingsScreenVM @Inject constructor(
     fun latestAppVersionRetriever(onTaskCompleted: () -> Unit) {
         viewModelScope.launch {
             when (val latestReleaseData = gitHubReleasesRepo.getLatestVersionData()) {
-                is GitHubReleasesResult.Failure -> {
+                is RequestResult.Failure -> {
 
                 }
 
-                is GitHubReleasesResult.Success -> {
+                is RequestResult.Success -> {
                     _latestReleaseInfoFromGitHubReleases.emit(latestReleaseData.data)
                 }
             }

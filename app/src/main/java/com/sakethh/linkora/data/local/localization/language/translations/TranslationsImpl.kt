@@ -1,8 +1,8 @@
 package com.sakethh.linkora.data.local.localization.language.translations
 
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
-import com.sakethh.linkora.data.remote.localization.LocalizationResult
 import com.sakethh.linkora.utils.linkoraLog
 import javax.inject.Inject
 
@@ -13,8 +13,11 @@ class TranslationsImpl @Inject constructor(
     TranslationsRepo {
     override suspend fun addLocalizedStrings(languageCode: String) {
         when (val localizedData = localizationRepo.getRemoteStrings(languageCode)) {
-            is LocalizationResult.Failure -> TODO()
-            is LocalizationResult.Success -> {
+            is RequestResult.Failure -> {
+
+            }
+
+            is RequestResult.Success -> {
                 localDatabase.translationDao()
                     .deleteAllLocalizedStringsForThisLanguage(languageCode)
                 linkoraLog("deleted localized strings for $languageCode")

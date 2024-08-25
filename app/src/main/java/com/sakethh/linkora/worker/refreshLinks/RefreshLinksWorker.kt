@@ -7,10 +7,9 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkManager
 import androidx.work.WorkerParameters
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
-import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
-import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -119,11 +118,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         ) {
                             when (val tweetMetaData =
                                 twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
-                                is TwitterMetaDataResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is TwitterMetaDataResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink =
                                         modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
                                                 "https://t.co/"
@@ -140,11 +139,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         } else {
                             when (val scrappedData =
                                 linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
-                                is LinkMetaDataScrapperResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is LinkMetaDataScrapperResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL
@@ -176,11 +175,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         ) {
                             when (val tweetMetaData =
                                 twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
-                                is TwitterMetaDataResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is TwitterMetaDataResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink =
                                         modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
                                                 "https://t.co/"
@@ -197,11 +196,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         } else {
                             when (val scrappedData =
                                 linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
-                                is LinkMetaDataScrapperResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is LinkMetaDataScrapperResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL
@@ -233,11 +232,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         ) {
                             when (val tweetMetaData =
                                 twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
-                                is TwitterMetaDataResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is TwitterMetaDataResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink =
                                         modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
                                                 "https://t.co/"
@@ -254,11 +253,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                         } else {
                             when (val scrappedData =
                                 linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
-                                is LinkMetaDataScrapperResult.Failure -> {
+                                is RequestResult.Failure -> {
 
                                 }
 
-                                is LinkMetaDataScrapperResult.Success -> {
+                                is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL
@@ -292,11 +291,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                             ) {
                                 when (val tweetMetaData =
                                     twitterMetaDataRepo.retrieveMetaData(modifiedLink.webURL)) {
-                                    is TwitterMetaDataResult.Failure -> {
+                                    is RequestResult.Failure -> {
 
                                     }
 
-                                    is TwitterMetaDataResult.Success -> {
+                                    is RequestResult.Success -> {
                                         modifiedLink =
                                             modifiedLink.copy(title = if (!tweetMetaData.data.text.contains(
                                                     "https://t.co/"
@@ -313,11 +312,11 @@ class RefreshLinksWorker @AssistedInject constructor(
                             } else {
                                 when (val scrappedData =
                                     linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
-                                    is LinkMetaDataScrapperResult.Failure -> {
+                                    is RequestResult.Failure -> {
 
                                     }
 
-                                    is LinkMetaDataScrapperResult.Success -> {
+                                    is RequestResult.Success -> {
                                         modifiedLink = modifiedLink.copy(
                                             title = scrappedData.data.title,
                                             imgURL = scrappedData.data.imgURL

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.data.remote.releases
 
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -9,7 +10,7 @@ import javax.inject.Inject
 class GitHubReleasesImpl @Inject constructor(
     private val ktorClient: HttpClient
 ) : GitHubReleasesRepo {
-    override suspend fun getLatestVersionData(): GitHubReleasesResult {
+    override suspend fun getLatestVersionData(): RequestResult<GitHubReleaseDTOItem> {
         return try {
             val latestRelease =
                 ktorClient.get("https://api.github.com/repos/sakethpathike/Linkora/releases")
@@ -18,10 +19,10 @@ class GitHubReleasesImpl @Inject constructor(
                             releaseName = "v$releaseName"
                         }
                     }
-            GitHubReleasesResult.Success(latestRelease)
+            RequestResult.Success(latestRelease)
         } catch (e: Exception) {
             e.printStackTrace()
-            GitHubReleasesResult.Failure("Failed at getLatestVersionData")
+            RequestResult.Failure("Failed at getLatestVersionData")
         }
     }
 }

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.data.remote.scrape
 
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import kotlinx.coroutines.Dispatchers
@@ -7,14 +8,14 @@ import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
 class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
-    override suspend fun scrapeLinkData(url: String): LinkMetaDataScrapperResult {
+    override suspend fun scrapeLinkData(url: String): RequestResult<LinkMetaData> {
         return withContext(Dispatchers.IO) {
             try {
                 val urlHost: String
                 try {
                     urlHost = url.split("/")[2]
                 } catch (e: Exception) {
-                    return@withContext LinkMetaDataScrapperResult.Failure("invalid link : " + e.message.toString())
+                    return@withContext RequestResult.Failure("invalid link : " + e.message.toString())
                 }
                 val rawHTML =
                     try {
@@ -34,7 +35,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                             .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).get()
                             .toString()
                     } catch (e: Exception) {
-                        return@withContext LinkMetaDataScrapperResult.Failure("reported an error that has been found while scarping the meta data of the given link : " + e.message.toString())
+                        return@withContext RequestResult.Failure("reported an error that has been found while scarping the meta data of the given link : " + e.message.toString())
                     }
 
                 val imgURL = rawHTML.split("\n").firstOrNull {
@@ -59,7 +60,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                                 .execute()
                                 .statusCode()
                         } catch (e: Exception) {
-                            LinkMetaDataScrapperResult.Failure(e.message.toString())
+                            e.printStackTrace()
                         }
                     }
                     if (statusValue == 200) {
@@ -71,11 +72,11 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                 val title =
                     rawHTML.substringAfter("<title").substringAfter(">").substringBefore("</title>")
                         .trim()
-                LinkMetaDataScrapperResult.Success(
+                RequestResult.Success(
                     LinkMetaData(baseURL = urlHost, imgURL, title)
                 )
             } catch (e: Exception) {
-                LinkMetaDataScrapperResult.Failure(e.message.toString())
+                RequestResult.Failure(e.message.toString())
             }
         }
     }

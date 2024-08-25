@@ -7,6 +7,7 @@ import com.sakethh.linkora.LocalizedStrings.givenLinkAlreadyExists
 import com.sakethh.linkora.LocalizedStrings.invalidUrl
 import com.sakethh.linkora.LocalizedStrings.movedTheLinkToArchive
 import com.sakethh.linkora.LocalizedStrings.removedTheLinkFromArchive
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -14,8 +15,6 @@ import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
-import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataResult
-import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperResult
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -170,11 +169,11 @@ class LinksImpl @Inject constructor(
                             LinkType.ARCHIVE_LINK -> archivedLinks!!.webURL.trim()
                         }
                     )) {
-                    is TwitterMetaDataResult.Failure -> {
+                    is RequestResult.Failure -> {
                         return saveWithGivenData()
                     }
 
-                    is TwitterMetaDataResult.Success -> {
+                    is RequestResult.Success -> {
                         when (linkType) {
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                                 val linkTableData = LinksTable(
@@ -325,11 +324,11 @@ class LinksImpl @Inject constructor(
                         }
                     )
                 )) {
-                is LinkMetaDataScrapperResult.Failure -> {
+                is RequestResult.Failure -> {
                     return saveWithGivenData()
                 }
 
-                is LinkMetaDataScrapperResult.Success -> {
+                is RequestResult.Success -> {
                     when (linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                             val linkData = LinksTable(
