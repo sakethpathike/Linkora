@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.OpenInBrowser
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
@@ -503,6 +504,23 @@ open class SettingsScreenVM @Inject constructor(
                             ), dataStore = context.dataStore, newValue = it
                         )
                         SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
+                    }
+                }), SettingsUIElement(
+                title = "Show associated image in link menu",
+                doesDescriptionExists = true,
+                description = "Enables the display of an associated image within the link menu",
+                isSwitchNeeded = true,
+                isSwitchEnabled = SettingsPreference.showAssociatedImagesInLinkMenu,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.Image,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name
+                            ), dataStore = context.dataStore, newValue = it
+                        )
+                        SettingsPreference.showAssociatedImagesInLinkMenu.value = it
                     }
                 }), SettingsUIElement(
                 title = autoCheckForUpdates.value,

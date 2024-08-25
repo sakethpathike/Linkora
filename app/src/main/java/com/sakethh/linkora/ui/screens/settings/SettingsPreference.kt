@@ -31,6 +31,7 @@ object SettingsPreference : ViewModel() {
     val shouldDarkThemeBeEnabled = mutableStateOf(false)
     val isInAppWebTabEnabled = mutableStateOf(true)
     val isAutoDetectTitleForLinksEnabled = mutableStateOf(false)
+    val showAssociatedImagesInLinkMenu = mutableStateOf(false)
     val isBtmSheetEnabledForSavingLinks = mutableStateOf(false)
     val isHomeScreenEnabled = mutableStateOf(true)
     val isSendCrashReportsEnabled = mutableStateOf(true)
@@ -185,6 +186,12 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
                         dataStore = context.dataStore
                     ) ?: (APP_VERSION_CODE - 1)
+                },
+                async {
+                    showAssociatedImagesInLinkMenu.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name),
+                        dataStore = context.dataStore
+                    ) ?: true
                 },
                 async {
                     isShelfMinimizedInHomeScreen.value = readSettingPreferenceValue(
