@@ -11,18 +11,18 @@ class TranslationsImpl @Inject constructor(
     private val localizationRepo: LocalizationRepo
 ) :
     TranslationsRepo {
-    override suspend fun addLocalizedStrings(languageCode: String) {
+    override suspend fun addLocalizedStrings(languageCode: String): RequestResult<String> {
         when (val localizedData = localizationRepo.getRemoteStrings(languageCode)) {
             is RequestResult.Failure -> {
-
+                return RequestResult.Failure("Cannot retrieve now, please try again")
             }
-
             is RequestResult.Success -> {
                 localDatabase.translationDao()
                     .deleteAllLocalizedStringsForThisLanguage(languageCode)
                 linkoraLog("deleted localized strings for $languageCode")
                 localDatabase.translationDao().addLocalizedStrings(localizedData.data)
                 linkoraLog("added localized strings for $languageCode")
+                return RequestResult.Success("Fetched successfully")
             }
         }
     }

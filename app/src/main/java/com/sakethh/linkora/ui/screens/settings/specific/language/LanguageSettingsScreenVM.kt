@@ -23,6 +23,7 @@ import com.sakethh.linkora.data.local.localization.language.translations.Transla
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer
@@ -99,6 +100,7 @@ class LanguageSettingsScreenVM @Inject constructor(
         }
     }
 
+    private var triggeredFromRetrieveStrings = false
     fun onClick(languageSettingsScreenUIEvent: LanguageSettingsScreenUIEvent) {
         when (languageSettingsScreenUIEvent) {
             is LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage -> {
@@ -134,11 +136,23 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings -> {
+                triggeredFromRetrieveStrings = true
                 viewModelScope.launch {
                     async {
                         onClick(LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(languageSettingsScreenUIEvent.context))
                     }.await()
-                    translationsRepo.addLocalizedStrings(languageSettingsScreenUIEvent.languageCode)
+                    when (val resultState =
+                        translationsRepo.addLocalizedStrings(languageSettingsScreenUIEvent.languageCode)) {
+                        is RequestResult.Failure -> {
+                            pushUiEvent(CommonUiEvent.ShowToast(resultState.msg))
+                        }
+
+                        is RequestResult.Success -> {
+                            pushUiEvent(CommonUiEvent.ShowToast(resultState.data))
+                        }
+                    }
+                }.invokeOnCompletion {
+                    triggeredFromRetrieveStrings = false
                 }
             }
 
@@ -224,7 +238,11 @@ class LanguageSettingsScreenVM @Inject constructor(
                             it.totalStrings
                         )
                         SettingsPreference.totalRemoteStrings.intValue = it.totalStrings
-
+                        linkoraLog(triggeredFromRetrieveStrings.toString())
+                        if (SettingsPreference.remoteStringsLastUpdatedOn.value == it.lastUpdatedOn && !triggeredFromRetrieveStrings) {
+                            pushUiEvent(CommonUiEvent.ShowToast("language info and strings are up to date"))
+                            return@launch
+                        }
                         SettingsPreference.changeSettingPreferenceValue(
                             stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
                             languageSettingsScreenUIEvent.context.dataStore,
@@ -244,6 +262,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                                 it.contributionLink
                             )
                         })
+                    pushUiEvent(CommonUiEvent.ShowToast("Updated language info successfully"))
                 }
             }
 

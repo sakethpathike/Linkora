@@ -578,7 +578,7 @@ open class SettingsScreenVM @Inject constructor(
     private val _eventChannel = Channel<CommonUiEvent>()
     val eventChannel = _eventChannel.receiveAsFlow()
 
-    private suspend fun pushUiEvent(commonUiEvent: CommonUiEvent) {
+    protected suspend fun pushUiEvent(commonUiEvent: CommonUiEvent) {
         _eventChannel.send(commonUiEvent)
     }
 
