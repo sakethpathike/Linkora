@@ -240,7 +240,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                         SettingsPreference.totalRemoteStrings.intValue = it.totalStrings
                         linkoraLog(triggeredFromRetrieveStrings.toString())
                         if (SettingsPreference.remoteStringsLastUpdatedOn.value == it.lastUpdatedOn && !triggeredFromRetrieveStrings) {
-                            pushUiEvent(CommonUiEvent.ShowToast("language info and strings are up to date"))
+                            pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.languageInfoAndStringsAreUpToDate.value))
                             return@launch
                         }
                         SettingsPreference.changeSettingPreferenceValue(
@@ -262,7 +262,7 @@ class LanguageSettingsScreenVM @Inject constructor(
                                 it.contributionLink
                             )
                         })
-                    pushUiEvent(CommonUiEvent.ShowToast("Updated language info successfully"))
+                    pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.updatedLanguageInfoSuccessfully.value))
                 }
             }
 

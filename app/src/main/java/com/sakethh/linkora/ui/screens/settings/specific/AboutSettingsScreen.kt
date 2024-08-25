@@ -115,7 +115,7 @@ fun AboutSettingsScreen(
                         text = LocalizedStrings.linkora.value,
                         style =
                         remember {
-                            typography.bodyMedium
+                            if (SettingsPreference.preferredAppLanguageCode.value == "en") typography.bodyMedium else typography.titleSmall
                         },
                         fontSize = 18.sp,
                         modifier = Modifier
@@ -247,7 +247,7 @@ fun AboutSettingsScreen(
                 )
 
                 Text(
-                    text = "Socials",
+                    text = LocalizedStrings.socials.value,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(start = 15.dp),
                     color = MaterialTheme.colorScheme.primary
@@ -313,7 +313,7 @@ fun AboutSettingsScreen(
                     color = MaterialTheme.colorScheme.outline
                 )
                 Text(
-                    text = "Development",
+                    text = LocalizedStrings.development.value,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 20.dp),
                     color = MaterialTheme.colorScheme.primary
@@ -347,10 +347,10 @@ fun AboutSettingsScreen(
                 )
 
                 SettingsAppInfoComponent(
-                    description = "Have a suggestion? Create an issue on GitHub to improve Linkora.",
+                    description = LocalizedStrings.haveASuggestionCreateAnIssueOnGithubToImproveLinkora.value,
                     icon = Icons.Default.Construction,
                     usingLocalIcon = false,
-                    title = "Open a GitHub Issue",
+                    title = LocalizedStrings.openAGithubIssue.value,
                     localIcon = R.drawable.github_logo,
                     onClick = {
                         customWebTab.openInWeb(
@@ -374,10 +374,10 @@ fun AboutSettingsScreen(
                 )
 
                 SettingsAppInfoComponent(
-                    description = "Track recent changes and updates to Linkora.",
+                    description = LocalizedStrings.trackRecentChangesAndUpdatesToLinkora.value,
                     icon = Icons.Default.TrackChanges,
                     usingLocalIcon = false,
-                    title = "Changelog",
+                    title = LocalizedStrings.changelog.value,
                     localIcon = R.drawable.github_logo,
                     onClick = {
                         customWebTab.openInWeb(
@@ -401,10 +401,10 @@ fun AboutSettingsScreen(
                 )
 
                 SettingsAppInfoComponent(
-                    description = "Help make Linkora accessible in more languages by contributing translations.",
+                    description = LocalizedStrings.helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value,
                     icon = Icons.Default.Translate,
                     usingLocalIcon = false,
-                    title = "Help Translate Linkora",
+                    title = LocalizedStrings.helpTranslateLinkora.value,
                     localIcon = R.drawable.github_logo,
                     onClick = {
                         customWebTab.openInWeb(

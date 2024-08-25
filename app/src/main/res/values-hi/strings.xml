@@ -265,4 +265,16 @@
     <string name="you_can_find_saved_links_and_important_links_in_the_default_panel">आप \"डिफ़ॉल्ट\" पैनल में \"सेव्ड लिंक्स\" और \"इम्पोर्टेंट लिंक्स\" पा सकते हैं।</string>
     <string name="syncing_language_details_this_may_take_some_time">भाषा विवरण सिंक किया जा रहा है। इसमें कुछ समय लग सकता है।</string>
     <string name="syncing_translations_for_this_may_take_some_time">\"$$$$\" के लिए अनुवाद सिंक किया जा रहा है। इसमें कुछ समय लग सकता है।</string>
+    <string name="cannot_retrieve_now_please_try_again">अभी प्राप्त नहीं कर सकते, कृपया पुनः प्रयास करें।</string>
+    <string name="fetched_successfully">सफलतापूर्वक प्राप्त किया गया।</string>
+    <string name="socials">सोशल्स</string>
+    <string name="development">डेवलपमेंट</string>
+    <string name="have_a_suggestion_create_an_issue_on_github_to_improve_linkora">कोई सुझाव है? लिंकओरा को बेहतर बनाने के लिए गिटहब पर एक इश्यू बनाएं।</string>
+    <string name="track_recent_changes_and_updates_to_linkora">लिंकओरा में हाल की परिवर्तनों और अपडेट्स को ट्रैक करें।</string>
+    <string name="help_make_linkora_accessible_in_more_languages_by_contributing_translations">लिंकओरा को अधिक भाषाओं में सुलभ बनाने में मदद करें और अनुवाद में योगदान दें।</string>
+    <string name="updated_language_info_successfully">भाषा की जानकारी सफलतापूर्वक अपडेट की गई।</string>
+    <string name="language_info_and_strings_are_up_to_date">भाषा की जानकारी और स्ट्रिंग्स अपडेटेड हैं।</string>
+    <string name="open_a_github_issue">एक गिटहब इश्यू खोलें।</string>
+    <string name="changelog">परिवर्तन विवरण</string>
+    <string name="help_translate_linkora">लिंकओरा का अनुवाद करने में मदद करें</string>
 </resources>

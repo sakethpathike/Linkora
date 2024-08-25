@@ -813,6 +813,55 @@ object LocalizedStrings : ViewModel() {
     val syncingTranslationsForCurrentlySelectedLanguage =
         _syncingTranslationsForCurrentlySelectedLanguage
 
+    private val _cannotRetrieveNowPleaseTryAgain = mutableStateOf("")
+    val cannotRetrieveNowPleaseTryAgain =
+        _cannotRetrieveNowPleaseTryAgain
+
+    private val _fetchedSuccessfully = mutableStateOf("")
+    val fetchedSuccessfully =
+        _fetchedSuccessfully
+
+    private val _socials = mutableStateOf("")
+    val socials =
+        _socials
+
+    private val _development = mutableStateOf("")
+    val development =
+        _development
+
+    private val _haveASuggestionCreateAnIssueOnGithubToImproveLinkora = mutableStateOf("")
+    val haveASuggestionCreateAnIssueOnGithubToImproveLinkora =
+        _haveASuggestionCreateAnIssueOnGithubToImproveLinkora
+
+    private val _trackRecentChangesAndUpdatesToLinkora = mutableStateOf("")
+    val trackRecentChangesAndUpdatesToLinkora =
+        _trackRecentChangesAndUpdatesToLinkora
+
+    private val _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations =
+        mutableStateOf("")
+    val helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations =
+        _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations
+
+    private val _updatedLanguageInfoSuccessfully = mutableStateOf("")
+    val updatedLanguageInfoSuccessfully =
+        _updatedLanguageInfoSuccessfully
+
+    private val _languageInfoAndStringsAreUpToDate = mutableStateOf("")
+    val languageInfoAndStringsAreUpToDate =
+        _languageInfoAndStringsAreUpToDate
+
+    private val _openAGithubIssue = mutableStateOf("")
+    val openAGithubIssue =
+        _openAGithubIssue
+
+    private val _changelog = mutableStateOf("")
+    val changelog =
+        _changelog
+
+    private val _helpTranslateLinkora = mutableStateOf("")
+    val helpTranslateLinkora =
+        _helpTranslateLinkora
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -821,6 +870,210 @@ object LocalizedStrings : ViewModel() {
                 .getTranslationRepo()
         viewModelScope.launch {
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _helpTranslateLinkora.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "help_translate_linkora",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.help_translate_linkora)
+                                }
+                            })
+                    } else {
+                        _helpTranslateLinkora.value =
+                            context.getString(R.string.help_translate_linkora)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _changelog.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "changelog",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.changelog)
+                                }
+                            })
+                    } else {
+                        _changelog.value =
+                            context.getString(R.string.changelog)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _openAGithubIssue.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "open_a_github_issue",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.open_a_github_issue)
+                                }
+                            })
+                    } else {
+                        _openAGithubIssue.value =
+                            context.getString(R.string.open_a_github_issue)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _languageInfoAndStringsAreUpToDate.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "language_info_and_strings_are_up_to_date",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.language_info_and_strings_are_up_to_date)
+                                }
+                            })
+                    } else {
+                        _languageInfoAndStringsAreUpToDate.value =
+                            context.getString(R.string.language_info_and_strings_are_up_to_date)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _updatedLanguageInfoSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "updated_language_info_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.updated_language_info_successfully)
+                                }
+                            })
+                    } else {
+                        _updatedLanguageInfoSuccessfully.value =
+                            context.getString(R.string.updated_language_info_successfully)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "help_make_linkora_accessible_in_more_languages_by_contributing_translations",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.help_make_linkora_accessible_in_more_languages_by_contributing_translations)
+                                }
+                            })
+                    } else {
+                        _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value =
+                            context.getString(R.string.help_make_linkora_accessible_in_more_languages_by_contributing_translations)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _trackRecentChangesAndUpdatesToLinkora.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "track_recent_changes_and_updates_to_linkora",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.track_recent_changes_and_updates_to_linkora)
+                                }
+                            })
+                    } else {
+                        _trackRecentChangesAndUpdatesToLinkora.value =
+                            context.getString(R.string.track_recent_changes_and_updates_to_linkora)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _haveASuggestionCreateAnIssueOnGithubToImproveLinkora.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "have_a_suggestion_create_an_issue_on_github_to_improve_linkora",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.have_a_suggestion_create_an_issue_on_github_to_improve_linkora)
+                                }
+                            })
+                    } else {
+                        _haveASuggestionCreateAnIssueOnGithubToImproveLinkora.value =
+                            context.getString(R.string.have_a_suggestion_create_an_issue_on_github_to_improve_linkora)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _development.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "development",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.development)
+                                }
+                            })
+                    } else {
+                        _development.value =
+                            context.getString(R.string.development)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _socials.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "socials",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.socials)
+                                }
+                            })
+                    } else {
+                        _socials.value =
+                            context.getString(R.string.socials)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _fetchedSuccessfully.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "fetched_successfully",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.fetched_successfully)
+                                }
+                            })
+                    } else {
+                        _fetchedSuccessfully.value =
+                            context.getString(R.string.fetched_successfully)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _cannotRetrieveNowPleaseTryAgain.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "cannot_retrieve_now_please_try_again",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.cannot_retrieve_now_please_try_again)
+                                }
+                            })
+                    } else {
+                        _cannotRetrieveNowPleaseTryAgain.value =
+                            context.getString(R.string.cannot_retrieve_now_please_try_again)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {

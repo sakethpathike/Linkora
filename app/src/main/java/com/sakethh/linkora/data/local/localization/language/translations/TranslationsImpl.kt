@@ -1,5 +1,6 @@
 package com.sakethh.linkora.data.local.localization.language.translations
 
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
@@ -14,7 +15,7 @@ class TranslationsImpl @Inject constructor(
     override suspend fun addLocalizedStrings(languageCode: String): RequestResult<String> {
         when (val localizedData = localizationRepo.getRemoteStrings(languageCode)) {
             is RequestResult.Failure -> {
-                return RequestResult.Failure("Cannot retrieve now, please try again")
+                return RequestResult.Failure(LocalizedStrings.cannotRetrieveNowPleaseTryAgain.value)
             }
             is RequestResult.Success -> {
                 localDatabase.translationDao()
@@ -22,7 +23,7 @@ class TranslationsImpl @Inject constructor(
                 linkoraLog("deleted localized strings for $languageCode")
                 localDatabase.translationDao().addLocalizedStrings(localizedData.data)
                 linkoraLog("added localized strings for $languageCode")
-                return RequestResult.Success("Fetched successfully")
+                return RequestResult.Success(LocalizedStrings.fetchedSuccessfully.value)
             }
         }
     }

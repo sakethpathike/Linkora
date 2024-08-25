@@ -264,4 +264,16 @@
     <string name="you_can_find_saved_links_and_important_links_in_the_default_panel">You can find \"Saved Links\" and \"Important Links\" in the \"Default\" panel.</string>
     <string name="syncing_language_details_this_may_take_some_time">Syncing language details. This may take some time.</string>
     <string name="syncing_translations_for_this_may_take_some_time">Syncing translations for \"$$$$\". This may take some time.</string>
+    <string name="cannot_retrieve_now_please_try_again">Cannot retrieve now, please try again</string>
+    <string name="fetched_successfully">Fetched successfully</string>
+    <string name="socials">Socials</string>
+    <string name="development">Development</string>
+    <string name="have_a_suggestion_create_an_issue_on_github_to_improve_linkora">Have a suggestion? Create an issue on GitHub to improve Linkora.</string>
+    <string name="track_recent_changes_and_updates_to_linkora">Track recent changes and updates to Linkora.</string>
+    <string name="help_make_linkora_accessible_in_more_languages_by_contributing_translations">Help make Linkora accessible in more languages by contributing translations.</string>
+    <string name="updated_language_info_successfully">Updated language info successfully</string>
+    <string name="language_info_and_strings_are_up_to_date">language info and strings are up to date</string>
+    <string name="open_a_github_issue">Open a GitHub Issue</string>
+    <string name="changelog">Changelog</string>
+    <string name="help_translate_linkora">Help Translate Linkora</string>
 </resources>
