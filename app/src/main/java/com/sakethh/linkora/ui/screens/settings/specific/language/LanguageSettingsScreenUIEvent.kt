@@ -42,7 +42,5 @@ sealed class LanguageSettingsScreenUIEvent {
     ) :
         LanguageSettingsScreenUIEvent()
 
-    data class Contribute(val languageCode: String) : LanguageSettingsScreenUIEvent()
-
     data class ResetAppLanguage(val context: Context) : LanguageSettingsScreenUIEvent()
 }

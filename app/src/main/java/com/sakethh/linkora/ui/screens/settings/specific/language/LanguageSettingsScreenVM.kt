@@ -73,7 +73,7 @@ class LanguageSettingsScreenVM @Inject constructor(
             languageName = "हिंदी",
             languageCode = "hi",
             languageContributionLink = "",
-            localizedStringsCount = 247
+            localizedStringsCount = SettingsPreference.totalLocalAppStrings.intValue
         ),
     )
 
@@ -133,7 +133,6 @@ class LanguageSettingsScreenVM @Inject constructor(
                 }
             }
 
-            is LanguageSettingsScreenUIEvent.Contribute -> TODO()
             is LanguageSettingsScreenUIEvent.DownloadLatestLanguageStrings -> {
                 viewModelScope.launch {
                     async {

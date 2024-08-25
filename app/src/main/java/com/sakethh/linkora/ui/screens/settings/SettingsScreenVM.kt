@@ -566,11 +566,12 @@ open class SettingsScreenVM @Inject constructor(
         shouldErrorDialogBeVisible: MutableState<Boolean>
     ) {
         viewModelScope.launch {
-            importRepo.importToLocalDB(
+            val importLocalDB = importRepo.importToLocalDB(
                 exceptionType = exceptionType,
                 jsonString = json,
                 shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
             )
+            pushUiEvent(CommonUiEvent.ShowToast(importLocalDB))
         }
     }
 

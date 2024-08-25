@@ -280,7 +280,8 @@ fun LanguageSettingsScreen(
                             currentlySelectedLanguageCode.value = it.languageCode
                             currentlySelectedLanguageName.value = it.languageName
                             currentlySelectedLanguageContributionLink.value =
-                                it.languageContributionLink
+                                remotelyAvailableLanguages.find { remoteLanguage -> it.languageCode == remoteLanguage.languageCode }?.contributionLink
+                                    ?: ""
                             async {
                                 doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
                                     languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
@@ -290,8 +291,6 @@ fun LanguageSettingsScreen(
                             linkoraLog(
                                 doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value.toString()
                             )
-                            currentlySelectedLanguageContributionLink.value =
-                                it.languageContributionLink
                             isLanguageSelectionBtmSheetVisible.value =
                                 !isLanguageSelectionBtmSheetVisible.value
                         }

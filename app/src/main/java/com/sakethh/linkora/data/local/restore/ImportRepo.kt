@@ -7,7 +7,7 @@ interface ImportRepo {
         exceptionType: MutableState<String?>,
         jsonString: String,
         shouldErrorDialogBeVisible: MutableState<Boolean>
-    )
+    ): String
 
     suspend fun migrateArchiveFoldersV9toV10()
 

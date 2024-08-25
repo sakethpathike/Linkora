@@ -75,9 +75,8 @@ class ImportImpl @Inject constructor(
         exceptionType: MutableState<String?>,
         jsonString: String,
         shouldErrorDialogBeVisible: MutableState<Boolean>
-    ) = coroutineScope {
-
-        try {
+    ): String {
+        return try {
             val json = Json {
                 ignoreUnknownKeys = true
             }
@@ -168,33 +167,33 @@ class ImportImpl @Inject constructor(
             exceptionType.value = null
             shouldErrorDialogBeVisible.value = false
             if (jsonDeserialized.schemaVersion <= 9) {
-                awaitAll(async {
-                    if (jsonDeserialized.foldersTable.isNotEmpty()) {
-                        migrateRegularFoldersLinksDataFromV9toV10()
-                    }
-                }, async {
-                    if (jsonDeserialized.archivedFoldersTable.isNotEmpty()) {
-                        migrateArchiveFoldersV9toV10()
-                    }
-                })
+                coroutineScope {
+                    awaitAll(async {
+                        if (jsonDeserialized.foldersTable.isNotEmpty()) {
+                            migrateRegularFoldersLinksDataFromV9toV10()
+                        }
+                    }, async {
+                        if (jsonDeserialized.archivedFoldersTable.isNotEmpty()) {
+                            migrateArchiveFoldersV9toV10()
+                        }
+                    })
+                }
             }
-            // // // // TODO()
-            /*withContext(Dispatchers.Main) {
-                Toast.makeText(
-                    context,
-                    if (jsonDeserialized.schemaVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }*/
+
+            if (jsonDeserialized.schemaVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}"
+
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
             exceptionType.value = IllegalArgumentException().toString()
             shouldErrorDialogBeVisible.value = true
+            IllegalArgumentException().toString()
         } catch (e: SerializationException) {
             exceptionType.value = SerializationException().toString()
             shouldErrorDialogBeVisible.value = true
+            SerializationException().toString()
         }
     }
+
 
     override suspend fun migrateRegularFoldersLinksDataFromV9toV10() = coroutineScope {
         foldersRepo.getAllRootFolders().collect { rootFolders ->
