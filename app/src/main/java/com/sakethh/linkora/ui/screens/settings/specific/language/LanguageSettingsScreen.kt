@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -135,6 +136,7 @@ fun LanguageSettingsScreen(
     val isRetrieveLanguageInfoFABTriggered = rememberSaveable {
         mutableStateOf(false)
     }
+    val localUriHandler = LocalUriHandler.current
     SpecificSettingsScreenScaffold(
         topAppBarText = language.value,
         navController = navController,
@@ -277,6 +279,8 @@ fun LanguageSettingsScreen(
                             isSelectedLanguageAvailableOnlyRemotely.value = false
                             currentlySelectedLanguageCode.value = it.languageCode
                             currentlySelectedLanguageName.value = it.languageName
+                            currentlySelectedLanguageContributionLink.value =
+                                it.languageContributionLink
                             async {
                                 doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
                                     languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
@@ -311,6 +315,7 @@ fun LanguageSettingsScreen(
                         coroutineScope.launch {
                             currentlySelectedLanguageCode.value = it.languageCode
                             currentlySelectedLanguageName.value = it.languageName
+                            currentlySelectedLanguageContributionLink.value = it.contributionLink
                             async {
                                 doesRemoteLanguagePackExistsLocallyForTheSelectedLanguage.value =
                                     languageSettingsScreenVM.translationsRepo.doesStringsPackForThisLanguageExists(
@@ -530,32 +535,37 @@ fun LanguageSettingsScreen(
                     }
                 }
 
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(onClick = {
-                            isLanguageSelectionBtmSheetVisible.value =
-                                !isLanguageSelectionBtmSheetVisible.value
-                        }, indication = null, interactionSource = remember {
-                            MutableInteractionSource()
-                        })
-                        .pulsateEffect()
-                        .padding(start = 10.dp, top = 7.5.dp, bottom = 7.5.dp, end = 15.dp)
-                ) {
-                    FilledTonalIconButton(
-                        modifier = Modifier.pulsateEffect(),
-                        onClick = {
-
-                        }) {
-                        Icon(imageVector = Icons.Default.Translate, contentDescription = "")
+                if (currentlySelectedLanguageContributionLink.value.isNotBlank()) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .clickable(onClick = {
+                                localUriHandler.openUri(currentlySelectedLanguageContributionLink.value)
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }, indication = null, interactionSource = remember {
+                                MutableInteractionSource()
+                            })
+                            .pulsateEffect()
+                            .padding(start = 10.dp, top = 7.5.dp, bottom = 7.5.dp, end = 15.dp)
+                    ) {
+                        FilledTonalIconButton(
+                            modifier = Modifier.pulsateEffect(),
+                            onClick = {
+                                localUriHandler.openUri(currentlySelectedLanguageContributionLink.value)
+                                isLanguageSelectionBtmSheetVisible.value =
+                                    !isLanguageSelectionBtmSheetVisible.value
+                            }) {
+                            Icon(imageVector = Icons.Default.Translate, contentDescription = "")
+                        }
+                        Spacer(modifier = Modifier.width(5.dp))
+                        Text(
+                            text = stringResource(R.string.help_improve_language_strings),
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp
+                        )
                     }
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = stringResource(R.string.help_improve_language_strings),
-                        style = MaterialTheme.typography.titleSmall,
-                        fontSize = 16.sp
-                    )
                 }
                 Spacer(modifier = Modifier.height(22.5.dp))
             }
