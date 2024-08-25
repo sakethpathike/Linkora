@@ -409,11 +409,11 @@ fun AboutSettingsScreen(
                     onClick = {
                         customWebTab.openInWeb(
                             recentlyVisitedData = RecentlyVisited(
-                                title = "Linkora on Github",
-                                webURL = "https://www.github.com/sakethpathike/Linkora",
-                                baseURL = "github.com",
-                                imgURL = "it.imgURL",
-                                infoForSaving = "Linkora on Github"
+                                title = "All Strings - Linkora - Crowdin translation",
+                                webURL = "https://crowdin.com/editor/linkora/all",
+                                baseURL = "crowdin.com",
+                                imgURL = "https://d2gma3rgtloi6d.cloudfront.net/31573b0b/images/content/crowdin-share.png",
+                                infoForSaving = ""
                             ),
                             context = context,
                             uriHandler = uriHandler,
