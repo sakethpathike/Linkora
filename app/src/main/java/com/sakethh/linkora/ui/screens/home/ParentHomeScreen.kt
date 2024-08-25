@@ -6,11 +6,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -134,9 +129,6 @@ fun ParentHomeScreen(
     val shouldSortingBottomSheetAppear = rememberSaveable {
         mutableStateOf(false)
     }
-    val shouldShelfBottomSheetAppear = rememberSaveable {
-        mutableStateOf(false)
-    }
     val sortingBtmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val activity = LocalContext.current as? Activity
     val btmModalSheetStateForSavingLinks =
@@ -167,14 +159,6 @@ fun ParentHomeScreen(
     }
     val cardOffSetX = remember { mutableStateOf(0f) }
     val cardOffSetY = remember { mutableStateOf(0f) }
-    val scaleState = rememberInfiniteTransition(label = "").animateFloat(
-        initialValue = 1f,
-        targetValue = 1.15f,
-        animationSpec = infiniteRepeatable(
-            tween(500, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ), label = ""
-    )
     val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shelfLazyColumnState = rememberLazyListState()
@@ -337,7 +321,7 @@ fun ParentHomeScreen(
                                     homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
                                         it.id, context
                                     )
-                                }.start()
+                                }
                             },
                             icon = {
                                 Column {
@@ -381,7 +365,7 @@ fun ParentHomeScreen(
                                         context.dataStore,
                                         newValue = -1
                                     )
-                                }.start()
+                                }
                             },
                             icon = {
                                 Column {
@@ -464,7 +448,7 @@ fun ParentHomeScreen(
                                                 onClick = {
                                                     coroutineScope.launch {
                                                         pagerState.animateScrollToPage(index)
-                                                    }.start()
+                                                    }
                                                 }) {
                                                 Text(
                                                     text = homeScreenListsElement.folderName,
@@ -492,7 +476,7 @@ fun ParentHomeScreen(
                                                     onClick = {
                                                         coroutineScope.launch {
                                                             pagerState.animateScrollToPage(index)
-                                                        }.start()
+                                                        }
                                                     }) {
                                                     Text(
                                                         text = archiveScreenModal.name,

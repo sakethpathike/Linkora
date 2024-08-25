@@ -113,7 +113,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                             ShelfBtmSheetVM.selectedShelfData = it
                             navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
                         },
-                        elementName = "0",
+                        elementName = it.shelfName,
                         elementImageVector = Icons.Default.ViewArray,
                         inShelfUI = true,
                         onDeleteIconClick = {
