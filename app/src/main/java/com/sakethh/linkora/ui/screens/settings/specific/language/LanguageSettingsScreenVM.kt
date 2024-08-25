@@ -218,13 +218,20 @@ class LanguageSettingsScreenVM @Inject constructor(
             is LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
                 viewModelScope.launch {
                     val remoteLanguagesData = localizationRepo.getRemoteLanguages()
-                    remoteLanguagesData.totalStrings.let {
+                    remoteLanguagesData.let {
                         SettingsPreference.changeSettingPreferenceValue(
                             intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
                             languageSettingsScreenUIEvent.context.dataStore,
-                            it
+                            it.totalStrings
                         )
-                        SettingsPreference.totalRemoteStrings.intValue = it
+                        SettingsPreference.totalRemoteStrings.intValue = it.totalStrings
+
+                        SettingsPreference.changeSettingPreferenceValue(
+                            stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
+                            languageSettingsScreenUIEvent.context.dataStore,
+                            it.lastUpdatedOn
+                        )
+                        SettingsPreference.remoteStringsLastUpdatedOn.value = it.lastUpdatedOn
                     }
                     remoteLanguagesData.let {
                         linkoraLog(it.toString())
@@ -234,7 +241,8 @@ class LanguageSettingsScreenVM @Inject constructor(
                             com.sakethh.linkora.data.local.localization.language.Language(
                                 it.languageCode,
                                 it.languageName,
-                                it.localizedStringsCount
+                                it.localizedStringsCount,
+                                it.contributionLink
                             )
                         })
                 }

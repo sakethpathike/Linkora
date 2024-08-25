@@ -89,13 +89,13 @@ fun ChildArchiveScreen(
     val selectedURLOrFolderName = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedURLTitle = rememberSaveable {
+    val selectedItemTitle = rememberSaveable {
         mutableStateOf("")
     }
     val selectedURLImgLink = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedFolderNote = rememberSaveable {
+    val selectedItemNote = rememberSaveable {
         mutableStateOf("")
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
@@ -129,8 +129,8 @@ fun ChildArchiveScreen(
                                     archiveScreenVM.selectedArchivedLinkData.value = it
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     selectedURLOrFolderName.value = it.webURL
-                                    selectedFolderNote.value = it.infoForSaving
-                                    selectedURLTitle.value = it.title
+                                    selectedItemNote.value = it.infoForSaving
+                                    selectedItemTitle.value = it.title
                                     selectedURLImgLink.value = it.imgURL
                                     coroutineScope.launch {
                                         optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
@@ -221,10 +221,12 @@ fun ChildArchiveScreen(
                             showMoreIcon = !archiveScreenVM.isSelectionModeEnabled.value,
                             folderNote = it.infoForSaving,
                             onMoreIconClick = {
+                                selectedItemNote.value = it.infoForSaving
+                                selectedItemTitle.value = it.archiveFolderName
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.archiveFolderName
-                                selectedFolderNote.value = it.infoForSaving
+                                selectedItemNote.value = it.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(it.id)
                                 }
@@ -273,7 +275,8 @@ fun ChildArchiveScreen(
                                 CollectionsScreenVM.selectedFolderData.value.id = it.id
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                                 selectedURLOrFolderName.value = it.folderName
-                                selectedFolderNote.value = it.infoForSaving
+                                selectedItemNote.value = it.infoForSaving
+                                selectedItemTitle.value = it.folderName
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(it.id)
                                 }
@@ -332,7 +335,7 @@ fun ChildArchiveScreen(
                     shouldRenameDialogBoxAppear.value = true
                 },
                 onArchiveClick = {},
-                noteForSaving = selectedFolderNote.value,
+                noteForSaving = selectedItemNote.value,
                 onNoteDeleteCardClick = {
                     archiveScreenVM.onNoteDeleteCardClick(
                         archiveScreenType = archiveScreenType,
@@ -342,7 +345,7 @@ fun ChildArchiveScreen(
                     )
                 },
                 folderName = if (archiveScreenType == ArchiveScreenType.FOLDERS) selectedURLOrFolderName.value else "",
-                linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedURLTitle.value else "",
+                linkTitle = if (archiveScreenType == ArchiveScreenType.LINKS) selectedItemTitle.value else "",
                 imgLink = selectedURLImgLink.value,
                 onRefreshClick = {
                     if (archiveScreenType == ArchiveScreenType.LINKS) {
@@ -404,7 +407,9 @@ fun ChildArchiveScreen(
                             )
                         }, folderID = CollectionsScreenVM.selectedFolderData.value.id
                     )
-                }
+                },
+                existingTitle = selectedItemTitle.value,
+                existingNote = selectedItemNote.value
             )
         )
     }

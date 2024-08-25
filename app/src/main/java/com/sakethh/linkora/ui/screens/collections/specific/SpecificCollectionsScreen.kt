@@ -149,7 +149,10 @@ fun SpecificCollectionScreen(navController: NavController) {
     val selectedURLOrFolderNote = rememberSaveable {
         mutableStateOf("")
     }
-    val selectedURLTitle = rememberSaveable {
+    val selectedItemTitle = rememberSaveable {
+        mutableStateOf("")
+    }
+    val selectedItemNote = rememberSaveable {
         mutableStateOf("")
     }
     val uriHandler = LocalUriHandler.current
@@ -558,7 +561,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     folderName = folderData.folderName,
                                     folderNote = folderData.infoForSaving,
                                     onMoreIconClick = {
-                                        selectedURLTitle.value = folderData.folderName
+                                        selectedItemTitle.value = folderData.folderName
+                                        selectedItemNote.value = folderData.infoForSaving
                                         selectedURLOrFolderNote.value = folderData.infoForSaving
                                         clickedFolderNote.value = folderData.infoForSaving
                                         coroutineScope.launch {
@@ -611,11 +615,13 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
                                         onMoreIconCLick = {
+                                            selectedItemTitle.value = linkData.title
+                                            selectedItemNote.value = linkData.infoForSaving
                                             CollectionsScreenVM.selectedFolderData.value.id =
                                                 linkData.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
-                                            selectedURLTitle.value = linkData.title
+                                            selectedItemTitle.value = linkData.title
                                             selectedWebURL.value = linkData.webURL
                                             selectedURLOrFolderNote.value = linkData.infoForSaving
                                             tempImpLinkData.apply {
@@ -724,6 +730,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
                                         onMoreIconCLick = {
+                                            selectedItemTitle.value = linkData.title
+                                            selectedItemNote.value = linkData.infoForSaving
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             CollectionsScreenVM.selectedFolderData.value.id =
@@ -833,6 +841,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
                                         onMoreIconCLick = {
+                                            selectedItemTitle.value = linkData.title
+                                            selectedItemNote.value = linkData.infoForSaving
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                 OptionsBtmSheetType.LINK
                                             CollectionsScreenVM.selectedFolderData.value.id =
@@ -952,8 +962,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     folderName = folderData.folderName,
                                     folderNote = folderData.infoForSaving,
                                     onMoreIconClick = {
+                                        selectedItemTitle.value = folderData.folderName
+                                        selectedItemNote.value = folderData.infoForSaving
                                         CollectionsScreenVM.selectedFolderData.value = folderData
-                                        selectedURLTitle.value = folderData.folderName
                                         selectedURLOrFolderNote.value = folderData.infoForSaving
                                         clickedFolderNote.value = folderData.infoForSaving
                                         coroutineScope.launch {
@@ -1006,6 +1017,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
                                         onMoreIconCLick = {
+                                            selectedItemTitle.value = linkData.title
+                                            selectedItemNote.value = linkData.infoForSaving
                                             CollectionsScreenVM.selectedFolderData.value.id =
                                                 linkData.id
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -1186,7 +1199,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         linkID = CollectionsScreenVM.selectedFolderData.value.id
                     )
                 },
-                folderName = selectedURLTitle.value,
+                folderName = selectedItemTitle.value,
                 linkTitle = tempImpLinkData.title.value,
                 imgLink = tempImpLinkData.imgURL.value,
                 onRefreshClick = {
@@ -1306,7 +1319,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     }
                     shouldRenameDialogBeVisible.value = false
-                }
+                }, existingTitle = selectedItemTitle.value, existingNote = selectedItemNote.value
             )
         )
         val collectionsScreenVM: CollectionsScreenVM = hiltViewModel()

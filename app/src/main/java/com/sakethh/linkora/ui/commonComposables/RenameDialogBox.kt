@@ -49,7 +49,9 @@ data class RenameDialogBoxParam(
     val renameDialogBoxFor: OptionsBtmSheetType = OptionsBtmSheetType.FOLDER,
     val onNoteChangeClick: ((newNote: String) -> Unit),
     val onTitleChangeClick: ((newTitle: String) -> Unit),
-    val existingFolderName: String?
+    val existingFolderName: String?,
+    val existingTitle: String,
+    val existingNote: String
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,11 +61,11 @@ fun RenameDialogBox(
 ) {
     val localContext = LocalContext.current
     if (renameDialogBoxParam.shouldDialogBoxAppear.value) {
-        val newFolderOrTitleName = rememberSaveable {
-            mutableStateOf("")
+        val newFolderOrTitleName = rememberSaveable(renameDialogBoxParam.existingTitle) {
+            mutableStateOf(renameDialogBoxParam.existingTitle)
         }
-        val newNote = rememberSaveable {
-            mutableStateOf("")
+        val newNote = rememberSaveable(renameDialogBoxParam.existingNote) {
+            mutableStateOf(renameDialogBoxParam.existingNote)
         }
         LinkoraTheme {
             BasicAlertDialog(modifier = Modifier
@@ -92,7 +94,6 @@ fun RenameDialogBox(
                     }
                     item {
                         OutlinedTextField(
-                            maxLines = 1,
                             label = {
                                 Text(
                                     text = if (renameDialogBoxParam.renameDialogBoxFor == OptionsBtmSheetType.FOLDER)
@@ -103,7 +104,6 @@ fun RenameDialogBox(
                                 )
                             },
                             textStyle = MaterialTheme.typography.titleSmall,
-                            singleLine = true,
                             value = newFolderOrTitleName.value,
                             onValueChange = {
                                 newFolderOrTitleName.value = it

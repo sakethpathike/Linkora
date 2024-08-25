@@ -367,6 +367,62 @@ open class SettingsScreenVM @Inject constructor(
             isIconNeeded = mutableStateOf(false),
             shouldArrowIconBeAppear = mutableStateOf(true)
         ),
+        SettingsUIElement(
+            title = "vxTwitter",
+            doesDescriptionExists = true,
+            description = "WTFPL License",
+            isSwitchNeeded = false,
+            isSwitchEnabled = mutableStateOf(false),
+            onSwitchStateChange = {
+
+            },
+            onAcknowledgmentClick = { uriHandler, context ->
+                viewModelScope.launch {
+                    openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = "dylanpdx/BetterTwitFix: Fix Twitter video embeds in Discord (and Telegram!)",
+                            webURL = "https://github.com/dylanpdx/BetterTwitFix",
+                            baseURL = "github.com",
+                            imgURL = "https://opengraph.githubassets.com/e14998b463f6fccffcd69d5e806a19576cff9fedc5ef525ae9aa32661c425d5c/dylanpdx/BetterTwitFix",
+                            infoForSaving = "",
+                        ),
+                        uriHandler = uriHandler,
+                        context = context,
+                        forceOpenInExternalBrowser = false
+                    )
+                }
+            },
+            isIconNeeded = mutableStateOf(false),
+            shouldArrowIconBeAppear = mutableStateOf(true)
+        ),
+        SettingsUIElement(
+            title = "Poppins",
+            doesDescriptionExists = true,
+            description = "Open Font License",
+            isSwitchNeeded = false,
+            isSwitchEnabled = mutableStateOf(false),
+            onSwitchStateChange = {
+
+            },
+            onAcknowledgmentClick = { uriHandler, context ->
+                viewModelScope.launch {
+                    openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = "Poppins - Google Fonts",
+                            webURL = "https://fonts.google.com/specimen/Poppins",
+                            baseURL = "fonts.google.com",
+                            imgURL = "https://www.gstatic.com/images/icons/material/apps/fonts/1x/catalog/v5/opengraph_color.png",
+                            infoForSaving = "",
+                        ),
+                        uriHandler = uriHandler,
+                        context = context,
+                        forceOpenInExternalBrowser = false
+                    )
+                }
+            },
+            isIconNeeded = mutableStateOf(false),
+            shouldArrowIconBeAppear = mutableStateOf(true)
+        ),
     )
 
 

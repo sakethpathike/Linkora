@@ -140,8 +140,8 @@ fun CollectionsScreen(navController: NavController) {
     val foldersData = collectionsScreenVM.foldersData.collectAsStateWithLifecycle().value
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val clickedFolderName = rememberSaveable { mutableStateOf("") }
-    val clickedFolderNote = rememberSaveable { mutableStateOf("") }
+    val clickedItemName = rememberSaveable { mutableStateOf("") }
+    val clickedItemNote = rememberSaveable { mutableStateOf("") }
     val btmModalSheetStateForSavingLinks = rememberModalBottomSheetState()
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
@@ -476,12 +476,12 @@ fun CollectionsScreen(navController: NavController) {
                             folderName = folderData.folderName,
                             folderNote = folderData.infoForSaving,
                             onMoreIconClick = {
+                                clickedItemName.value = folderData.folderName
+                                clickedItemNote.value = folderData.infoForSaving
                                 CollectionsScreenVM.selectedFolderData.value = folderData
-                                clickedFolderNote.value = folderData.infoForSaving
                                 coroutineScope.launch {
                                     optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
                                 }
-                                clickedFolderName.value = folderData.folderName
                                 CollectionsScreenVM.selectedFolderData.value = folderData
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             },
@@ -568,7 +568,7 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                 },
-                noteForSaving = clickedFolderNote.value,
+                noteForSaving = clickedItemNote.value,
                 onNoteDeleteCardClick = {
                     collectionsScreenVM.onNoteDeleteClick(
                         CollectionsScreenVM.selectedFolderData.value.id
@@ -590,7 +590,7 @@ fun CollectionsScreen(navController: NavController) {
                 shouldRenameDialogBoxBeVisible.value = false
             },
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
-                existingFolderName = clickedFolderName.value,
+                existingFolderName = clickedItemName.value,
                 onTitleChangeClick = {
                     collectionsScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.UpdateFolderName(
@@ -603,7 +603,9 @@ fun CollectionsScreen(navController: NavController) {
                         )
                     )
                     shouldRenameDialogBoxBeVisible.value = false
-                })
+                },
+                existingTitle = clickedItemName.value, existingNote = clickedItemNote.value
+            )
         )
         DeleteDialogBox(
             DeleteDialogBoxParam(

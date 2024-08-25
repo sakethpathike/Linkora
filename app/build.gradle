@@ -7,6 +7,7 @@ plugins {
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'
@@ -138,4 +139,6 @@ dependencies {
     implementation 'androidx.hilt:hilt-work:1.2.0'
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
+
+    implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
 }

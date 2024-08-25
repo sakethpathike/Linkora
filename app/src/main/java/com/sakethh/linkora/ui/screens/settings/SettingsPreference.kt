@@ -52,6 +52,7 @@ object SettingsPreference : ViewModel() {
     val preferredAppLanguageCode = mutableStateOf("en")
     val totalLocalAppStrings = mutableIntStateOf(249)
     val totalRemoteStrings = mutableIntStateOf(0)
+    val remoteStringsLastUpdatedOn = mutableStateOf("")
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -222,6 +223,13 @@ object SettingsPreference : ViewModel() {
                             preferenceKey = stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
                             dataStore = context.dataStore
                         ) ?: Constants.LINKORA_LOCALIZATION_SERVER
+                },
+                async {
+                    remoteStringsLastUpdatedOn.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
+                            dataStore = context.dataStore
+                        ) ?: ""
                 },
                 async {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(

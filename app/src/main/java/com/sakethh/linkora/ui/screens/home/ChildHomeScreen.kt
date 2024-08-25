@@ -692,7 +692,7 @@ fun ChildHomeScreen(
                     }
                 }
                 shouldRenameDialogBoxAppear.value = false
-            }
+            }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
         )
     )
 }

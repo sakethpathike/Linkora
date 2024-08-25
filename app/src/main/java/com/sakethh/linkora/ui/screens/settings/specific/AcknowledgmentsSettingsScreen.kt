@@ -1,14 +1,16 @@
 package com.sakethh.linkora.ui.screens.settings.specific
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -21,6 +23,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
 import com.sakethh.linkora.LocalizedStrings.acknowledgments
 import com.sakethh.linkora.LocalizedStrings.linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries
 import com.sakethh.linkora.ui.CommonUiEvent
@@ -73,7 +76,21 @@ fun AcknowledgmentsSettingsScreen(
                 )
             }
             item {
-                Spacer(modifier = Modifier.height(100.dp))
+                Button(onClick = {
+                    context.startActivity(
+                        Intent(
+                            context,
+                            OssLicensesMenuActivity::class.java
+                        )
+                    )
+                }, modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 15.dp, end = 15.dp)) {
+                    Text(text = "View All", style = MaterialTheme.typography.titleSmall)
+                }
+            }
+            item {
+                Spacer(modifier = Modifier)
             }
         }
     }

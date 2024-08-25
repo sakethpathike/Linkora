@@ -1499,7 +1499,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         )
                     }
                     shouldRenameDialogBoxAppear.value = false
-                }
+                }, existingTitle = selectedLinkTitle.value, existingNote = selectedURLNote.value
             )
         )
         DeleteDialogBox(

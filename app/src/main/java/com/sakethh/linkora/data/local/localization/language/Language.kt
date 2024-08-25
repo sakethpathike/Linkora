@@ -8,5 +8,6 @@ data class Language(
     @PrimaryKey
     val languageCode: String,
     val languageName: String,
-    val localizedStringsCount: Int
+    val localizedStringsCount: Int,
+    val contributionLink: String
 )
