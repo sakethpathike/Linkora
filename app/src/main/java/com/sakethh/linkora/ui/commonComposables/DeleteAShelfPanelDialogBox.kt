@@ -8,8 +8,6 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
@@ -25,12 +23,6 @@ data class DeleteAShelfDialogBoxParam(
 @Composable
 fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBoxParam) {
     if (deleteAShelfDialogBoxParam.isDialogBoxVisible.value) {
-        val title =
-            LocalizedStrings.areYouSureWantToDelete.value + rememberSaveable(
-                ShelfBtmSheetVM.selectedShelfData.shelfName
-            ) {
-                mutableStateOf(" \"${ShelfBtmSheetVM.selectedShelfData.shelfName}\"?")
-            }.value
         LinkoraTheme {
             AlertDialog(
                 confirmButton = {
@@ -64,7 +56,10 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                     }
                 }, title = {
                     Text(
-                        text = title, style = MaterialTheme.typography.titleMedium,
+                        text = LocalizedStrings.areYouSureWantToDeleteThePanel.value.replace(
+                            "\$\$\$\$",
+                            ShelfBtmSheetVM.selectedShelfData.shelfName
+                        ), style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp,
                         textAlign = TextAlign.Start

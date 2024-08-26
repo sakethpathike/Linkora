@@ -862,6 +862,22 @@ object LocalizedStrings : ViewModel() {
     val helpTranslateLinkora =
         _helpTranslateLinkora
 
+    private val _editPanelName = mutableStateOf("")
+    val editPanelName =
+        _editPanelName
+
+    private val _areYouSureWantToDeleteThePanel = mutableStateOf("")
+    val areYouSureWantToDeleteThePanel =
+        _areYouSureWantToDeleteThePanel
+
+    private val _areYouSureWantToDeleteTheFolder = mutableStateOf("")
+    val areYouSureWantToDeleteTheFolder =
+        _areYouSureWantToDeleteTheFolder
+
+    private val _renameFolder = mutableStateOf("")
+    val renameFolder =
+        _renameFolder
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -869,7 +885,76 @@ object LocalizedStrings : ViewModel() {
             EntryPoints.get(context.applicationContext, TranslationRepoInstance::class.java)
                 .getTranslationRepo()
         viewModelScope.launch {
+            count = 0
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _renameFolder.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "rename_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.rename_folder)
+                                }
+                            })
+                    } else {
+                        _renameFolder.value =
+                            context.getString(R.string.rename_folder)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureWantToDeleteTheFolder.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_want_to_delete_the_folder",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_want_to_delete_the_folder)
+                                }
+                            })
+                    } else {
+                        _areYouSureWantToDeleteTheFolder.value =
+                            context.getString(R.string.are_you_sure_want_to_delete_the_folder)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _areYouSureWantToDeleteThePanel.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "are_you_sure_want_to_delete_the_panel",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.are_you_sure_want_to_delete_the_panel)
+                                }
+                            })
+                    } else {
+                        _areYouSureWantToDeleteThePanel.value =
+                            context.getString(R.string.are_you_sure_want_to_delete_the_panel)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _editPanelName.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "edit_panel_name",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.edit_panel_name)
+                                }
+                            })
+                    } else {
+                        _editPanelName.value =
+                            context.getString(R.string.edit_panel_name)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {

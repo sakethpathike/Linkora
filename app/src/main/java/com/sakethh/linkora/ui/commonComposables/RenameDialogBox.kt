@@ -83,8 +83,10 @@ fun RenameDialogBox(
                     item {
                         Text(
                             text = if (renameDialogBoxParam.renameDialogBoxFor != OptionsBtmSheetType.LINK)
-                                LocalizedStrings.rename.value
-                                        + " \"${renameDialogBoxParam.existingFolderName}\" " + LocalizedStrings.folder.value + ":" else
+                                LocalizedStrings.renameFolder.value.replace(
+                                    "\$\$\$\$",
+                                    renameDialogBoxParam.existingFolderName ?: ""
+                                ) else
                                 LocalizedStrings.changeLinkData.value,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 22.sp,

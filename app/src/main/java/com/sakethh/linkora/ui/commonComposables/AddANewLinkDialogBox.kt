@@ -161,7 +161,7 @@ fun AddANewLinkDialogBox(
             mutableStateOf("")
         }
         val selectedFolderName = rememberSaveable {
-            mutableStateOf("Saved Links")
+            mutableStateOf(LocalizedStrings.savedLinks.value)
         }
         val selectedFolderID = rememberSaveable {
             mutableLongStateOf(0)

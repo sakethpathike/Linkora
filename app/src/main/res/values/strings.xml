@@ -276,4 +276,8 @@
     <string name="open_a_github_issue">Open a GitHub Issue</string>
     <string name="changelog">Changelog</string>
     <string name="help_translate_linkora">Help Translate Linkora</string>
+    <string name="edit_panel_name">Edit \"$$$$\" Panel Name</string>
+    <string name="are_you_sure_want_to_delete_the_panel">Are you sure want to delete the panel named \"$$$$\"?</string>
+    <string name="are_you_sure_want_to_delete_the_folder">Are you sure want to delete the folder $$$$?</string>
+    <string name="rename_folder">Rename \"$$$$\" folder:</string>
 </resources>

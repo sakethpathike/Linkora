@@ -80,8 +80,11 @@ fun DeleteDialogBox(
                         else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER && deleteDialogBoxParam.areFoldersSelectable)
                             LocalizedStrings.areYouSureYouWantToDeleteAllSelectedFolders.value
                         else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.FOLDER)
-                            LocalizedStrings.areYouSureWantToDeleteThe.value
-                                    + " \"${deleteDialogBoxParam.folderName.value}\" " + LocalizedStrings.folder + "?" else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA)
+                            LocalizedStrings.areYouSureWantToDeleteTheFolder.value.replace(
+                                "\$\$\$\$",
+                                deleteDialogBoxParam.folderName.value
+                            )
+                        else if (deleteDialogBoxParam.deleteDialogBoxType == DataDialogBoxType.SELECTED_DATA)
                             LocalizedStrings.areYouSureYouWantToDeleteAllSelectedItems.value
                         else LocalizedStrings.areYouSureYouWantToDeleteAllFoldersAndLinks.value,
                         style = MaterialTheme.typography.titleMedium,
