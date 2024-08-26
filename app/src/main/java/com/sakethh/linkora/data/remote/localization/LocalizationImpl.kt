@@ -4,6 +4,7 @@ import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.RequestState
 import com.sakethh.linkora.data.local.localization.language.translations.Translation
 import com.sakethh.linkora.data.remote.localization.model.RemoteLocalizationInfoDTO
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
@@ -17,7 +18,7 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
         return try {
             val localizedStrings = mutableListOf<Translation>()
             RequestResult.updateState(RequestState.REQUESTING)
-            ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + languageCode).bodyAsText()
+            ktorClient.get(SettingsPreference.localizationServerURL.value + languageCode).bodyAsText()
                 .substringAfter("<resources>")
                 .substringBefore("</resources>")
                 .split("<string").forEach {
@@ -46,7 +47,7 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
     override suspend fun getRemoteLanguages(): RemoteLocalizationInfoDTO {
         return try {
             RequestResult.updateState(RequestState.REQUESTING)
-            val remoteLanguageData = ktorClient.get(Constants.LINKORA_LOCALIZATION_SERVER + "info")
+            val remoteLanguageData = ktorClient.get(SettingsPreference.localizationServerURL.value + "info")
                 .body<RemoteLocalizationInfoDTO>()
             RequestResult.updateState(RequestState.SUCCESS)
             remoteLanguageData
