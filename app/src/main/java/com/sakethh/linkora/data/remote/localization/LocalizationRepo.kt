@@ -7,5 +7,5 @@ import com.sakethh.linkora.data.remote.localization.model.RemoteLocalizationInfo
 interface LocalizationRepo {
     suspend fun getRemoteStrings(languageCode: String): RequestResult<List<Translation>>
 
-    suspend fun getRemoteLanguages(): RemoteLocalizationInfoDTO
+    suspend fun getRemoteLanguages(): RequestResult<RemoteLocalizationInfoDTO>
 }

@@ -230,39 +230,49 @@ class LanguageSettingsScreenVM @Inject constructor(
 
             is LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo -> {
                 viewModelScope.launch {
-                    val remoteLanguagesData = localizationRepo.getRemoteLanguages()
-                    remoteLanguagesData.let {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
-                            languageSettingsScreenUIEvent.context.dataStore,
-                            it.totalStrings
-                        )
-                        SettingsPreference.totalRemoteStrings.intValue = it.totalStrings
-                        linkoraLog(triggeredFromRetrieveStrings.toString())
-                        if (SettingsPreference.remoteStringsLastUpdatedOn.value == it.lastUpdatedOn && !triggeredFromRetrieveStrings) {
-                            pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.languageInfoAndStringsAreUpToDate.value))
-                            return@launch
+                    when (val remoteLanguagesData = localizationRepo.getRemoteLanguages()) {
+                        is RequestResult.Failure -> {
+                            pushUiEvent(CommonUiEvent.ShowToast(remoteLanguagesData.msg))
                         }
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
-                            languageSettingsScreenUIEvent.context.dataStore,
-                            it.lastUpdatedOn
-                        )
-                        SettingsPreference.remoteStringsLastUpdatedOn.value = it.lastUpdatedOn
-                    }
-                    remoteLanguagesData.let {
-                        linkoraLog(it.toString())
+
+                        is RequestResult.Success -> {
+                            remoteLanguagesData.let {
+                                SettingsPreference.changeSettingPreferenceValue(
+                                    intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
+                                    languageSettingsScreenUIEvent.context.dataStore,
+                                    it.data.totalStrings
+                                )
+                                SettingsPreference.totalRemoteStrings.intValue =
+                                    it.data.totalStrings
+                                linkoraLog(triggeredFromRetrieveStrings.toString())
+                                if (SettingsPreference.remoteStringsLastUpdatedOn.value == it.data.lastUpdatedOn && !triggeredFromRetrieveStrings) {
+                                    pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.languageInfoAndStringsAreUpToDate.value))
+                                    return@launch
+                                }
+                                SettingsPreference.changeSettingPreferenceValue(
+                                    stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
+                                    languageSettingsScreenUIEvent.context.dataStore,
+                                    it.data.lastUpdatedOn
+                                )
+                                SettingsPreference.remoteStringsLastUpdatedOn.value =
+                                    it.data.lastUpdatedOn
+                            }
+                            remoteLanguagesData.let {
+                                linkoraLog(it.toString())
+                            }
+
+                            languageRepo.addNewLanguages(remoteLanguagesData.data.availableLanguages.map {
+                                com.sakethh.linkora.data.local.localization.language.Language(
+                                    it.languageCode,
+                                    it.languageName,
+                                    it.localizedStringsCount,
+                                    it.contributionLink
+                                )
+                            })
+                            pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.updatedLanguageInfoSuccessfully.value))
+                        }
                     }
 
-                    languageRepo.addNewLanguages(remoteLanguagesData.availableLanguages.map {
-                            com.sakethh.linkora.data.local.localization.language.Language(
-                                it.languageCode,
-                                it.languageName,
-                                it.localizedStringsCount,
-                                it.contributionLink
-                            )
-                        })
-                    pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.updatedLanguageInfoSuccessfully.value))
                 }
             }
 

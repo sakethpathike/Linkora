@@ -1,11 +1,11 @@
 package com.sakethh.linkora.data.remote.localization
 
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.RequestState
 import com.sakethh.linkora.data.local.localization.language.translations.Translation
 import com.sakethh.linkora.data.remote.localization.model.RemoteLocalizationInfoDTO
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.utils.Constants
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.get
@@ -40,26 +40,21 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
         } catch (e: Exception) {
             RequestResult.updateState(RequestState.FAILED)
             e.printStackTrace()
-            RequestResult.Failure("")
+            RequestResult.Failure(LocalizedStrings.cannotRetrieveNowPleaseTryAgain.value)
         }
     }
 
-    override suspend fun getRemoteLanguages(): RemoteLocalizationInfoDTO {
+    override suspend fun getRemoteLanguages(): RequestResult<RemoteLocalizationInfoDTO> {
         return try {
             RequestResult.updateState(RequestState.REQUESTING)
             val remoteLanguageData = ktorClient.get(SettingsPreference.localizationServerURL.value + "info")
                 .body<RemoteLocalizationInfoDTO>()
             RequestResult.updateState(RequestState.SUCCESS)
-            remoteLanguageData
+            RequestResult.Success(remoteLanguageData)
         } catch (e: Exception) {
             RequestResult.updateState(RequestState.FAILED)
             e.printStackTrace()
-            RemoteLocalizationInfoDTO(
-                availableLanguages = listOf(),
-                totalAvailableLanguages = 0,
-                totalStrings = 0,
-                ""
-            )
+            RequestResult.Failure(LocalizedStrings.cannotRetrieveNowPleaseTryAgain.value)
         }
     }
 }

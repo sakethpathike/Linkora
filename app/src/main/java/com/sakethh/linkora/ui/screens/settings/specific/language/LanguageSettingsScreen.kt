@@ -54,7 +54,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -67,7 +66,6 @@ import com.sakethh.linkora.LocalizedStrings.appLanguage
 import com.sakethh.linkora.LocalizedStrings.availableLanguages
 import com.sakethh.linkora.LocalizedStrings.language
 import com.sakethh.linkora.LocalizedStrings.resetAppLanguage
-import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CustomWebTab
@@ -297,8 +295,9 @@ fun LanguageSettingsScreen(
                     },
                     text = it.languageName,
                     isRemoteLanguage = false,
-                    localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
-                        ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " " + LocalizedStrings.stringsLocalized.value,
+                    localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value)
+                        remotelyAvailableLanguages.find { language -> language.languageCode == it.languageCode }?.localizedStringsCount
+                            ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " " + LocalizedStrings.stringsLocalized.value,
                     localizationStatusFraction = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
                         ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalRemoteStrings.intValue else SettingsPreference.totalLocalAppStrings.intValue).toFloat(),
                 )
@@ -560,7 +559,7 @@ fun LanguageSettingsScreen(
                         }
                         Spacer(modifier = Modifier.width(5.dp))
                         Text(
-                            text = stringResource(R.string.help_improve_language_strings),
+                            text = LocalizedStrings.helpImproveLanguageStrings.value,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 16.sp
                         )
