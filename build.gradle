@@ -4,7 +4,6 @@ buildscript {
     }
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.9.10"
-        classpath("com.google.dagger:hilt-android-gradle-plugin:2.48.1")
         classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21'
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.48.1'
         classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")

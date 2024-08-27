@@ -12,7 +12,6 @@ plugins {
 android {
     namespace 'com.sakethh.linkora'
     compileSdk 34
-
     defaultConfig {
         applicationId "com.sakethh.linkora"
         minSdk 21
@@ -25,6 +24,16 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary true
+        }
+        flavorDimensions = ["distribution"]
+        productFlavors {
+            fdroid {
+                isDefault true
+                dimension "distribution"
+            }
+            github {
+                dimension "distribution"
+            }
         }
         sourceSets {
             androidTest.assets.srcDirs += files("$projectDir/schemas".toString())
@@ -57,6 +66,7 @@ android {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
     buildFeatures {
+        buildConfig = true
         compose true
     }
     composeOptions {
@@ -127,9 +137,9 @@ dependencies {
     implementation "androidx.room:room-ktx:$room_version"
     ksp "androidx.room:room-compiler:$room_version"
 
-    implementation platform('com.google.firebase:firebase-bom:32.7.3')
-    implementation 'com.google.firebase:firebase-crashlytics-ktx'
-    implementation 'com.google.firebase:firebase-analytics-ktx'
+    githubImplementation platform('com.google.firebase:firebase-bom:33.1.2')
+    githubImplementation 'com.google.firebase:firebase-crashlytics-ktx'
+    githubImplementation 'com.google.firebase:firebase-analytics-ktx'
 
     implementation("com.google.dagger:hilt-android:2.49")
     kapt("com.google.dagger:hilt-android-compiler:2.48.1")
