@@ -16,7 +16,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 
-
 object LocalizedStrings : ViewModel() {
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -878,6 +877,10 @@ object LocalizedStrings : ViewModel() {
     val renameFolder =
         _renameFolder
 
+    private val _createANewInternalFolderIn = mutableStateOf("")
+    val createANewInternalFolderIn =
+        _createANewInternalFolderIn
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -887,6 +890,23 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _createANewInternalFolderIn.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "create_a_new_internal_folder_in",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.create_a_new_internal_folder_in)
+                                }
+                            })
+                    } else {
+                        _createANewInternalFolderIn.value =
+                            context.getString(R.string.create_a_new_internal_folder_in)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
@@ -1945,16 +1965,16 @@ object LocalizedStrings : ViewModel() {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
                         _createANewFolderIn.value = (translationsRepo.getLocalizedStringValueFor(
-                            "create_a_new_folder_in",
+                            "create_a_new_internal_folder_in",
                             SettingsPreference.preferredAppLanguageCode.value
                         ).let {
                             it.ifNullOrBlank {
-                                context.getString(R.string.create_a_new_folder_in)
+                                context.getString(R.string.create_a_new_internal_folder_in)
                             }
                         })
                     } else {
                         _createANewFolderIn.value =
-                            context.getString(R.string.create_a_new_folder_in)
+                            context.getString(R.string.create_a_new_internal_folder_in)
                     }
                 },
 

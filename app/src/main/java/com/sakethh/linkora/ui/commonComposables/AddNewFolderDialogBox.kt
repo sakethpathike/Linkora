@@ -151,7 +151,10 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewFolderIn.value + " \"${CollectionsScreenVM.currentClickedFolderData.value.folderName}\"" else
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewFolderIn.value.replace(
+                            "\$\$\$\$",
+                            CollectionsScreenVM.currentClickedFolderData.value.folderName
+                        ) else
                             LocalizedStrings.createANewFolder.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,

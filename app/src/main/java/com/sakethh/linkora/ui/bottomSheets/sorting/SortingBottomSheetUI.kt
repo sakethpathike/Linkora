@@ -114,7 +114,7 @@ fun SortingBottomSheetUI(
                     }
                     if ((sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.REGULAR_FOLDER_SCREEN || sortingBottomSheetParam.sortingBtmSheetType == SortingBtmSheetType.ARCHIVE_FOLDER_SCREEN) && sortingBottomSheetParam.shouldLinksSelectionBeVisible.value) {
                         FolderIndividualComponent(
-                            folderName = "Links",
+                            folderName = LocalizedStrings.links.value,
                             folderNote = "",
                             folderIcon = Icons.Default.Link,
                             onMoreIconClick = { },

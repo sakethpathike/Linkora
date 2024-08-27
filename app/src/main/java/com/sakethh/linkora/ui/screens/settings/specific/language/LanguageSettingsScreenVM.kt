@@ -197,6 +197,10 @@ class LanguageSettingsScreenVM @Inject constructor(
                     translationsRepo.deleteAllLocalizedStringsForThisLanguage(
                         languageSettingsScreenUIEvent.languageCode
                     )
+                    if (SettingsPreference.preferredAppLanguageCode.value != languageSettingsScreenUIEvent.languageCode) {
+                        linkoraLog("not preferredAppLanguageCode")
+                        return@launch
+                    }
                     SettingsPreference.changeSettingPreferenceValue(
                         booleanPreferencesKey(
                             SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
@@ -204,26 +208,27 @@ class LanguageSettingsScreenVM @Inject constructor(
                     )
                     useLanguageStringsBasedOnFetchedValuesFromServer.value = false
                     linkoraLog(languageSettingsScreenUIEvent.languageName + ":" + languageSettingsScreenUIEvent.languageCode)
-                    async {
-                        if (compiledLanguages.map { it.languageCode }
-                                .contains(languageSettingsScreenUIEvent.languageCode) && SettingsPreference.preferredAppLanguageCode.value == languageSettingsScreenUIEvent.languageCode) {
-                            onClick(
-                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
-                                    context = languageSettingsScreenUIEvent.context,
-                                    languageCode = languageSettingsScreenUIEvent.languageCode,
-                                    languageName = languageSettingsScreenUIEvent.languageName
-                                )
+
+
+                    linkoraLog("preferredAppLanguageCode")
+                    if (compiledLanguages.map { it.languageCode }
+                            .contains(languageSettingsScreenUIEvent.languageCode)) {
+                        onClick(
+                            LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                                context = languageSettingsScreenUIEvent.context,
+                                languageCode = languageSettingsScreenUIEvent.languageCode,
+                                languageName = languageSettingsScreenUIEvent.languageName
                             )
-                        } else {
-                            onClick(
-                                LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
-                                    context = languageSettingsScreenUIEvent.context,
-                                    languageCode = "en",
-                                    languageName = "English"
-                                )
+                        )
+                    } else {
+                        onClick(
+                            LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
+                                context = languageSettingsScreenUIEvent.context,
+                                languageCode = "en",
+                                languageName = "English"
                             )
-                        }
-                    }.await()
+                        )
+                    }
                     LocalizedStrings.loadStrings(languageSettingsScreenUIEvent.context)
                 }
             }
@@ -277,6 +282,12 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.ResetAppLanguage -> {
+                SettingsPreference.changeSettingPreferenceValue(
+                    booleanPreferencesKey(
+                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                    ), languageSettingsScreenUIEvent.context.dataStore, false
+                )
+                useLanguageStringsBasedOnFetchedValuesFromServer.value = false
                 onClick(
                     LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage(
                         languageSettingsScreenUIEvent.context,

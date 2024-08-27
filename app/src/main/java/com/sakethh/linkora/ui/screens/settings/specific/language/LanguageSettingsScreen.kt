@@ -99,17 +99,6 @@ fun LanguageSettingsScreen(
             }
         }
     }
-    LaunchedEffect(key1 = Unit) {
-        preferredAppLanguageName.value = readSettingPreferenceValue(
-            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
-            context.dataStore
-        ) ?: "English"
-
-        preferredAppLanguageCode.value = readSettingPreferenceValue(
-            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
-            context.dataStore
-        ) ?: "en"
-    }
     val isLanguageSelectionBtmSheetVisible = rememberSaveable {
         mutableStateOf(false)
     }
@@ -578,6 +567,17 @@ fun LanguageSettingsScreen(
             shouldCancelButtonBeVisible = false,
             shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
         )
+    LaunchedEffect(key1 = Unit) {
+        preferredAppLanguageName.value = readSettingPreferenceValue(
+            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+            context.dataStore
+        ) ?: "English"
+
+        preferredAppLanguageCode.value = readSettingPreferenceValue(
+            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+            context.dataStore
+        ) ?: "en"
+    }
 }
 
 @Composable

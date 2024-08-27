@@ -191,7 +191,7 @@
     <string name="show_description_for_settings_desc">If this setting is enabled, detailed descriptions will be visible for certain settings, like the one you\'re reading now. If it is disabled, only the titles will be shown.</string>
     <string name="successfully_exported">Successfully Exported</string>
     <string name="import_data">Import Data</string>
-    <string name="import_data_from_external_json_file">Import Data from external JSON file.\"</string>
+    <string name="import_data_from_external_json_file">Import Data from external JSON file.</string>
     <string name="export_data_desc">Export all of your data in JSON format.</string>
     <string name="delete_entire_data_permanently">Delete entire data permanently</string>
     <string name="delete_entire_data_permanently_desc">Delete all links and folders permanently including archives.</string>
@@ -280,4 +280,5 @@
     <string name="are_you_sure_want_to_delete_the_panel">Are you sure want to delete the panel named \"$$$$\"?</string>
     <string name="are_you_sure_want_to_delete_the_folder">Are you sure want to delete the folder $$$$?</string>
     <string name="rename_folder">Rename \"$$$$\" folder:</string>
+    <string name="create_a_new_internal_folder_in">Create a new internal folder in \"$$$$\":</string>
 </resources>

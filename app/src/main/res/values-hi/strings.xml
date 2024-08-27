@@ -281,4 +281,5 @@
     <string name="are_you_sure_want_to_delete_the_panel">क्या आप वाकई \"$$$$\" नामक पैनल को हटाना चाहते हैं?</string>
     <string name="are_you_sure_want_to_delete_the_folder">क्या आप वाकई फोल्डर \"$$$$\" को हटाना चाहते हैं?</string>
     <string name="rename_folder">\"$$$$\" फोल्डर का नाम बदलें:</string>
+    <string name="create_a_new_internal_folder_in">Create a new internal folder in \"$$$$\":</string>
 </resources>

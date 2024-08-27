@@ -21,6 +21,7 @@ import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -65,7 +66,9 @@ fun RegularSettingComponent(
         }
         Column {
             Text(
-                text = settingsUIElement.title,
+                text = rememberSaveable(settingsUIElement.title) {
+                    settingsUIElement.title
+                },
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -78,7 +81,9 @@ fun RegularSettingComponent(
             )
             if (settingsUIElement.doesDescriptionExists) {
                 Text(
-                    text = settingsUIElement.description ?: "",
+                    text = rememberSaveable(settingsUIElement.description) {
+                        settingsUIElement.description ?: ""
+                    },
                     style = MaterialTheme.typography.titleSmall,
                     fontSize = 14.sp,
                     lineHeight = 18.sp,

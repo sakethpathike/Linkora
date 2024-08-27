@@ -24,12 +24,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.android.gms.oss.licenses.OssLicensesMenuActivity
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.acknowledgments
 import com.sakethh.linkora.LocalizedStrings.linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -47,6 +49,9 @@ fun AcknowledgmentsSettingsScreen(
                 }
             }
         }
+    }
+    LaunchedEffect(key1 = Unit) {
+        linkoraLog(LocalizedStrings.kotlin.value)
     }
     SpecificSettingsScreenScaffold(
         topAppBarText = acknowledgments.value,
