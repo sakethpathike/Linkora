@@ -151,7 +151,7 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewFolderIn.value.replace(
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewInternalFolderIn.value.replace(
                             "\$\$\$\$",
                             CollectionsScreenVM.currentClickedFolderData.value.folderName
                         ) else

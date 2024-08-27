@@ -31,7 +31,6 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
-import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,9 +48,6 @@ fun AcknowledgmentsSettingsScreen(
                 }
             }
         }
-    }
-    LaunchedEffect(key1 = Unit) {
-        linkoraLog(LocalizedStrings.kotlin.value)
     }
     SpecificSettingsScreenScaffold(
         topAppBarText = acknowledgments.value,
@@ -75,7 +71,7 @@ fun AcknowledgmentsSettingsScreen(
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp)
                 )
             }
-            items(settingsScreenVM.acknowledgmentsSection) {
+            items(settingsScreenVM.acknowledgmentsSection()) {
                 RegularSettingComponent(
                     settingsUIElement = it
                 )
@@ -91,7 +87,10 @@ fun AcknowledgmentsSettingsScreen(
                 }, modifier = Modifier
                     .fillMaxWidth()
                     .padding(start = 15.dp, end = 15.dp)) {
-                    Text(text = "View All", style = MaterialTheme.typography.titleSmall)
+                    Text(
+                        text = LocalizedStrings.viewAll.value,
+                        style = MaterialTheme.typography.titleSmall
+                    )
                 }
             }
             item {

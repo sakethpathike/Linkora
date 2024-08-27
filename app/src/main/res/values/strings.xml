@@ -281,4 +281,7 @@
     <string name="are_you_sure_want_to_delete_the_folder">Are you sure want to delete the folder $$$$?</string>
     <string name="rename_folder">Rename \"$$$$\" folder:</string>
     <string name="create_a_new_internal_folder_in">Create a new internal folder in \"$$$$\":</string>
+    <string name="show_associated_image_in_link_menu">Show associated image in link menu</string>
+    <string name="enables_the_display_of_an_associated_image_within_the_link_menu">Enables the display of an associated image within the link menu</string>
+    <string name="view_all">View All</string>
 </resources>

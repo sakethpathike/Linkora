@@ -881,6 +881,18 @@ object LocalizedStrings : ViewModel() {
     val createANewInternalFolderIn =
         _createANewInternalFolderIn
 
+    private val _showAssociatedImageInLinkMenu = mutableStateOf("")
+    val showAssociatedImageInLinkMenu =
+        _showAssociatedImageInLinkMenu
+
+    private val _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu = mutableStateOf("")
+    val enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu =
+        _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu
+
+    private val _viewAll = mutableStateOf("")
+    val viewAll =
+        _viewAll
+
     private var count = 0
     fun loadStrings(context: Context) {
 
@@ -890,6 +902,57 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _viewAll.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "view_all",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.view_all)
+                                }
+                            })
+                    } else {
+                        _viewAll.value =
+                            context.getString(R.string.view_all)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "enables_the_display_of_an_associated_image_within_the_link_menu",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.enables_the_display_of_an_associated_image_within_the_link_menu)
+                                }
+                            })
+                    } else {
+                        _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value =
+                            context.getString(R.string.enables_the_display_of_an_associated_image_within_the_link_menu)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showAssociatedImageInLinkMenu.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_associated_image_in_link_menu",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_associated_image_in_link_menu)
+                                }
+                            })
+                    } else {
+                        _showAssociatedImageInLinkMenu.value =
+                            context.getString(R.string.show_associated_image_in_link_menu)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {

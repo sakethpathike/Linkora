@@ -26,6 +26,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.androidJetpack
 import com.sakethh.linkora.LocalizedStrings.apacheLicense
 import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdates
@@ -147,285 +148,286 @@ open class SettingsScreenVM @Inject constructor(
         val latestReleaseInfoFromGitHubReleases = _latestReleaseInfoFromGitHubReleases.asStateFlow()
     }
 
-    val acknowledgmentsSection = listOf(
-        SettingsUIElement(
-            title = kotlin.value,
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {},
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Kotlin - GitHub",
-                            webURL = "https://github.com/JetBrains/kotlin",
-                            baseURL = "github.com",
-                            imgURL = "https://avatars.githubusercontent.com/u/1446536",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            isIconNeeded = mutableStateOf(false),
-            shouldArrowIconBeAppear = mutableStateOf(true)
-        ),
-        SettingsUIElement(
-            title = androidJetpack.value,
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {},
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "androidx - GitHub",
-                            webURL = "https://github.com/androidx/androidx",
-                            baseURL = "github.com",
-                            imgURL = "https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = coil.value,
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+    val acknowledgmentsSection: () -> List<SettingsUIElement> = {
+        listOf(
+            SettingsUIElement(
+                title = kotlin.value,
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {},
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Kotlin - GitHub",
+                                webURL = "https://github.com/JetBrains/kotlin",
+                                baseURL = "github.com",
+                                imgURL = "https://avatars.githubusercontent.com/u/1446536",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                isIconNeeded = mutableStateOf(false),
+                shouldArrowIconBeAppear = mutableStateOf(true)
+            ),
+            SettingsUIElement(
+                title = androidJetpack.value,
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {},
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "androidx - GitHub",
+                                webURL = "https://github.com/androidx/androidx",
+                                baseURL = "github.com",
+                                imgURL = "https://play-lh.googleusercontent.com/PCpXdqvUWfCW1mXhH1Y_98yBpgsWxuTSTofy3NGMo9yBTATDyzVkqU580bfSln50bFU",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = coil.value,
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Coil - GitHub",
-                            webURL = "https://github.com/coil-kt/coil",
-                            baseURL = "github.com",
-                            imgURL = "https://avatars.githubusercontent.com/u/52722434",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = "jsoup",
-            doesDescriptionExists = true,
-            description = "MIT License",
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Coil - GitHub",
+                                webURL = "https://github.com/coil-kt/coil",
+                                baseURL = "github.com",
+                                imgURL = "https://avatars.githubusercontent.com/u/52722434",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = "jsoup",
+                doesDescriptionExists = true,
+                description = "MIT License",
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "jsoup - GitHub",
-                            webURL = "https://github.com/jhy/jsoup",
-                            baseURL = "github.com",
-                            imgURL = "https://jsoup.org/rez/jsoup%20logo%20twitter.png",
-                            infoForSaving = "jsoup on GitHub",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = materialDesign3.value,
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "jsoup - GitHub",
+                                webURL = "https://github.com/jhy/jsoup",
+                                baseURL = "github.com",
+                                imgURL = "https://jsoup.org/rez/jsoup%20logo%20twitter.png",
+                                infoForSaving = "jsoup on GitHub",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = materialDesign3.value,
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Material 3",
-                            webURL = "https://m3.material.io/",
-                            baseURL = "material.io",
-                            imgURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Material_Design_Logo.svg/512px-Google_Material_Design_Logo.svg.png",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = "Accompanist",
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Material 3",
+                                webURL = "https://m3.material.io/",
+                                baseURL = "material.io",
+                                imgURL = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Material_Design_Logo.svg/512px-Google_Material_Design_Logo.svg.png",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = "Accompanist",
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Accompanist",
-                            webURL = "https://google.github.io/accompanist/",
-                            baseURL = "github.io",
-                            imgURL = "https://google.github.io/accompanist/header.png",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = "kotlinx.serialization",
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Accompanist",
+                                webURL = "https://google.github.io/accompanist/",
+                                baseURL = "github.io",
+                                imgURL = "https://google.github.io/accompanist/header.png",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = "kotlinx.serialization",
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "kotlinx.serialization - GitHub",
-                            webURL = "https://github.com/Kotlin/kotlinx.serialization",
-                            baseURL = "github.com",
-                            imgURL = "https://avatars.githubusercontent.com/u/1446536?v=4",
-                            infoForSaving = "kotlinx.serialization on GitHub",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            shouldArrowIconBeAppear = mutableStateOf(true),
-            isIconNeeded = mutableStateOf(false)
-        ),
-        SettingsUIElement(
-            title = materialIcons.value,
-            doesDescriptionExists = true,
-            description = apacheLicense.value,
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "kotlinx.serialization - GitHub",
+                                webURL = "https://github.com/Kotlin/kotlinx.serialization",
+                                baseURL = "github.com",
+                                imgURL = "https://avatars.githubusercontent.com/u/1446536?v=4",
+                                infoForSaving = "kotlinx.serialization on GitHub",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                shouldArrowIconBeAppear = mutableStateOf(true),
+                isIconNeeded = mutableStateOf(false)
+            ),
+            SettingsUIElement(
+                title = materialIcons.value,
+                doesDescriptionExists = true,
+                description = apacheLicense.value,
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Material Icons - GitHub",
-                            webURL = "https://github.com/google/material-design-icons",
-                            baseURL = "google.com",
-                            imgURL = "",
-                            infoForSaving = "Material Icons on GitHub",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            isIconNeeded = mutableStateOf(false),
-            shouldArrowIconBeAppear = mutableStateOf(true)
-        ),
-        SettingsUIElement(
-            title = "vxTwitter",
-            doesDescriptionExists = true,
-            description = "WTFPL License",
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Material Icons - GitHub",
+                                webURL = "https://github.com/google/material-design-icons",
+                                baseURL = "google.com",
+                                imgURL = "",
+                                infoForSaving = "Material Icons on GitHub",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                isIconNeeded = mutableStateOf(false),
+                shouldArrowIconBeAppear = mutableStateOf(true)
+            ),
+            SettingsUIElement(
+                title = "vxTwitter",
+                doesDescriptionExists = true,
+                description = "WTFPL License",
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "dylanpdx/BetterTwitFix: Fix Twitter video embeds in Discord (and Telegram!)",
-                            webURL = "https://github.com/dylanpdx/BetterTwitFix",
-                            baseURL = "github.com",
-                            imgURL = "https://opengraph.githubassets.com/e14998b463f6fccffcd69d5e806a19576cff9fedc5ef525ae9aa32661c425d5c/dylanpdx/BetterTwitFix",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            isIconNeeded = mutableStateOf(false),
-            shouldArrowIconBeAppear = mutableStateOf(true)
-        ),
-        SettingsUIElement(
-            title = "Poppins",
-            doesDescriptionExists = true,
-            description = "Open Font License",
-            isSwitchNeeded = false,
-            isSwitchEnabled = mutableStateOf(false),
-            onSwitchStateChange = {
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "dylanpdx/BetterTwitFix: Fix Twitter video embeds in Discord (and Telegram!)",
+                                webURL = "https://github.com/dylanpdx/BetterTwitFix",
+                                baseURL = "github.com",
+                                imgURL = "https://opengraph.githubassets.com/e14998b463f6fccffcd69d5e806a19576cff9fedc5ef525ae9aa32661c425d5c/dylanpdx/BetterTwitFix",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                isIconNeeded = mutableStateOf(false),
+                shouldArrowIconBeAppear = mutableStateOf(true)
+            ),
+            SettingsUIElement(
+                title = "Poppins",
+                doesDescriptionExists = true,
+                description = "Open Font License",
+                isSwitchNeeded = false,
+                isSwitchEnabled = mutableStateOf(false),
+                onSwitchStateChange = {
 
-            },
-            onAcknowledgmentClick = { uriHandler, context ->
-                viewModelScope.launch {
-                    openInWeb(
-                        recentlyVisitedData = RecentlyVisited(
-                            title = "Poppins - Google Fonts",
-                            webURL = "https://fonts.google.com/specimen/Poppins",
-                            baseURL = "fonts.google.com",
-                            imgURL = "https://www.gstatic.com/images/icons/material/apps/fonts/1x/catalog/v5/opengraph_color.png",
-                            infoForSaving = "",
-                        ),
-                        uriHandler = uriHandler,
-                        context = context,
-                        forceOpenInExternalBrowser = false
-                    )
-                }
-            },
-            isIconNeeded = mutableStateOf(false),
-            shouldArrowIconBeAppear = mutableStateOf(true)
-        ),
-    )
-
+                },
+                onAcknowledgmentClick = { uriHandler, context ->
+                    viewModelScope.launch {
+                        openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = "Poppins - Google Fonts",
+                                webURL = "https://fonts.google.com/specimen/Poppins",
+                                baseURL = "fonts.google.com",
+                                imgURL = "https://www.gstatic.com/images/icons/material/apps/fonts/1x/catalog/v5/opengraph_color.png",
+                                infoForSaving = "",
+                            ),
+                            uriHandler = uriHandler,
+                            context = context,
+                            forceOpenInExternalBrowser = false
+                        )
+                    }
+                },
+                isIconNeeded = mutableStateOf(false),
+                shouldArrowIconBeAppear = mutableStateOf(true)
+            ),
+        )
+    }
 
     val privacySection: (context: Context) -> SettingsUIElement = { context ->
         SettingsUIElement(
@@ -506,9 +508,9 @@ open class SettingsScreenVM @Inject constructor(
                         SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
                     }
                 }), SettingsUIElement(
-                title = "Show associated image in link menu",
+                title = LocalizedStrings.showAssociatedImageInLinkMenu.value,
                 doesDescriptionExists = true,
-                description = "Enables the display of an associated image within the link menu",
+                description = LocalizedStrings.enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value,
                 isSwitchNeeded = true,
                 isSwitchEnabled = SettingsPreference.showAssociatedImagesInLinkMenu,
                 isIconNeeded = mutableStateOf(true),
