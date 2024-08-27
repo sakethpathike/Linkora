@@ -158,7 +158,7 @@
     <string name="permission_is_denied_desc">It seems you\'ve denied the permission, Linkora needs storage access to export links to a JSON file in your local storage.</string>
     <string name="go_to_settings">Go to Settings</string>
     <string name="retrieving_latest_information">Retrieving latest information, this may take sometime.</string>
-    <string name="new_update_is_available">Linkora just got better,\\nnew update is available.</string>
+    <string name="new_update_is_available">Linkora just got better,\n new update is available.</string>
     <string name="current_version">version you\'re using</string>
     <string name="latest_version">latest version which you should be using</string>
     <string name="release_page_on_github">release page on GitHub</string>

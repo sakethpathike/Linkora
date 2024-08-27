@@ -6,9 +6,8 @@ single link or categorizing them into folders, Linkora handles it all with unmat
 
 [<img src="https://github.com/user-attachments/assets/a50513b3-dbf8-48c1-bff8-1f4215fefbb9"
 alt="Get it on GitHub"
-height="80">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.6.0)
+height="80">](https://github.com/sakethpathike/Linkora/releases/tag/release-v0.7.0)
 
-or [click here](https://github.com/sakethpathike/Linkora/releases/download/release-v0.6.0/Linkora-v0.6.0.apk).
 
 ## Features
 
@@ -25,6 +24,10 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - Customize your home screen by adding any folders you want to the **_Shelf_**, making it easy to
   access
   the most important ones.
+- Linkora's latest update supports Hindi locally and features remote string loading, making it
+  easier to add languages without app updates. To contribute,
+  please [check this](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md)
+  guide.
 
 ## Screenshots
 
@@ -67,9 +70,9 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 ### Settings Screen
 
-|                                                Settings Screen                                                 |                                                Settings Screen                                                 |
-|:--------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|
-| ![Settings Screen in Linkora](https://github.com/user-attachments/assets/80f7a830-590f-4515-8b8e-6beb4aa84433) | ![Settings Screen in Linkora](https://github.com/user-attachments/assets/63b21509-fee7-442e-8ad1-8224ac0fc618) |
+|                                                Settings Screen                                                 |                                                Settings Screen                                                 |                                                Settings Screen                                                 |
+|:--------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|:--------------------------------------------------------------------------------------------------------------:|
+| ![Settings Screen in Linkora](https://github.com/user-attachments/assets/936da3f2-d6e9-4bbb-abe2-72485436d471) | ![Settings Screen in Linkora](https://github.com/user-attachments/assets/63b21509-fee7-442e-8ad1-8224ac0fc618) | ![Settings Screen in Linkora](https://github.com/user-attachments/assets/26f9cb08-6efd-4d14-ada0-542d976377e1) |
 
 ### Sharing from other apps
 
@@ -108,10 +111,9 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 - [x] Shelf on Home Screen
 - [ ] Save multiple links with a single click
 - [ ] UI updates
-- [ ] Translations
+- [x] Translations
 - [ ] Import links from other link management apps, including Raindrop and others
 
-**Note:** This project is in active development.
 
 ## Join Discord
 
@@ -123,8 +125,10 @@ or [click here](https://github.com/sakethpathike/Linkora/releases/download/relea
 
 Contributions are welcome! Feel free to raise issues or submit pull requests to improve Linkora.
 
-- If you're looking to contribute, you can refer to the "Upcoming Updates" section above for areas to work on or any related stuff.
+- If you're looking to contribute to code, you can refer to the "Upcoming Updates" section above for
+  areas to work on or any related stuff.
 
+##### Refer to [this guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md) for contributing to language strings.
 ## License
 
 ```

@@ -51,7 +51,7 @@ object SettingsPreference : ViewModel() {
     val lastSelectedPanelID = mutableLongStateOf(-1)
     val preferredAppLanguageName = mutableStateOf("English")
     val preferredAppLanguageCode = mutableStateOf("en")
-    val totalLocalAppStrings = mutableIntStateOf(281)
+    val totalLocalAppStrings = mutableIntStateOf(285)
     val totalRemoteStrings = mutableIntStateOf(0)
     val remoteStringsLastUpdatedOn = mutableStateOf("")
 

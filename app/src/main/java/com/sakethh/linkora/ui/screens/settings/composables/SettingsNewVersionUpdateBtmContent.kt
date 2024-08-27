@@ -119,44 +119,7 @@ fun SettingsNewVersionUpdateBtmContent(
             }
         }
         item {
-            Spacer(modifier = Modifier.height(5.dp))
-        }
-        item {
-            Button(
-                modifier = Modifier
-                    .padding(start = 20.dp, end = 20.dp)
-                    .fillMaxWidth()
-                    .pulsateEffect(),
-                onClick = {
-                    coroutineScope.launch {
-                        if (modalBtmSheetState.isVisible) {
-                            modalBtmSheetState.hide()
-                        }
-                    }.invokeOnCompletion {
-                        shouldBtmModalSheetBeVisible.value = false
-                    }
-                    SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.assets.find {
-                        it.directDownloadURL.endsWith(".apk")
-                    }?.directDownloadURL?.let { uriHandler.openUri(it) }
-                }) {
-                Text(
-                    text = download.value,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 16.sp,
-                    textAlign = TextAlign.Center, lineHeight = 18.sp,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                )
-            }
-        }
-        item {
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(20.dp)
-                    .navigationBarsPadding(),
-                thickness = 0.5.dp,
-                color = MaterialTheme.colorScheme.outline.copy(0.25f)
-            )
+            Spacer(modifier = Modifier.navigationBarsPadding())
         }
     }
 }

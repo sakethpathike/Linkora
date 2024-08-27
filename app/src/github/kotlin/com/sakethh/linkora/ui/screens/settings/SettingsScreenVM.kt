@@ -134,8 +134,8 @@ open class SettingsScreenVM @Inject constructor(
     companion object {
         val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
         val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
-        const val APP_VERSION_NAME = "v0.6.0"
-        const val APP_VERSION_CODE = 24
+        const val APP_VERSION_NAME = "v0.7.0"
+        const val APP_VERSION_CODE = 25
         private val _latestReleaseInfoFromGitHubReleases = MutableStateFlow(
             GitHubReleaseDTOItem(
                 assets = listOf(),
