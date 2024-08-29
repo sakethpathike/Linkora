@@ -86,6 +86,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -788,14 +789,26 @@ fun ParentHomeScreen(
                 }
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value,
-            onFolderCreateClick = { folderName, folderNote -> }
+            onFolderCreateClick = { folderName, folderNote ->
+                homeScreenVM.onUiEvent(
+                    SpecificCollectionsScreenUIEvent.CreateANewFolder(
+                        FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                    )
+                )
+            }
         )
 
         AddNewFolderDialogBox(
             AddNewFolderDialogBoxParam(
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear,
                 inAChildFolderScreen = false,
-                onFolderCreateClick = { folderName, folderNote -> }
+                onFolderCreateClick = { folderName, folderNote ->
+                    homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.CreateANewFolder(
+                            FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                        )
+                    )
+                }
             )
         )
 
