@@ -332,7 +332,10 @@ class LinksImpl @Inject constructor(
                     when (linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                             val linkData = LinksTable(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else linksTable!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                    "&amp;",
+                                    "&"
+                                ) else linksTable!!.title,
                                 webURL = "http" + linksTable!!.webURL.substringAfter("http")
                                     .substringBefore(" ").trim(),
                                 baseURL = linkDataExtractor.data.baseURL,
@@ -360,7 +363,10 @@ class LinksImpl @Inject constructor(
 
                         LinkType.IMP_LINK -> {
                             val importantLinkScrappedData = ImportantLinks(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else importantLink!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                    "&amp;",
+                                    "&"
+                                ) else importantLink!!.title,
                                 webURL = sanitizeLink(importantLink!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
@@ -380,7 +386,10 @@ class LinksImpl @Inject constructor(
 
                         LinkType.HISTORY_LINK -> {
                             val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else recentlyVisited!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                    "&amp;",
+                                    "&"
+                                ) else recentlyVisited!!.title,
                                 webURL = sanitizeLink(recentlyVisited!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
@@ -401,7 +410,10 @@ class LinksImpl @Inject constructor(
 
                         LinkType.ARCHIVE_LINK -> {
                             val archiveLinkScrappedData = ArchivedLinks(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title else archivedLinks!!.title,
+                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                    "&amp;",
+                                    "&"
+                                ) else archivedLinks!!.title,
                                 webURL = sanitizeLink(archivedLinks!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,

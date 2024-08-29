@@ -535,7 +535,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ),
                                                 title = it.title,
-                                                webBaseURL = it.webURL,
+                                                webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -650,7 +650,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ),
                                                 title = it.title,
-                                                webBaseURL = it.webURL,
+                                                webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -764,7 +764,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ),
                                                 title = it.title,
-                                                webBaseURL = it.webURL,
+                                                webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -879,7 +879,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ),
                                                 title = it.title,
-                                                webBaseURL = it.webURL,
+                                                webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -994,7 +994,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ),
                                                 title = it.title,
-                                                webBaseURL = it.webURL,
+                                                webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
                                                 onMoreIconCLick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
