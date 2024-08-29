@@ -13,6 +13,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.APP_VERSION_CODE
 import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
@@ -170,10 +171,10 @@ object SettingsPreference : ViewModel() {
                     ) ?: true
                 },
                 async {
-                    isAutoCheckUpdatesEnabled.value = readSettingPreferenceValue(
+                    isAutoCheckUpdatesEnabled.value = (readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
                         dataStore = context.dataStore
-                    ) ?: true
+                    ) ?: BuildConfig.FLAVOR) != "fdroid"
                 },
                 async {
                     selectedSortingType.value = readSortingPreferenceValue(
