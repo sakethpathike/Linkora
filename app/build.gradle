@@ -2,12 +2,12 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
+    //id 'com.google.gms.google-services'
+    //id 'com.google.firebase.crashlytics'
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
-    id("com.google.android.gms.oss-licenses-plugin")
+    //id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'
@@ -150,5 +150,5 @@ dependencies {
     implementation "androidx.startup:startup-runtime:1.1.1"
     implementation(platform("org.jetbrains.kotlin:kotlin-bom:1.8.22"))
 
-    implementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
+    githubImplementation("com.google.android.gms:play-services-oss-licenses:17.1.0")
 }
