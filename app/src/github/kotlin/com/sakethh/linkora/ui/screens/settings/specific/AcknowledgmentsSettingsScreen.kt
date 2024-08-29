@@ -1,3 +1,5 @@
+package com.sakethh.linkora.ui.screens.settings.specific
+
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement

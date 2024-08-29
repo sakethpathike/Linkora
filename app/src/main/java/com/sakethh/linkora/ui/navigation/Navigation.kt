@@ -1,6 +1,5 @@
 package com.sakethh.linkora.ui.navigation
 
-import AcknowledgmentsSettingsScreen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -14,6 +13,7 @@ import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
