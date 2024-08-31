@@ -2,12 +2,12 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization'
-    id 'com.google.gms.google-services'
-    id 'com.google.firebase.crashlytics'
+    //id 'com.google.gms.google-services'
+    //id 'com.google.firebase.crashlytics'
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
-    id("com.google.android.gms.oss-licenses-plugin")
+    // id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'
@@ -79,6 +79,10 @@ android {
     }
     lint {
         checkReleaseBuilds false
+    }
+    dependenciesInfo {
+        includeInApk = false
+        includeInBundle = false
     }
 }
 
