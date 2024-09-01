@@ -144,6 +144,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+                else -> {}
             }
         }
     }

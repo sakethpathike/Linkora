@@ -355,8 +355,7 @@ open class CollectionsScreenVM @Inject constructor(
             is SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink -> {
                 viewModelScope.launch {
                     if (linksRepo.doesThisExistsInImpLinks(specificCollectionsScreenUIEvent.importantLinks.webURL)) {
-                        linksRepo.deleteALinkFromImpLinksBasedOnURL(specificCollectionsScreenUIEvent.importantLinks.webURL)
-                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.removedLinkFromImportantLinksSuccessfully.value))
+                        pushAUIEvent(CommonUiEvent.ShowDeleteDialogBox)
                     } else {
                         linksRepo.addANewLinkToImpLinks(
                             specificCollectionsScreenUIEvent.importantLinks,
@@ -368,6 +367,13 @@ open class CollectionsScreenVM @Inject constructor(
                             autoDetectTitle = false
                         )
                     }
+                }
+            }
+
+            is SpecificCollectionsScreenUIEvent.DeleteAnExistingLinkFromImportantLinks -> {
+                viewModelScope.launch {
+                    linksRepo.deleteALinkFromImpLinksBasedOnURL(specificCollectionsScreenUIEvent.webUrl)
+                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.removedLinkFromImportantLinksSuccessfully.value))
                 }
             }
         }

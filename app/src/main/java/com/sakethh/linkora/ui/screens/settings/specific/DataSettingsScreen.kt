@@ -60,6 +60,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+                else -> {}
             }
         }
     }

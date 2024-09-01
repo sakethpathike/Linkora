@@ -103,12 +103,17 @@ import kotlinx.coroutines.launch
 fun SpecificCollectionScreen(navController: NavController) {
     val specificCollectionsScreenVM: SpecificCollectionsScreenVM = hiltViewModel()
     val context = LocalContext.current
+    val shouldDeleteDialogBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
     LaunchedEffect(key1 = Unit) {
         specificCollectionsScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
+                CommonUiEvent.ShowDeleteDialogBox -> shouldDeleteDialogBeVisible.value = true
             }
         }
     }
@@ -137,9 +142,6 @@ fun SpecificCollectionScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val shouldRenameDialogBeVisible = rememberSaveable {
-        mutableStateOf(false)
-    }
-    val shouldDeleteDialogBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
     val shouldSortingBottomSheetAppear = rememberSaveable {
@@ -1231,19 +1233,27 @@ fun SpecificCollectionScreen(navController: NavController) {
                             )
                         )
                     } else {
-                        specificCollectionsScreenVM.onDeleteClick(
-                            folderID = CollectionsScreenVM.selectedFolderData.value.id,
-                            context = context,
-                            onTaskCompleted = {
-                                specificCollectionsScreenVM.changeRetrievedData(
-                                    folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
-                                    sortingPreferences = SortingPreferences.valueOf(
-                                        SettingsPreference.selectedSortingType.value
-                                    )
+                        if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.IMPORTANT_LINKS_SCREEN) {
+                            specificCollectionsScreenVM.onUiEvent(
+                                SpecificCollectionsScreenUIEvent.DeleteAnExistingLinkFromImportantLinks(
+                                    selectedWebURL.value
                                 )
-                            },
-                            linkID = CollectionsScreenVM.selectedFolderData.value.id
-                        )
+                            )
+                        } else {
+                            specificCollectionsScreenVM.onDeleteClick(
+                                folderID = CollectionsScreenVM.selectedFolderData.value.id,
+                                context = context,
+                                onTaskCompleted = {
+                                    specificCollectionsScreenVM.changeRetrievedData(
+                                        folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
+                                        sortingPreferences = SortingPreferences.valueOf(
+                                            SettingsPreference.selectedSortingType.value
+                                        )
+                                    )
+                                },
+                                linkID = CollectionsScreenVM.selectedFolderData.value.id
+                            )
+                        }
                     }
                 },
                 deleteDialogBoxType = if (areElementsSelectable.value) DataDialogBoxType.SELECTED_DATA else if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,

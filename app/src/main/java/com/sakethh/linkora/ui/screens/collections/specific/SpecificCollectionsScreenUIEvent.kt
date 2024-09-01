@@ -58,4 +58,7 @@ sealed class SpecificCollectionsScreenUIEvent {
 
     data class AddExistingLinkToImportantLink(val importantLinks: ImportantLinks) :
         SpecificCollectionsScreenUIEvent()
+
+    data class DeleteAnExistingLinkFromImportantLinks(val webUrl: String) :
+        SpecificCollectionsScreenUIEvent()
 }
