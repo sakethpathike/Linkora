@@ -176,17 +176,15 @@ class LinksImpl @Inject constructor(
                     is RequestResult.Success -> {
                         when (linkType) {
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
+                                linkoraLog(tweetMetaData.data.toString())
                                 val linkTableData = LinksTable(
-                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
-                                            "https://t.co/"
-                                        )
-                                    ) tweetMetaData.data.text else linksTable!!.title,
+                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) tweetMetaData.data.text else linksTable!!.title,
                                     webURL = tweetMetaData.data.tweetURL,
                                     baseURL = "twitter.com",
                                     imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.contains(
-                                            "jpg"
-                                        )
+                                        it.endsWith(
+                                            ".jpg"
+                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
                                     }
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = linksTable!!.infoForSaving,
@@ -211,17 +209,16 @@ class LinksImpl @Inject constructor(
                             }
 
                             LinkType.IMP_LINK -> {
+                                linkoraLog(tweetMetaData.data.toString())
                                 val importantLinkScrappedData = ImportantLinks(
-                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
-                                            "https://t.co/"
-                                        )
-                                    ) tweetMetaData.data.text else importantLink!!.title,
+                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle)
+                                        tweetMetaData.data.text else importantLink!!.title,
                                     webURL = sanitizeLink(importantLink!!.webURL),
                                     baseURL = "twitter.com",
                                     imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.contains(
-                                            "jpg"
-                                        )
+                                        it.endsWith(
+                                            ".jpg"
+                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
                                     }
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = importantLink.infoForSaving
@@ -239,20 +236,19 @@ class LinksImpl @Inject constructor(
                             }
 
                             LinkType.HISTORY_LINK -> {
+                                linkoraLog(tweetMetaData.data.toString())
                                 val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
-                                            "https://t.co/"
-                                        )
-                                    ) tweetMetaData.data.text else importantLink!!.title,
-                                    webURL = sanitizeLink(importantLink!!.webURL),
+                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
+                                    ) tweetMetaData.data.text else recentlyVisited!!.title,
+                                    webURL = sanitizeLink(recentlyVisited!!.webURL),
                                     baseURL = "twitter.com",
                                     imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.contains(
-                                            "jpg"
-                                        )
+                                        it.endsWith(
+                                            ".jpg"
+                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
                                     }
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
-                                    infoForSaving = importantLink.infoForSaving
+                                    infoForSaving = recentlyVisited.infoForSaving
                                 )
                                 if (updateExistingLink) {
                                     linkoraLog("Update ${linkType.name}")
@@ -271,19 +267,17 @@ class LinksImpl @Inject constructor(
 
                             LinkType.ARCHIVE_LINK -> {
                                 val archiveLinkScrappedData = ArchivedLinks(
-                                    title = if ((SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) && !tweetMetaData.data.text.contains(
-                                            "https://t.co/"
-                                        )
-                                    ) tweetMetaData.data.text else importantLink!!.title,
-                                    webURL = sanitizeLink(importantLink!!.webURL),
+                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
+                                    ) tweetMetaData.data.text else archivedLinks!!.title,
+                                    webURL = sanitizeLink(archivedLinks!!.webURL),
                                     baseURL = "twitter.com",
                                     imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.contains(
-                                            "jpg"
-                                        )
+                                        it.endsWith(
+                                            ".jpg"
+                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
                                     }
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
-                                    infoForSaving = importantLink.infoForSaving
+                                    infoForSaving = archivedLinks.infoForSaving
                                 )
                                 if (updateExistingLink) {
                                     linkoraLog("Update ${linkType.name}")
