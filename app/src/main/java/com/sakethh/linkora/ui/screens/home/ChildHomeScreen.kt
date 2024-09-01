@@ -96,13 +96,18 @@ fun ChildHomeScreen(
         })
     }
     val context = LocalContext.current
+    val shouldDeleteDialogBoxAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
     LaunchedEffect(key1 = Unit) {
-        specificCollectionsScreenVM.eventChannel.collectLatest {
+        homeScreenVM.eventChannel.collectLatest {
             when (it) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
-                else -> {}
+                is CommonUiEvent.ShowDeleteDialogBox -> {
+                    shouldDeleteDialogBoxAppear.value = true
+                }
             }
         }
     }
@@ -113,9 +118,6 @@ fun ChildHomeScreen(
     val coroutineScope = rememberCoroutineScope()
     val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
-        mutableStateOf(false)
-    }
-    val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
     }
     val shouldRenameDialogBoxAppear = rememberSaveable {
