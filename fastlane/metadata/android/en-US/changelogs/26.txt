@@ -1,0 +1,3 @@
+## Fixes
+
+- When saving a link from Twitter, the tweet text and one attached image now load as expected. If no image is attached, the profile picture loads as usual.
