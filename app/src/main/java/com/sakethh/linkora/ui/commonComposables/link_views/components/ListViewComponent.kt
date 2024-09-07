@@ -53,7 +53,8 @@ import com.sakethh.linkora.ui.screens.CoilImage
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ListViewComponent(
-    linkUIComponentParam: LinkUIComponentParam
+    linkUIComponentParam: LinkUIComponentParam,
+    forTitleOnlyView: Boolean = false
 ) {
     val context = LocalContext.current
     val localClipBoardManager = LocalClipboardManager.current
@@ -91,14 +92,14 @@ fun ListViewComponent(
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 16.sp,
                 modifier = Modifier
-                    .fillMaxWidth(0.65f)
+                    .fillMaxWidth(if (!linkUIComponentParam.isSelectionModeEnabled.value && forTitleOnlyView) 1f else 0.65f)
                     .padding(end = 15.dp),
                 maxLines = 4,
                 lineHeight = 20.sp,
                 textAlign = TextAlign.Start,
                 overflow = TextOverflow.Ellipsis
             )
-            if (!linkUIComponentParam.isItemSelected.value) {
+            if (!linkUIComponentParam.isItemSelected.value && !forTitleOnlyView) {
                 if (linkUIComponentParam.imgURL.isNotEmpty()) {
                     CoilImage(
                         modifier = Modifier
@@ -124,7 +125,7 @@ fun ListViewComponent(
                         )
                     }
                 }
-            } else {
+            } else if (linkUIComponentParam.isItemSelected.value) {
                 Box(
                     modifier = Modifier
                         .width(95.dp)
