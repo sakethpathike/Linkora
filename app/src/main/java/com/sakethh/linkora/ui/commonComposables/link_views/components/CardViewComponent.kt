@@ -35,15 +35,17 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CoilImage
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.fadedEdges
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun StaggeredViewComponent(linkUIComponentParam: LinkUIComponentParam) {
+fun CardViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredView: Boolean) {
     val colorScheme = MaterialTheme.colorScheme
         Column(
             Modifier
                 .fillMaxWidth()
+                .then(if (!forStaggeredView) Modifier.height(250.dp) else Modifier)
                 .combinedClickable(onClick = {
                     linkUIComponentParam.onLinkClick()
                 }, interactionSource = remember {
@@ -77,13 +79,13 @@ fun StaggeredViewComponent(linkUIComponentParam: LinkUIComponentParam) {
                     Icon(Icons.Default.CheckCircle, null, tint = colorScheme.onPrimary)
                 }
             } else if (linkUIComponentParam.imgURL.trim().isNotBlank()) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                Box(modifier = if (forStaggeredView) Modifier.fillMaxSize() else Modifier.height(150.dp)) {
                     CoilImage(
                         modifier = Modifier
                             .fillMaxSize()
                             .fadedEdges(colorScheme),
                         imgURL = linkUIComponentParam.imgURL,
-                        contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/")) ContentScale.Crop else ContentScale.Fit
+                        contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
                     )
                     Text(
                         text = linkUIComponentParam.webBaseURL,
@@ -104,22 +106,28 @@ fun StaggeredViewComponent(linkUIComponentParam: LinkUIComponentParam) {
                     )
                 }
             } else {
-                Text(
-                    text = linkUIComponentParam.webBaseURL,
-                    modifier = Modifier
-                        .padding(
-                            top = 10.dp, start = 9.dp, end = 9.dp
-                        )
-                        .background(
-                            color = MaterialTheme.colorScheme.primary.copy(0.15f),
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                        .padding(5.dp),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontSize = 10.sp,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+                Box(
+                    modifier = if (!forStaggeredView) Modifier
+                        .height(150.dp)
+                        .fillMaxWidth() else Modifier, contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = linkUIComponentParam.webBaseURL,
+                        modifier = Modifier
+                            .padding(
+                                top = 10.dp, start = 9.dp, end = 9.dp
+                            )
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(0.15f),
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .padding(5.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 10.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -135,7 +143,8 @@ fun StaggeredViewComponent(linkUIComponentParam: LinkUIComponentParam) {
                             .padding(10.dp),
                         style = MaterialTheme.typography.titleSmall,
                         overflow = TextOverflow.Ellipsis,
-                        fontSize = 12.sp
+                        fontSize = 12.sp,
+                        maxLines = if (forStaggeredView) Int.MAX_VALUE else 4
                     )
                 }
                 if (!linkUIComponentParam.isSelectionModeEnabled.value) {
