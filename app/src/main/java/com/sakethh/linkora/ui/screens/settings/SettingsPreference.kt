@@ -60,6 +60,7 @@ object SettingsPreference : ViewModel() {
     val enableBorderForNonListViews = mutableStateOf(true)
     val enableTitleForNonListViews = mutableStateOf(true)
     val enableBaseURLForNonListViews = mutableStateOf(true)
+    val enableFadedEdgeForNonListViews = mutableStateOf(true)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -250,6 +251,13 @@ object SettingsPreference : ViewModel() {
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
                         ) ?: enableBaseURLForNonListViews.value
+                },
+                async {
+                    enableFadedEdgeForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableFadedEdgeForNonListViews.value
                 },
                 async {
                     localizationServerURL.value =

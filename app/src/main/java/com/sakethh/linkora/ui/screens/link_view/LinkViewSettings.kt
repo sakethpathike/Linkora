@@ -139,6 +139,19 @@ fun LinkViewSettings(navController: NavController) {
                 title = "Show Base URL",
                 isSwitchChecked = SettingsPreference.enableBaseURLForNonListViews
             ),
+            LinkPref(
+                onClick = {
+                    SettingsPreference.enableFadedEdgeForNonListViews.value =
+                        !SettingsPreference.enableFadedEdgeForNonListViews.value
+                    SettingsPreference.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                        dataStore = navController.context.dataStore,
+                        newValue = SettingsPreference.enableFadedEdgeForNonListViews.value
+                    )
+                },
+                title = "Show Bottom Faded Edge",
+                isSwitchChecked = SettingsPreference.enableFadedEdgeForNonListViews
+            ),
         )
     }
 

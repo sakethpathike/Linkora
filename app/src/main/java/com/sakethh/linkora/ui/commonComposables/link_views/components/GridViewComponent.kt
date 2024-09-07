@@ -88,7 +88,7 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                         modifier = Modifier
                             .fillMaxSize()
                             .then(
-                                if (SettingsPreference.enableBaseURLForNonListViews.value || SettingsPreference.enableTitleForNonListViews.value) Modifier.fadedEdges(
+                                if (SettingsPreference.enableFadedEdgeForNonListViews.value) Modifier.fadedEdges(
                                     colorScheme
                                 ) else Modifier
                             ),
