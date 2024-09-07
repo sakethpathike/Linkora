@@ -156,7 +156,8 @@ fun ListViewComponent(
                     shape = RoundedCornerShape(5.dp)
                 )
                 .padding(5.dp),
-            text = linkUIComponentParam.webBaseURL,
+            text = linkUIComponentParam.webBaseURL.replace("www.", "").replace("http://", "")
+                .replace("https://", ""),
             style = MaterialTheme.typography.titleLarge,
             maxLines = 1,
             textAlign = TextAlign.Start,

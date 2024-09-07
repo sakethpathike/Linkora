@@ -18,7 +18,9 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,35 +42,35 @@ import com.sakethh.linkora.utils.fadedEdges
 @Composable
 fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredView: Boolean) {
     val colorScheme = MaterialTheme.colorScheme
-        Column(
-            Modifier
-                .fillMaxWidth()
-                .then(if (!forStaggeredView) Modifier.height(250.dp) else Modifier)
-                .combinedClickable(onClick = {
-                    linkUIComponentParam.onLinkClick()
-                }, interactionSource = remember {
-                    MutableInteractionSource()
-                }, indication = null, onLongClick = {
-                    linkUIComponentParam.onLongClick()
-                })
-                .pulsateEffect()
-                .padding(4.dp)
-                .clip(RoundedCornerShape(5.dp))
-                .then(
-                    if (SettingsPreference.enableBordersForNonListViews.value)
-                        Modifier.border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.secondary.copy(0.5f),
-                            shape = RoundedCornerShape(5.dp)
-                        )
-                    else Modifier
+
+    Column(
+        Modifier
+            .fillMaxWidth()
+            .then(if (!forStaggeredView) Modifier.wrapContentHeight() else Modifier)
+            .combinedClickable(onClick = {
+                linkUIComponentParam.onLinkClick()
+            }, interactionSource = remember {
+                MutableInteractionSource()
+            }, indication = null, onLongClick = {
+                linkUIComponentParam.onLongClick()
+            })
+            .pulsateEffect()
+            .padding(4.dp)
+            .clip(RoundedCornerShape(5.dp))
+            .then(
+                if (SettingsPreference.enableBordersForNonListViews.value) Modifier.border(
+                    width = 1.dp,
+                    color = MaterialTheme.colorScheme.secondary.copy(0.5f),
+                    shape = RoundedCornerShape(5.dp)
                 )
-                .then(
-                    if (linkUIComponentParam.isSelectionModeEnabled.value) Modifier.background(
-                        colorScheme.primaryContainer
-                    ) else Modifier
-                )
-                .animateContentSize()
+                else Modifier
+            )
+            .then(
+                if (linkUIComponentParam.isSelectionModeEnabled.value) Modifier.background(
+                    colorScheme.primaryContainer
+                ) else Modifier
+            )
+            .animateContentSize()
         ) {
             if (linkUIComponentParam.isItemSelected.value) {
                 Box(
@@ -101,31 +103,50 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                 Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = linkUIComponentParam.title,
-                        modifier = Modifier
-                            .padding(10.dp),
+                        modifier = Modifier.padding(
+                            start = 10.dp,
+                            top = 10.dp,
+                            end = 10.dp,
+                            bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 10.dp else 0.dp
+                        ),
                         style = MaterialTheme.typography.titleSmall,
-                        overflow = TextOverflow.Ellipsis,
-                        fontSize = 12.sp,
-                        maxLines = if (forStaggeredView) Int.MAX_VALUE else 4
+                        overflow = TextOverflow.Ellipsis, fontSize = 12.sp
                     )
                 }
             }
-            Text(
-                text = linkUIComponentParam.webBaseURL,
+        if (!linkUIComponentParam.isSelectionModeEnabled.value) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
-                    .padding(
-                        start = 10.dp, end = 10.dp,
-                        bottom = 10.dp
+                    .fillMaxWidth()
+                    .padding(end = 5.dp)
+            ) {
+                Box(Modifier.fillMaxWidth(0.75f)) {
+                    Text(
+                        text = linkUIComponentParam.webBaseURL.replace("www.", "")
+                            .replace("http://", "").replace("https://", ""),
+                        modifier = Modifier
+                            .padding(
+                                start = 10.dp
+                            )
+                            .background(
+                                color = MaterialTheme.colorScheme.primary.copy(0.25f),
+                                shape = RoundedCornerShape(5.dp)
+                            )
+                            .padding(5.dp),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 10.sp,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
-                    .background(
-                        color = MaterialTheme.colorScheme.primary.copy(0.25f),
-                        shape = RoundedCornerShape(5.dp)
-                    )
-                    .padding(5.dp),
-                style = MaterialTheme.typography.titleLarge,
-                fontSize = 10.sp,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+                }
+                IconButton(onClick = {
+                    linkUIComponentParam.onMoreIconClick()
+                }) {
+                    Icon(Icons.Default.MoreVert, null)
+                }
+            }
+        }
         }
 }
