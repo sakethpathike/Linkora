@@ -5,7 +5,7 @@
 
 [<img src="https://github.com/user-attachments/assets/a50513b3-dbf8-48c1-bff8-1f4215fefbb9"
 alt="Get it on GitHub"
-height="80">](https://github.com/sakethpathike/Linkora/releases/tag/v0.7.0)
+height="80">](https://github.com/sakethpathike/Linkora/releases/tag/v0.7.1)
 
 
 ## Features
