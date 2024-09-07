@@ -4,6 +4,7 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -20,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -58,7 +58,7 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
             .padding(4.dp)
             .clip(RoundedCornerShape(5.dp))
             .then(
-                if (SettingsPreference.enableBordersForNonListViews.value) Modifier.border(
+                if (SettingsPreference.enableBorderForNonListViews.value) Modifier.border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.secondary.copy(0.5f),
                     shape = RoundedCornerShape(5.dp)
@@ -87,40 +87,53 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                     CoilImage(
                         modifier = Modifier
                             .fillMaxSize()
-                            .fadedEdges(colorScheme),
+                            .then(
+                                if (SettingsPreference.enableBaseURLForNonListViews.value || SettingsPreference.enableTitleForNonListViews.value) Modifier.fadedEdges(
+                                    colorScheme
+                                ) else Modifier
+                            ),
                         imgURL = linkUIComponentParam.imgURL,
                         contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
                     )
+                    if (!SettingsPreference.enableBaseURLForNonListViews.value && !SettingsPreference.enableTitleForNonListViews.value) {
+                        Icon(
+                            Icons.Default.MoreVert,
+                            null,
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .clip(RoundedCornerShape(topStart = 10.dp))
+                                .clickable {
+                                    linkUIComponentParam.onMoreIconClick()
+                                }
+                                .padding(10.dp)
+                        )
+                    }
                 }
             }
+        if (SettingsPreference.enableTitleForNonListViews.value) {
+            Text(
+                text = linkUIComponentParam.title,
+                modifier = Modifier.padding(
+                    start = if (SettingsPreference.enableBorderForNonListViews.value) 10.dp else 0.dp,
+                    top = 10.dp,
+                    end = 10.dp,
+                    bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 10.dp else 0.dp
+                ),
+                style = MaterialTheme.typography.titleSmall,
+                overflow = TextOverflow.Ellipsis, fontSize = 12.sp
+            )
+        }
+        if (!linkUIComponentParam.isSelectionModeEnabled.value && SettingsPreference.enableBaseURLForNonListViews.value) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .wrapContentHeight()
-            ) {
-                Column(modifier = Modifier.fillMaxWidth()) {
-                    Text(
-                        text = linkUIComponentParam.title,
-                        modifier = Modifier.padding(
-                            start = 10.dp,
-                            top = 10.dp,
-                            end = 10.dp,
-                            bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 10.dp else 0.dp
-                        ),
-                        style = MaterialTheme.typography.titleSmall,
-                        overflow = TextOverflow.Ellipsis, fontSize = 12.sp
+                    .padding(
+                        top = 10.dp,
+                        bottom = 10.dp,
+                        end = if (SettingsPreference.enableBorderForNonListViews.value) 5.dp else 0.dp
                     )
-                }
-            }
-        if (!linkUIComponentParam.isSelectionModeEnabled.value) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 5.dp)
             ) {
                 Box(Modifier.fillMaxWidth(0.75f)) {
                     Text(
@@ -128,7 +141,7 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                             .replace("http://", "").replace("https://", ""),
                         modifier = Modifier
                             .padding(
-                                start = 10.dp
+                                start = if (SettingsPreference.enableBorderForNonListViews.value) 10.dp else 0.dp,
                             )
                             .background(
                                 color = MaterialTheme.colorScheme.primary.copy(0.25f),
@@ -141,11 +154,23 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                         overflow = TextOverflow.Ellipsis
                     )
                 }
-                IconButton(onClick = {
+                Icon(Icons.Default.MoreVert, null, modifier = Modifier
+                    .clickable {
                     linkUIComponentParam.onMoreIconClick()
-                }) {
-                    Icon(Icons.Default.MoreVert, null)
-                }
+                    })
+            }
+        } else if (!SettingsPreference.enableBaseURLForNonListViews.value && SettingsPreference.enableTitleForNonListViews.value) {
+            Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
+                Icon(
+                    Icons.Default.MoreVert,
+                    null,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(topStart = 10.dp))
+                        .clickable {
+                            linkUIComponentParam.onMoreIconClick()
+                        }
+                        .padding(10.dp)
+                )
             }
         }
         }

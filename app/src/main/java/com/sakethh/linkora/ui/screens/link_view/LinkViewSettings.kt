@@ -40,6 +40,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
+import com.sakethh.linkora.ui.screens.link_view.model.LinkPref
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
@@ -96,6 +97,51 @@ fun LinkViewSettings(navController: NavController) {
                 onLongClick = { -> }),
         )
     }
+
+    val nonListViewPref = remember {
+        listOf(
+            LinkPref(
+                onClick = {
+                    SettingsPreference.enableBorderForNonListViews.value =
+                        !SettingsPreference.enableBorderForNonListViews.value
+                    SettingsPreference.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                        dataStore = navController.context.dataStore,
+                        newValue = SettingsPreference.enableBorderForNonListViews.value
+                    )
+                },
+                title = "Show Border Around Links",
+                isSwitchChecked = SettingsPreference.enableBorderForNonListViews
+            ),
+            LinkPref(
+                onClick = {
+                    SettingsPreference.enableTitleForNonListViews.value =
+                        !SettingsPreference.enableTitleForNonListViews.value
+                    SettingsPreference.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                        dataStore = navController.context.dataStore,
+                        newValue = SettingsPreference.enableTitleForNonListViews.value
+                    )
+                },
+                title = "Show Title",
+                isSwitchChecked = SettingsPreference.enableTitleForNonListViews
+            ),
+            LinkPref(
+                onClick = {
+                    SettingsPreference.enableBaseURLForNonListViews.value =
+                        !SettingsPreference.enableBaseURLForNonListViews.value
+                    SettingsPreference.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                        dataStore = navController.context.dataStore,
+                        newValue = SettingsPreference.enableBaseURLForNonListViews.value
+                    )
+                },
+                title = "Show Base URL",
+                isSwitchChecked = SettingsPreference.enableBaseURLForNonListViews
+            ),
+        )
+    }
+
     SpecificSettingsScreenScaffold(
         topAppBarText = "Link View Settings",
         navController = navController
@@ -174,10 +220,14 @@ fun LinkViewSettings(navController: NavController) {
                     LinkViewRadioButtonComponent(it, navController)
                 }
 
-                item(span = {
+                items(nonListViewPref, span = {
                     GridItemSpan(maxLineSpan)
                 }) {
-                    LinkUIBorderSwitch(navController)
+                    LinkViewPreferenceSwitch(
+                        onClick = it.onClick,
+                        title = it.title,
+                        isSwitchChecked = it.isSwitchChecked.value
+                    )
                 }
 
                 item(span = {
@@ -239,8 +289,12 @@ fun LinkViewSettings(navController: NavController) {
                     LinkViewRadioButtonComponent(it, navController)
                 }
 
-                item(span = StaggeredGridItemSpan.FullLine) {
-                    LinkUIBorderSwitch(navController)
+                items(items = nonListViewPref, span = { StaggeredGridItemSpan.FullLine }) {
+                    LinkViewPreferenceSwitch(
+                        onClick = it.onClick,
+                        title = it.title,
+                        isSwitchChecked = it.isSwitchChecked.value
+                    )
                 }
 
                 item(span = StaggeredGridItemSpan.FullLine) {
@@ -273,20 +327,17 @@ fun LinkViewSettings(navController: NavController) {
     }
 }
 
-
 @Composable
-private fun LinkUIBorderSwitch(navController: NavController) {
+private fun LinkViewPreferenceSwitch(
+    onClick: () -> Unit,
+    title: String,
+    isSwitchChecked: Boolean
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = {
-                SettingsPreference.enableBordersForNonListViews.value =
-                    !SettingsPreference.enableBordersForNonListViews.value
-                SettingsPreference.changeSettingPreferenceValue(
-                    preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
-                    dataStore = navController.context.dataStore,
-                    newValue = SettingsPreference.enableBordersForNonListViews.value
-                )
+                onClick()
             }, interactionSource = remember {
                 MutableInteractionSource()
             }, indication = null)
@@ -295,20 +346,14 @@ private fun LinkUIBorderSwitch(navController: NavController) {
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(
-            "Show Border Around Links",
+            title,
             style = MaterialTheme.typography.titleSmall,
             modifier = Modifier.fillMaxWidth(0.75f)
         )
         Switch(
-            checked = SettingsPreference.enableBordersForNonListViews.value,
+            checked = isSwitchChecked,
             onCheckedChange = {
-                SettingsPreference.enableBordersForNonListViews.value =
-                    !SettingsPreference.enableBordersForNonListViews.value
-                SettingsPreference.changeSettingPreferenceValue(
-                    preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
-                    dataStore = navController.context.dataStore,
-                    newValue = it
-                )
+                onClick()
             })
     }
 }

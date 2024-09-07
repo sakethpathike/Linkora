@@ -57,7 +57,9 @@ object SettingsPreference : ViewModel() {
     val totalRemoteStrings = mutableIntStateOf(0)
     val remoteStringsLastUpdatedOn = mutableStateOf("")
     val currentlySelectedLinkView = mutableStateOf(LinkView.REGULAR_LIST_VIEW.name)
-    val enableBordersForNonListViews = mutableStateOf(true)
+    val enableBorderForNonListViews = mutableStateOf(true)
+    val enableTitleForNonListViews = mutableStateOf(true)
+    val enableBaseURLForNonListViews = mutableStateOf(true)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -229,11 +231,25 @@ object SettingsPreference : ViewModel() {
                         ) ?: false
                 },
                 async {
-                    enableBordersForNonListViews.value =
+                    enableBorderForNonListViews.value =
                         readSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
-                        ) ?: enableBordersForNonListViews.value
+                        ) ?: enableBorderForNonListViews.value
+                },
+                async {
+                    enableTitleForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableTitleForNonListViews.value
+                },
+                async {
+                    enableBaseURLForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableBaseURLForNonListViews.value
                 },
                 async {
                     localizationServerURL.value =
