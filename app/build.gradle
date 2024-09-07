@@ -57,6 +57,13 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
         }
+        devRelease {
+            applicationIdSuffix = ".dev"
+            versionNameSuffix = "-dev"
+            shrinkResources true
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
