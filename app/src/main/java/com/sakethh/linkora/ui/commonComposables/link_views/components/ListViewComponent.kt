@@ -40,7 +40,6 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -145,19 +144,22 @@ fun ListViewComponent(
             }
         }
         Text(
-            text = linkUIComponentParam.webBaseURL,
-            style = MaterialTheme.typography.titleSmall,
-            fontWeight = FontWeight.SemiBold,
-            maxLines = 1,
-            textAlign = TextAlign.Start,
-            overflow = TextOverflow.Ellipsis,
             modifier = Modifier
-                .fillMaxWidth()
                 .padding(
                     top = 15.dp,
                     end = 15.dp,
                     bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 15.dp else 0.dp
                 )
+                .background(
+                    color = MaterialTheme.colorScheme.primary.copy(0.15f),
+                    shape = RoundedCornerShape(5.dp)
+                )
+                .padding(5.dp),
+            text = linkUIComponentParam.webBaseURL,
+            style = MaterialTheme.typography.titleLarge,
+            maxLines = 1,
+            textAlign = TextAlign.Start,
+            overflow = TextOverflow.Ellipsis,
         )
         Row(
             modifier = Modifier
