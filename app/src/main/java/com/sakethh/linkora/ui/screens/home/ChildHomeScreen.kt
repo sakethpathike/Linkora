@@ -36,10 +36,10 @@ import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -147,8 +147,9 @@ fun ChildHomeScreen(
                     items(items = savedLinksData, key = { linksTable ->
                         linksTable.id.toString() + linksTable.webURL
                     }) {
-                        LinkUIComponent(
-                            LinkUIComponentParam(
+                        ListViewComponent(
+                            forTitleOnlyView = false,
+                           linkUIComponentParam =  LinkUIComponentParam(
                                 onLongClick = {
                                     if (!homeScreenVM.isSelectionModeEnabled.value) {
                                         homeScreenVM.isSelectionModeEnabled.value =
@@ -165,7 +166,7 @@ fun ChildHomeScreen(
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = {
+                                onMoreIconClick = {
                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                         OptionsBtmSheetType.LINK
                                     selectedElementID.longValue = it.id
@@ -244,8 +245,9 @@ fun ChildHomeScreen(
                     items(items = impLinksData, key = { importantLinks ->
                         importantLinks.webURL + importantLinks.id.toString()
                     }) {
-                        LinkUIComponent(
-                            LinkUIComponentParam(
+                        ListViewComponent(
+                            forTitleOnlyView = false,
+                            linkUIComponentParam = LinkUIComponentParam(
                                 onLongClick = {
                                     if (!homeScreenVM.isSelectionModeEnabled.value) {
                                         homeScreenVM.isSelectionModeEnabled.value =
@@ -262,7 +264,7 @@ fun ChildHomeScreen(
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = {
+                                onMoreIconClick = {
                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                         OptionsBtmSheetType.LINK
                                     selectedElementID.longValue = it.id
@@ -400,7 +402,8 @@ fun ChildHomeScreen(
                 }
                 if (folderLinksData.isNotEmpty()) {
                     itemsIndexed(items = folderLinksData) { index, it ->
-                        LinkUIComponent(
+                        ListViewComponent(
+                            forTitleOnlyView = false,
                             linkUIComponentParam = LinkUIComponentParam(
                                 onLongClick = {
                                     if (!homeScreenVM.isSelectionModeEnabled.value) {
@@ -418,7 +421,7 @@ fun ChildHomeScreen(
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = {
+                                onMoreIconClick = {
                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                         OptionsBtmSheetType.LINK
                                     selectedElementID.longValue = it.id

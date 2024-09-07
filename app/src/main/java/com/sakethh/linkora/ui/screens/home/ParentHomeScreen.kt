@@ -34,6 +34,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ViewQuilt
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Layers
@@ -294,6 +295,11 @@ fun ParentHomeScreen(
                                 contentDescription = null
                             )
                         }
+                    }
+                    IconButton(onClick = {
+                        navController.navigate(NavigationRoutes.LINK_VIEW_SETTINGS.name)
+                    }) {
+                        Icon(Icons.AutoMirrored.Filled.ViewQuilt, null)
                     }
                 })
             }) {

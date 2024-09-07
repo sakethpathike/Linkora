@@ -40,7 +40,7 @@ import com.sakethh.linkora.utils.fadedEdges
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun CardViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredView: Boolean) {
+fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredView: Boolean) {
     val colorScheme = MaterialTheme.colorScheme
         Column(
             Modifier
@@ -56,10 +56,14 @@ fun CardViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                 .pulsateEffect()
                 .padding(4.dp)
                 .clip(RoundedCornerShape(5.dp))
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.secondary.copy(0.5f),
-                    shape = RoundedCornerShape(5.dp)
+                .then(
+                    if (SettingsPreference.enableBordersForNonListViews.value)
+                        Modifier.border(
+                            width = 1.dp,
+                            color = MaterialTheme.colorScheme.secondary.copy(0.5f),
+                            shape = RoundedCornerShape(5.dp)
+                        )
+                    else Modifier
                 )
                 .then(
                     if (linkUIComponentParam.isSelectionModeEnabled.value) Modifier.background(

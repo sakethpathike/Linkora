@@ -9,7 +9,9 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
+import com.sakethh.linkora.ui.screens.link_view.LinkViewSettings
 import com.sakethh.linkora.ui.screens.search.SearchScreen
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
@@ -31,7 +33,7 @@ fun MainNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = NavigationVM.startDestination.value
+        startDestination = NavigationRoutes.LINK_VIEW_SETTINGS.name
     ) {
         composable(route = NavigationRoutes.HOME_SCREEN.name) {
             ParentHomeScreen(navController = navController, customWebTab)
@@ -99,6 +101,9 @@ fun MainNavigation(
         }
         composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
             SpecificPanelScreen(navController)
+        }
+        composable(route = NavigationRoutes.LINK_VIEW_SETTINGS.name) {
+            LinkViewSettings(navController)
         }
     }
 
