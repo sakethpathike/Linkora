@@ -180,12 +180,8 @@ open class HomeScreenVM @Inject constructor(
                         currentPhaseOfTheDay.value = LocalizedStrings.goodAfternoon.value
                     }
 
-                    in 16..22 -> {
+                    in 16..23 -> {
                         currentPhaseOfTheDay.value = LocalizedStrings.goodEvening.value
-                    }
-
-                    in 23 downTo 0 -> {
-                        currentPhaseOfTheDay.value = LocalizedStrings.goodNight.value
                     }
 
                     else -> {

@@ -18,9 +18,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -91,46 +89,6 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                         imgURL = linkUIComponentParam.imgURL,
                         contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
                     )
-                    Text(
-                        text = linkUIComponentParam.webBaseURL,
-                        modifier = Modifier
-                            .align(Alignment.BottomStart)
-                            .padding(
-                                start = 9.dp, top = 10.dp, end = 9.dp
-                            )
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(0.15f),
-                                shape = RoundedCornerShape(5.dp)
-                            )
-                            .padding(5.dp),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            } else {
-                Box(
-                    modifier = if (!forStaggeredView) Modifier
-                        .height(150.dp)
-                        .fillMaxWidth() else Modifier, contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = linkUIComponentParam.webBaseURL,
-                        modifier = Modifier
-                            .padding(
-                                top = 10.dp, start = 9.dp, end = 9.dp
-                            )
-                            .background(
-                                color = MaterialTheme.colorScheme.primary.copy(0.15f),
-                                shape = RoundedCornerShape(5.dp)
-                            )
-                            .padding(5.dp),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = 10.sp,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
                 }
             }
             Row(
@@ -140,7 +98,7 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                     .fillMaxWidth()
                     .wrapContentHeight()
             ) {
-                Column(modifier = Modifier.fillMaxWidth(if (linkUIComponentParam.isSelectionModeEnabled.value) 1f else 0.75f)) {
+                Column(modifier = Modifier.fillMaxWidth()) {
                     Text(
                         text = linkUIComponentParam.title,
                         modifier = Modifier
@@ -151,15 +109,23 @@ fun GridViewComponent(linkUIComponentParam: LinkUIComponentParam, forStaggeredVi
                         maxLines = if (forStaggeredView) Int.MAX_VALUE else 4
                     )
                 }
-                if (!linkUIComponentParam.isSelectionModeEnabled.value) {
-                    IconButton(onClick = {
-                        linkUIComponentParam.onMoreIconClick()
-                    }) {
-                        Icon(
-                            Icons.Default.MoreVert, contentDescription = null
-                        )
-                    }
-                }
             }
+            Text(
+                text = linkUIComponentParam.webBaseURL,
+                modifier = Modifier
+                    .padding(
+                        start = 10.dp, end = 10.dp,
+                        bottom = 10.dp
+                    )
+                    .background(
+                        color = MaterialTheme.colorScheme.primary.copy(0.25f),
+                        shape = RoundedCornerShape(5.dp)
+                    )
+                    .padding(5.dp),
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 10.sp,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
         }
 }

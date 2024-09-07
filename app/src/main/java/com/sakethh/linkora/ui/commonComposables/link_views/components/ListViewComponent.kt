@@ -152,7 +152,7 @@ fun ListViewComponent(
                     bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 15.dp else 0.dp
                 )
                 .background(
-                    color = MaterialTheme.colorScheme.primary.copy(0.15f),
+                    color = MaterialTheme.colorScheme.primary.copy(0.1f),
                     shape = RoundedCornerShape(5.dp)
                 )
                 .padding(5.dp),
@@ -161,6 +161,7 @@ fun ListViewComponent(
             maxLines = 1,
             textAlign = TextAlign.Start,
             overflow = TextOverflow.Ellipsis,
+            fontSize = 12.sp
         )
         Row(
             modifier = Modifier

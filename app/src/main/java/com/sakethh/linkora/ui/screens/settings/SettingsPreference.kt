@@ -99,6 +99,20 @@ object SettingsPreference : ViewModel() {
         coroutineScope {
             kotlinx.coroutines.awaitAll(
                 async {
+                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == null
+                    ) {
+                        true
+                    } else {
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == true
+                    }
+                },
+                async {
                     shouldFollowSystemTheme.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                         dataStore = context.dataStore
@@ -152,20 +166,6 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
                         dataStore = context.dataStore
                     ) ?: 0
-                },
-                async {
-                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = context.dataStore
-                        ) == null
-                    ) {
-                        true
-                    } else {
-                        readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = context.dataStore
-                        ) == true
-                    }
                 },
                 async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
