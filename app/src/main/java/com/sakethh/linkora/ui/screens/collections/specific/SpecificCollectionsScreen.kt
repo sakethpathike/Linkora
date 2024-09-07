@@ -616,7 +616,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
+                                        onMoreIconClick = {
                                             selectedItemTitle.value = linkData.title
                                             selectedItemNote.value = linkData.infoForSaving
                                             CollectionsScreenVM.selectedFolderData.value.id =
@@ -731,7 +731,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
+                                        onMoreIconClick = {
                                             selectedItemTitle.value = linkData.title
                                             selectedItemNote.value = linkData.infoForSaving
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -842,7 +842,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
+                                        onMoreIconClick = {
                                             selectedItemTitle.value = linkData.title
                                             selectedItemNote.value = linkData.infoForSaving
                                             SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -1018,7 +1018,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         title = linkData.title,
                                         webBaseURL = linkData.baseURL,
                                         imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
+                                        onMoreIconClick = {
                                             selectedItemTitle.value = linkData.title
                                             selectedItemNote.value = linkData.infoForSaving
                                             CollectionsScreenVM.selectedFolderData.value.id =

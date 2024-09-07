@@ -539,7 +539,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                 title = it.title,
                                                 webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                onMoreIconCLick = {
+                                                onMoreIconClick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                         OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
@@ -654,7 +654,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                 title = it.title,
                                                 webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                onMoreIconCLick = {
+                                                onMoreIconClick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                         OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
@@ -768,7 +768,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                 title = it.title,
                                                 webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                onMoreIconCLick = {
+                                                onMoreIconClick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                         OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
@@ -883,7 +883,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                 title = it.title,
                                                 webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                onMoreIconCLick = {
+                                                onMoreIconClick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                         OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
@@ -998,7 +998,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                 title = it.title,
                                                 webBaseURL = it.baseURL,
                                                 imgURL = it.imgURL,
-                                                onMoreIconCLick = {
+                                                onMoreIconClick = {
                                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                         OptionsBtmSheetType.LINK
                                                     SearchScreenVM.selectedLinkID = it.id
@@ -1306,7 +1306,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = {
+                                onMoreIconClick = {
                                     SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                         OptionsBtmSheetType.LINK
                                     SearchScreenVM.selectedLinkID = it.id

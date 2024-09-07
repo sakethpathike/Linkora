@@ -578,7 +578,10 @@ fun CollectionsScreen(navController: NavController) {
                 linkTitle = "",
                 folderName = CollectionsScreenVM.selectedFolderData.value.folderName,
                 imgLink = "",
-                onRefreshClick = {}
+                onRefreshClick = {},
+                webUrl = "",
+                onForceOpenInExternalBrowserClicked = { },
+                showQuickActions = rememberSaveable { mutableStateOf(false) }
             )
         )
         RenameDialogBox(

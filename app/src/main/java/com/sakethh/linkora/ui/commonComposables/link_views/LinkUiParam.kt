@@ -6,11 +6,11 @@ data class LinkUIComponentParam(
     val title: String,
     val webBaseURL: String,
     val imgURL: String,
-    val onMoreIconCLick: () -> Unit,
+    val onMoreIconClick: () -> Unit,
     val onLinkClick: () -> Unit,
     val webURL: String,
     val onForceOpenInExternalBrowserClicked: () -> Unit,
     val isSelectionModeEnabled: MutableState<Boolean>,
     val isItemSelected: MutableState<Boolean>,
-    val onLongClick: () -> Unit
+    val onLongClick: () -> Unit,
 )

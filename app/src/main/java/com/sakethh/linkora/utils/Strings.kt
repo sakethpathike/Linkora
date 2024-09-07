@@ -7,3 +7,7 @@ fun String?.ifNullOrBlank(string: () -> String): String {
         this
     }
 }
+
+fun String.baseUrl(): String {
+    return this.split("/")[2]
+}

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.bottomSheets.menu
 
+import android.content.Intent
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateContentSize
@@ -27,13 +28,16 @@ import androidx.compose.material.icons.filled.DriveFileRenameOutline
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Tune
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Link
+import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
+import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Unarchive
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -55,6 +59,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.style.TextAlign
@@ -374,6 +379,12 @@ fun MenuBtmSheetUI(
                         Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
+                if (menuBtmSheetParam.showQuickActions.value) {
+                    QuickActions(
+                        onForceOpenInExternalBrowserClicked = menuBtmSheetParam.onForceOpenInExternalBrowserClicked,
+                        webUrl = menuBtmSheetParam.webUrl
+                    )
+                }
             }
         }
         BackHandler {
@@ -384,6 +395,67 @@ fun MenuBtmSheetUI(
     }
 }
 
+@Composable
+private fun QuickActions(onForceOpenInExternalBrowserClicked: () -> Unit, webUrl: String) {
+    val localURIHandler = LocalUriHandler.current
+    val localClipBoardManager = LocalClipboardManager.current
+    val context = LocalContext.current
+    Column {
+        HorizontalDivider(Modifier.padding(start = 15.dp, end = 15.dp, bottom = 15.dp, top = 5.dp))
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            FilledTonalIconButton(onClick = {
+                onForceOpenInExternalBrowserClicked()
+                try {
+                    localURIHandler.openUri(webUrl)
+                } catch (_: android.content.ActivityNotFoundException) {
+                    Toast.makeText(
+                        context,
+                        LocalizedStrings.noActivityFoundToHandleIntent.value,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }) {
+                Icon(
+                    imageVector = Icons.Outlined.OpenInBrowser,
+                    contentDescription = null
+                )
+            }
+            FilledTonalIconButton(onClick = {
+                localClipBoardManager.setText(
+                    AnnotatedString(webUrl)
+                )
+                Toast.makeText(
+                    context,
+                    LocalizedStrings.linkCopiedToTheClipboard.value,
+                    Toast.LENGTH_SHORT
+                ).show()
+            }) {
+                Icon(
+                    imageVector = Icons.Outlined.ContentCopy,
+                    contentDescription = null
+                )
+            }
+            FilledTonalIconButton(onClick = {
+                val intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, webUrl)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(intent, null)
+                context.startActivity(shareIntent)
+            }) {
+                Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
+            }
+        }
+        Spacer(Modifier.height(15.dp))
+    }
+}
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IndividualMenuComponent(

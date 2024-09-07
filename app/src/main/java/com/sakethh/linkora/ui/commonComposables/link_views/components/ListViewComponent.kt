@@ -214,7 +214,7 @@ fun ListViewComponent(
                             Icon(imageVector = Icons.Outlined.Share, contentDescription = null)
                         }
                         IconButton(onClick = {
-                            linkUIComponentParam.onMoreIconCLick()
+                            linkUIComponentParam.onMoreIconClick()
                         }) {
                             Icon(
                                 imageVector = Icons.Filled.MoreVert,

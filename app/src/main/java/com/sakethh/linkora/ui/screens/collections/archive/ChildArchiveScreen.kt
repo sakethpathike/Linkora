@@ -46,6 +46,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.baseUrl
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -126,7 +127,7 @@ fun ChildArchiveScreen(
                                 title = it.title,
                                 webBaseURL = it.baseURL,
                                 imgURL = it.imgURL,
-                                onMoreIconCLick = {
+                                onMoreIconClick = {
                                     archiveScreenVM.selectedArchivedLinkData.value = it
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     selectedURLOrFolderName.value = it.webURL
@@ -166,7 +167,6 @@ fun ChildArchiveScreen(
                                 },
                                 webURL = it.webURL,
                                 onForceOpenInExternalBrowserClicked = {
-                                    coroutineScope.launch {
                                         customWebTab.openInWeb(
                                             recentlyVisitedData = RecentlyVisited(
                                                 title = it.title,
@@ -177,7 +177,6 @@ fun ChildArchiveScreen(
                                             ), context = context, uriHandler = uriHandler,
                                             forceOpenInExternalBrowser = false
                                         )
-                                    }
                                 },
                                 isItemSelected = mutableStateOf(
                                     archiveScreenVM.selectedLinksData.contains(
@@ -352,7 +351,21 @@ fun ChildArchiveScreen(
                     if (archiveScreenType == ArchiveScreenType.LINKS) {
                         archiveScreenVM.refreshArchivedLinkData(archiveScreenVM.selectedArchivedLinkData.value.id)
                     }
-                }
+                },
+                webUrl = selectedURLOrFolderName.value,
+                onForceOpenInExternalBrowserClicked = {
+                    customWebTab.openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = selectedItemTitle.value,
+                            webURL = selectedURLOrFolderName.value,
+                            baseURL = selectedURLOrFolderName.value.baseUrl(),
+                            imgURL = selectedURLImgLink.value,
+                            infoForSaving = selectedItemNote.value
+                        ), context = context, uriHandler = uriHandler,
+                        forceOpenInExternalBrowser = false
+                    )
+                },
+                showQuickActions = mutableStateOf(archiveScreenType == ArchiveScreenType.LINKS),
             )
         )
 
