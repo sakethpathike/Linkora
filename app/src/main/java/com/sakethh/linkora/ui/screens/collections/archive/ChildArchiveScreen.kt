@@ -30,10 +30,10 @@ import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -113,7 +113,7 @@ fun ChildArchiveScreen(
                         key = { _, archivedLinks ->
                             archivedLinks.id.toString() + archivedLinks.baseURL
                         }) { index, it ->
-                        LinkUIComponent(
+                        ListViewComponent(
                             LinkUIComponentParam(
                                 onLongClick = {
                                     if (!archiveScreenVM.isSelectionModeEnabled.value) {

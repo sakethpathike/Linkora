@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.commonComposables
+package com.sakethh.linkora.ui.commonComposables.link_views.components
 
 import android.content.Intent
 import android.widget.Toast
@@ -31,7 +31,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -47,25 +46,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.CoilImage
 
 
-data class LinkUIComponentParam(
-    val title: String,
-    val webBaseURL: String,
-    val imgURL: String,
-    val onMoreIconCLick: () -> Unit,
-    val onLinkClick: () -> Unit,
-    val webURL: String,
-    val onForceOpenInExternalBrowserClicked: () -> Unit,
-    val isSelectionModeEnabled: MutableState<Boolean>,
-    val isItemSelected: MutableState<Boolean>,
-    val onLongClick: () -> Unit
-)
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun LinkUIComponent(
+fun ListViewComponent(
     linkUIComponentParam: LinkUIComponentParam
 ) {
     val context = LocalContext.current

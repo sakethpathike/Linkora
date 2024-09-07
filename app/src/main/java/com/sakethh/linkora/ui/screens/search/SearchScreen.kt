@@ -88,10 +88,10 @@ import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -108,6 +108,7 @@ import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFo
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -520,7 +521,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        LinkUIComponent(
+                                        ListViewComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -556,7 +557,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     selectedWebURL.value = it.webURL
                                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                                     coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
+                                                        awaitAll(async {
                                                             optionsBtmSheetVM.updateArchiveLinkCardData(
                                                                 url = it.webURL
                                                             )
@@ -633,7 +634,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             impLink.id.toString() + impLink.baseURL + index.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        LinkUIComponent(
+                                        ListViewComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -671,7 +672,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     selectedWebURL.value = it.webURL
                                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                                     coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
+                                                        awaitAll(async {
                                                             optionsBtmSheetVM.updateArchiveLinkCardData(
                                                                 url = it.webURL
                                                             )
@@ -749,7 +750,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             folderLink.baseURL + folderLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        LinkUIComponent(
+                                        ListViewComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -785,7 +786,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     selectedWebURL.value = it.webURL
                                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                                     coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
+                                                        awaitAll(async {
                                                             optionsBtmSheetVM.updateArchiveLinkCardData(
                                                                 url = it.webURL
                                                             )
@@ -862,7 +863,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             historyLink.baseURL + historyLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        LinkUIComponent(
+                                        ListViewComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -900,7 +901,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     selectedWebURL.value = it.webURL
                                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                                     coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
+                                                        awaitAll(async {
                                                             optionsBtmSheetVM.updateArchiveLinkCardData(
                                                                 url = it.webURL
                                                             )
@@ -977,7 +978,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             archiveLink.baseURL + archiveLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        LinkUIComponent(
+                                        ListViewComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -1015,7 +1016,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     selectedWebURL.value = it.webURL
                                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                                     coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
+                                                        awaitAll(async {
                                                             optionsBtmSheetVM.updateArchiveLinkCardData(
                                                                 url = it.webURL
                                                             )
@@ -1292,7 +1293,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         key = { index, recentlyVisited ->
                             recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
                         }) { index, it ->
-                        LinkUIComponent(
+                        ListViewComponent(
                             LinkUIComponentParam(
                                 onLongClick = {
                                     if (!isSelectionModeEnabled.value) {
@@ -1321,7 +1322,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     selectedWebURL.value = it.webURL
                                     shouldOptionsBtmModalSheetBeVisible.value = true
                                     coroutineScope.launch {
-                                        kotlinx.coroutines.awaitAll(async {
+                                        awaitAll(async {
                                             optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
                                         }, async {
                                             optionsBtmSheetVM.updateImportantCardData(url = it.webURL)

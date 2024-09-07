@@ -76,10 +76,10 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -602,7 +602,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
                                 }) { linkIndex, linkData ->
-                                LinkUIComponent(
+                                ListViewComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -717,7 +717,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
                                 }) { linkIndex, linkData ->
-                                LinkUIComponent(
+                                ListViewComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -828,7 +828,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, importantLinks ->
                                     importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
                                 }) { linkIndex, linkData ->
-                                LinkUIComponent(
+                                ListViewComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -1004,7 +1004,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
                                 }) { linkIndex, linkData ->
-                                LinkUIComponent(
+                                ListViewComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
