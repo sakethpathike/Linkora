@@ -5,7 +5,9 @@
 
 [<img src="https://github.com/user-attachments/assets/a50513b3-dbf8-48c1-bff8-1f4215fefbb9"
 alt="Get it on GitHub"
-height="80">](https://github.com/sakethpathike/Linkora/releases/tag/v0.7.1)
+height="80">](https://github.com/sakethpathike/Linkora/releases/tag/v0.7.1) [<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/com.sakethh.linkora)
 
 
 ## Features
