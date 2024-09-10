@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.DatasetLinked
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
@@ -296,8 +297,8 @@ fun CollectionsScreen(navController: NavController) {
                                         }, indication = null,
                                             onClick = {
                                                 SpecificCollectionsScreenVM.screenType.value =
-                                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                    SpecificScreenType.ALL_LINKS_SCREEN
+                                                navController.navigate(NavigationRoutes.ALL_LINKS_SCREEN.name)
                                             },
                                             onLongClick = {
 
@@ -307,7 +308,7 @@ fun CollectionsScreen(navController: NavController) {
                                     Row(horizontalArrangement = Arrangement.Center) {
                                         Icon(
                                             modifier = Modifier.padding(20.dp),
-                                            imageVector = Icons.Outlined.StarOutline,
+                                            imageVector = Icons.Outlined.DatasetLinked,
                                             contentDescription = null
                                         )
                                         Box(
@@ -315,43 +316,7 @@ fun CollectionsScreen(navController: NavController) {
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Text(
-                                                text = LocalizedStrings.importantLinks.value,
-                                                style = MaterialTheme.typography.titleSmall,
-                                                fontSize = 16.sp
-                                            )
-                                        }
-                                    }
-                                }
-                                Card(
-                                    modifier = Modifier
-                                        .padding(
-                                            top = 20.dp, end = 20.dp, start = 20.dp
-                                        )
-                                        .wrapContentHeight()
-                                        .fillMaxWidth()
-                                        .combinedClickable(interactionSource = remember {
-                                            MutableInteractionSource()
-                                        }, indication = null,
-                                            onClick = {
-                                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
-                                            },
-                                            onLongClick = {
-
-                                            })
-                                        .pulsateEffect()
-                                ) {
-                                    Row {
-                                        Icon(
-                                            modifier = Modifier.padding(20.dp),
-                                            imageVector = Icons.Outlined.Archive,
-                                            contentDescription = null
-                                        )
-                                        Box(
-                                            modifier = Modifier.height(heightOfCard.value),
-                                            contentAlignment = Alignment.CenterStart
-                                        ) {
-                                            Text(
-                                                text = LocalizedStrings.archive.value,
+                                                text = "All Links",
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 16.sp
                                             )
@@ -359,7 +324,12 @@ fun CollectionsScreen(navController: NavController) {
                                     }
                                 }
                                 HorizontalDivider(
-                                    modifier = Modifier.padding(25.dp),
+                                    modifier = Modifier.padding(
+                                        start = 25.dp,
+                                        top = 15.dp,
+                                        bottom = 15.dp,
+                                        end = 25.dp
+                                    ),
                                     thickness = 0.5.dp,
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
@@ -397,9 +367,88 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
+                                Card(
+                                    modifier = Modifier
+                                        .padding(
+                                            end = 20.dp, start = 20.dp, top = 15.dp
+                                        )
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .onGloballyPositioned {
+                                            heightOfCard.value = with(localDensity) {
+                                                it.size.height.toDp()
+                                            }
+                                        }
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                SpecificCollectionsScreenVM.screenType.value =
+                                                    SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                            },
+                                            onLongClick = {
+
+                                            })
+                                        .pulsateEffect()
+                                ) {
+                                    Row(horizontalArrangement = Arrangement.Center) {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.StarOutline,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = LocalizedStrings.importantLinks.value,
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
+                                Card(
+                                    modifier = Modifier
+                                        .padding(
+                                            top = 15.dp, end = 20.dp, start = 20.dp
+                                        )
+                                        .wrapContentHeight()
+                                        .fillMaxWidth()
+                                        .combinedClickable(interactionSource = remember {
+                                            MutableInteractionSource()
+                                        }, indication = null,
+                                            onClick = {
+                                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                                            },
+                                            onLongClick = {
+
+                                            })
+                                        .pulsateEffect()
+                                ) {
+                                    Row {
+                                        Icon(
+                                            modifier = Modifier.padding(20.dp),
+                                            imageVector = Icons.Outlined.Archive,
+                                            contentDescription = null
+                                        )
+                                        Box(
+                                            modifier = Modifier.height(heightOfCard.value),
+                                            contentAlignment = Alignment.CenterStart
+                                        ) {
+                                            Text(
+                                                text = LocalizedStrings.archive.value,
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
+                                }
                                 HorizontalDivider(
                                     modifier = Modifier.padding(
-                                        top = 20.dp,
+                                        top = 15.dp,
                                         start = 20.dp,
                                         end = 20.dp,
                                         bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp

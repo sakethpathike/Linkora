@@ -91,7 +91,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
-import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -521,7 +521,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        ListViewComponent(
+                                        ListViewLinkUIComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -634,7 +634,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             impLink.id.toString() + impLink.baseURL + index.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        ListViewComponent(
+                                        ListViewLinkUIComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -750,7 +750,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             folderLink.baseURL + folderLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        ListViewComponent(
+                                        ListViewLinkUIComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -863,7 +863,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             historyLink.baseURL + historyLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        ListViewComponent(
+                                        ListViewLinkUIComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -978,7 +978,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                             archiveLink.baseURL + archiveLink.id.toString() + UUID.randomUUID()
                                                 .toString()
                                         }) { index, it ->
-                                        ListViewComponent(
+                                        ListViewLinkUIComponent(
                                             LinkUIComponentParam(
                                                 onLongClick = {
                                                     if (!isSelectionModeEnabled.value) {
@@ -1293,7 +1293,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         key = { index, recentlyVisited ->
                             recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
                         }) { index, it ->
-                        ListViewComponent(
+                        ListViewLinkUIComponent(
                             LinkUIComponentParam(
                                 onLongClick = {
                                     if (!isSelectionModeEnabled.value) {

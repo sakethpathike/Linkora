@@ -16,7 +16,7 @@
         android:fullBackupContent="true"
         android:hasFragileUserData="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="[Debug] Linkora"
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
@@ -28,9 +28,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove">
         </provider>
-        <meta-data
-            android:name="firebase_analytics_collection_deactivated"
-            android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

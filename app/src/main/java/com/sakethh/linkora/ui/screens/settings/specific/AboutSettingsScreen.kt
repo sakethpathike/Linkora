@@ -64,7 +64,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -98,7 +98,7 @@ fun AboutSettingsScreen(
         mutableStateOf(false)
     }
     val typography = MaterialTheme.typography
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.about.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

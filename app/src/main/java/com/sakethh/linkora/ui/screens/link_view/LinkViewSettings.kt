@@ -38,13 +38,13 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
-import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewComponent
-import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.screens.link_view.model.LinkPref
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -155,7 +155,7 @@ fun LinkViewSettings(navController: NavController) {
         )
     }
 
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = "Link View Settings",
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
@@ -199,7 +199,7 @@ fun LinkViewSettings(navController: NavController) {
                     )
                 }
                 items(sampleList) {
-                    ListViewComponent(
+                    ListViewLinkUIComponent(
                         it,
                         forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                     )
@@ -267,7 +267,7 @@ fun LinkViewSettings(navController: NavController) {
                     )
                 }
                 items(sampleList + sampleList.shuffled()) {
-                    GridViewComponent(it, forStaggeredView = false)
+                    GridViewLinkUIComponent(it, forStaggeredView = false)
                 }
                 item(span = {
                     GridItemSpan(maxLineSpan)
@@ -330,7 +330,7 @@ fun LinkViewSettings(navController: NavController) {
                     )
                 }
                 items(sampleList + sampleList.shuffled()) {
-                    GridViewComponent(it, forStaggeredView = true)
+                    GridViewLinkUIComponent(it, forStaggeredView = true)
                 }
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Spacer(Modifier.height(100.dp))

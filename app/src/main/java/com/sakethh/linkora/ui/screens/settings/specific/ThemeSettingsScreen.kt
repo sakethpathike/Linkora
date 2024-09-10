@@ -28,7 +28,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +45,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
             }
         }
     }
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.theme.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

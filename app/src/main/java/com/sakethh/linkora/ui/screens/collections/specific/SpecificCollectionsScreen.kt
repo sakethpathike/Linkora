@@ -79,7 +79,7 @@ import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
-import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -522,6 +522,11 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 SpecificScreenType.ROOT_SCREEN -> {
 
                                 }
+
+                                SpecificScreenType.ALL_LINKS_SCREEN -> {
+
+
+                                }
                             }
                         }
                     })
@@ -602,7 +607,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
                                 }) { linkIndex, linkData ->
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -717,7 +722,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
                                 }) { linkIndex, linkData ->
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -828,7 +833,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, importantLinks ->
                                     importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
                                 }) { linkIndex, linkData ->
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -1004,7 +1009,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 key = { _, linksTable ->
                                     linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
                                 }) { linkIndex, linkData ->
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     LinkUIComponentParam(
                                         onLongClick = {
                                             if (!areElementsSelectable.value) {
@@ -1438,6 +1443,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
                     SpecificScreenType.INTENT_ACTIVITY -> SortingBtmSheetType.COLLECTIONS_SCREEN
                     SpecificScreenType.ROOT_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+                    SpecificScreenType.ALL_LINKS_SCREEN -> SortingBtmSheetType.ALL_LINKS_SCREEN
                 },
                 shouldFoldersSelectionBeVisible = when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> mutableStateOf(

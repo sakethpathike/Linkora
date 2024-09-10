@@ -638,6 +638,10 @@ open class SpecificCollectionsScreenVM @Inject constructor(
             SpecificScreenType.ROOT_SCREEN -> {
 
             }
+
+            SpecificScreenType.ALL_LINKS_SCREEN -> {
+
+            }
         }
     }
 
@@ -905,5 +909,6 @@ open class SpecificCollectionsScreenVM @Inject constructor(
 }
 
 enum class SpecificScreenType {
-    IMPORTANT_LINKS_SCREEN, ARCHIVED_FOLDERS_LINKS_SCREEN, SAVED_LINKS_SCREEN, SPECIFIC_FOLDER_LINKS_SCREEN, INTENT_ACTIVITY, ROOT_SCREEN
+    IMPORTANT_LINKS_SCREEN, ARCHIVED_FOLDERS_LINKS_SCREEN, SAVED_LINKS_SCREEN,
+    SPECIFIC_FOLDER_LINKS_SCREEN, INTENT_ACTIVITY, ROOT_SCREEN, ALL_LINKS_SCREEN
 }

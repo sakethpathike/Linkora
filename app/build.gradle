@@ -2,12 +2,12 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.serialization'
-    //id 'com.google.gms.google-services'
-    //id 'com.google.firebase.crashlytics'
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
     id("dagger.hilt.android.plugin")
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
-   // id("com.google.android.gms.oss-licenses-plugin")
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'
@@ -40,14 +40,6 @@ android {
         }
     }
     buildTypes {
-        debug {
-            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "true")
-        }
-        release {
-            resValue("bool", "FIREBASE_ANALYTICS_DEACTIVATED", "false")
-        }
-    }
-    buildTypes {
         release {
             shrinkResources true
             minifyEnabled true
@@ -60,9 +52,11 @@ android {
         devRelease {
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
+
             shrinkResources true
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
     }
     compileOptions {

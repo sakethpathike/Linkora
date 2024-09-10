@@ -50,8 +50,8 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
-import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewComponent
-import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -316,7 +316,7 @@ fun ChildHomeScreen(
                             items(items = savedLinksData, key = { linksTable ->
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
@@ -334,7 +334,7 @@ fun ChildHomeScreen(
                             items(items = impLinksData, key = { importantLinks ->
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
@@ -371,7 +371,7 @@ fun ChildHomeScreen(
                         }
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
-                                ListViewComponent(
+                                ListViewLinkUIComponent(
                                     forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
@@ -406,7 +406,7 @@ fun ChildHomeScreen(
                             items(items = savedLinksData, key = { linksTable ->
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
@@ -428,7 +428,7 @@ fun ChildHomeScreen(
                             items(items = impLinksData, key = { importantLinks ->
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
@@ -474,7 +474,7 @@ fun ChildHomeScreen(
                         }
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
@@ -511,7 +511,7 @@ fun ChildHomeScreen(
                             items(items = savedLinksData, key = { linksTable ->
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
@@ -529,7 +529,7 @@ fun ChildHomeScreen(
                             items(items = impLinksData, key = { importantLinks ->
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
@@ -571,7 +571,7 @@ fun ChildHomeScreen(
                         }
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
-                                GridViewComponent(
+                                GridViewLinkUIComponent(
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )

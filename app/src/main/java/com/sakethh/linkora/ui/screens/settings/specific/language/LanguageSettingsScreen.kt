@@ -76,7 +76,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLa
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -125,7 +125,7 @@ fun LanguageSettingsScreen(
         mutableStateOf(false)
     }
     val localUriHandler = LocalUriHandler.current
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = language.value,
         navController = navController,
         floatingActionButton = {
