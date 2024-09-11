@@ -30,30 +30,62 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.RecentlyVisited
+import com.sakethh.linkora.data.local.links.LinkType
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
+import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
+import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
+import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
+import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
+import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
+import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.link_view.LinkView
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 
 @OptIn(
     ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
 )
 @Composable
 fun AllLinksScreen(navController: NavController) {
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setNavigationBarColor(
+        MaterialTheme.colorScheme.surfaceColorAtElevation(
+            BottomAppBarDefaults.ContainerElevation
+        )
+    )
     val allLinksScreenVM: AllLinksScreenVM = hiltViewModel()
 
     val savedLinks = allLinksScreenVM.savedLinks.collectAsStateWithLifecycle(emptyList())
@@ -63,7 +95,104 @@ fun AllLinksScreen(navController: NavController) {
     val regularFoldersLinks =
         allLinksScreenVM.regularFoldersLinks.collectAsStateWithLifecycle(emptyList())
 
+    val uriHandler = LocalUriHandler.current
+    val coroutineScope = rememberCoroutineScope()
+    val btmModalSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val shouldOptionsBtmModalSheetBeVisible = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldRenameDialogBoxAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val shouldDeleteDialogBoxAppear = rememberSaveable {
+        mutableStateOf(false)
+    }
+    val selectedWebURL = rememberSaveable {
+        mutableStateOf("")
+    }
+    val selectedElementID = rememberSaveable {
+        mutableLongStateOf(0)
+    }
+    val selectedURLTitle = rememberSaveable {
+        mutableStateOf("")
+    }
+    val selectedNote = rememberSaveable {
+        mutableStateOf("")
+    }
+    val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
+    val selectedLinkType = rememberSaveable {
+        mutableStateOf("")
+    }
     val noLinksSelectedState = allLinksScreenVM.linkTypes.map { it.isChecked.value }.all { !it }
+    val customWebTab = viewModel<CustomWebTab>()
+    val context = LocalContext.current
+    fun modifiedLinkUIComponentParam(
+        linksTable: LinksTable,
+        linkType: LinkType
+    ): LinkUIComponentParam {
+        return LinkUIComponentParam(
+            onLongClick = {},
+            isSelectionModeEnabled = mutableStateOf(false),
+            isItemSelected = mutableStateOf(
+                false
+            ),
+            title = linksTable.title,
+            webBaseURL = linksTable.baseURL,
+            imgURL = linksTable.imgURL,
+            onMoreIconClick = {
+                selectedLinkType.value = linkType.name
+                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                    OptionsBtmSheetType.LINK
+                selectedElementID.longValue = linksTable.id
+                HomeScreenVM.tempImpLinkData.baseURL = linksTable.baseURL
+                HomeScreenVM.tempImpLinkData.imgURL = linksTable.imgURL
+                HomeScreenVM.tempImpLinkData.webURL = linksTable.webURL
+                HomeScreenVM.tempImpLinkData.title = linksTable.title
+                HomeScreenVM.tempImpLinkData.infoForSaving =
+                    linksTable.infoForSaving
+                shouldOptionsBtmModalSheetBeVisible.value = true
+                selectedWebURL.value = linksTable.webURL
+                selectedNote.value = linksTable.infoForSaving
+                selectedURLTitle.value = linksTable.title
+                coroutineScope.launch {
+                    awaitAll(async {
+                        optionsBtmSheetVM.updateImportantCardData(
+                            url = selectedWebURL.value
+                        )
+                    }, async {
+                        optionsBtmSheetVM.updateArchiveLinkCardData(
+                            url = selectedWebURL.value
+                        )
+                    }
+                    )
+                }
+            },
+            onLinkClick = {
+                customWebTab.openInWeb(
+                    recentlyVisitedData = RecentlyVisited(
+                        title = linksTable.title,
+                        webURL = linksTable.webURL,
+                        baseURL = linksTable.baseURL,
+                        imgURL = linksTable.imgURL,
+                        infoForSaving = linksTable.infoForSaving
+                    ), context = context, uriHandler = uriHandler,
+                    forceOpenInExternalBrowser = false
+                )
+            },
+            webURL = linksTable.webURL,
+            onForceOpenInExternalBrowserClicked = {
+                customWebTab.openInWeb(
+                    recentlyVisitedData = RecentlyVisited(
+                        title = linksTable.title,
+                        webURL = linksTable.webURL,
+                        baseURL = linksTable.baseURL,
+                        imgURL = linksTable.imgURL,
+                        infoForSaving = linksTable.infoForSaving
+                    ), context = context, uriHandler = uriHandler,
+                    forceOpenInExternalBrowser = true
+                )
+            })
+    }
     SpecificScreenScaffold(topAppBarText = "All Links", navController = navController, actions = {
         if (
             allLinksScreenVM.linkTypes
@@ -97,75 +226,82 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             ListViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.SAVED_LINK
+                                ),
                                 forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(impLinks.value) {
+                        items(impLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "Graduation",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             ListViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.IMP_LINK
+                                ),
                                 forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(historyLinks.value) {
+                        items(historyLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "Illmatic",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             ListViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.HISTORY_LINK
+                                ),
                                 forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(archivedLinks.value) {
+                        items(archivedLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "It Was Written",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             ListViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.ARCHIVE_LINK
+                                ),
                                 forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
@@ -174,18 +310,10 @@ fun AllLinksScreen(navController: NavController) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 ListViewLinkUIComponent(
-                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                        webBaseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconClick = {},
-                                        onLinkClick = {},
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = { },
-                                        isSelectionModeEnabled = mutableStateOf(false),
-                                        isItemSelected = mutableStateOf(false),
-                                        onLongClick = {
-
-                                        }),
+                                    linkUIComponentParam = modifiedLinkUIComponentParam(
+                                        linksTable = it,
+                                        linkType = LinkType.FOLDER_LINK
+                                    ),
                                     forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
                                 )
                         }
@@ -199,75 +327,82 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.SAVED_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(impLinks.value) {
+                        items(impLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.IMP_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(historyLinks.value) {
+                        items(historyLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.HISTORY_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(archivedLinks.value) {
+                        items(archivedLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.ARCHIVE_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
@@ -276,18 +411,10 @@ fun AllLinksScreen(navController: NavController) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 GridViewLinkUIComponent(
-                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                        webBaseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconClick = {},
-                                        onLinkClick = {},
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = { },
-                                        isSelectionModeEnabled = mutableStateOf(false),
-                                        isItemSelected = mutableStateOf(false),
-                                        onLongClick = {
-
-                                        }),
+                                    linkUIComponentParam = modifiedLinkUIComponentParam(
+                                        linksTable = it,
+                                        linkType = LinkType.FOLDER_LINK
+                                    ),
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                                 )
                         }
@@ -303,75 +430,82 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.SAVED_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(impLinks.value) {
+                        items(impLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.IMP_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(historyLinks.value) {
+                        items(historyLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.HISTORY_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
                     }
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
-                        items(archivedLinks.value) {
+                        items(archivedLinks.value.map {
+                            LinksTable(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving,
+                                isLinkedWithSavedLinks = false,
+                                isLinkedWithFolders = false,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                        }) {
                             GridViewLinkUIComponent(
-                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                    webBaseURL = it.baseURL,
-                                    imgURL = it.imgURL,
-                                    onMoreIconClick = {},
-                                    onLinkClick = {},
-                                    webURL = it.webURL,
-                                    onForceOpenInExternalBrowserClicked = { },
-                                    isSelectionModeEnabled = mutableStateOf(false),
-                                    isItemSelected = mutableStateOf(false),
-                                    onLongClick = {
-
-                                    }),
+                                linkUIComponentParam = modifiedLinkUIComponentParam(
+                                    linksTable = it,
+                                    linkType = LinkType.ARCHIVE_LINK
+                                ),
                                 forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                             )
                         }
@@ -380,18 +514,10 @@ fun AllLinksScreen(navController: NavController) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 GridViewLinkUIComponent(
-                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                        webBaseURL = it.baseURL,
-                                        imgURL = it.imgURL,
-                                        onMoreIconClick = {},
-                                        onLinkClick = {},
-                                        webURL = it.webURL,
-                                        onForceOpenInExternalBrowserClicked = { },
-                                        isSelectionModeEnabled = mutableStateOf(false),
-                                        isItemSelected = mutableStateOf(false),
-                                        onLongClick = {
-
-                                        }),
+                                    linkUIComponentParam = modifiedLinkUIComponentParam(
+                                        linksTable = it,
+                                        linkType = LinkType.FOLDER_LINK
+                                    ),
                                     forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
                                 )
                         }
@@ -399,8 +525,60 @@ fun AllLinksScreen(navController: NavController) {
                 }
             }
         }
+        MenuBtmSheetUI(
+            MenuBtmSheetParam(
+                btmModalSheetState = btmModalSheetState,
+                shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
+                btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
+                onRenameClick = {
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }
+                    shouldRenameDialogBoxAppear.value = true
+                },
+                onDeleteCardClick = {
+                    shouldDeleteDialogBoxAppear.value = true
+                },
+                onArchiveClick = {
+
+                },
+                noteForSaving = selectedNote.value,
+                onNoteDeleteCardClick = {
+
+                },
+                folderName = selectedURLTitle.value,
+                linkTitle = selectedURLTitle.value,
+                imgLink = HomeScreenVM.tempImpLinkData.imgURL,
+                onRefreshClick = {
+
+                }, onImportantLinkClick = {
+
+                }
+            )
+        )
     }
-}
+    DeleteDialogBox(
+        DeleteDialogBoxParam(
+            folderName = selectedURLTitle,
+            shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
+            deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
+            onDeleteClick = {
+            })
+    )
+    RenameDialogBox(
+        RenameDialogBoxParam(
+            shouldDialogBoxAppear = shouldRenameDialogBoxAppear,
+            existingFolderName = selectedURLTitle.value,
+            renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
+            onNoteChangeClick = { newNote: String ->
+
+            },
+            onTitleChangeClick = { newTitle: String ->
+
+            }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
+        )
+    )
+    }
 
 @Composable
 private fun LinksSelectionChips(allLinksScreenVM: AllLinksScreenVM) {
