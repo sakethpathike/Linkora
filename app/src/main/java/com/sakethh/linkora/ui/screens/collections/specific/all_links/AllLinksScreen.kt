@@ -545,12 +545,13 @@ fun AllLinksScreen(navController: NavController) {
                     allLinksScreenVM.onUIEvent(
                         SpecificCollectionsScreenUIEvent.ArchiveAnExistingLink(
                             ArchivedLinks(
+                                id = selectedElementID.longValue,
                                 title = HomeScreenVM.tempImpLinkData.title,
                                 webURL = HomeScreenVM.tempImpLinkData.webURL,
                                 baseURL = HomeScreenVM.tempImpLinkData.baseURL,
                                 imgURL = HomeScreenVM.tempImpLinkData.imgURL,
                                 infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
-                            ), LinkType.valueOf(selectedLinkType.value)
+                            ), context, LinkType.valueOf(selectedLinkType.value)
                         )
                     )
                 },

@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.screens.collections.specific
 
+import android.content.Context
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -67,7 +68,11 @@ sealed class SpecificCollectionsScreenUIEvent {
     data class OnLinkRefresh(val linkId: Long, val linkType: LinkType) :
         SpecificCollectionsScreenUIEvent()
 
-    data class ArchiveAnExistingLink(val archivedLink: ArchivedLinks, val linkType: LinkType) :
+    data class ArchiveAnExistingLink(
+        val archivedLink: ArchivedLinks,
+        val context: Context,
+        val linkType: LinkType
+    ) :
         SpecificCollectionsScreenUIEvent()
 
     data class DeleteAnExistingNote(val linkId: Long, val linkType: LinkType) :
