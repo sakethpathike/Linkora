@@ -3,7 +3,6 @@ package com.sakethh.linkora.ui.screens.collections.specific.all_links
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
-import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
@@ -19,8 +18,7 @@ class AllLinksScreenVM @Inject constructor(
     importantLinksSortingRepo: ImportantLinksSortingRepo,
     historyLinksSortingRepo: HistoryLinksSortingRepo,
     archivedLinksSortingRepo: ArchivedLinksSortingRepo,
-    regularFolderLinksSortingRepo: RegularFolderLinksSortingRepo,
-    archivedFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
+    regularFolderLinksSortingRepo: RegularFolderLinksSortingRepo
 ) : ViewModel() {
 
 
@@ -29,6 +27,7 @@ class AllLinksScreenVM @Inject constructor(
         LinkTypeSelection(linkType = "Important Links", isChecked = mutableStateOf(false)),
         LinkTypeSelection(linkType = "History Links", isChecked = mutableStateOf(false)),
         LinkTypeSelection(linkType = "Archived Links", isChecked = mutableStateOf(false)),
+        LinkTypeSelection(linkType = "Folders Links", isChecked = mutableStateOf(false)),
     )
 
     val savedLinks = when (SettingsPreference.selectedSortingType.value) {
@@ -97,6 +96,23 @@ class AllLinksScreenVM @Inject constructor(
 
         else -> {
             archivedLinksSortingRepo.sortByZToA()
+        }
+    }
+    val regularFoldersLinks = when (SettingsPreference.selectedSortingType.value) {
+        SortingPreferences.NEW_TO_OLD.name -> {
+            regularFolderLinksSortingRepo.sortByLatestToOldestV10()
+        }
+
+        SortingPreferences.OLD_TO_NEW.name -> {
+            regularFolderLinksSortingRepo.sortByOldestToLatestV10()
+        }
+
+        SortingPreferences.A_TO_Z.name -> {
+            regularFolderLinksSortingRepo.sortByAToZV10()
+        }
+
+        else -> {
+            regularFolderLinksSortingRepo.sortByZToAV10()
         }
     }
 }

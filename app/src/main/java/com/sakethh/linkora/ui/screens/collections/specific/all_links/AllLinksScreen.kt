@@ -55,13 +55,26 @@ import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffol
 @Composable
 fun AllLinksScreen(navController: NavController) {
     val allLinksScreenVM: AllLinksScreenVM = hiltViewModel()
+
     val savedLinks = allLinksScreenVM.savedLinks.collectAsStateWithLifecycle(emptyList())
+    val impLinks = allLinksScreenVM.importantLinks.collectAsStateWithLifecycle(emptyList())
+    val historyLinks = allLinksScreenVM.historyLinks.collectAsStateWithLifecycle(emptyList())
+    val archivedLinks = allLinksScreenVM.archivedLinks.collectAsStateWithLifecycle(emptyList())
+    val regularFoldersLinks =
+        allLinksScreenVM.regularFoldersLinks.collectAsStateWithLifecycle(emptyList())
+
+    val noLinksSelectedState = allLinksScreenVM.linkTypes.map { it.isChecked.value }.all { !it }
     SpecificScreenScaffold(topAppBarText = "All Links", navController = navController, actions = {
-        IconButton(modifier = Modifier.pulsateEffect(),
-            onClick = { /*shouldSortingBottomSheetAppear.value = true*/ }) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Outlined.Sort, contentDescription = null
-            )
+        if (
+            allLinksScreenVM.linkTypes
+                .map { it.isChecked.value }.count { it } == 1
+        ) {
+            IconButton(modifier = Modifier.pulsateEffect(),
+                onClick = { /*shouldSortingBottomSheetAppear.value = true*/ }) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.Sort, contentDescription = null
+                )
+            }
         }
         IconButton(onClick = {
             navController.navigate(NavigationRoutes.LINK_VIEW_SETTINGS.name)
@@ -75,50 +88,209 @@ fun AllLinksScreen(navController: NavController) {
             .fillMaxSize()
             .padding(paddingValues)
             .nestedScroll(topAppBarScrollBehaviour.nestedScrollConnection)
-
+            .animateContentSize()
         when (SettingsPreference.currentlySelectedLinkView.value) {
             LinkView.REGULAR_LIST_VIEW.name, LinkView.TITLE_ONLY_LIST_VIEW.name -> {
                 LazyColumn(
                     modifier = commonModifier
                 ) {
-                    items(savedLinks.value) {
-                        ListViewLinkUIComponent(
-                            linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {},
-                                onLinkClick = {},
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = { },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-                                onLongClick = {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(savedLinks.value) {
+                            ListViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
 
-                                }),
-                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
-                        )
+                                    }),
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(impLinks.value) {
+                            ListViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(historyLinks.value) {
+                            ListViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(archivedLinks.value) {
+                            ListViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(regularFoldersLinks.value) {
+                            if (!it.isLinkedWithArchivedFolder)
+                                ListViewLinkUIComponent(
+                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                        webBaseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        onMoreIconClick = {},
+                                        onLinkClick = {},
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = { },
+                                        isSelectionModeEnabled = mutableStateOf(false),
+                                        isItemSelected = mutableStateOf(false),
+                                        onLongClick = {
+
+                                        }),
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                )
+                        }
                     }
                 }
             }
 
             LinkView.GRID_VIEW.name -> {
                 LazyVerticalGrid(columns = GridCells.Adaptive(150.dp), modifier = commonModifier) {
-                    items(savedLinks.value) {
-                        GridViewLinkUIComponent(
-                            linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {},
-                                onLinkClick = {},
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = { },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-                                onLongClick = {
 
-                                }),
-                            forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
-                        )
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(savedLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(impLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(historyLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(archivedLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(regularFoldersLinks.value) {
+                            if (!it.isLinkedWithArchivedFolder)
+                                GridViewLinkUIComponent(
+                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                        webBaseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        onMoreIconClick = {},
+                                        onLinkClick = {},
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = { },
+                                        isSelectionModeEnabled = mutableStateOf(false),
+                                        isItemSelected = mutableStateOf(false),
+                                        onLongClick = {
+
+                                        }),
+                                    forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                )
+                        }
                     }
                 }
             }
@@ -127,22 +299,102 @@ fun AllLinksScreen(navController: NavController) {
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Adaptive(150.dp), modifier = commonModifier
                 ) {
-                    items(savedLinks.value) {
-                        GridViewLinkUIComponent(
-                            linkUIComponentParam = LinkUIComponentParam(title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {},
-                                onLinkClick = {},
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = { },
-                                isSelectionModeEnabled = mutableStateOf(false),
-                                isItemSelected = mutableStateOf(false),
-                                onLongClick = {
 
-                                }),
-                            forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
-                        )
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(savedLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(impLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(historyLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(archivedLinks.value) {
+                            GridViewLinkUIComponent(
+                                linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                    webBaseURL = it.baseURL,
+                                    imgURL = it.imgURL,
+                                    onMoreIconClick = {},
+                                    onLinkClick = {},
+                                    webURL = it.webURL,
+                                    onForceOpenInExternalBrowserClicked = { },
+                                    isSelectionModeEnabled = mutableStateOf(false),
+                                    isItemSelected = mutableStateOf(false),
+                                    onLongClick = {
+
+                                    }),
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                            )
+                        }
+                    }
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                        items(regularFoldersLinks.value) {
+                            if (!it.isLinkedWithArchivedFolder)
+                                GridViewLinkUIComponent(
+                                    linkUIComponentParam = LinkUIComponentParam(title = it.title,
+                                        webBaseURL = it.baseURL,
+                                        imgURL = it.imgURL,
+                                        onMoreIconClick = {},
+                                        onLinkClick = {},
+                                        webURL = it.webURL,
+                                        onForceOpenInExternalBrowserClicked = { },
+                                        isSelectionModeEnabled = mutableStateOf(false),
+                                        isItemSelected = mutableStateOf(false),
+                                        onLongClick = {
+
+                                        }),
+                                    forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                )
+                        }
                     }
                 }
             }

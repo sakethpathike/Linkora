@@ -10,15 +10,31 @@ class RegularFolderLinksSortingImpl(private val localDatabase: LocalDatabase) :
         return localDatabase.regularFolderLinksSorting().sortByAToZV10(folderID)
     }
 
+    override fun sortByAToZV10(): Flow<List<LinksTable>> {
+        return localDatabase.regularFolderLinksSorting().sortByAToZV10()
+    }
+
     override fun sortByZToAV10(folderID: Long): Flow<List<LinksTable>> {
         return localDatabase.regularFolderLinksSorting().sortByZToAV10(folderID)
+    }
+
+    override fun sortByZToAV10(): Flow<List<LinksTable>> {
+        return localDatabase.regularFolderLinksSorting().sortByZToAV10()
     }
 
     override fun sortByLatestToOldestV10(folderID: Long): Flow<List<LinksTable>> {
         return localDatabase.regularFolderLinksSorting().sortByLatestToOldestV10(folderID)
     }
 
+    override fun sortByLatestToOldestV10(): Flow<List<LinksTable>> {
+        return localDatabase.regularFolderLinksSorting().sortByLatestToOldestV10()
+    }
+
     override fun sortByOldestToLatestV10(folderID: Long): Flow<List<LinksTable>> {
         return localDatabase.regularFolderLinksSorting().sortByOldestToLatestV10(folderID)
+    }
+
+    override fun sortByOldestToLatestV10(): Flow<List<LinksTable>> {
+        return localDatabase.regularFolderLinksSorting().sortByOldestToLatestV10()
     }
 }

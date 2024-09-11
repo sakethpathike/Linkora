@@ -12,4 +12,12 @@ interface RegularFolderLinksSortingRepo {
     fun sortByLatestToOldestV10(folderID: Long): Flow<List<LinksTable>>
 
     fun sortByOldestToLatestV10(folderID: Long): Flow<List<LinksTable>>
+
+    fun sortByAToZV10(): Flow<List<LinksTable>>
+
+    fun sortByZToAV10(): Flow<List<LinksTable>>
+
+    fun sortByLatestToOldestV10(): Flow<List<LinksTable>>
+
+    fun sortByOldestToLatestV10(): Flow<List<LinksTable>>
 }
