@@ -45,9 +45,10 @@ import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinkType
@@ -66,6 +67,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.link_view.LinkView
@@ -124,7 +126,7 @@ fun AllLinksScreen(navController: NavController) {
         mutableStateOf("")
     }
     val noLinksSelectedState = allLinksScreenVM.linkTypes.map { it.isChecked.value }.all { !it }
-    val customWebTab = viewModel<CustomWebTab>()
+    val customWebTab = hiltViewModel<CustomWebTab>()
     val context = LocalContext.current
     fun modifiedLinkUIComponentParam(
         linksTable: LinksTable,
@@ -540,19 +542,47 @@ fun AllLinksScreen(navController: NavController) {
                     shouldDeleteDialogBoxAppear.value = true
                 },
                 onArchiveClick = {
-
+                    allLinksScreenVM.onUIEvent(
+                        SpecificCollectionsScreenUIEvent.ArchiveAnExistingLink(
+                            ArchivedLinks(
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                            ), LinkType.valueOf(selectedLinkType.value)
+                        )
+                    )
                 },
                 noteForSaving = selectedNote.value,
                 onNoteDeleteCardClick = {
-
+                    allLinksScreenVM.onUIEvent(
+                        SpecificCollectionsScreenUIEvent.DeleteAnExistingNote(
+                            selectedElementID.longValue, LinkType.valueOf(selectedLinkType.value)
+                        )
+                    )
                 },
                 folderName = selectedURLTitle.value,
                 linkTitle = selectedURLTitle.value,
                 imgLink = HomeScreenVM.tempImpLinkData.imgURL,
                 onRefreshClick = {
-
+                    allLinksScreenVM.onUIEvent(
+                        SpecificCollectionsScreenUIEvent.OnLinkRefresh(
+                            selectedElementID.longValue, LinkType.valueOf(selectedLinkType.value)
+                        )
+                    )
                 }, onImportantLinkClick = {
-
+                    allLinksScreenVM.onUIEvent(
+                        SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
+                            ImportantLinks(
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving
+                            )
+                        )
+                    )
                 }
             )
         )
@@ -563,6 +593,11 @@ fun AllLinksScreen(navController: NavController) {
             shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
             deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
             onDeleteClick = {
+                allLinksScreenVM.onUIEvent(
+                    SpecificCollectionsScreenUIEvent.DeleteAnExistingLink(
+                        selectedElementID.longValue, LinkType.valueOf(selectedLinkType.value)
+                    )
+                )
             })
     )
     RenameDialogBox(
@@ -571,10 +606,22 @@ fun AllLinksScreen(navController: NavController) {
             existingFolderName = selectedURLTitle.value,
             renameDialogBoxFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
             onNoteChangeClick = { newNote: String ->
-
+                allLinksScreenVM.onUIEvent(
+                    SpecificCollectionsScreenUIEvent.UpdateLinkNote(
+                        linkId = selectedElementID.longValue,
+                        newNote = newNote,
+                        linkType = LinkType.valueOf(selectedLinkType.value)
+                    )
+                )
             },
             onTitleChangeClick = { newTitle: String ->
-
+                allLinksScreenVM.onUIEvent(
+                    SpecificCollectionsScreenUIEvent.UpdateLinkTitle(
+                        linkId = selectedElementID.longValue,
+                        newTitle = newTitle,
+                        linkType = LinkType.valueOf(selectedLinkType.value)
+                    )
+                )
             }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
         )
     )

@@ -7,6 +7,7 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -115,4 +116,12 @@ class AllLinksScreenVM @Inject constructor(
             regularFolderLinksSortingRepo.sortByZToAV10()
         }
     }
+
+
+    fun onUIEvent(
+        specificCollectionsScreenUIEvent: SpecificCollectionsScreenUIEvent,
+    ) {
+
+    }
+
 }

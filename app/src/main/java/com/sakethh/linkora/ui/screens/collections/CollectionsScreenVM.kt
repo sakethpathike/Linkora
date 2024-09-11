@@ -376,6 +376,8 @@ open class CollectionsScreenVM @Inject constructor(
                     pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.removedLinkFromImportantLinksSuccessfully.value))
                 }
             }
+
+            else -> {}
         }
     }
 
