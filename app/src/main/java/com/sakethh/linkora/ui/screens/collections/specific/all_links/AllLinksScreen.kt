@@ -239,6 +239,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -263,6 +264,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -287,6 +289,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -340,6 +343,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -364,6 +368,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -388,6 +393,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -443,6 +449,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -467,6 +474,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -491,6 +499,7 @@ fun AllLinksScreen(navController: NavController) {
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
+                                id = it.id,
                                 title = it.title,
                                 webURL = it.webURL,
                                 baseURL = it.baseURL,
@@ -529,6 +538,28 @@ fun AllLinksScreen(navController: NavController) {
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                inSpecificArchiveScreen = mutableStateOf(false),
+                onUnarchiveClick = {
+                    allLinksScreenVM.onUIEvent(
+                        SpecificCollectionsScreenUIEvent.UnArchiveAnExistingLink(
+                            ArchivedLinks(
+                                title = HomeScreenVM.tempImpLinkData.title,
+                                webURL = HomeScreenVM.tempImpLinkData.webURL,
+                                baseURL = HomeScreenVM.tempImpLinkData.baseURL,
+                                imgURL = HomeScreenVM.tempImpLinkData.imgURL,
+                                infoForSaving = HomeScreenVM.tempImpLinkData.infoForSaving,
+                                id = selectedElementID.longValue
+                            )
+                        )
+                    )
+                },
+                webUrl = selectedWebURL.value,
+                inArchiveScreen = rememberSaveable(selectedLinkType.value) {
+                    mutableStateOf(selectedLinkType.value == LinkType.ARCHIVE_LINK.name)
+                },
+                showQuickActions = rememberSaveable(SettingsPreference.currentlySelectedLinkView.value) {
+                    mutableStateOf(SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkView.value == LinkView.GRID_VIEW.name)
+                },
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
@@ -614,6 +645,7 @@ fun AllLinksScreen(navController: NavController) {
                         linkType = LinkType.valueOf(selectedLinkType.value)
                     )
                 )
+                shouldRenameDialogBoxAppear.value = false
             },
             onTitleChangeClick = { newTitle: String ->
                 allLinksScreenVM.onUIEvent(
@@ -623,6 +655,7 @@ fun AllLinksScreen(navController: NavController) {
                         linkType = LinkType.valueOf(selectedLinkType.value)
                     )
                 )
+                shouldRenameDialogBoxAppear.value = false
             }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
         )
     )

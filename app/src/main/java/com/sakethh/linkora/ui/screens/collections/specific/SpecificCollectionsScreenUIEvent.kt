@@ -75,6 +75,11 @@ sealed class SpecificCollectionsScreenUIEvent {
     ) :
         SpecificCollectionsScreenUIEvent()
 
+    data class UnArchiveAnExistingLink(
+        val archivedLink: ArchivedLinks
+    ) :
+        SpecificCollectionsScreenUIEvent()
+
     data class DeleteAnExistingNote(val linkId: Long, val linkType: LinkType) :
         SpecificCollectionsScreenUIEvent()
 

@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.ArchivedLinks
+import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.links.LinkType
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
@@ -15,6 +16,7 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
+import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.receiveAsFlow
@@ -135,6 +137,7 @@ class AllLinksScreenVM @Inject constructor(
     ) {
         when (specificCollectionsScreenUIEvent) {
             is SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink -> {
+                linkoraLog("AddExistingLinkToImportantLink")
                 viewModelScope.launch {
                     if (linksRepo.doesThisExistsInImpLinks(specificCollectionsScreenUIEvent.importantLinks.webURL)) {
 
@@ -145,6 +148,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.ArchiveAnExistingLink -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 viewModelScope.launch {
                     linksRepo.archiveLinkTableUpdater(
                         archivedLinks = ArchivedLinks(
@@ -166,6 +170,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.DeleteAnExistingLink -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 viewModelScope.launch {
                     when (specificCollectionsScreenUIEvent.linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
@@ -196,6 +201,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.DeleteAnExistingNote -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 when (specificCollectionsScreenUIEvent.linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         viewModelScope.launch {
@@ -226,6 +232,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.OnLinkRefresh -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 when (specificCollectionsScreenUIEvent.linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         viewModelScope.launch {
@@ -241,6 +248,7 @@ class AllLinksScreenVM @Inject constructor(
 
                     LinkType.HISTORY_LINK -> {
                         viewModelScope.launch {
+                            linkoraLog(specificCollectionsScreenUIEvent.linkId.toString())
                             linksRepo.reloadHistoryLinksTableLink(
                                 specificCollectionsScreenUIEvent.linkId
                             )
@@ -256,6 +264,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateLinkNote -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 when (specificCollectionsScreenUIEvent.linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         viewModelScope.launch {
@@ -296,6 +305,7 @@ class AllLinksScreenVM @Inject constructor(
             }
 
             is SpecificCollectionsScreenUIEvent.UpdateLinkTitle -> {
+                linkoraLog(specificCollectionsScreenUIEvent.linkType.name)
                 when (specificCollectionsScreenUIEvent.linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         viewModelScope.launch {
@@ -335,11 +345,30 @@ class AllLinksScreenVM @Inject constructor(
                 }
             }
 
-            else -> {
+            is SpecificCollectionsScreenUIEvent.UnArchiveAnExistingLink -> {
+                linkoraLog("UnArchiveAnExistingLink")
                 viewModelScope.launch {
-                    pushUiEvent(CommonUiEvent.ShowToast(""))
+                    linksRepo.deleteALinkFromArchiveLinks(specificCollectionsScreenUIEvent.archivedLink.id)
+                    linksRepo.addANewLinkToSavedLinks(
+                        LinksTable(
+                            title = specificCollectionsScreenUIEvent.archivedLink.title,
+                            webURL = specificCollectionsScreenUIEvent.archivedLink.webURL,
+                            baseURL = specificCollectionsScreenUIEvent.archivedLink.baseURL,
+                            imgURL = specificCollectionsScreenUIEvent.archivedLink.imgURL,
+                            infoForSaving = specificCollectionsScreenUIEvent.archivedLink.infoForSaving,
+                            isLinkedWithSavedLinks = true,
+                            isLinkedWithFolders = false,
+                            isLinkedWithImpFolder = false,
+                            keyOfImpLinkedFolder = "",
+                            isLinkedWithArchivedFolder = false
+                        ),
+                        autoDetectTitle = false,
+                        onTaskCompleted = {}
+                    )
                 }
             }
+
+            else -> {}
         }
     }
 
