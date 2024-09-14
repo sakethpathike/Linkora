@@ -32,9 +32,9 @@ height="80">](https://github.com/sakethpathike/Linkora/releases) [<img src="http
 
 |  |  |  |
 |-----------------------|-----------------------|-----------------------|
-| ![Linkora UI Screenshot](https://github.com/user-attachments/assets/ca9533fa-ee8d-4eea-bb01-4abbb4ae2553) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/54bc6f28-4a3c-4ea5-8ce8-0cca538854fd) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/532caea7-1433-4e36-8132-72a2b37a56e4) |
-| ![Linkora UI Screenshot](https://github.com/user-attachments/assets/0fc9c62d-dd0b-4cee-bedf-8418c624a3f0) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/8181ff76-9cda-4e00-b191-aa8c3b5bfabd) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/40edab19-181f-4a3c-b3ff-13238b8fbf20) |
-| ![Linkora UI Screenshot](https://github.com/user-attachments/assets/0edb91df-4445-4801-b064-f03cfb950e24) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/8149ac76-27e5-43e4-818d-0f0e60008c1a) | ![Linkora UI Screenshot](https://github.com/user-attachments/assets/62132203-38bd-44f6-959a-220d2ff5d91a) |
+| ![Linkora UI Screenshot](assets/1.png) | ![Linkora UI Screenshot](assets/2.png) | ![Linkora UI Screenshot](assets/3.png) |
+| ![Linkora UI Screenshot](assets/4.png) | ![Linkora UI Screenshot](assets/5.png) | ![Linkora UI Screenshot](assets/6.png) |
+| ![Linkora UI Screenshot](assets/7.png) | ![Linkora UI Screenshot](assets/8.png) | ![Linkora UI Screenshot](assets/9.png) |
 
 |                            Sharing links from other apps                            |
 |:-----------------------------------------------------------------------------------:|
