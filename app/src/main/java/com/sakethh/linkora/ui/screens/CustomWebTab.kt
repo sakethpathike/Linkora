@@ -37,7 +37,6 @@ open class CustomWebTab @Inject constructor(private val linksRepo: LinksRepo) : 
                 setInstantAppsEnabled(true)
                 setShowTitle(true)
                 val customTabBuilder = build()
-                customTabBuilder.intent.setPackage("com.android.chrome")
                 customTabBuilder.launchUrl(context, Uri.parse(recentlyVisitedData.webURL))
             }
         }
