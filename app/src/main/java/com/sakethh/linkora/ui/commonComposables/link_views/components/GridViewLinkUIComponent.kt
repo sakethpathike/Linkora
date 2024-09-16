@@ -71,45 +71,45 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                 ) else Modifier
             )
             .animateContentSize()
-        ) {
-            if (linkUIComponentParam.isItemSelected.value) {
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .height(150.dp)
-                        .background(MaterialTheme.colorScheme.primary),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(Icons.Default.CheckCircle, null, tint = colorScheme.onPrimary)
-                }
-            } else if (linkUIComponentParam.imgURL.trim().isNotBlank()) {
-                Box(modifier = if (forStaggeredView) Modifier.fillMaxSize() else Modifier.height(150.dp)) {
-                    CoilImage(
+    ) {
+        if (linkUIComponentParam.isItemSelected.value) {
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .height(150.dp)
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(Icons.Default.CheckCircle, null, tint = colorScheme.onPrimary)
+            }
+        } else if (linkUIComponentParam.imgURL.trim().isNotBlank()) {
+            Box(modifier = if (forStaggeredView) Modifier.fillMaxSize() else Modifier.height(150.dp)) {
+                CoilImage(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .then(
+                            if (SettingsPreference.enableFadedEdgeForNonListViews.value) Modifier.fadedEdges(
+                                colorScheme
+                            ) else Modifier
+                        ),
+                    imgURL = linkUIComponentParam.imgURL,
+                    contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
+                )
+                if (!SettingsPreference.enableBaseURLForNonListViews.value && !SettingsPreference.enableTitleForNonListViews.value) {
+                    Icon(
+                        Icons.Default.MoreVert,
+                        null,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .then(
-                                if (SettingsPreference.enableFadedEdgeForNonListViews.value) Modifier.fadedEdges(
-                                    colorScheme
-                                ) else Modifier
-                            ),
-                        imgURL = linkUIComponentParam.imgURL,
-                        contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
+                            .align(Alignment.BottomEnd)
+                            .clip(RoundedCornerShape(topStart = 10.dp))
+                            .clickable {
+                                linkUIComponentParam.onMoreIconClick()
+                            }
+                            .padding(10.dp)
                     )
-                    if (!SettingsPreference.enableBaseURLForNonListViews.value && !SettingsPreference.enableTitleForNonListViews.value) {
-                        Icon(
-                            Icons.Default.MoreVert,
-                            null,
-                            modifier = Modifier
-                                .align(Alignment.BottomEnd)
-                                .clip(RoundedCornerShape(topStart = 10.dp))
-                                .clickable {
-                                    linkUIComponentParam.onMoreIconClick()
-                                }
-                                .padding(10.dp)
-                        )
-                    }
                 }
             }
+        }
         if (SettingsPreference.enableTitleForNonListViews.value) {
             Text(
                 text = linkUIComponentParam.title,
@@ -156,7 +156,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                 }
                 Icon(Icons.Default.MoreVert, null, modifier = Modifier
                     .clickable {
-                    linkUIComponentParam.onMoreIconClick()
+                        linkUIComponentParam.onMoreIconClick()
                     })
             }
         } else if (!SettingsPreference.enableBaseURLForNonListViews.value && SettingsPreference.enableTitleForNonListViews.value) {
@@ -173,5 +173,5 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                 )
             }
         }
-        }
+    }
 }

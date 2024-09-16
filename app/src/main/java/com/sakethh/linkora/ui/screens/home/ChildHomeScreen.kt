@@ -118,6 +118,7 @@ fun ChildHomeScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 is CommonUiEvent.ShowDeleteDialogBox -> {
                     shouldDeleteDialogBoxAppear.value = true
                 }

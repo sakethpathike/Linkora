@@ -720,6 +720,7 @@ class LinksImpl @Inject constructor(
             recentlyVisited = null, archivedLinks = null
         )
     }
+
     override suspend fun addANewLinkToImpLinks(
         importantLink: ImportantLinks
     ): CommonUiEvent {

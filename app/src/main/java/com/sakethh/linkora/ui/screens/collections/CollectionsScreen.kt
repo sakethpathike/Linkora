@@ -135,6 +135,7 @@ fun CollectionsScreen(navController: NavController) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -634,14 +635,15 @@ fun CollectionsScreen(navController: NavController) {
             )
         )
         RenameDialogBox(
-            RenameDialogBoxParam(onNoteChangeClick = {
-                collectionsScreenVM.onUiEvent(
-                    SpecificCollectionsScreenUIEvent.UpdateFolderNote(
-                        CollectionsScreenVM.selectedFolderData.value.id, it
+            RenameDialogBoxParam(
+                onNoteChangeClick = {
+                    collectionsScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.UpdateFolderNote(
+                            CollectionsScreenVM.selectedFolderData.value.id, it
+                        )
                     )
-                )
-                shouldRenameDialogBoxBeVisible.value = false
-            },
+                    shouldRenameDialogBoxBeVisible.value = false
+                },
                 shouldDialogBoxAppear = shouldRenameDialogBoxBeVisible,
                 existingFolderName = clickedItemName.value,
                 onTitleChangeClick = {

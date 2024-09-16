@@ -96,6 +96,7 @@ fun LanguageSettingsScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -559,15 +560,15 @@ fun LanguageSettingsScreen(
             }
         }
     }
-        SettingsNewVersionCheckerDialogBox(
-            text = if (isRetrieveLanguageInfoFABTriggered.value)
-                LocalizedStrings.syncingLanguageDetailsThisMayTakeSomeTime.value else LocalizedStrings.syncingTranslationsForCurrentlySelectedLanguage.value.replace(
-                "\$\$\$\$",
-                currentlySelectedLanguageName.value
-            ),
-            shouldCancelButtonBeVisible = false,
-            shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
-        )
+    SettingsNewVersionCheckerDialogBox(
+        text = if (isRetrieveLanguageInfoFABTriggered.value)
+            LocalizedStrings.syncingLanguageDetailsThisMayTakeSomeTime.value else LocalizedStrings.syncingTranslationsForCurrentlySelectedLanguage.value.replace(
+            "\$\$\$\$",
+            currentlySelectedLanguageName.value
+        ),
+        shouldCancelButtonBeVisible = false,
+        shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
+    )
     LaunchedEffect(key1 = Unit) {
         preferredAppLanguageName.value = readSettingPreferenceValue(
             stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),

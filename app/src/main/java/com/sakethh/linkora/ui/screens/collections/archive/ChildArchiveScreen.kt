@@ -84,6 +84,7 @@ fun ChildArchiveScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -188,75 +189,75 @@ fun ChildArchiveScreen(
 
     LinkoraTheme {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
-                if (archiveLinksData.isNotEmpty()) {
-                    when (SettingsPreference.currentlySelectedLinkLayout.value) {
-                        LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
-                            LazyColumn(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .animateContentSize()
-                            ) {
-                                itemsIndexed(
-                                    items = archiveLinksData,
-                                    key = { _, archivedLinks ->
-                                        archivedLinks.id.toString() + archivedLinks.baseURL
-                                    }) { index, it ->
-                                    ListViewLinkUIComponent(
-                                        commonLinkParam(it),
-                                        forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
-                                    )
-                                }
-                            }
-                        }
-
-                        LinkLayout.GRID_VIEW.name -> {
-                            LazyVerticalGrid(
-                                columns = GridCells.Adaptive(150.dp),
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .fillMaxSize()
-                                    .animateContentSize()
-                            ) {
-                                itemsIndexed(
-                                    items = archiveLinksData,
-                                    key = { _, archivedLinks ->
-                                        archivedLinks.id.toString() + archivedLinks.baseURL
-                                    }) { index, it ->
-                                    GridViewLinkUIComponent(
-                                        commonLinkParam(it),
-                                        forStaggeredView = false
-                                    )
-                                }
-                            }
-                        }
-
-                        LinkLayout.STAGGERED_VIEW.name -> {
-                            LazyVerticalStaggeredGrid(
-                                columns = StaggeredGridCells.Adaptive(150.dp),
-                                modifier = Modifier
-                                    .padding(5.dp)
-                                    .fillMaxSize()
-                                    .animateContentSize()
-                            ) {
-                                itemsIndexed(
-                                    items = archiveLinksData,
-                                    key = { _, archivedLinks ->
-                                        archivedLinks.id.toString() + archivedLinks.baseURL
-                                    }) { index, it ->
-                                    GridViewLinkUIComponent(
-                                        commonLinkParam(it),
-                                        forStaggeredView = true
-                                    )
-                                }
+            if (archiveLinksData.isNotEmpty()) {
+                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                    LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                ListViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                )
                             }
                         }
                     }
-                } else {
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        DataEmptyScreen(text = LocalizedStrings.noLinksWereArchived.value)
-                        Spacer(modifier = Modifier.height(165.dp))
+
+                    LinkLayout.GRID_VIEW.name -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forStaggeredView = false
+                                )
+                            }
+                        }
+                    }
+
+                    LinkLayout.STAGGERED_VIEW.name -> {
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forStaggeredView = true
+                                )
+                            }
+                        }
                     }
                 }
+            } else {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    DataEmptyScreen(text = LocalizedStrings.noLinksWereArchived.value)
+                    Spacer(modifier = Modifier.height(165.dp))
+                }
+            }
         } else {
             LazyColumn(
                 modifier = Modifier

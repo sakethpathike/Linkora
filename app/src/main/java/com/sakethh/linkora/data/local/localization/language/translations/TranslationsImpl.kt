@@ -17,6 +17,7 @@ class TranslationsImpl @Inject constructor(
             is RequestResult.Failure -> {
                 return RequestResult.Failure(LocalizedStrings.cannotRetrieveNowPleaseTryAgain.value)
             }
+
             is RequestResult.Success -> {
                 localDatabase.translationDao()
                     .deleteAllLocalizedStringsForThisLanguage(languageCode)

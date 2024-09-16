@@ -456,6 +456,7 @@ private fun QuickActions(onForceOpenInExternalBrowserClicked: () -> Unit, webUrl
         Spacer(Modifier.height(15.dp))
     }
 }
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun IndividualMenuComponent(

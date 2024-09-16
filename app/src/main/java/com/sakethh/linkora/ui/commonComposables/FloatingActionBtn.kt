@@ -50,140 +50,140 @@ fun FloatingActionBtn(
         )
     }
     val coroutineScope = rememberCoroutineScope()
-        androidx.compose.foundation.layout.Column(
-            modifier = Modifier.padding(
-                bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
-            )
+    androidx.compose.foundation.layout.Column(
+        modifier = Modifier.padding(
+            bottom = if (!floatingActionBtnParam.inASpecificScreen) 82.dp else 0.dp
+        )
+    ) {
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+            modifier = Modifier.align(Alignment.End),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            androidx.compose.foundation.layout.Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = Modifier.align(Alignment.End),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (floatingActionBtnParam.isMainFabRotated.value) {
-                    AnimatedVisibility(
-                        visible = floatingActionBtnParam.isMainFabRotated.value,
-                        enter = androidx.compose.animation.fadeIn(
-                            androidx.compose.animation.core.tween(
-                                200
-                            )
-                        ),
-                        exit = androidx.compose.animation.fadeOut(
-                            androidx.compose.animation.core.tween(
-                                200
-                            )
-                        )
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = LocalizedStrings.createANewFolder.value,
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(
-                                end = 15.dp
-                            )
-                        )
-                    }
-                }
+            if (floatingActionBtnParam.isMainFabRotated.value) {
                 AnimatedVisibility(
                     visible = floatingActionBtnParam.isMainFabRotated.value,
-                    enter = androidx.compose.animation.scaleIn(
-                        animationSpec = androidx.compose.animation.core.tween(
-                            300
+                    enter = androidx.compose.animation.fadeIn(
+                        androidx.compose.animation.core.tween(
+                            200
                         )
                     ),
-                    exit = androidx.compose.animation.scaleOut(
-                        androidx.compose.animation.core.tween(300)
+                    exit = androidx.compose.animation.fadeOut(
+                        androidx.compose.animation.core.tween(
+                            200
+                        )
                     )
                 ) {
-                    androidx.compose.material3.FloatingActionButton(
-                        modifier = Modifier.pulsateEffect(),
-                        onClick = {
-                            floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
-                                false
-                            floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
-                            floatingActionBtnParam.isMainFabRotated.value = false
-                        }) {
-                        androidx.compose.material3.Icon(
-                            imageVector = Icons.Default.CreateNewFolder,
-                            contentDescription = null
+                    androidx.compose.material3.Text(
+                        text = LocalizedStrings.createANewFolder.value,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(
+                            end = 15.dp
                         )
-                    }
+                    )
                 }
-
             }
-            androidx.compose.foundation.layout.Spacer(
-                modifier = Modifier.height(
-                    15.dp
+            AnimatedVisibility(
+                visible = floatingActionBtnParam.isMainFabRotated.value,
+                enter = androidx.compose.animation.scaleIn(
+                    animationSpec = androidx.compose.animation.core.tween(
+                        300
+                    )
+                ),
+                exit = androidx.compose.animation.scaleOut(
+                    androidx.compose.animation.core.tween(300)
                 )
-            )
-            androidx.compose.foundation.layout.Row(
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
-                modifier = Modifier.align(Alignment.End),
-                verticalAlignment = Alignment.CenterVertically
             ) {
-                if (floatingActionBtnParam.isMainFabRotated.value) {
-                    AnimatedVisibility(
-                        visible = floatingActionBtnParam.isMainFabRotated.value,
-                        enter = androidx.compose.animation.fadeIn(
-                            androidx.compose.animation.core.tween(
-                                200
-                            )
-                        ),
-                        exit = androidx.compose.animation.fadeOut(
-                            androidx.compose.animation.core.tween(
-                                200
-                            )
-                        )
-                    ) {
-                        androidx.compose.material3.Text(
-                            text = LocalizedStrings.addANewLink.value,
-                            color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
-                            style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
-                            fontSize = 20.sp,
-                            modifier = Modifier.padding(
-                                end = 15.dp
-                            )
-                        )
-                    }
-                }
                 androidx.compose.material3.FloatingActionButton(
-                    modifier = Modifier
-                        .rotate(
-                            floatingActionBtnParam.rotationAnimation.value
-                        )
-                        .pulsateEffect(),
+                    modifier = Modifier.pulsateEffect(),
                     onClick = {
-                        if (floatingActionBtnParam.isMainFabRotated.value) {
-                            floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
-                                false
-                            floatingActionBtnParam.shouldDialogForNewLinkAppear.value = true
-                            floatingActionBtnParam.isMainFabRotated.value = false
-                        } else {
-                            coroutineScope.launch {
-                                kotlinx.coroutines.awaitAll(async {
-                                    floatingActionBtnParam.rotationAnimation.animateTo(
-                                        360f,
-                                        animationSpec = androidx.compose.animation.core.tween(300)
-                                    )
-                                }, async {
-                                    floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
-                                        true
-                                    kotlinx.coroutines.delay(10L)
-                                    floatingActionBtnParam.isMainFabRotated.value = true
-                                })
-                            }.invokeOnCompletion {
-                                coroutineScope.launch {
-                                    floatingActionBtnParam.rotationAnimation.snapTo(0f)
-                                }
-                            }
-                        }
+                        floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
+                            false
+                        floatingActionBtnParam.shouldDialogForNewFolderAppear.value = true
+                        floatingActionBtnParam.isMainFabRotated.value = false
                     }) {
                     androidx.compose.material3.Icon(
-                        imageVector = currentIconForMainFAB.value,
+                        imageVector = Icons.Default.CreateNewFolder,
                         contentDescription = null
                     )
                 }
             }
+
         }
+        androidx.compose.foundation.layout.Spacer(
+            modifier = Modifier.height(
+                15.dp
+            )
+        )
+        androidx.compose.foundation.layout.Row(
+            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.Center,
+            modifier = Modifier.align(Alignment.End),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (floatingActionBtnParam.isMainFabRotated.value) {
+                AnimatedVisibility(
+                    visible = floatingActionBtnParam.isMainFabRotated.value,
+                    enter = androidx.compose.animation.fadeIn(
+                        androidx.compose.animation.core.tween(
+                            200
+                        )
+                    ),
+                    exit = androidx.compose.animation.fadeOut(
+                        androidx.compose.animation.core.tween(
+                            200
+                        )
+                    )
+                ) {
+                    androidx.compose.material3.Text(
+                        text = LocalizedStrings.addANewLink.value,
+                        color = androidx.compose.material3.MaterialTheme.colorScheme.onSurface,
+                        style = androidx.compose.material3.MaterialTheme.typography.titleMedium,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(
+                            end = 15.dp
+                        )
+                    )
+                }
+            }
+            androidx.compose.material3.FloatingActionButton(
+                modifier = Modifier
+                    .rotate(
+                        floatingActionBtnParam.rotationAnimation.value
+                    )
+                    .pulsateEffect(),
+                onClick = {
+                    if (floatingActionBtnParam.isMainFabRotated.value) {
+                        floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
+                            false
+                        floatingActionBtnParam.shouldDialogForNewLinkAppear.value = true
+                        floatingActionBtnParam.isMainFabRotated.value = false
+                    } else {
+                        coroutineScope.launch {
+                            kotlinx.coroutines.awaitAll(async {
+                                floatingActionBtnParam.rotationAnimation.animateTo(
+                                    360f,
+                                    animationSpec = androidx.compose.animation.core.tween(300)
+                                )
+                            }, async {
+                                floatingActionBtnParam.shouldScreenTransparencyDecreasedBoxVisible.value =
+                                    true
+                                kotlinx.coroutines.delay(10L)
+                                floatingActionBtnParam.isMainFabRotated.value = true
+                            })
+                        }.invokeOnCompletion {
+                            coroutineScope.launch {
+                                floatingActionBtnParam.rotationAnimation.snapTo(0f)
+                            }
+                        }
+                    }
+                }) {
+                androidx.compose.material3.Icon(
+                    imageVector = currentIconForMainFAB.value,
+                    contentDescription = null
+                )
+            }
+        }
+    }
 }

@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -65,7 +64,6 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -687,7 +685,7 @@ fun AllLinksScreen(navController: NavController) {
             }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
         )
     )
-    }
+}
 
 @Composable
 private fun LinksSelectionChips(allLinksScreenVM: AllLinksScreenVM) {

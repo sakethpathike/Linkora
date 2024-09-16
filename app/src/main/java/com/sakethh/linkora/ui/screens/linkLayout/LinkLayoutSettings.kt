@@ -414,10 +414,10 @@ private fun LinkViewRadioButtonComponent(
             })
         Text(
             text = linkLayout.name.replace("_", " ").split(" ").map {
-            it.lowercase()
-        }.map {
-            it.replaceFirstChar { char -> char.uppercaseChar() }
-        }.joinToString().replace(",", ""),
+                it.lowercase()
+            }.map {
+                it.replaceFirstChar { char -> char.uppercaseChar() }
+            }.joinToString().replace(",", ""),
             style = MaterialTheme.typography.titleSmall
         )
     }

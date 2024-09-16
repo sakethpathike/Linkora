@@ -53,11 +53,11 @@ fun SpecificScreenScaffold(
                         )
                     }
                 }, scrollBehavior = topAppBarScrollBehaviour, title = {
-                        Text(
-                            text = topAppBarText,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontSize = 18.sp
-                        )
+                    Text(
+                        text = topAppBarText,
+                        style = MaterialTheme.typography.titleMedium,
+                        fontSize = 18.sp
+                    )
                 })
             }
         }) {

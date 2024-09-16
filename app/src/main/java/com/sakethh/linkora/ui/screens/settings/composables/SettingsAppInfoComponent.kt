@@ -76,7 +76,9 @@ fun SettingsAppInfoComponent(
                 Icon(
                     painter = painterResource(id = localIcon),
                     contentDescription = null,
-                    modifier = Modifier.padding(20.dp).size(24.dp)
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(24.dp)
                 )
             } else {
                 if (icon != null) {
