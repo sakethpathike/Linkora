@@ -1444,6 +1444,11 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
         )
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                showQuickActions = mutableStateOf(
+                    !SearchScreenVM.isSearchEnabled.value &&
+                            (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name ||
+                                    SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
+                ),
                 btmModalSheetState = optionsBtmSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,

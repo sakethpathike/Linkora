@@ -383,6 +383,12 @@ fun ChildArchiveScreen(
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                showQuickActions = mutableStateOf(
+                    archiveScreenType == ArchiveScreenType.LINKS && (
+                            SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                    || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name
+                            )
+                ),
                 inArchiveScreen = mutableStateOf(true),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
@@ -433,7 +439,6 @@ fun ChildArchiveScreen(
                         forceOpenInExternalBrowser = false
                     )
                 },
-                showQuickActions = mutableStateOf(archiveScreenType == ArchiveScreenType.LINKS),
             )
         )
 
