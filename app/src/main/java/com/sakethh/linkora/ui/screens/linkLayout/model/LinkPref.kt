@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.link_view.model
+package com.sakethh.linkora.ui.screens.linkLayout.model
 
 import androidx.compose.runtime.MutableState
 

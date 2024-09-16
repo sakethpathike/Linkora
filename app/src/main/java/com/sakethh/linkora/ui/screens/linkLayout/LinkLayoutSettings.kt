@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.link_view
+package com.sakethh.linkora.ui.screens.linkLayout
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -40,7 +40,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
-import com.sakethh.linkora.ui.screens.link_view.model.LinkPref
+import com.sakethh.linkora.ui.screens.linkLayout.model.LinkPref
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
@@ -91,6 +91,16 @@ fun LinkLayoutSettings(navController: NavController) {
                 onMoreIconClick = { -> },
                 onLinkClick = { -> },
                 webURL = "https://twitter.com/CatWorkers/status/1819121250226127061",
+                onForceOpenInExternalBrowserClicked = { -> },
+                isSelectionModeEnabled = mutableStateOf(false),
+                isItemSelected = mutableStateOf(false),
+                onLongClick = { -> }),
+            LinkUIComponentParam(title = "Philipp Lackner - YouTube",
+                webBaseURL = "youtube.com",
+                imgURL = "https://yt3.googleusercontent.com/mhup7lzHh_c9b55z0edX65ReN9iJmTF2JU7vMGER9LTOora-NnXtvZdtn_vJmTvW6-y97z0Y=s900-c-k-c0x00ffffff-no-rj",
+                onMoreIconClick = { -> },
+                onLinkClick = { -> },
+                webURL = "https://www.youtube.com/@PhilippLackner",
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),

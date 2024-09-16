@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.collections.specific.all_links
+package com.sakethh.linkora.ui.screens.collections.allLinks
 
 import androidx.compose.runtime.MutableState
 

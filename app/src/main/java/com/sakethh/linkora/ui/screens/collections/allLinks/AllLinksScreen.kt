@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.collections.specific.all_links
+package com.sakethh.linkora.ui.screens.collections.allLinks
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
@@ -22,8 +22,8 @@ import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
 import androidx.compose.foundation.lazy.staggeredgrid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ViewQuilt
 import androidx.compose.material.icons.automirrored.outlined.Sort
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -74,7 +74,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.link_view.LinkLayout
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.async
@@ -227,9 +227,9 @@ fun AllLinksScreen(navController: NavController) {
             }
         }
         IconButton(onClick = {
-            navController.navigate(NavigationRoutes.LINK_VIEW_SETTINGS.name)
+            navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
         }) {
-            Icon(Icons.AutoMirrored.Filled.ViewQuilt, null)
+            Icon(Icons.Default.Dashboard, null)
         }
     }, bottomBar = {
         LinksSelectionChips(allLinksScreenVM)
