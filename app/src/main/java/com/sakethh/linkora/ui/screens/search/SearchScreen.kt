@@ -28,7 +28,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -91,6 +99,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
@@ -104,6 +113,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -191,6 +201,85 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     val impLinksStringRes = importantLinks.value
     val savedLinksStringRes = savedLinks.value
     val foldersStringRes = folders.value
+
+    fun commonLinkParam(it: RecentlyVisited): LinkUIComponentParam {
+        return LinkUIComponentParam(
+            onLongClick = {
+                if (!isSelectionModeEnabled.value) {
+                    isSelectionModeEnabled.value = true
+                    searchScreenVM.selectedHistoryLinksData.add(it)
+                }
+            },
+            isSelectionModeEnabled = isSelectionModeEnabled,
+            title = it.title,
+            webBaseURL = it.baseURL,
+            imgURL = it.imgURL,
+            onMoreIconClick = {
+                SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
+                SearchScreenVM.selectedLinkID = it.id
+                selectedLinkTitle.value = it.title
+                SearchScreenVM.selectedLinkType = SearchScreenVM.SelectedLinkType.HISTORY_LINKS
+                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                HomeScreenVM.tempImpLinkData.title = it.title
+                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                selectedURLNote.value = it.infoForSaving
+                selectedWebURL.value = it.webURL
+                shouldOptionsBtmModalSheetBeVisible.value = true
+                coroutineScope.launch {
+                    awaitAll(async {
+                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                    }, async {
+                        optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                    })
+                }
+            },
+            onLinkClick = {
+                if (!isSelectionModeEnabled.value) {
+                    customWebTab.openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = it.title,
+                            webURL = it.webURL,
+                            baseURL = it.baseURL,
+                            imgURL = it.imgURL,
+                            infoForSaving = it.infoForSaving
+                        ),
+                        context = context,
+                        uriHandler = uriHandler,
+                        forceOpenInExternalBrowser = false
+                    )
+                } else {
+                    if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
+                        searchScreenVM.selectedHistoryLinksData.add(it)
+                    } else {
+                        searchScreenVM.selectedHistoryLinksData.remove(it)
+                    }
+                }
+            },
+            webURL = it.webURL,
+            onForceOpenInExternalBrowserClicked = {
+                searchScreenVM.onLinkClick(
+                    RecentlyVisited(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    ),
+                    context = context,
+                    uriHandler = uriHandler,
+                    onTaskCompleted = {},
+                    forceOpenInExternalBrowser = true
+                )
+            },
+            isItemSelected = mutableStateOf(
+                searchScreenVM.selectedHistoryLinksData.contains(
+                    it
+                )
+            )
+        )
+    }
 
     LinkoraTheme {
         Column {
@@ -1161,228 +1250,184 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         }
                     }
                 })
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                stickyHeader {
-                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                        Row(modifier = Modifier
-                            .clickable {
-                                if (historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }
-                            }
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically) {
-                            if (isSelectionModeEnabled.value) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                        isSelectionModeEnabled.value =
-                                            false
-                                        searchScreenVM.areAllLinksChecked.value =
-                                            false
-                                        searchScreenVM.areAllFoldersChecked.value =
-                                            false
-                                        searchScreenVM.selectedImportantLinksData.clear()
-                                        searchScreenVM.selectedLinksTableData.clear()
-                                        searchScreenVM.selectedArchiveLinksTableData.clear()
-                                        searchScreenVM.selectedHistoryLinksData.clear()
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Cancel,
-                                            contentDescription = null
-                                        )
-                                    }
-                                    AnimatedContent(
-                                        targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersData.size,
-                                        label = "",
-                                        transitionSpec = {
-                                            ContentTransform(
-                                                initialContentExit = slideOutVertically(
-                                                    animationSpec = tween(
-                                                        150
-                                                    )
-                                                ) + fadeOut(
-                                                    tween(150)
-                                                ), targetContentEnter = slideInVertically(
-                                                    animationSpec = tween(durationMillis = 150)
-                                                ) + fadeIn(
-                                                    tween(150)
-                                                )
-                                            )
-                                        }) {
-                                        Text(
-                                            text = it.toString(),
-                                            color = MaterialTheme.colorScheme.onSurface,
-                                            style = MaterialTheme.typography.titleLarge,
-                                            fontSize = 18.sp
-                                        )
-                                    }
-                                    Text(
-                                        text = " " + itemsSelected.value,
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontSize = 18.sp
-                                    )
-                                }
-                            } else {
-                                Text(
-                                    text = history.value,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(
-                                        start = 15.dp
-                                    )
-                                )
-                            }
-                            if (!isSelectionModeEnabled.value) {
-                                IconButton(
-                                    modifier = if (historyLinksData.isNotEmpty()) Modifier
-                                        .clickable(
-                                            onClick = {},
-                                            indication = null,
-                                            interactionSource = remember {
-                                                MutableInteractionSource()
-                                            })
-                                        .pulsateEffect() else Modifier, onClick = {
-                                        if (historyLinksData.isNotEmpty()) {
-                                            shouldSortingBottomSheetAppear.value = true
-                                        }
-                                    }) {
-                                    if (historyLinksData.isNotEmpty()) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            } else if (isSelectionModeEnabled.value) {
-                                Row {
-                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                        isSelectionModeEnabled.value =
-                                            false
-                                        searchScreenVM.archiveSelectedHistoryLinks()
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Archive,
-                                            contentDescription = null
-                                        )
-                                    }
-                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                        shouldDeleteDialogBoxAppear.value = true
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.DeleteForever,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            }
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                Row(modifier = Modifier
+                    .clickable {
+                        if (historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
+                            shouldSortingBottomSheetAppear.value = true
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
                     }
-                }
-                if (historyLinksData.isNotEmpty()) {
-                    itemsIndexed(
-                        items = historyLinksData,
-                        key = { index, recentlyVisited ->
-                            recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
-                        }) { index, it ->
-                        ListViewLinkUIComponent(
-                            LinkUIComponentParam(
-                                onLongClick = {
-                                    if (!isSelectionModeEnabled.value) {
-                                        isSelectionModeEnabled.value =
-                                            true
-                                        searchScreenVM.selectedHistoryLinksData.add(it)
-                                    }
-                                },
-                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconClick = {
-                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                        OptionsBtmSheetType.LINK
-                                    SearchScreenVM.selectedLinkID = it.id
-                                    selectedLinkTitle.value = it.title
-                                    SearchScreenVM.selectedLinkType =
-                                        SearchScreenVM.SelectedLinkType.HISTORY_LINKS
-                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
-                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
-                                    selectedURLNote.value = it.infoForSaving
-                                    selectedWebURL.value = it.webURL
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    coroutineScope.launch {
-                                        awaitAll(async {
-                                            optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                        }, async {
-                                            optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                        })
-                                    }
-                                },
-                                onLinkClick = {
-                                    if (!isSelectionModeEnabled.value) {
-                                        customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
-                                    } else {
-                                        if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
-                                            searchScreenVM.selectedHistoryLinksData.add(it)
-                                        } else {
-                                            searchScreenVM.selectedHistoryLinksData.remove(it)
-                                        }
-                                    }
-                                },
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = {
-                                    searchScreenVM.onLinkClick(
-                                        RecentlyVisited(
-                                            title = it.title,
-                                            webURL = it.webURL,
-                                            baseURL = it.baseURL,
-                                            imgURL = it.imgURL,
-                                            infoForSaving = it.infoForSaving
-                                        ),
-                                        context = context,
-                                        uriHandler = uriHandler,
-                                        onTaskCompleted = {},
-                                        forceOpenInExternalBrowser = true
-                                    )
-                                },
-                                isItemSelected = mutableStateOf(
-                                    searchScreenVM.selectedHistoryLinksData.contains(
-                                        it
-                                    )
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    if (isSelectionModeEnabled.value) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                isSelectionModeEnabled.value = false
+                                searchScreenVM.areAllLinksChecked.value = false
+                                searchScreenVM.areAllFoldersChecked.value = false
+                                searchScreenVM.selectedImportantLinksData.clear()
+                                searchScreenVM.selectedLinksTableData.clear()
+                                searchScreenVM.selectedArchiveLinksTableData.clear()
+                                searchScreenVM.selectedHistoryLinksData.clear()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel, contentDescription = null
                                 )
+                            }
+                            AnimatedContent(targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersData.size,
+                                label = "",
+                                transitionSpec = {
+                                    ContentTransform(
+                                        initialContentExit = slideOutVertically(
+                                            animationSpec = tween(
+                                                150
+                                            )
+                                        ) + fadeOut(
+                                            tween(150)
+                                        ), targetContentEnter = slideInVertically(
+                                            animationSpec = tween(durationMillis = 150)
+                                        ) + fadeIn(
+                                            tween(150)
+                                        )
+                                    )
+                                }) {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp
+                                )
+                            }
+                            Text(
+                                text = " " + itemsSelected.value,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 18.sp
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = history.value,
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(
+                                start = 15.dp
                             )
                         )
                     }
-                } else {
-                    item {
-                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFoundInHistory.value)
+                    if (!isSelectionModeEnabled.value) {
+                        IconButton(modifier = if (historyLinksData.isNotEmpty()) Modifier
+                            .clickable(onClick = {},
+                                indication = null,
+                                interactionSource = remember {
+                                    MutableInteractionSource()
+                                })
+                            .pulsateEffect() else Modifier, onClick = {
+                            if (historyLinksData.isNotEmpty()) {
+                                shouldSortingBottomSheetAppear.value = true
+                            }
+                        }) {
+                            if (historyLinksData.isNotEmpty()) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    } else if (isSelectionModeEnabled.value) {
+                        Row {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                isSelectionModeEnabled.value = false
+                                searchScreenVM.archiveSelectedHistoryLinks()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Archive, contentDescription = null
+                                )
+                            }
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                shouldDeleteDialogBoxAppear.value = true
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.DeleteForever,
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(225.dp))
+                Spacer(modifier = Modifier.height(5.dp))
+            }
+            if (historyLinksData.isNotEmpty()) {
+                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                    LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                ListViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                )
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
+
+                    LinkLayout.GRID_VIEW.name -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp)
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it), forStaggeredView = false
+                                )
+                            }
+                            item(span = {
+                                GridItemSpan(this.maxCurrentLineSpan)
+                            }) {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
+
+                    LinkLayout.STAGGERED_VIEW.name -> {
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp)
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it), forStaggeredView = true
+                                )
+                            }
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
                 }
+            } else {
+                DataEmptyScreen(text = LocalizedStrings.noLinksWereFoundInHistory.value)
             }
         }
         SortingBottomSheetUI(
