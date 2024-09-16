@@ -215,17 +215,6 @@ fun AllLinksScreen(navController: NavController) {
             })
     }
     SpecificScreenScaffold(topAppBarText = "All Links", navController = navController, actions = {
-        if (
-            allLinksScreenVM.linkTypes
-                .map { it.isChecked.value }.count { it } == 1
-        ) {
-            IconButton(modifier = Modifier.pulsateEffect(),
-                onClick = { /*shouldSortingBottomSheetAppear.value = true*/ }) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Outlined.Sort, contentDescription = null
-                )
-            }
-        }
         IconButton(onClick = {
             navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
         }) {
