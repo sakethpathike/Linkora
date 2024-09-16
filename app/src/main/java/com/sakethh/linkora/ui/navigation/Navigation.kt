@@ -8,7 +8,6 @@ import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
 import com.sakethh.linkora.ui.screens.collections.allLinks.AllLinksScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
-import com.sakethh.linkora.ui.screens.collections.savedLinks.SavedLinksScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayoutSettings
@@ -108,9 +107,6 @@ fun MainNavigation(
         }
         composable(route = NavigationRoutes.ALL_LINKS_SCREEN.name) {
             AllLinksScreen(navController)
-        }
-        composable(route = NavigationRoutes.SAVED_LINKS_SCREEN.name) {
-            SavedLinksScreen(navController)
         }
     }
 

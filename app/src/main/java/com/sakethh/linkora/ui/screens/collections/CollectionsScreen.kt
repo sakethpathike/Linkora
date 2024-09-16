@@ -344,7 +344,7 @@ fun CollectionsScreen(navController: NavController) {
                                             onClick = {
                                                 SpecificCollectionsScreenVM.screenType.value =
                                                     SpecificScreenType.SAVED_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SAVED_LINKS_SCREEN.name)
+                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                             },
                                             onLongClick = {})
                                         .pulsateEffect()
