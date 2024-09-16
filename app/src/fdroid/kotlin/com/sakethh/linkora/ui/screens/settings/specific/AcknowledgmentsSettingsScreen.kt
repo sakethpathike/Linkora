@@ -25,7 +25,7 @@ import com.sakethh.linkora.LocalizedStrings.linkoraWouldNotBePossibleWithoutTheF
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -45,7 +45,7 @@ fun AcknowledgmentsSettingsScreen(
             }
         }
     }
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = acknowledgments.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

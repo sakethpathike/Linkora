@@ -10,7 +10,7 @@ import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.collections.specific.all_links.AllLinksScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
-import com.sakethh.linkora.ui.screens.link_view.LinkViewSettings
+import com.sakethh.linkora.ui.screens.link_view.LinkLayoutSettings
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
@@ -103,7 +103,7 @@ fun MainNavigation(
             SpecificPanelScreen(navController)
         }
         composable(route = NavigationRoutes.LINK_VIEW_SETTINGS.name) {
-            LinkViewSettings(navController)
+            LinkLayoutSettings(navController)
         }
         composable(route = NavigationRoutes.ALL_LINKS_SCREEN.name) {
             AllLinksScreen(navController)

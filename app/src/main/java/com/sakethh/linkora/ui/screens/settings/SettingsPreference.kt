@@ -14,7 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
-import com.sakethh.linkora.ui.screens.link_view.LinkView
+import com.sakethh.linkora.ui.screens.link_view.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.APP_VERSION_CODE
 import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
@@ -56,7 +56,7 @@ object SettingsPreference : ViewModel() {
     val totalLocalAppStrings = mutableIntStateOf(285)
     val totalRemoteStrings = mutableIntStateOf(0)
     val remoteStringsLastUpdatedOn = mutableStateOf("")
-    val currentlySelectedLinkView = mutableStateOf(LinkView.REGULAR_LIST_VIEW.name)
+    val currentlySelectedLinkLayout = mutableStateOf(LinkLayout.REGULAR_LIST_VIEW.name)
     val enableBorderForNonListViews = mutableStateOf(true)
     val enableTitleForNonListViews = mutableStateOf(true)
     val enableBaseURLForNonListViews = mutableStateOf(true)
@@ -274,11 +274,11 @@ object SettingsPreference : ViewModel() {
                         ) ?: ""
                 },
                 async {
-                    currentlySelectedLinkView.value =
+                    currentlySelectedLinkLayout.value =
                         readSettingPreferenceValue(
                             preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
                             dataStore = context.dataStore
-                        ) ?: currentlySelectedLinkView.value
+                        ) ?: currentlySelectedLinkLayout.value
                 },
                 async {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(

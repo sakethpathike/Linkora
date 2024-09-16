@@ -48,7 +48,7 @@ import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffol
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LinkViewSettings(navController: NavController) {
+fun LinkLayoutSettings(navController: NavController) {
     val sampleList = remember {
         listOf(
             LinkUIComponentParam(
@@ -156,11 +156,11 @@ fun LinkViewSettings(navController: NavController) {
     }
 
     SpecificScreenScaffold(
-        topAppBarText = "Link View Settings",
+        topAppBarText = "Link Layout Settings",
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
-        if (SettingsPreference.currentlySelectedLinkView.value == LinkView.REGULAR_LIST_VIEW.name
-            || SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+        if (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.REGULAR_LIST_VIEW.name
+            || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -178,7 +178,7 @@ fun LinkViewSettings(navController: NavController) {
                     )
                 }
 
-                items(LinkView.entries) {
+                items(LinkLayout.entries) {
                     LinkViewRadioButtonComponent(it, navController, PaddingValues(start = 10.dp))
                 }
 
@@ -201,14 +201,14 @@ fun LinkViewSettings(navController: NavController) {
                 items(sampleList) {
                     ListViewLinkUIComponent(
                         it,
-                        forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                        forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                     )
                 }
                 item {
                     Spacer(Modifier.height(100.dp))
                 }
             }
-        } else if (SettingsPreference.currentlySelectedLinkView.value == LinkView.GRID_VIEW.name) {
+        } else if (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(150.dp),
                 modifier = Modifier
@@ -227,7 +227,7 @@ fun LinkViewSettings(navController: NavController) {
                         color = MaterialTheme.colorScheme.primary
                     )
                 }
-                items(LinkView.entries, span = {
+                items(LinkLayout.entries, span = {
                     GridItemSpan(maxLineSpan)
                 }) {
                     LinkViewRadioButtonComponent(it, navController)
@@ -295,7 +295,8 @@ fun LinkViewSettings(navController: NavController) {
                     )
                 }
 
-                items(items = LinkView.entries,
+                items(
+                    items = LinkLayout.entries,
                     span = {
                         StaggeredGridItemSpan.FullLine
                     }) {
@@ -373,7 +374,7 @@ private fun LinkViewPreferenceSwitch(
 
 @Composable
 private fun LinkViewRadioButtonComponent(
-    linkView: LinkView,
+    linkLayout: LinkLayout,
     navController: NavController,
     paddingValues: PaddingValues = PaddingValues(0.dp)
 ) {
@@ -382,26 +383,27 @@ private fun LinkViewRadioButtonComponent(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                SettingsPreference.currentlySelectedLinkView.value = linkView.name
+                SettingsPreference.currentlySelectedLinkLayout.value = linkLayout.name
                 SettingsPreference.changeSettingPreferenceValue(
                     preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
                     dataStore = navController.context.dataStore,
-                    newValue = linkView.name
+                    newValue = linkLayout.name
                 )
             }
             .padding(paddingValues)
     ) {
         RadioButton(
-            selected = SettingsPreference.currentlySelectedLinkView.value == linkView.name,
+            selected = SettingsPreference.currentlySelectedLinkLayout.value == linkLayout.name,
             onClick = {
-                SettingsPreference.currentlySelectedLinkView.value = linkView.name
+                SettingsPreference.currentlySelectedLinkLayout.value = linkLayout.name
                 SettingsPreference.changeSettingPreferenceValue(
                     preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
                     dataStore = navController.context.dataStore,
-                    newValue = linkView.name
+                    newValue = linkLayout.name
                 )
             })
-        Text(text = linkView.name.replace("_", " ").split(" ").map {
+        Text(
+            text = linkLayout.name.replace("_", " ").split(" ").map {
             it.lowercase()
         }.map {
             it.replaceFirstChar { char -> char.uppercaseChar() }

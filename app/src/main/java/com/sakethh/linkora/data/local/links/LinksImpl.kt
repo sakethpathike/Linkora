@@ -1,6 +1,7 @@
 package com.sakethh.linkora.data.local.links
 
 import android.content.Context
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.addedTheUrl
 import com.sakethh.linkora.LocalizedStrings.couldNotRetrieveMetadataNowButLinkoraSavedTheLink
 import com.sakethh.linkora.LocalizedStrings.givenLinkAlreadyExists
@@ -474,7 +475,7 @@ class LinksImpl @Inject constructor(
     }
 
     override suspend fun deleteANoteFromArchiveLinks(linkID: Long) {
-        localDatabase.linksDao().deleteANoteFromRecentlyVisited(linkID)
+        localDatabase.linksDao().deleteANoteFromArchiveLinks(linkID)
     }
 
     override suspend fun deleteANoteFromArchiveLinks(webURL: String) {
@@ -718,6 +719,12 @@ class LinksImpl @Inject constructor(
             updateExistingLink = false,
             recentlyVisited = null, archivedLinks = null
         )
+    }
+    override suspend fun addANewLinkToImpLinks(
+        importantLink: ImportantLinks
+    ): CommonUiEvent {
+        localDatabase.linksDao().addANewLinkToImpLinks(importantLink)
+        return CommonUiEvent.ShowToast(LocalizedStrings.addedLinkToImportantLinks.value)
     }
 
     override suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks) {

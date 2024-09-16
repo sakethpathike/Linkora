@@ -105,6 +105,10 @@ interface LinksRepo {
         autoDetectTitle: Boolean
     ): CommonUiEvent
 
+    suspend fun addANewLinkToImpLinks(
+        importantLink: ImportantLinks
+    ): CommonUiEvent
+
 
     suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks)
 

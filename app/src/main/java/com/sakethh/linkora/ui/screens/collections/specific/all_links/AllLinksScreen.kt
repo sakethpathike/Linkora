@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.screens.collections.specific.all_links
 
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -33,6 +34,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -52,6 +54,7 @@ import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.links.LinkType
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
@@ -69,12 +72,14 @@ import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.link_view.LinkView
+import com.sakethh.linkora.ui.screens.link_view.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(
@@ -128,9 +133,22 @@ fun AllLinksScreen(navController: NavController) {
     val noLinksSelectedState = allLinksScreenVM.linkTypes.map { it.isChecked.value }.all { !it }
     val customWebTab = hiltViewModel<CustomWebTab>()
     val context = LocalContext.current
+    val onImportantLinkClickTriggered = rememberSaveable {
+        mutableStateOf(false)
+    }
+    LaunchedEffect(Unit) {
+        allLinksScreenVM.uiChannel.collectLatest {
+            when (it) {
+                is CommonUiEvent.ShowDeleteDialogBox -> shouldDeleteDialogBoxAppear.value = true
+                is CommonUiEvent.ShowToast -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
+    }
     fun modifiedLinkUIComponentParam(
         linksTable: LinksTable,
-        linkType: LinkType
+        linkType: LinkType,
+        selectedBtmSheetType: SpecificScreenType
     ): LinkUIComponentParam {
         return LinkUIComponentParam(
             onLongClick = {},
@@ -142,6 +160,7 @@ fun AllLinksScreen(navController: NavController) {
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
+                SpecificCollectionsScreenVM.screenType.value = selectedBtmSheetType
                 selectedLinkType.value = linkType.name
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                     OptionsBtmSheetType.LINK
@@ -220,8 +239,8 @@ fun AllLinksScreen(navController: NavController) {
             .padding(paddingValues)
             .nestedScroll(topAppBarScrollBehaviour.nestedScrollConnection)
             .animateContentSize()
-        when (SettingsPreference.currentlySelectedLinkView.value) {
-            LinkView.REGULAR_LIST_VIEW.name, LinkView.TITLE_ONLY_LIST_VIEW.name -> {
+        when (SettingsPreference.currentlySelectedLinkLayout.value) {
+            LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
                 LazyColumn(
                     modifier = commonModifier
                 ) {
@@ -230,9 +249,10 @@ fun AllLinksScreen(navController: NavController) {
                             ListViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.SAVED_LINK
+                                    linkType = LinkType.SAVED_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -255,9 +275,10 @@ fun AllLinksScreen(navController: NavController) {
                             ListViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.IMP_LINK
+                                    linkType = LinkType.IMP_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -280,9 +301,10 @@ fun AllLinksScreen(navController: NavController) {
                             ListViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.HISTORY_LINK
+                                    linkType = LinkType.HISTORY_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -305,9 +327,10 @@ fun AllLinksScreen(navController: NavController) {
                             ListViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.ARCHIVE_LINK
+                                    linkType = LinkType.ARCHIVE_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -317,16 +340,17 @@ fun AllLinksScreen(navController: NavController) {
                                 ListViewLinkUIComponent(
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         linksTable = it,
-                                        linkType = LinkType.FOLDER_LINK
+                                        linkType = LinkType.FOLDER_LINK,
+                                        selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkView.value == LinkView.TITLE_ONLY_LIST_VIEW.name
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                 )
                         }
                     }
                 }
             }
 
-            LinkView.GRID_VIEW.name -> {
+            LinkLayout.GRID_VIEW.name -> {
                 LazyVerticalGrid(columns = GridCells.Adaptive(150.dp), modifier = commonModifier) {
 
                     if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
@@ -334,9 +358,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.SAVED_LINK
+                                    linkType = LinkType.SAVED_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -359,9 +384,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.IMP_LINK
+                                    linkType = LinkType.IMP_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -384,9 +410,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.HISTORY_LINK
+                                    linkType = LinkType.HISTORY_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -409,9 +436,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.ARCHIVE_LINK
+                                    linkType = LinkType.ARCHIVE_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -421,16 +449,17 @@ fun AllLinksScreen(navController: NavController) {
                                 GridViewLinkUIComponent(
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         linksTable = it,
-                                        linkType = LinkType.FOLDER_LINK
+                                        linkType = LinkType.FOLDER_LINK,
+                                        selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                 )
                         }
                     }
                 }
             }
 
-            LinkView.STAGGERED_VIEW.name -> {
+            LinkLayout.STAGGERED_VIEW.name -> {
                 LazyVerticalStaggeredGrid(
                     columns = StaggeredGridCells.Adaptive(150.dp), modifier = commonModifier
                 ) {
@@ -440,9 +469,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.SAVED_LINK
+                                    linkType = LinkType.SAVED_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -465,9 +495,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.IMP_LINK
+                                    linkType = LinkType.IMP_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -490,9 +521,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.HISTORY_LINK
+                                    linkType = LinkType.HISTORY_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -515,9 +547,10 @@ fun AllLinksScreen(navController: NavController) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
                                     linksTable = it,
-                                    linkType = LinkType.ARCHIVE_LINK
+                                    linkType = LinkType.ARCHIVE_LINK,
+                                    selectedBtmSheetType = SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -527,9 +560,10 @@ fun AllLinksScreen(navController: NavController) {
                                 GridViewLinkUIComponent(
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         linksTable = it,
-                                        linkType = LinkType.FOLDER_LINK
+                                        linkType = LinkType.FOLDER_LINK,
+                                        selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name
+                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                 )
                         }
                     }
@@ -538,6 +572,7 @@ fun AllLinksScreen(navController: NavController) {
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                shouldImportantLinkOptionBeVisible = mutableStateOf(selectedLinkType.value == LinkType.IMP_LINK.name),
                 inSpecificArchiveScreen = mutableStateOf(false),
                 onUnarchiveClick = {
                     allLinksScreenVM.onUIEvent(
@@ -557,12 +592,15 @@ fun AllLinksScreen(navController: NavController) {
                 inArchiveScreen = rememberSaveable(selectedLinkType.value) {
                     mutableStateOf(selectedLinkType.value == LinkType.ARCHIVE_LINK.name)
                 },
-                showQuickActions = rememberSaveable(SettingsPreference.currentlySelectedLinkView.value) {
-                    mutableStateOf(SettingsPreference.currentlySelectedLinkView.value == LinkView.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkView.value == LinkView.GRID_VIEW.name)
+                showQuickActions = rememberSaveable(SettingsPreference.currentlySelectedLinkLayout.value) {
+                    mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
                 },
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-                btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
+                btmSheetFor = when (SpecificCollectionsScreenVM.screenType.value) {
+                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN
+                    else -> OptionsBtmSheetType.LINK
+                },
                 onRenameClick = {
                     coroutineScope.launch {
                         btmModalSheetState.hide()
@@ -604,6 +642,7 @@ fun AllLinksScreen(navController: NavController) {
                         )
                     )
                 }, onImportantLinkClick = {
+                    onImportantLinkClickTriggered.value = true
                     allLinksScreenVM.onUIEvent(
                         SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
                             ImportantLinks(

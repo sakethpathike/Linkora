@@ -140,9 +140,11 @@ class AllLinksScreenVM @Inject constructor(
                 linkoraLog("AddExistingLinkToImportantLink")
                 viewModelScope.launch {
                     if (linksRepo.doesThisExistsInImpLinks(specificCollectionsScreenUIEvent.importantLinks.webURL)) {
-
+                        pushUiEvent(CommonUiEvent.ShowDeleteDialogBox)
                     } else {
-                        linksRepo.deleteALinkFromImpLinksBasedOnURL(specificCollectionsScreenUIEvent.importantLinks.webURL)
+                        linksRepo.addANewLinkToImpLinks(
+                            specificCollectionsScreenUIEvent.importantLinks
+                        )
                     }
                 }
             }

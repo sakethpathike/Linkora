@@ -26,5 +26,6 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val forAChildFolder: MutableState<Boolean> = mutableStateOf(false),
     val webUrl: String = "",
     val onForceOpenInExternalBrowserClicked: () -> Unit = {},
-    val showQuickActions: MutableState<Boolean> = mutableStateOf(false)
+    val showQuickActions: MutableState<Boolean> = mutableStateOf(false),
+    val shouldImportantLinkOptionBeVisible: MutableState<Boolean> = mutableStateOf(true)
 )
