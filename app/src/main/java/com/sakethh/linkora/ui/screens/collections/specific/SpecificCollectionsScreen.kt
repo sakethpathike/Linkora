@@ -1055,15 +1055,19 @@ fun SpecificCollectionScreen(navController: NavController) {
             }
 
             val commonModifier = Modifier
-                .nestedScroll(scrollBehavior.nestedScrollConnection)
                 .padding(it)
+                .padding(5.dp)
                 .fillMaxSize()
                 .animateContentSize()
 
             when (SettingsPreference.currentlySelectedLinkLayout.value) {
                 LinkLayout.TITLE_ONLY_LIST_VIEW.name, LinkLayout.REGULAR_LIST_VIEW.name -> {
                     LazyColumn(
-                        modifier = commonModifier
+                        modifier = Modifier
+                            .padding(it)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection)
+                            .fillMaxSize()
+                            .animateContentSize()
                     ) {
                         when (SpecificCollectionsScreenVM.screenType.value) {
                             SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
