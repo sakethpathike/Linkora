@@ -129,7 +129,7 @@
     <string name="new_link_added_to_the_folder">New link added to the folder</string>
     <string name="selected_folders_archived_successfully">Selected folders archived successfully</string>
     <string name="deleted_the_note">deleted the note</string>
-    <string name="search_titles_to_find_links_and_folders">Search titles to find links and folders</string>
+    <string name="search_titles_to_find_links_and_folders">Search titles and notes to find links and folders</string>
     <string name="archived_links">Archived Links</string>
     <string name="archived_folders">Archived Folders</string>
     <string name="links_from_folders">Links from folders</string>

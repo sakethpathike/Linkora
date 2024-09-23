@@ -130,7 +130,7 @@
     <string name="new_link_added_to_the_folder">फ़ोल्डर में नया लिंक ऐड किया गया</string>
     <string name="selected_folders_archived_successfully">चयनित फ़ोल्डर सफलतापूर्वक संग्रहीत किए गए</string>
     <string name="deleted_the_note">नोट हटा दिया गया</string>
-    <string name="search_titles_to_find_links_and_folders">शीर्षकों की खोज करके लिंक और फ़ोल्डर खोजें</string>
+    <string name="search_titles_to_find_links_and_folders">शीर्षकों और नोट्स की खोज करके लिंक और फ़ोल्डर खोजें</string>
     <string name="archived_links">संग्रहीत लिंक्स</string>
     <string name="archived_folders">संग्रहीत फ़ोल्डर</string>
     <string name="links_from_folders">फ़ोल्डर से लिंक</string>
