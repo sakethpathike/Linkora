@@ -48,6 +48,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -68,6 +69,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -134,6 +136,9 @@ fun AllLinksScreen(navController: NavController) {
     val onImportantLinkClickTriggered = rememberSaveable {
         mutableStateOf(false)
     }
+    val isAllTablesEmpty = savedLinks.value.isEmpty() && impLinks.value.isEmpty() &&
+            historyLinks.value.isEmpty() && archivedLinks.value.isEmpty() &&
+            regularFoldersLinks.value.isEmpty()
     LaunchedEffect(Unit) {
         allLinksScreenVM.uiChannel.collectLatest {
             when (it) {
@@ -213,19 +218,66 @@ fun AllLinksScreen(navController: NavController) {
             })
     }
     SpecificScreenScaffold(topAppBarText = "All Links", navController = navController, actions = {
-        IconButton(onClick = {
-            navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
-        }) {
-            Icon(Icons.Default.Dashboard, null)
+        if (!isAllTablesEmpty) {
+            IconButton(onClick = {
+                navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+            }) {
+                Icon(Icons.Default.Dashboard, null)
+            }
         }
     }, bottomBar = {
-        LinksSelectionChips(allLinksScreenVM)
+        if (isAllTablesEmpty) {
+            return@SpecificScreenScaffold
+        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation))
+        ) {
+            Text(
+                "Filter based on",
+                style = MaterialTheme.typography.titleSmall,
+                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Spacer(Modifier.width(15.dp))
+                allLinksScreenVM.linkTypes.forEach {
+                    if (it.linkType == "Saved Links" && savedLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == "Important Links" && impLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == "History Links" && historyLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == "Archived Links" && archivedLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == "Folders Links" && regularFoldersLinks.value.isEmpty()) return@forEach
+                    FilterChip(modifier = Modifier.animateContentSize(), onClick = {
+                        it.isChecked.value = !it.isChecked.value
+                    }, selected = it.isChecked.value, label = {
+                        Text(it.linkType, style = MaterialTheme.typography.titleSmall)
+                    })
+                    Spacer(Modifier.width(10.dp))
+                }
+            }
+        }
     }) { paddingValues, topAppBarScrollBehaviour ->
         val commonModifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)
             .nestedScroll(topAppBarScrollBehaviour.nestedScrollConnection)
             .animateContentSize()
+
+        if (isAllTablesEmpty) {
+            LazyColumn(
+                modifier = commonModifier
+            ) {
+                item {
+                    DataEmptyScreen(LocalizedStrings.noLinksWereFound.value)
+                }
+            }
+            return@SpecificScreenScaffold
+        }
         when (SettingsPreference.currentlySelectedLinkLayout.value) {
             LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
                 LazyColumn(
@@ -685,35 +737,4 @@ fun AllLinksScreen(navController: NavController) {
             }, existingTitle = selectedURLTitle.value, existingNote = selectedNote.value
         )
     )
-}
-
-@Composable
-private fun LinksSelectionChips(allLinksScreenVM: AllLinksScreenVM) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation))
-    ) {
-        Text(
-            "Filter based on",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(start = 15.dp, top = 15.dp)
-        )
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Spacer(Modifier.width(15.dp))
-            allLinksScreenVM.linkTypes.forEach {
-                FilterChip(modifier = Modifier.animateContentSize(), onClick = {
-                    it.isChecked.value = !it.isChecked.value
-                }, selected = it.isChecked.value, label = {
-                    Text(it.linkType, style = MaterialTheme.typography.titleSmall)
-                })
-                Spacer(Modifier.width(10.dp))
-            }
-        }
-    }
 }

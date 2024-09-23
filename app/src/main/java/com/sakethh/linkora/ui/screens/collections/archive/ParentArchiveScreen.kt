@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Sort
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.outlined.DeleteForever
@@ -85,6 +86,15 @@ fun ParentArchiveScreen(navController: NavController, customWebTab: CustomWebTab
                     }) {
                         Icon(
                             imageVector = Icons.Default.Cancel, contentDescription = null
+                        )
+                    }
+                } else {
+                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                        navController.navigateUp()
+                    }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = null
                         )
                     }
                 }
