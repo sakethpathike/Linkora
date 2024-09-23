@@ -32,6 +32,7 @@ import com.sakethh.linkora.LocalizedStrings.redirectToLatestReleasePage
 import com.sakethh.linkora.LocalizedStrings.releasePageOnGithub
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import kotlinx.coroutines.launch
 
@@ -62,10 +63,10 @@ fun SettingsNewVersionUpdateBtmContent(
         item {
             VersionCardForBtmSheetContent(
                 title = currentVersion.value,
-                value = SettingsScreenVM.APP_VERSION_NAME
+                value = SettingsPreference.APP_VERSION_NAME
             )
         }
-        if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+        if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
             item {
                 VersionCardForBtmSheetContent(
                     title = latestVersion.value,

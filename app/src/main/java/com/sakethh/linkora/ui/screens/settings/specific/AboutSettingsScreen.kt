@@ -125,7 +125,7 @@ fun AboutSettingsScreen(
                             .alignByBaseline()
                     )
                     Text(
-                        text = SettingsScreenVM.APP_VERSION_NAME,
+                        text = SettingsPreference.APP_VERSION_NAME,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp,
                         modifier = Modifier.alignByBaseline()
@@ -144,7 +144,7 @@ fun AboutSettingsScreen(
                             if (isNetworkAvailable(context)) {
                                 settingsScreenVM.latestAppVersionRetriever {
                                     shouldVersionCheckerDialogAppear.value = false
-                                    if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                                    if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                         shouldBtmModalSheetBeVisible.value = true
                                         SettingsPreference.isOnLatestUpdate.value =
                                             false
@@ -183,7 +183,7 @@ fun AboutSettingsScreen(
                                     settingsScreenVM.latestAppVersionRetriever { }
                                 }
                                 shouldVersionCheckerDialogAppear.value = false
-                                if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                                if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                     shouldBtmModalSheetBeVisible.value = true
                                     SettingsPreference.isOnLatestUpdate.value =
                                         false
