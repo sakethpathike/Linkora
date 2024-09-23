@@ -1,0 +1,5 @@
+## What's New
+- Added a global folder `All Links` for easy access to all links.
+- Links can now be searched with `notes`.
+- Customizable _Layouts_ in `Settings`: `Regular List View`, `Title Only List View`, `Grid View`, and `Staggered View`.
+- Fixed the _cursive_ font issue.
