@@ -142,9 +142,9 @@ class MainActivity : ComponentActivity() {
                     }.await()
                     if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
                         SettingsPreference.isOnLatestUpdate.value =
-                            SettingsScreenVM.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
+                            SettingsPreference.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
                         withContext(Dispatchers.Main) {
-                            if (SettingsScreenVM.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName && SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName != "") {
+                            if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName && SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName != "") {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.a_new_update_is_available),

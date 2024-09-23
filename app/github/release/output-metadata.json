@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 27,
-      "versionName": "0.7.2",
+      "versionCode": 28,
+      "versionName": "0.8.0",
       "outputFile": "app-github-release.apk"
     }
   ],
