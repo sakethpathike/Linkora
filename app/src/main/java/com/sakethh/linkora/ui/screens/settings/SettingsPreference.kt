@@ -15,7 +15,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.APP_VERSION_CODE
 import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import kotlinx.coroutines.async
@@ -25,6 +24,9 @@ import kotlinx.coroutines.launch
 import java.util.UUID
 
 object SettingsPreference : ViewModel() {
+
+    const val APP_VERSION_NAME = "v0.8.0"
+    const val APP_VERSION_CODE = 28
 
     val Context.dataStore by preferencesDataStore("linkoraDataStore")
 
