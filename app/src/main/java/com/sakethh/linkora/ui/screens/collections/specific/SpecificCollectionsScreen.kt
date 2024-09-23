@@ -22,7 +22,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.outlined.Sort
@@ -61,6 +69,7 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
+import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -76,10 +85,11 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -88,6 +98,7 @@ import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -522,587 +533,878 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 SpecificScreenType.ROOT_SCREEN -> {
 
                                 }
+
+                                SpecificScreenType.ALL_LINKS_SCREEN -> {
+
+
+                                }
                             }
                         }
                     })
             }
         }) {
-            LazyColumn(
-                modifier = Modifier
-                    .nestedScroll(scrollBehavior.nestedScrollConnection)
-                    .padding(it)
-                    .fillMaxSize()
-                    .animateContentSize()
-            ) {
-                when (SpecificCollectionsScreenVM.screenType.value) {
-                    SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
-                        if (childFoldersData.isNotEmpty()) {
-                            itemsIndexed(
-                                items = childFoldersData,
-                                key = { _, foldersTable ->
-                                    foldersTable.id.toString() + foldersTable.folderName
-                                }) { folderIndex, folderData ->
-                                FolderIndividualComponent(
-                                    showCheckBox = areElementsSelectable,
-                                    isCheckBoxChecked = mutableStateOf(
-                                        specificCollectionsScreenVM.selectedFoldersData.contains(
-                                            folderData
-                                        )
-                                    ),
-                                    checkBoxState = { checkBoxState ->
-                                        if (checkBoxState) {
-                                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                                folderData
-                                            )
-                                        } else {
-                                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
-                                                it == folderData
-                                            }
-                                        }
-                                    },
-                                    folderName = folderData.folderName,
-                                    folderNote = folderData.infoForSaving,
-                                    onMoreIconClick = {
-                                        selectedItemTitle.value = folderData.folderName
-                                        selectedItemNote.value = folderData.infoForSaving
-                                        selectedURLOrFolderNote.value = folderData.infoForSaving
-                                        clickedFolderNote.value = folderData.infoForSaving
-                                        coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
-                                        }
-                                        clickedFolderName.value = folderData.folderName
-                                        CollectionsScreenVM.selectedFolderData.value = folderData
-                                        shouldOptionsBtmModalSheetBeVisible.value = true
-                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                            OptionsBtmSheetType.FOLDER
-                                    },
-                                    showMoreIcon = !areElementsSelectable.value,
-                                    onFolderClick = { _ ->
-                                        if (!areElementsSelectable.value) {
-                                            CollectionsScreenVM.currentClickedFolderData.value =
-                                                folderData
-                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                                        }
-                                    }, onLongClick = {
-                                        if (!areElementsSelectable.value) {
-                                            areElementsSelectable.value = true
-                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
-                                                false
-                                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
-                                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                                folderData
-                                            )
-                                        }
-                                    })
-                            }
-                        }
-                        if (specificFolderLinksData.isNotEmpty()) {
-                            itemsIndexed(
-                                items = specificFolderLinksData,
-                                key = { _, linksTable ->
-                                    linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
-                                }) { linkIndex, linkData ->
-                                LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        onLongClick = {
-                                            if (!areElementsSelectable.value) {
-                                                areElementsSelectable.value = true
-                                                specificCollectionsScreenVM.selectedLinksID.add(
-                                                    linkData.id
-                                                )
-                                            }
-                                        },
-                                        isSelectionModeEnabled = areElementsSelectable,
-                                        title = linkData.title,
-                                        webBaseURL = linkData.baseURL,
-                                        imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedItemTitle.value = linkData.title
-                                            selectedItemNote.value = linkData.infoForSaving
-                                            CollectionsScreenVM.selectedFolderData.value.id =
-                                                linkData.id
-                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                OptionsBtmSheetType.LINK
-                                            selectedItemTitle.value = linkData.title
-                                            selectedWebURL.value = linkData.webURL
-                                            selectedURLOrFolderNote.value = linkData.infoForSaving
-                                            tempImpLinkData.apply {
-                                                this.webURL.value = linkData.webURL
-                                                this.baseURL.value = linkData.baseURL
-                                                this.imgURL.value = linkData.imgURL
-                                                this.title.value = linkData.title
-                                                this.infoForSaving.value = linkData.infoForSaving
-                                                this.id = linkData.id
-                                            }
-                                            tempImpLinkData.webURL.value = linkData.webURL
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                awaitAll(async {
-                                                    optionsBtmSheetVM.updateImportantCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                }, async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                })
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            if (areElementsSelectable.value) {
 
-                                                if (!specificCollectionsScreenVM.selectedLinksID.contains(
-                                                        linkData.id
-                                                    )
-                                                ) {
-                                                    specificCollectionsScreenVM.selectedLinksID.add(
-                                                        linkData.id
-                                                    )
-                                                } else {
-                                                    specificCollectionsScreenVM.selectedLinksID.remove(
-                                                        linkData.id
-                                                    )
-                                                }
-                                            } else {
-                                                specificCollectionsScreenVM.onLinkClick(
-                                                    recentlyVisited = RecentlyVisited(
-                                                        title = linkData.title,
-                                                        webURL = linkData.webURL,
-                                                        baseURL = linkData.baseURL,
-                                                        imgURL = linkData.imgURL,
-                                                        infoForSaving = linkData.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false,
-                                                    onTaskCompleted = {}
-                                                )
-                                            }
-                                        },
-                                        webURL = linkData.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            specificCollectionsScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = linkData.title,
-                                                    webURL = linkData.webURL,
-                                                    baseURL = linkData.baseURL,
-                                                    imgURL = linkData.imgURL,
-                                                    infoForSaving = linkData.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        },
-                                        isItemSelected = mutableStateOf(
-                                            specificCollectionsScreenVM.selectedLinksID.contains(
-                                                linkData.id
-                                            )
-                                        )
-                                    )
+            fun savedLinksParam(linkData: LinksTable): LinkUIComponentParam {
+                return LinkUIComponentParam(
+                    onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.selectedLinksID.add(
+                                linkData.id
+                            )
+                        }
+                    },
+                    isSelectionModeEnabled = areElementsSelectable,
+                    title = linkData.title,
+                    webBaseURL = linkData.baseURL,
+                    imgURL = linkData.imgURL,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = linkData.title
+                        selectedItemNote.value = linkData.infoForSaving
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.LINK
+                        CollectionsScreenVM.selectedFolderData.value.id =
+                            linkData.id
+                        selectedWebURL.value = linkData.webURL
+                        selectedURLOrFolderNote.value = linkData.infoForSaving
+                        tempImpLinkData.apply {
+                            this.webURL.value = linkData.webURL
+                            this.baseURL.value = linkData.baseURL
+                            this.imgURL.value = linkData.imgURL
+                            this.title.value = linkData.title
+                            this.infoForSaving.value = linkData.infoForSaving
+                        }
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                optionsBtmSheetVM.updateImportantCardData(
+                                    url = selectedWebURL.value
+                                )
+                            }, async {
+                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                    url = selectedWebURL.value
+                                )
+                            })
+                        }
+                    },
+                    onLinkClick = {
+                        if (areElementsSelectable.value) {
+                            if (!specificCollectionsScreenVM.selectedLinksID.contains(
+                                    linkData.id
+                                )
+                            ) {
+                                specificCollectionsScreenVM.selectedLinksID.add(
+                                    linkData.id
+                                )
+                            } else {
+                                specificCollectionsScreenVM.selectedLinksID.remove(
+                                    linkData.id
                                 )
                             }
                         } else {
-                            item {
-                                DataEmptyScreen(text = LocalizedStrings.thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value)
-                            }
+                            specificCollectionsScreenVM.onLinkClick(
+                                RecentlyVisited(
+                                    title = linkData.title,
+                                    webURL = linkData.webURL,
+                                    baseURL = linkData.baseURL,
+                                    imgURL = linkData.imgURL,
+                                    infoForSaving = linkData.infoForSaving
+                                ),
+                                context = context,
+                                uriHandler = uriHandler,
+                                forceOpenInExternalBrowser = false,
+                                onTaskCompleted = {}
+                            )
                         }
-                    }
+                    },
+                    webURL = linkData.webURL,
+                    onForceOpenInExternalBrowserClicked = {
+                        specificCollectionsScreenVM.onLinkClick(
+                            RecentlyVisited(
+                                title = linkData.title,
+                                webURL = linkData.webURL,
+                                baseURL = linkData.baseURL,
+                                imgURL = linkData.imgURL,
+                                infoForSaving = linkData.infoForSaving
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            onTaskCompleted = {},
+                            forceOpenInExternalBrowser = true
+                        )
+                    },
+                    isItemSelected = mutableStateOf(
+                        specificCollectionsScreenVM.selectedLinksID.contains(
+                            linkData.id
+                        )
+                    )
+                )
+            }
 
-                    SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                        if (savedLinksData.isNotEmpty()) {
-                            itemsIndexed(
-                                items = savedLinksData,
-                                key = { _, linksTable ->
-                                    linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
-                                }) { linkIndex, linkData ->
-                                LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        onLongClick = {
-                                            if (!areElementsSelectable.value) {
-                                                areElementsSelectable.value = true
-                                                specificCollectionsScreenVM.selectedLinksID.add(
-                                                    linkData.id
-                                                )
-                                            }
-                                        },
-                                        isSelectionModeEnabled = areElementsSelectable,
-                                        title = linkData.title,
-                                        webBaseURL = linkData.baseURL,
-                                        imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedItemTitle.value = linkData.title
-                                            selectedItemNote.value = linkData.infoForSaving
-                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                OptionsBtmSheetType.LINK
-                                            CollectionsScreenVM.selectedFolderData.value.id =
-                                                linkData.id
-                                            selectedWebURL.value = linkData.webURL
-                                            selectedURLOrFolderNote.value = linkData.infoForSaving
-                                            tempImpLinkData.apply {
-                                                this.webURL.value = linkData.webURL
-                                                this.baseURL.value = linkData.baseURL
-                                                this.imgURL.value = linkData.imgURL
-                                                this.title.value = linkData.title
-                                                this.infoForSaving.value = linkData.infoForSaving
-                                            }
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                awaitAll(async {
-                                                    optionsBtmSheetVM.updateImportantCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                }, async {
-                                                    optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                        url = selectedWebURL.value
-                                                    )
-                                                })
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            if (areElementsSelectable.value) {
-                                                if (!specificCollectionsScreenVM.selectedLinksID.contains(
-                                                        linkData.id
-                                                    )
-                                                ) {
-                                                    specificCollectionsScreenVM.selectedLinksID.add(
-                                                        linkData.id
-                                                    )
-                                                } else {
-                                                    specificCollectionsScreenVM.selectedLinksID.remove(
-                                                        linkData.id
-                                                    )
-                                                }
-                                            } else {
-                                                specificCollectionsScreenVM.onLinkClick(
-                                                    RecentlyVisited(
-                                                        title = linkData.title,
-                                                        webURL = linkData.webURL,
-                                                        baseURL = linkData.baseURL,
-                                                        imgURL = linkData.imgURL,
-                                                        infoForSaving = linkData.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false,
-                                                    onTaskCompleted = {}
-                                                )
-                                            }
-                                        },
-                                        webURL = linkData.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            specificCollectionsScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = linkData.title,
-                                                    webURL = linkData.webURL,
-                                                    baseURL = linkData.baseURL,
-                                                    imgURL = linkData.imgURL,
-                                                    infoForSaving = linkData.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        },
-                                        isItemSelected = mutableStateOf(
-                                            specificCollectionsScreenVM.selectedLinksID.contains(
-                                                linkData.id
-                                            )
-                                        )
-                                    )
+            fun specificFolderLinksParam(linkData: LinksTable): LinkUIComponentParam {
+                return LinkUIComponentParam(
+                    onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.selectedLinksID.add(
+                                linkData.id
+                            )
+                        }
+                    },
+                    isSelectionModeEnabled = areElementsSelectable,
+                    title = linkData.title,
+                    webBaseURL = linkData.baseURL,
+                    imgURL = linkData.imgURL,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = linkData.title
+                        selectedItemNote.value = linkData.infoForSaving
+                        CollectionsScreenVM.selectedFolderData.value.id =
+                            linkData.id
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.LINK
+                        selectedItemTitle.value = linkData.title
+                        selectedWebURL.value = linkData.webURL
+                        selectedURLOrFolderNote.value = linkData.infoForSaving
+                        tempImpLinkData.apply {
+                            this.webURL.value = linkData.webURL
+                            this.baseURL.value = linkData.baseURL
+                            this.imgURL.value = linkData.imgURL
+                            this.title.value = linkData.title
+                            this.infoForSaving.value = linkData.infoForSaving
+                            this.id = linkData.id
+                        }
+                        tempImpLinkData.webURL.value = linkData.webURL
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                        coroutineScope.launch {
+                            awaitAll(async {
+                                optionsBtmSheetVM.updateImportantCardData(
+                                    url = selectedWebURL.value
+                                )
+                            }, async {
+                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                    url = selectedWebURL.value
+                                )
+                            })
+                        }
+                    },
+                    onLinkClick = {
+                        if (areElementsSelectable.value) {
+
+                            if (!specificCollectionsScreenVM.selectedLinksID.contains(
+                                    linkData.id
+                                )
+                            ) {
+                                specificCollectionsScreenVM.selectedLinksID.add(
+                                    linkData.id
+                                )
+                            } else {
+                                specificCollectionsScreenVM.selectedLinksID.remove(
+                                    linkData.id
                                 )
                             }
                         } else {
-                            item {
-                                DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
-                            }
+                            specificCollectionsScreenVM.onLinkClick(
+                                recentlyVisited = RecentlyVisited(
+                                    title = linkData.title,
+                                    webURL = linkData.webURL,
+                                    baseURL = linkData.baseURL,
+                                    imgURL = linkData.imgURL,
+                                    infoForSaving = linkData.infoForSaving
+                                ),
+                                context = context,
+                                uriHandler = uriHandler,
+                                forceOpenInExternalBrowser = false,
+                                onTaskCompleted = {}
+                            )
                         }
-                    }
+                    },
+                    webURL = linkData.webURL,
+                    onForceOpenInExternalBrowserClicked = {
+                        specificCollectionsScreenVM.onLinkClick(
+                            RecentlyVisited(
+                                title = linkData.title,
+                                webURL = linkData.webURL,
+                                baseURL = linkData.baseURL,
+                                imgURL = linkData.imgURL,
+                                infoForSaving = linkData.infoForSaving
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            onTaskCompleted = {},
+                            forceOpenInExternalBrowser = true
+                        )
+                    },
+                    isItemSelected = mutableStateOf(
+                        specificCollectionsScreenVM.selectedLinksID.contains(
+                            linkData.id
+                        )
+                    )
+                )
+            }
 
-                    SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                        if (impLinksData.isNotEmpty()) {
-                            itemsIndexed(
-                                items = impLinksData,
-                                key = { _, importantLinks ->
-                                    importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
-                                }) { linkIndex, linkData ->
-                                LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        onLongClick = {
-                                            if (!areElementsSelectable.value) {
-                                                areElementsSelectable.value = true
-                                                specificCollectionsScreenVM.selectedImpLinks.add(
-                                                    linkData.webURL
-                                                )
-                                            }
-                                        },
-                                        isSelectionModeEnabled = areElementsSelectable,
-                                        title = linkData.title,
-                                        webBaseURL = linkData.baseURL,
-                                        imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedItemTitle.value = linkData.title
-                                            selectedItemNote.value = linkData.infoForSaving
-                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                OptionsBtmSheetType.LINK
-                                            CollectionsScreenVM.selectedFolderData.value.id =
-                                                linkData.id
-                                            selectedWebURL.value = linkData.webURL
-                                            selectedURLOrFolderNote.value = linkData.infoForSaving
-                                            tempImpLinkData.apply {
-                                                this.webURL.value = linkData.webURL
-                                                this.baseURL.value = linkData.baseURL
-                                                this.imgURL.value = linkData.imgURL
-                                                this.title.value = linkData.title
-                                                this.infoForSaving.value = linkData.infoForSaving
-                                            }
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                            coroutineScope.launch {
-                                                awaitAll(
-                                                    async {
-                                                        optionsBtmSheetVM.updateImportantCardData(
-                                                            url = selectedWebURL.value,
-                                                        )
-                                                    },
-                                                    async {
-                                                        optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                            url = selectedWebURL.value,
-                                                        )
-                                                    },
-                                                )
-                                            }
-                                        },
-                                        onLinkClick = {
-                                            if (areElementsSelectable.value) {
-
-                                                if (!specificCollectionsScreenVM.selectedImpLinks.contains(
-                                                        linkData.webURL
-                                                    )
-                                                ) {
-                                                    specificCollectionsScreenVM.selectedImpLinks.add(
-                                                        linkData.webURL
-                                                    )
-                                                } else {
-                                                    specificCollectionsScreenVM.selectedImpLinks.remove(
-                                                        linkData.webURL
-                                                    )
-                                                }
-                                            } else {
-                                                specificCollectionsScreenVM.onLinkClick(
-                                                    RecentlyVisited(
-                                                        title = linkData.title,
-                                                        webURL = linkData.webURL,
-                                                        baseURL = linkData.baseURL,
-                                                        imgURL = linkData.imgURL,
-                                                        infoForSaving = linkData.infoForSaving,
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false,
-                                                    onTaskCompleted = {}
-                                                )
-                                            }
-                                        },
-                                        webURL = linkData.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            specificCollectionsScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = linkData.title,
-                                                    webURL = linkData.webURL,
-                                                    baseURL = linkData.baseURL,
-                                                    imgURL = linkData.imgURL,
-                                                    infoForSaving = linkData.infoForSaving,
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true,
-                                            )
-                                        },
-                                        isItemSelected = mutableStateOf(
-                                            specificCollectionsScreenVM.selectedImpLinks.contains(
-                                                linkData.webURL
-                                            )
-                                        )
+            fun commonImpLinkParam(linkData: ImportantLinks): LinkUIComponentParam {
+                return LinkUIComponentParam(
+                    onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.selectedImpLinks.add(
+                                linkData.webURL
+                            )
+                        }
+                    },
+                    isSelectionModeEnabled = areElementsSelectable,
+                    title = linkData.title,
+                    webBaseURL = linkData.baseURL,
+                    imgURL = linkData.imgURL,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = linkData.title
+                        selectedItemNote.value = linkData.infoForSaving
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.LINK
+                        CollectionsScreenVM.selectedFolderData.value.id =
+                            linkData.id
+                        selectedWebURL.value = linkData.webURL
+                        selectedURLOrFolderNote.value =
+                            linkData.infoForSaving
+                        tempImpLinkData.apply {
+                            this.webURL.value = linkData.webURL
+                            this.baseURL.value = linkData.baseURL
+                            this.imgURL.value = linkData.imgURL
+                            this.title.value = linkData.title
+                            this.infoForSaving.value =
+                                linkData.infoForSaving
+                        }
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                        coroutineScope.launch {
+                            awaitAll(
+                                async {
+                                    optionsBtmSheetVM.updateImportantCardData(
+                                        url = selectedWebURL.value,
                                     )
+                                },
+                                async {
+                                    optionsBtmSheetVM.updateArchiveLinkCardData(
+                                        url = selectedWebURL.value,
+                                    )
+                                },
+                            )
+                        }
+                    },
+                    onLinkClick = {
+                        if (areElementsSelectable.value) {
+
+                            if (!specificCollectionsScreenVM.selectedImpLinks.contains(
+                                    linkData.webURL
+                                )
+                            ) {
+                                specificCollectionsScreenVM.selectedImpLinks.add(
+                                    linkData.webURL
+                                )
+                            } else {
+                                specificCollectionsScreenVM.selectedImpLinks.remove(
+                                    linkData.webURL
                                 )
                             }
                         } else {
-                            item {
-                                DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
-                            }
+                            specificCollectionsScreenVM.onLinkClick(
+                                RecentlyVisited(
+                                    title = linkData.title,
+                                    webURL = linkData.webURL,
+                                    baseURL = linkData.baseURL,
+                                    imgURL = linkData.imgURL,
+                                    infoForSaving = linkData.infoForSaving,
+                                ),
+                                context = context,
+                                uriHandler = uriHandler,
+                                forceOpenInExternalBrowser = false,
+                                onTaskCompleted = {}
+                            )
                         }
-                    }
+                    },
+                    webURL = linkData.webURL,
+                    onForceOpenInExternalBrowserClicked = {
+                        specificCollectionsScreenVM.onLinkClick(
+                            RecentlyVisited(
+                                title = linkData.title,
+                                webURL = linkData.webURL,
+                                baseURL = linkData.baseURL,
+                                imgURL = linkData.imgURL,
+                                infoForSaving = linkData.infoForSaving,
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            onTaskCompleted = {},
+                            forceOpenInExternalBrowser = true,
+                        )
+                    },
+                    isItemSelected = mutableStateOf(
+                        specificCollectionsScreenVM.selectedImpLinks.contains(
+                            linkData.webURL
+                        )
+                    )
+                )
+            }
 
-                    SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
-                        if (archivedSubFoldersData.isNotEmpty() && !areElementsSelectable.value) {
-                            itemsIndexed(
-                                items = archivedSubFoldersData,
-                                key = { folderIndex, foldersTable ->
-                                    foldersTable.folderName + foldersTable.id.toString()
-                                }) { folderIndex, folderData ->
-                                FolderIndividualComponent(
-                                    showCheckBox = areElementsSelectable,
-                                    isCheckBoxChecked = mutableStateOf(
-                                        specificCollectionsScreenVM.selectedFoldersData.contains(
-                                            folderData
-                                        )
-                                    ),
-                                    checkBoxState = { checkBoxState ->
-                                        if (checkBoxState) {
-                                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                                folderData
-                                            )
-                                        } else {
-                                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
-                                                it == folderData
-                                            }
-                                        }
-                                    },
-                                    folderName = folderData.folderName,
-                                    folderNote = folderData.infoForSaving,
-                                    onMoreIconClick = {
-                                        selectedItemTitle.value = folderData.folderName
-                                        selectedItemNote.value = folderData.infoForSaving
-                                        CollectionsScreenVM.selectedFolderData.value = folderData
-                                        selectedURLOrFolderNote.value = folderData.infoForSaving
-                                        clickedFolderNote.value = folderData.infoForSaving
-                                        coroutineScope.launch {
-                                            optionsBtmSheetVM.updateArchiveFolderCardData(folderData.id)
-                                        }
-                                        clickedFolderName.value = folderData.folderName
-                                        shouldOptionsBtmModalSheetBeVisible.value = true
-                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                            OptionsBtmSheetType.FOLDER
-                                    },
-                                    showMoreIcon = !areElementsSelectable.value,
-                                    onLongClick = {
-                                        if (!areElementsSelectable.value) {
-                                            areElementsSelectable.value = true
-                                            specificCollectionsScreenVM.areAllFoldersChecked.value =
-                                                false
-                                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
-                                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                                folderData
-                                            )
-                                        }
-                                    },
-                                    onFolderClick = { _ ->
-                                        if (!areElementsSelectable.value) {
-                                            CollectionsScreenVM.currentClickedFolderData.value =
-                                                folderData
-                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                                        }
-                                    })
-                            }
+            fun archiveFolderLinksParam(linkData: LinksTable): LinkUIComponentParam {
+                return LinkUIComponentParam(
+                    onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.selectedLinksID.add(
+                                linkData.id
+                            )
                         }
-                        if (archivedFoldersLinksData.isNotEmpty()) {
-                            itemsIndexed(
-                                items = archivedFoldersLinksData,
-                                key = { _, linksTable ->
-                                    linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
-                                }) { linkIndex, linkData ->
-                                LinkUIComponent(
-                                    LinkUIComponentParam(
-                                        onLongClick = {
-                                            if (!areElementsSelectable.value) {
-                                                areElementsSelectable.value = true
-                                                specificCollectionsScreenVM.selectedLinksID.add(
-                                                    linkData.id
-                                                )
-                                            }
-                                        },
-                                        isSelectionModeEnabled = areElementsSelectable,
-                                        title = linkData.title,
-                                        webBaseURL = linkData.baseURL,
-                                        imgURL = linkData.imgURL,
-                                        onMoreIconCLick = {
-                                            selectedItemTitle.value = linkData.title
-                                            selectedItemNote.value = linkData.infoForSaving
-                                            CollectionsScreenVM.selectedFolderData.value.id =
-                                                linkData.id
-                                            SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                OptionsBtmSheetType.LINK
-                                            tempImpLinkData.apply {
-                                                this.webURL.value = linkData.webURL
-                                                this.baseURL.value = linkData.baseURL
-                                                this.imgURL.value = linkData.imgURL
-                                                this.title.value = linkData.title
-                                                this.infoForSaving.value = linkData.infoForSaving
-                                            }
-                                            selectedWebURL.value = linkData.webURL
-                                            selectedURLOrFolderNote.value = linkData.infoForSaving
-                                            shouldOptionsBtmModalSheetBeVisible.value = true
-                                        },
-                                        onLinkClick = {
-                                            if (areElementsSelectable.value) {
-                                                if (!specificCollectionsScreenVM.selectedLinksID.contains(
-                                                        linkData.id
-                                                    )
-                                                ) {
-                                                    specificCollectionsScreenVM.selectedLinksID.add(
-                                                        linkData.id
-                                                    )
-                                                } else {
-                                                    specificCollectionsScreenVM.selectedLinksID.remove(
-                                                        linkData.id
-                                                    )
-                                                }
-                                            } else {
-                                                specificCollectionsScreenVM.onLinkClick(
-                                                    RecentlyVisited(
-                                                        title = linkData.title,
-                                                        webURL = linkData.webURL,
-                                                        baseURL = linkData.baseURL,
-                                                        imgURL = linkData.imgURL,
-                                                        infoForSaving = linkData.infoForSaving
-                                                    ),
-                                                    context = context,
-                                                    uriHandler = uriHandler,
-                                                    forceOpenInExternalBrowser = false,
-                                                    onTaskCompleted = {}
-                                                )
-                                            }
-                                        },
-                                        webURL = linkData.webURL,
-                                        onForceOpenInExternalBrowserClicked = {
-                                            specificCollectionsScreenVM.onLinkClick(
-                                                RecentlyVisited(
-                                                    title = linkData.title,
-                                                    webURL = linkData.webURL,
-                                                    baseURL = linkData.baseURL,
-                                                    imgURL = linkData.imgURL,
-                                                    infoForSaving = linkData.infoForSaving
-                                                ),
-                                                context = context,
-                                                uriHandler = uriHandler,
-                                                onTaskCompleted = {},
-                                                forceOpenInExternalBrowser = true
-                                            )
-                                        },
-                                        isItemSelected = mutableStateOf(
-                                            specificCollectionsScreenVM.selectedLinksID.contains(
-                                                linkData.id
-                                            )
-                                        ),
-                                    )
+                    },
+                    isSelectionModeEnabled = areElementsSelectable,
+                    title = linkData.title,
+                    webBaseURL = linkData.baseURL,
+                    imgURL = linkData.imgURL,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = linkData.title
+                        selectedItemNote.value = linkData.infoForSaving
+                        CollectionsScreenVM.selectedFolderData.value.id =
+                            linkData.id
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.LINK
+                        tempImpLinkData.apply {
+                            this.webURL.value = linkData.webURL
+                            this.baseURL.value = linkData.baseURL
+                            this.imgURL.value = linkData.imgURL
+                            this.title.value = linkData.title
+                            this.infoForSaving.value =
+                                linkData.infoForSaving
+                        }
+                        selectedWebURL.value = linkData.webURL
+                        selectedURLOrFolderNote.value =
+                            linkData.infoForSaving
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                    },
+                    onLinkClick = {
+                        if (areElementsSelectable.value) {
+                            if (!specificCollectionsScreenVM.selectedLinksID.contains(
+                                    linkData.id
+                                )
+                            ) {
+                                specificCollectionsScreenVM.selectedLinksID.add(
+                                    linkData.id
+                                )
+                            } else {
+                                specificCollectionsScreenVM.selectedLinksID.remove(
+                                    linkData.id
                                 )
                             }
                         } else {
-                            item {
-                                DataEmptyScreen(text = LocalizedStrings.noLinksFoundInThisArchivedFolder.value)
+                            specificCollectionsScreenVM.onLinkClick(
+                                RecentlyVisited(
+                                    title = linkData.title,
+                                    webURL = linkData.webURL,
+                                    baseURL = linkData.baseURL,
+                                    imgURL = linkData.imgURL,
+                                    infoForSaving = linkData.infoForSaving
+                                ),
+                                context = context,
+                                uriHandler = uriHandler,
+                                forceOpenInExternalBrowser = false,
+                                onTaskCompleted = {}
+                            )
+                        }
+                    },
+                    webURL = linkData.webURL,
+                    onForceOpenInExternalBrowserClicked = {
+                        specificCollectionsScreenVM.onLinkClick(
+                            RecentlyVisited(
+                                title = linkData.title,
+                                webURL = linkData.webURL,
+                                baseURL = linkData.baseURL,
+                                imgURL = linkData.imgURL,
+                                infoForSaving = linkData.infoForSaving
+                            ),
+                            context = context,
+                            uriHandler = uriHandler,
+                            onTaskCompleted = {},
+                            forceOpenInExternalBrowser = true
+                        )
+                    },
+                    isItemSelected = mutableStateOf(
+                        specificCollectionsScreenVM.selectedLinksID.contains(
+                            linkData.id
+                        )
+                    ),
+                )
+            }
+
+            @Composable
+            fun CommonArchivedSubFolders(folderData: FoldersTable) {
+                FolderIndividualComponent(
+                    showCheckBox = areElementsSelectable,
+                    isCheckBoxChecked = mutableStateOf(
+                        specificCollectionsScreenVM.selectedFoldersData.contains(
+                            folderData
+                        )
+                    ),
+                    checkBoxState = { checkBoxState ->
+                        if (checkBoxState) {
+                            specificCollectionsScreenVM.selectedFoldersData.add(
+                                folderData
+                            )
+                        } else {
+                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
+                                it == folderData
                             }
                         }
-                    }
+                    },
+                    folderName = folderData.folderName,
+                    folderNote = folderData.infoForSaving,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = folderData.folderName
+                        selectedItemNote.value = folderData.infoForSaving
+                        CollectionsScreenVM.selectedFolderData.value =
+                            folderData
+                        selectedURLOrFolderNote.value =
+                            folderData.infoForSaving
+                        clickedFolderNote.value = folderData.infoForSaving
+                        coroutineScope.launch {
+                            optionsBtmSheetVM.updateArchiveFolderCardData(
+                                folderData.id
+                            )
+                        }
+                        clickedFolderName.value = folderData.folderName
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.FOLDER
+                    },
+                    showMoreIcon = !areElementsSelectable.value,
+                    onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                false
+                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
+                            specificCollectionsScreenVM.selectedFoldersData.add(
+                                folderData
+                            )
+                        }
+                    },
+                    onFolderClick = { _ ->
+                        if (!areElementsSelectable.value) {
+                            CollectionsScreenVM.currentClickedFolderData.value =
+                                folderData
+                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                        }
+                    })
+            }
 
-                    else -> {}
+            @Composable
+            fun CommonRegularSubFolders(folderData: FoldersTable) {
+                FolderIndividualComponent(
+                    showCheckBox = areElementsSelectable,
+                    isCheckBoxChecked = mutableStateOf(
+                        specificCollectionsScreenVM.selectedFoldersData.contains(
+                            folderData
+                        )
+                    ),
+                    checkBoxState = { checkBoxState ->
+                        if (checkBoxState) {
+                            specificCollectionsScreenVM.selectedFoldersData.add(
+                                folderData
+                            )
+                        } else {
+                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
+                                it == folderData
+                            }
+                        }
+                    },
+                    folderName = folderData.folderName,
+                    folderNote = folderData.infoForSaving,
+                    onMoreIconClick = {
+                        selectedItemTitle.value = folderData.folderName
+                        selectedItemNote.value = folderData.infoForSaving
+                        selectedURLOrFolderNote.value =
+                            folderData.infoForSaving
+                        clickedFolderNote.value = folderData.infoForSaving
+                        coroutineScope.launch {
+                            optionsBtmSheetVM.updateArchiveFolderCardData(
+                                folderData.id
+                            )
+                        }
+                        clickedFolderName.value = folderData.folderName
+                        CollectionsScreenVM.selectedFolderData.value =
+                            folderData
+                        shouldOptionsBtmModalSheetBeVisible.value = true
+                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                            OptionsBtmSheetType.FOLDER
+                    },
+                    showMoreIcon = !areElementsSelectable.value,
+                    onFolderClick = { _ ->
+                        if (!areElementsSelectable.value) {
+                            CollectionsScreenVM.currentClickedFolderData.value =
+                                folderData
+                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                        }
+                    }, onLongClick = {
+                        if (!areElementsSelectable.value) {
+                            areElementsSelectable.value = true
+                            specificCollectionsScreenVM.areAllFoldersChecked.value =
+                                false
+                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
+                            specificCollectionsScreenVM.selectedFoldersData.add(
+                                folderData
+                            )
+                        }
+                    })
+            }
+
+            val commonModifier = Modifier
+                .padding(it)
+                .padding(5.dp)
+                .fillMaxSize()
+                .animateContentSize()
+
+            when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                LinkLayout.TITLE_ONLY_LIST_VIEW.name, LinkLayout.REGULAR_LIST_VIEW.name -> {
+                    LazyColumn(
+                        modifier = Modifier
+                            .padding(it)
+                            .nestedScroll(scrollBehavior.nestedScrollConnection)
+                            .fillMaxSize()
+                            .animateContentSize()
+                    ) {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                if (childFoldersData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = childFoldersData,
+                                        key = { _, foldersTable ->
+                                            foldersTable.id.toString() + foldersTable.folderName
+                                        }) { folderIndex, folderData ->
+                                        CommonRegularSubFolders(folderData)
+                                    }
+                                }
+                                if (specificFolderLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = specificFolderLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
+                                        }) { linkIndex, linkData ->
+                                        ListViewLinkUIComponent(
+                                            specificFolderLinksParam(linkData),
+                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item {
+                                        DataEmptyScreen(text = LocalizedStrings.thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                if (savedLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = savedLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
+                                        }) { linkIndex, linkData ->
+                                        ListViewLinkUIComponent(
+                                            savedLinksParam(linkData),
+                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                if (impLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = impLinksData,
+                                        key = { _, importantLinks ->
+                                            importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
+                                        }) { linkIndex, linkData ->
+                                        ListViewLinkUIComponent(
+                                            commonImpLinkParam(linkData),
+                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item {
+                                        DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                                if (archivedSubFoldersData.isNotEmpty() && !areElementsSelectable.value) {
+                                    itemsIndexed(
+                                        items = archivedSubFoldersData,
+                                        key = { folderIndex, foldersTable ->
+                                            foldersTable.folderName + foldersTable.id.toString()
+                                        }) { folderIndex, folderData ->
+                                        CommonArchivedSubFolders(folderData)
+                                    }
+                                }
+                                if (archivedFoldersLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = archivedFoldersLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
+                                        }) { linkIndex, linkData ->
+                                        ListViewLinkUIComponent(
+                                            archiveFolderLinksParam(linkData),
+                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksFoundInThisArchivedFolder.value)
+                                    }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(175.dp))
+                        }
+                    }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(175.dp))
+
+                LinkLayout.GRID_VIEW.name -> {
+                    LazyVerticalGrid(
+                        columns = GridCells.Adaptive(150.dp),
+                        modifier = commonModifier
+                    ) {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                if (childFoldersData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = childFoldersData,
+                                        key = { _, foldersTable ->
+                                            foldersTable.id.toString() + foldersTable.folderName
+                                        }, span = { _, _ ->
+                                            GridItemSpan(this.maxLineSpan)
+                                        }) { folderIndex, folderData ->
+                                        CommonRegularSubFolders(folderData)
+                                    }
+                                }
+                                if (specificFolderLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = specificFolderLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            specificFolderLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = {
+                                        GridItemSpan(this.maxCurrentLineSpan)
+                                    }) {
+                                        DataEmptyScreen(text = LocalizedStrings.thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                if (savedLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = savedLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            savedLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = {
+                                        GridItemSpan(this.maxCurrentLineSpan)
+                                    }) {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                if (impLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = impLinksData,
+                                        key = { _, importantLinks ->
+                                            importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            commonImpLinkParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = {
+                                        GridItemSpan(this.maxCurrentLineSpan)
+                                    }) {
+                                        DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                                if (archivedSubFoldersData.isNotEmpty() && !areElementsSelectable.value) {
+                                    itemsIndexed(
+                                        items = archivedSubFoldersData,
+                                        key = { folderIndex, foldersTable ->
+                                            foldersTable.folderName + foldersTable.id.toString()
+                                        }, span = { _, _ ->
+                                            GridItemSpan(this.maxLineSpan)
+                                        }) { folderIndex, folderData ->
+                                        CommonArchivedSubFolders(folderData)
+                                    }
+                                }
+                                if (archivedFoldersLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = archivedFoldersLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            archiveFolderLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = {
+                                        GridItemSpan(this.maxLineSpan)
+                                    }) {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksFoundInThisArchivedFolder.value)
+                                    }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(175.dp))
+                        }
+                    }
+                }
+
+                LinkLayout.STAGGERED_VIEW.name -> {
+                    LazyVerticalStaggeredGrid(
+                        columns = StaggeredGridCells.Adaptive(150.dp),
+                        modifier = commonModifier
+                    ) {
+                        when (SpecificCollectionsScreenVM.screenType.value) {
+                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> {
+                                if (childFoldersData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = childFoldersData,
+                                        key = { _, foldersTable ->
+                                            foldersTable.id.toString() + foldersTable.folderName
+                                        }, span = { _, _ ->
+                                            StaggeredGridItemSpan.FullLine
+                                        }) { folderIndex, folderData ->
+                                        CommonRegularSubFolders(folderData)
+                                    }
+                                }
+                                if (specificFolderLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = specificFolderLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.baseURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            specificFolderLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = StaggeredGridItemSpan.FullLine) {
+                                        DataEmptyScreen(text = LocalizedStrings.thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.SAVED_LINKS_SCREEN -> {
+                                if (savedLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = savedLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.baseURL + linksTable.id.toString() + linksTable.webURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            savedLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = StaggeredGridItemSpan.FullLine) {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
+                                if (impLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = impLinksData,
+                                        key = { _, importantLinks ->
+                                            importantLinks.id.toString() + importantLinks.baseURL + importantLinks.webURL
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            commonImpLinkParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = StaggeredGridItemSpan.FullLine) {
+                                        DataEmptyScreen(text = LocalizedStrings.noImportantLinksWereFound.value)
+                                    }
+                                }
+                            }
+
+                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> {
+                                if (archivedSubFoldersData.isNotEmpty() && !areElementsSelectable.value) {
+                                    itemsIndexed(
+                                        items = archivedSubFoldersData,
+                                        key = { folderIndex, foldersTable ->
+                                            foldersTable.folderName + foldersTable.id.toString()
+                                        }, span = { _, _ ->
+                                            StaggeredGridItemSpan.FullLine
+                                        }) { folderIndex, folderData ->
+                                        CommonArchivedSubFolders(folderData)
+                                    }
+                                }
+                                if (archivedFoldersLinksData.isNotEmpty()) {
+                                    itemsIndexed(
+                                        items = archivedFoldersLinksData,
+                                        key = { _, linksTable ->
+                                            linksTable.id.toString() + linksTable.webURL + linksTable.id.toString()
+                                        }) { linkIndex, linkData ->
+                                        GridViewLinkUIComponent(
+                                            archiveFolderLinksParam(linkData),
+                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                        )
+                                    }
+                                } else {
+                                    item(span = StaggeredGridItemSpan.FullLine) {
+                                        DataEmptyScreen(text = LocalizedStrings.noLinksFoundInThisArchivedFolder.value)
+                                    }
+                                }
+                            }
+
+                            else -> {}
+                        }
+                        item {
+                            Spacer(modifier = Modifier.height(175.dp))
+                        }
+                    }
                 }
             }
+
             if (shouldScreenTransparencyDecreasedBoxVisible.value) {
                 Box(modifier = Modifier
                     .fillMaxSize()
@@ -1127,6 +1429,7 @@ fun SpecificCollectionScreen(navController: NavController) {
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                showQuickActions = mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
                 inSpecificArchiveScreen = mutableStateOf(SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
                 inArchiveScreen = mutableStateOf(SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
                 btmModalSheetState = btmModalSheetState,
@@ -1438,6 +1741,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
                     SpecificScreenType.INTENT_ACTIVITY -> SortingBtmSheetType.COLLECTIONS_SCREEN
                     SpecificScreenType.ROOT_SCREEN -> SortingBtmSheetType.REGULAR_FOLDER_SCREEN
+                    SpecificScreenType.ALL_LINKS_SCREEN -> SortingBtmSheetType.ALL_LINKS_SCREEN
                 },
                 shouldFoldersSelectionBeVisible = when (SpecificCollectionsScreenVM.screenType.value) {
                     SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN -> mutableStateOf(

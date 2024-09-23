@@ -6,9 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
+import com.sakethh.linkora.ui.screens.collections.allLinks.AllLinksScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayoutSettings
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
@@ -99,6 +101,12 @@ fun MainNavigation(
         }
         composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
             SpecificPanelScreen(navController)
+        }
+        composable(route = NavigationRoutes.LINK_LAYOUT_SETTINGS.name) {
+            LinkLayoutSettings(navController)
+        }
+        composable(route = NavigationRoutes.ALL_LINKS_SCREEN.name) {
+            AllLinksScreen(navController)
         }
     }
 

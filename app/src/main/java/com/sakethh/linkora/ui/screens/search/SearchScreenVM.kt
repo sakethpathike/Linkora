@@ -116,7 +116,7 @@ class SearchScreenVM @Inject constructor(
     init {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
-                retrieveQueryData(query)
+                retrieveQueryData(query.trim())
             }
         }
     }

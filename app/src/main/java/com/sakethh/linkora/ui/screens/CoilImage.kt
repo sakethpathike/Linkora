@@ -10,12 +10,13 @@ import coil.request.ImageRequest
 @Composable
 fun CoilImage(
     modifier: Modifier,
-    imgURL: String
+    imgURL: String,
+    contentScale: ContentScale = ContentScale.Crop
 ) {
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current).data(imgURL).crossfade(true).build(),
         contentDescription = null,
         modifier = modifier,
-        contentScale = ContentScale.Crop
+        contentScale = contentScale
     )
 }

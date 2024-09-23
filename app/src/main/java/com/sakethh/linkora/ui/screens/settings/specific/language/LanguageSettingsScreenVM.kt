@@ -81,7 +81,7 @@ class LanguageSettingsScreenVM @Inject constructor(
     private val _remotelyAvailableLanguages =
         MutableStateFlow<List<com.sakethh.linkora.data.local.localization.language.Language>>(
             emptyList()
-    )
+        )
     val remotelyAvailableLanguages = _remotelyAvailableLanguages.asStateFlow()
 
     val shouldRequestingDataFromServerDialogBoxShouldAppear = mutableStateOf(false)
@@ -139,7 +139,11 @@ class LanguageSettingsScreenVM @Inject constructor(
                 triggeredFromRetrieveStrings = true
                 viewModelScope.launch {
                     async {
-                        onClick(LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(languageSettingsScreenUIEvent.context))
+                        onClick(
+                            LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(
+                                languageSettingsScreenUIEvent.context
+                            )
+                        )
                     }.await()
                     when (val resultState =
                         translationsRepo.addLocalizedStrings(languageSettingsScreenUIEvent.languageCode)) {

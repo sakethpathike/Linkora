@@ -7,16 +7,19 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import com.sakethh.linkora.R
 
-val fonts = FontFamily(
+val poppinsFontFamily = FontFamily(
     Font(R.font.semibold, weight = FontWeight.SemiBold),
     Font(R.font.medium, weight = FontWeight.Medium),
-    Font(R.font.regular, weight = FontWeight.Normal),
-    Font(R.font.playwriteittrad, weight = FontWeight.Bold)
+    Font(R.font.regular, weight = FontWeight.Normal)
+)
+
+val playWriteITTradFontFamily = FontFamily(
+    Font(R.font.playwriteittrad, weight = FontWeight.Normal)
 )
 
 val Typography = Typography(
-    titleLarge = TextStyle(fontFamily = fonts, fontWeight = FontWeight.SemiBold),
-    titleMedium = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Medium),
-    titleSmall = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Normal),
-    bodyMedium = TextStyle(fontFamily = fonts, fontWeight = FontWeight.Bold)
+    titleLarge = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.SemiBold),
+    titleMedium = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Medium),
+    titleSmall = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal),
+    bodyMedium = TextStyle(fontFamily = playWriteITTradFontFamily, fontWeight = FontWeight.Normal)
 )

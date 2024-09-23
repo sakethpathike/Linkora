@@ -129,7 +129,7 @@
     <string name="new_link_added_to_the_folder">New link added to the folder</string>
     <string name="selected_folders_archived_successfully">Selected folders archived successfully</string>
     <string name="deleted_the_note">deleted the note</string>
-    <string name="search_titles_to_find_links_and_folders">Search titles to find links and folders</string>
+    <string name="search_titles_to_find_links_and_folders">Search titles and notes to find links and folders</string>
     <string name="archived_links">Archived Links</string>
     <string name="archived_folders">Archived Folders</string>
     <string name="links_from_folders">Links from folders</string>
@@ -284,4 +284,19 @@
     <string name="show_associated_image_in_link_menu">Show associated image in link menu</string>
     <string name="enables_the_display_of_an_associated_image_within_the_link_menu">Enables the display of an associated image within the link menu</string>
     <string name="view_all">View All</string>
+    <string name="link_layout">Link Layout</string>
+    <string name="show_border_around_links">Show Border Around Links</string>
+    <string name="show_title">Show Title</string>
+    <string name="show_base_url">Show Base URL</string>
+    <string name="show_bottom_faded_edge">Show Bottom Faded Edge</string>
+    <string name="link_layout_settings">Link Layout Settings</string>
+    <string name="choose_the_layout_you_like_best">Choose the layout you like best</string>
+    <string name="feed_preview">Feed Preview</string>
+    <string name="all_links">All Links</string>
+    <string name="filter_based_on">Filter based on</string>
+    <string name="folders_links">Folders Links</string>
+    <string name="regular_list_view">Regular List View</string>
+    <string name="title_only_list_view">Title Only List View</string>
+    <string name="grid_view">Grid View</string>
+    <string name="staggered_view">Staggered View</string>
 </resources>

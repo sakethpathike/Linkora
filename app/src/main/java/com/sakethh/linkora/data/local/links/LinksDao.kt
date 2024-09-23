@@ -22,6 +22,9 @@ interface LinksDao {
     @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
 
+    @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE id = :linkID")
+    suspend fun deleteANoteFromArchiveLinks(linkID: Long)
+
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :folderID")
     suspend fun deleteALinkNoteFromArchiveBasedFolderLinksV10(
         webURL: String,
@@ -37,9 +40,19 @@ interface LinksDao {
     @Query("UPDATE important_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromImportantLinks(webURL: String)
 
+    @Query("UPDATE important_links_table SET infoForSaving = \"\" WHERE id = :linkID")
+    suspend fun deleteANoteFromImportantLinks(linkID: Long)
+
+    @Query("UPDATE links_table SET infoForSaving = \"\" WHERE id = :linkID")
+    suspend fun deleteANoteFromLinksTable(linkID: Long)
+
 
     @Query("UPDATE recently_visited_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromRecentlyVisited(webURL: String)
+
+
+    @Query("UPDATE recently_visited_table SET infoForSaving = \"\" WHERE id = :linkID")
+    suspend fun deleteANoteFromRecentlyVisited(linkID: Long)
 
 
     @Query("UPDATE links_table SET infoForSaving = \"\" WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
@@ -239,8 +252,14 @@ interface LinksDao {
     @Query("UPDATE recently_visited_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 
+    @Query("UPDATE recently_visited_table SET title = :newTitle WHERE id = :linkID")
+    suspend fun renameALinkTitleFromRecentlyVisited(linkID: Long, newTitle: String)
+
     @Query("UPDATE recently_visited_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE recently_visited_table SET infoForSaving = :newInfo WHERE id = :linkID")
+    suspend fun renameALinkInfoFromRecentlyVisitedLinks(linkID: Long, newInfo: String)
 
     @Query("UPDATE important_links_table SET title = :newTitle WHERE id = :id")
     suspend fun renameALinkTitleFromImpLinks(id: Long, newTitle: String)
@@ -254,11 +273,17 @@ interface LinksDao {
     @Query("UPDATE archived_links_table SET title = :newTitle WHERE webURL = :webURL")
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
 
+    @Query("UPDATE archived_links_table SET title = :newTitle WHERE id = :linkID")
+    suspend fun renameALinkTitleFromArchiveLinks(linkID: Long, newTitle: String)
+
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND isLinkedWithSavedLinks=1")
     suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
 
     @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE webURL = :webURL")
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
+
+    @Query("UPDATE archived_links_table SET infoForSaving = :newInfo WHERE id = :linkID")
+    suspend fun renameALinkInfoFromArchiveLinks(linkID: Long, newInfo: String)
 
     @Query("UPDATE links_table SET infoForSaving = :newInfo WHERE webURL = :webURL AND keyOfArchiveLinkedFolderV10 = :folderID")
     suspend fun renameALinkInfoFromArchiveBasedFolderLinksV10(

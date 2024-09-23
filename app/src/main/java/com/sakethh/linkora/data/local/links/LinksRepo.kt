@@ -24,6 +24,7 @@ interface LinksRepo {
 
     suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
 
+    suspend fun deleteANoteFromArchiveLinks(linkID: Long)
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
 
     suspend fun deleteALinkNoteFromArchiveBasedFolderLinksV10(
@@ -37,9 +38,12 @@ interface LinksRepo {
     )
 
     suspend fun deleteANoteFromImportantLinks(webURL: String)
+    suspend fun deleteANoteFromImportantLinks(linkID: Long)
 
+    suspend fun deleteANoteFromLinksTable(linkID: Long)
 
     suspend fun deleteANoteFromRecentlyVisited(webURL: String)
+    suspend fun deleteANoteFromRecentlyVisited(linkID: Long)
 
 
     suspend fun deleteALinkInfoFromSavedLinks(webURL: String)
@@ -99,6 +103,10 @@ interface LinksRepo {
         importantLink: ImportantLinks,
         onTaskCompleted: () -> Unit,
         autoDetectTitle: Boolean
+    ): CommonUiEvent
+
+    suspend fun addANewLinkToImpLinks(
+        importantLink: ImportantLinks
     ): CommonUiEvent
 
 
@@ -180,8 +188,10 @@ interface LinksRepo {
 
     suspend fun updateALinkDataFromArchivedLinksTable(archivedLinks: ArchivedLinks)
 
+    suspend fun renameALinkTitleFromRecentlyVisited(linkID: Long, newTitle: String)
     suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String)
 
+    suspend fun renameALinkInfoFromRecentlyVisitedLinks(linkID: Long, newInfo: String)
     suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String)
 
     suspend fun updateImpLinkTitle(id: Long, newTitle: String)
@@ -190,10 +200,12 @@ interface LinksRepo {
 
     suspend fun updateLinkInfoFromLinksTable(linkID: Long, newInfo: String)
 
+    suspend fun renameALinkTitleFromArchiveLinks(linkID: Long, newTitle: String)
     suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String)
 
     suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String)
 
+    suspend fun renameALinkInfoFromArchiveLinks(linkID: Long, newInfo: String)
     suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String)
 
     suspend fun renameALinkInfoFromArchiveBasedFolderLinksV10(

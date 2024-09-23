@@ -76,7 +76,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLa
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.collectLatest
@@ -96,6 +96,7 @@ fun LanguageSettingsScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -125,7 +126,7 @@ fun LanguageSettingsScreen(
         mutableStateOf(false)
     }
     val localUriHandler = LocalUriHandler.current
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = language.value,
         navController = navController,
         floatingActionButton = {
@@ -559,15 +560,15 @@ fun LanguageSettingsScreen(
             }
         }
     }
-        SettingsNewVersionCheckerDialogBox(
-            text = if (isRetrieveLanguageInfoFABTriggered.value)
-                LocalizedStrings.syncingLanguageDetailsThisMayTakeSomeTime.value else LocalizedStrings.syncingTranslationsForCurrentlySelectedLanguage.value.replace(
-                "\$\$\$\$",
-                currentlySelectedLanguageName.value
-            ),
-            shouldCancelButtonBeVisible = false,
-            shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
-        )
+    SettingsNewVersionCheckerDialogBox(
+        text = if (isRetrieveLanguageInfoFABTriggered.value)
+            LocalizedStrings.syncingLanguageDetailsThisMayTakeSomeTime.value else LocalizedStrings.syncingTranslationsForCurrentlySelectedLanguage.value.replace(
+            "\$\$\$\$",
+            currentlySelectedLanguageName.value
+        ),
+        shouldCancelButtonBeVisible = false,
+        shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
+    )
     LaunchedEffect(key1 = Unit) {
         preferredAppLanguageName.value = readSettingPreferenceValue(
             stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),

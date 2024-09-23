@@ -3,6 +3,7 @@ package com.sakethh.linkora.data.remote.scrape
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -41,8 +42,15 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                 val imgURL = rawHTML.split("\n").firstOrNull {
                     it.contains("og:image")
                 }.let {
-                    "http" + it?.substringAfter("http")?.substringBefore("\"")
+                    if (it?.contains("http") == false) {
+                        "https://" + url.substringAfter("://")
+                            .substringBefore("/") + it.substringAfter("content=\"")
+                            .substringBefore("\">")
+                    } else {
+                        "http" + it?.substringAfter("http")?.substringBefore("\"")
+                    }
                 }.trim().let {
+                    linkoraLog(it)
                     val statusValue = withContext(Dispatchers.IO) {
                         try {
                             Jsoup.connect(it)

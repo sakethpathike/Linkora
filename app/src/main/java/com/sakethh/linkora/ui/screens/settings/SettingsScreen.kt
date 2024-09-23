@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ColorLens
+import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Language
@@ -81,6 +82,15 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         },
                         sectionTitle = LocalizedStrings.general.value,
                         sectionIcon = Icons.Default.SettingsInputSvideo
+                    )
+                }
+                item(key = "layoutRow") {
+                    SettingsSectionComposable(
+                        onClick = {
+                            navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+                        },
+                        sectionTitle = LocalizedStrings.linkLayout.value,
+                        sectionIcon = Icons.Default.Dashboard
                     )
                 }
                 item(key = "languageRow") {

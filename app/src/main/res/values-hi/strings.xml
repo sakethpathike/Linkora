@@ -130,7 +130,7 @@
     <string name="new_link_added_to_the_folder">फ़ोल्डर में नया लिंक ऐड किया गया</string>
     <string name="selected_folders_archived_successfully">चयनित फ़ोल्डर सफलतापूर्वक संग्रहीत किए गए</string>
     <string name="deleted_the_note">नोट हटा दिया गया</string>
-    <string name="search_titles_to_find_links_and_folders">शीर्षकों की खोज करके लिंक और फ़ोल्डर खोजें</string>
+    <string name="search_titles_to_find_links_and_folders">शीर्षकों और नोट्स की खोज करके लिंक और फ़ोल्डर खोजें</string>
     <string name="archived_links">संग्रहीत लिंक्स</string>
     <string name="archived_folders">संग्रहीत फ़ोल्डर</string>
     <string name="links_from_folders">फ़ोल्डर से लिंक</string>
@@ -285,4 +285,19 @@
     <string name="show_associated_image_in_link_menu">लिंक मेनू में संबंधित छवि दिखाएं</string>
     <string name="enables_the_display_of_an_associated_image_within_the_link_menu">लिंक मेनू में संबंधित छवि दिखाने की अनुमति देता है</string>
     <string name="view_all">सभी देखें</string>
+    <string name="link_layout">लिंक लेआउट</string>
+    <string name="show_border_around_links">लिंक्स के चारों ओर बॉर्डर दिखाएं</string>
+    <string name="show_title">शीर्षक दिखाएं</string>
+    <string name="show_base_url">बेस यूआरएल दिखाएं</string>
+    <string name="show_bottom_faded_edge">नीचे के धुंधले किनारे दिखाएं</string>
+    <string name="link_layout_settings">लिंक लेआउट सेटिंग्स</string>
+    <string name="choose_the_layout_you_like_best">आपको जो लेआउट सबसे अच्छा लगे, चुनें</string>
+    <string name="feed_preview">फीड पूर्वावलोकन</string>
+    <string name="all_links">सभी लिंक</string>
+    <string name="filter_based_on">फिल्टर आधारित करें</string>
+    <string name="folders_links">फोल्डर लिंक</string>
+    <string name="regular_list_view">नियमित सूची दृश्य</string>
+    <string name="title_only_list_view">केवल शीर्षक सूची दृश्य</string>
+    <string name="grid_view">ग्रिड दृश्य</string>
+    <string name="staggered_view">स्टैगरड दृश्य</string>
 </resources>

@@ -1,6 +1,7 @@
 package com.sakethh.linkora.data.local.links
 
 import android.content.Context
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.addedTheUrl
 import com.sakethh.linkora.LocalizedStrings.couldNotRetrieveMetadataNowButLinkoraSavedTheLink
 import com.sakethh.linkora.LocalizedStrings.givenLinkAlreadyExists
@@ -473,6 +474,10 @@ class LinksImpl @Inject constructor(
         return localDatabase.linksDao().addListOfDataInLinksTable(list)
     }
 
+    override suspend fun deleteANoteFromArchiveLinks(linkID: Long) {
+        localDatabase.linksDao().deleteANoteFromArchiveLinks(linkID)
+    }
+
     override suspend fun deleteANoteFromArchiveLinks(webURL: String) {
         return localDatabase.linksDao().deleteANoteFromArchiveLinks(webURL)
     }
@@ -501,8 +506,20 @@ class LinksImpl @Inject constructor(
         return localDatabase.linksDao().deleteANoteFromImportantLinks(webURL)
     }
 
+    override suspend fun deleteANoteFromImportantLinks(linkID: Long) {
+        return localDatabase.linksDao().deleteANoteFromImportantLinks(linkID)
+    }
+
+    override suspend fun deleteANoteFromLinksTable(linkID: Long) {
+        localDatabase.linksDao().deleteANoteFromLinksTable(linkID)
+    }
+
     override suspend fun deleteANoteFromRecentlyVisited(webURL: String) {
         return localDatabase.linksDao().deleteANoteFromRecentlyVisited(webURL)
+    }
+
+    override suspend fun deleteANoteFromRecentlyVisited(linkID: Long) {
+        localDatabase.linksDao().deleteANoteFromRecentlyVisited(linkID)
     }
 
     override suspend fun deleteALinkInfoFromSavedLinks(webURL: String) {
@@ -704,6 +721,13 @@ class LinksImpl @Inject constructor(
         )
     }
 
+    override suspend fun addANewLinkToImpLinks(
+        importantLink: ImportantLinks
+    ): CommonUiEvent {
+        localDatabase.linksDao().addANewLinkToImpLinks(importantLink)
+        return CommonUiEvent.ShowToast(LocalizedStrings.addedLinkToImportantLinks.value)
+    }
+
     override suspend fun addANewLinkToArchiveLink(archivedLinks: ArchivedLinks) {
         return localDatabase.linksDao().addANewLinkToArchiveLink(archivedLinks)
     }
@@ -843,8 +867,16 @@ class LinksImpl @Inject constructor(
         localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(archivedLinks)
     }
 
+    override suspend fun renameALinkTitleFromRecentlyVisited(linkID: Long, newTitle: String) {
+        localDatabase.linksDao().renameALinkTitleFromRecentlyVisited(linkID, newTitle)
+    }
+
     override suspend fun renameALinkTitleFromRecentlyVisited(webURL: String, newTitle: String) {
         localDatabase.linksDao().renameALinkTitleFromRecentlyVisited(webURL, newTitle)
+    }
+
+    override suspend fun renameALinkInfoFromRecentlyVisitedLinks(linkID: Long, newInfo: String) {
+        localDatabase.linksDao().renameALinkInfoFromRecentlyVisitedLinks(linkID, newInfo)
     }
 
     override suspend fun renameALinkInfoFromRecentlyVisitedLinks(webURL: String, newInfo: String) {
@@ -863,12 +895,20 @@ class LinksImpl @Inject constructor(
         localDatabase.linksDao().renameALinkInfoFromLinksTable(linkID, newInfo)
     }
 
+    override suspend fun renameALinkTitleFromArchiveLinks(linkID: Long, newTitle: String) {
+        localDatabase.linksDao().renameALinkTitleFromArchiveLinks(linkID, newTitle)
+    }
+
     override suspend fun renameALinkTitleFromArchiveLinks(webURL: String, newTitle: String) {
         localDatabase.linksDao().renameALinkTitleFromArchiveLinks(webURL, newTitle)
     }
 
     override suspend fun renameALinkInfoFromSavedLinks(webURL: String, newInfo: String) {
         localDatabase.linksDao().renameALinkInfoFromSavedLinks(webURL, newInfo)
+    }
+
+    override suspend fun renameALinkInfoFromArchiveLinks(linkID: Long, newInfo: String) {
+        localDatabase.linksDao().renameALinkInfoFromArchiveLinks(linkID, newInfo)
     }
 
     override suspend fun renameALinkInfoFromArchiveLinks(webURL: String, newInfo: String) {

@@ -65,8 +65,8 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
-import com.sakethh.linkora.ui.theme.fonts
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
+import com.sakethh.linkora.ui.theme.poppinsFontFamily
 import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
@@ -84,6 +84,7 @@ fun GeneralSettingsScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -102,7 +103,7 @@ fun GeneralSettingsScreen(
     val successfulRefreshLinksCount =
         RefreshLinksWorker.successfulRefreshLinksCount
 
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.general.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
@@ -365,7 +366,7 @@ private fun TextFieldForPreferenceComposable(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        ProvideTextStyle(value = TextStyle(fontFamily = fonts)) {
+        ProvideTextStyle(value = TextStyle(fontFamily = poppinsFontFamily)) {
             OutlinedTextField(
                 supportingText = {
                     Text(

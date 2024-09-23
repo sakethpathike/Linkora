@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.settings.specific
 
 import android.content.Intent
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,7 +31,7 @@ import com.sakethh.linkora.LocalizedStrings.linkoraWouldNotBePossibleWithoutTheF
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -50,7 +51,7 @@ fun AcknowledgmentsSettingsScreen(
             }
         }
     }
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = acknowledgments.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
@@ -69,7 +70,11 @@ fun AcknowledgmentsSettingsScreen(
                     fontSize = 15.sp,
                     lineHeight = 20.sp,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                    modifier = Modifier
+                        .padding(start = 15.dp, end = 15.dp)
+                        .clickable {
+                            throw Exception("Testing Crashlytics")
+                        }
                 )
             }
             items(settingsScreenVM.acknowledgmentsSection()) {

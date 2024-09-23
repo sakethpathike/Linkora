@@ -46,7 +46,7 @@ import com.sakethh.linkora.ui.screens.settings.composables.ImportConflictBtmShee
 import com.sakethh.linkora.ui.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.utils.openApplicationSettings
 import kotlinx.coroutines.flow.collectLatest
 
@@ -60,6 +60,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -94,7 +95,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             )
             file.delete()
         }
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = data.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

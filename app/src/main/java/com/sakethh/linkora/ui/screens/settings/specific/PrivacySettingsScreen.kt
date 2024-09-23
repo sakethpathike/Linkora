@@ -20,7 +20,7 @@ import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
-import com.sakethh.linkora.ui.screens.settings.composables.SpecificSettingsScreenScaffold
+import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -33,11 +33,12 @@ fun PrivacySettingsScreen(navController: NavController, settingsScreenVM: Settin
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
     }
-    SpecificSettingsScreenScaffold(
+    SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.privacy.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->

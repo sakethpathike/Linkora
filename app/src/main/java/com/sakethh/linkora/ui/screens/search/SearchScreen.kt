@@ -28,7 +28,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridItemSpan
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
@@ -43,6 +51,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ProvideTextStyle
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -88,10 +97,11 @@ import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
@@ -104,10 +114,12 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.UUID
@@ -144,6 +156,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -191,993 +204,147 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     val savedLinksStringRes = savedLinks.value
     val foldersStringRes = folders.value
 
+    fun commonLinkParam(it: RecentlyVisited): LinkUIComponentParam {
+        return LinkUIComponentParam(
+            onLongClick = {
+                if (!isSelectionModeEnabled.value) {
+                    isSelectionModeEnabled.value = true
+                    searchScreenVM.selectedHistoryLinksData.add(it)
+                }
+            },
+            isSelectionModeEnabled = isSelectionModeEnabled,
+            title = it.title,
+            webBaseURL = it.baseURL,
+            imgURL = it.imgURL,
+            onMoreIconClick = {
+                SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
+                SearchScreenVM.selectedLinkID = it.id
+                selectedLinkTitle.value = it.title
+                SearchScreenVM.selectedLinkType = SearchScreenVM.SelectedLinkType.HISTORY_LINKS
+                HomeScreenVM.tempImpLinkData.webURL = it.webURL
+                HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
+                HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
+                HomeScreenVM.tempImpLinkData.title = it.title
+                HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
+                selectedURLNote.value = it.infoForSaving
+                selectedWebURL.value = it.webURL
+                shouldOptionsBtmModalSheetBeVisible.value = true
+                coroutineScope.launch {
+                    awaitAll(async {
+                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                    }, async {
+                        optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
+                    })
+                }
+            },
+            onLinkClick = {
+                if (!isSelectionModeEnabled.value) {
+                    customWebTab.openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = it.title,
+                            webURL = it.webURL,
+                            baseURL = it.baseURL,
+                            imgURL = it.imgURL,
+                            infoForSaving = it.infoForSaving
+                        ),
+                        context = context,
+                        uriHandler = uriHandler,
+                        forceOpenInExternalBrowser = false
+                    )
+                } else {
+                    if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
+                        searchScreenVM.selectedHistoryLinksData.add(it)
+                    } else {
+                        searchScreenVM.selectedHistoryLinksData.remove(it)
+                    }
+                }
+            },
+            webURL = it.webURL,
+            onForceOpenInExternalBrowserClicked = {
+                searchScreenVM.onLinkClick(
+                    RecentlyVisited(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    ),
+                    context = context,
+                    uriHandler = uriHandler,
+                    onTaskCompleted = {},
+                    forceOpenInExternalBrowser = true
+                )
+            },
+            isItemSelected = mutableStateOf(
+                searchScreenVM.selectedHistoryLinksData.contains(
+                    it
+                )
+            )
+        )
+    }
+
     LinkoraTheme {
         Column {
-            SearchBar(
-                enabled = !isSelectionModeEnabled.value, interactionSource = interactionSource,
-                trailingIcon = {
-                    if (SearchScreenVM.isSearchEnabled.value && !isSelectionModeEnabled.value) {
-                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                            if (searchTextField == "") {
-                                SearchScreenVM.focusRequester.freeFocus()
-                                SearchScreenVM.isSearchEnabled.value = false
-                            } else {
-                                searchScreenVM.changeSearchQuery("")
-                            }
-                        }) {
-                            Icon(imageVector = Icons.Default.Clear, contentDescription = null)
-                        }
-                    }
-                },
-                modifier = Modifier
-                    .animateContentSize()
-                    .padding(
-                        if (!isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) 15.dp else 0.dp
-                    )
-                    .fillMaxWidth()
-                    .then(
-                        if (isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) Modifier.height(
-                            0.dp
-                        ) else Modifier.wrapContentHeight()
-                    )
-                    .focusRequester(SearchScreenVM.focusRequester),
-                query = searchTextField,
-                onQueryChange = {
-                    searchScreenVM.changeSearchQuery(it)
-                },
-                onSearch = {
-                    searchScreenVM.changeSearchQuery(it)
-                },
-                active = SearchScreenVM.isSearchEnabled.value,
-                onActiveChange = {
-                    SearchScreenVM.isSearchEnabled.value = !SearchScreenVM.isSearchEnabled.value
-                },
-                leadingIcon = {
-                    Icon(imageVector = Icons.Default.Search, contentDescription = null)
-                },
-                placeholder = {
-                    Text(
-                        text = searchTitlesToFindLinksAndFolders.value,
-                        style = MaterialTheme.typography.titleSmall,
-                        modifier = Modifier.basicMarquee(),
-                        maxLines = 1
-                    )
-                },
-                content = {
-                    if (isSelectionModeEnabled.value) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight(),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                    isSelectionModeEnabled.value =
-                                        false
-                                    searchScreenVM.areAllLinksChecked.value =
-                                        false
-                                    searchScreenVM.areAllFoldersChecked.value =
-                                        false
-                                    searchScreenVM.selectedImportantLinksData.clear()
-                                    searchScreenVM.selectedLinksTableData.clear()
-                                    searchScreenVM.selectedArchiveLinksTableData.clear()
-                                    searchScreenVM.selectedHistoryLinksData.clear()
-                                    searchScreenVM.selectedFoldersData.clear()
-                                    SearchScreenVM.selectedArchiveFoldersData.clear()
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Default.Cancel,
-                                        contentDescription = null
-                                    )
+            ProvideTextStyle(MaterialTheme.typography.titleSmall) {
+                SearchBar(
+                    enabled = !isSelectionModeEnabled.value, interactionSource = interactionSource,
+                    trailingIcon = {
+                        if (SearchScreenVM.isSearchEnabled.value && !isSelectionModeEnabled.value) {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                if (searchTextField == "") {
+                                    SearchScreenVM.focusRequester.freeFocus()
+                                    SearchScreenVM.isSearchEnabled.value = false
+                                } else {
+                                    searchScreenVM.changeSearchQuery("")
                                 }
-                                AnimatedContent(
-                                    targetState = searchScreenVM.selectedLinksTableData.size +
-                                            searchScreenVM.selectedHistoryLinksData.size +
-                                            searchScreenVM.selectedArchiveLinksTableData.size + SearchScreenVM.selectedArchiveFoldersData.size +
-                                            searchScreenVM.selectedImportantLinksData.size + searchScreenVM.selectedFoldersData.size,
-                                    label = "",
-                                    transitionSpec = {
-                                        ContentTransform(
-                                            initialContentExit = slideOutVertically(
-                                                animationSpec = tween(
-                                                    150
-                                                )
-                                            ) + fadeOut(
-                                                tween(150)
-                                            ),
-                                            targetContentEnter = slideInVertically(
-                                                animationSpec = tween(
-                                                    durationMillis = 150
-                                                )
-                                            ) + fadeIn(
-                                                tween(150)
-                                            )
-                                        )
-                                    }) {
-                                    Text(
-                                        text = it.toString(),
-                                        color = MaterialTheme.colorScheme.onSurface,
-                                        style = MaterialTheme.typography.titleLarge,
-                                        fontSize = 18.sp
-                                    )
-                                }
-                                Text(
-                                    text = " " + itemsSelected.value,
-                                    color = MaterialTheme.colorScheme.onSurface,
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontSize = 18.sp
-                                )
-                            }
-                            Row {
-                                if (searchScreenVM.selectedArchiveLinksTableData.isEmpty() && SearchScreenVM.selectedArchiveFoldersData.isEmpty()) {
-                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                        searchScreenVM.archiveSelectedImportantLinks()
-                                        searchScreenVM.archiveSelectedLinksTableLinks()
-                                        searchScreenVM.archiveSelectedHistoryLinks()
-                                        searchScreenVM.archiveSelectedMultipleFolders()
-                                        searchScreenVM.selectedFoldersData.clear()
-                                        searchScreenVM.selectedImportantLinksData.clear()
-                                        searchScreenVM.selectedLinksTableData.clear()
-                                        searchScreenVM.selectedArchiveLinksTableData.clear()
-                                        searchScreenVM.selectedHistoryLinksData.clear()
-                                        isSelectionModeEnabled.value =
-                                            false
-                                        SearchScreenVM.isSearchEnabled.value = false
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Archive,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                                IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                    shouldDeleteDialogBoxAppear.value = true
-                                }) {
-                                    Icon(
-                                        imageVector = Icons.Outlined.DeleteForever,
-                                        contentDescription = null
-                                    )
-                                }
+                            }) {
+                                Icon(imageVector = Icons.Default.Clear, contentDescription = null)
                             }
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                    LazyColumn(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(SearchBarDefaults.colors().containerColor)
-                    ) {
-                        if (searchScreenVM.searchQuery.value.isNotEmpty()) {
-                            stickyHeader {
-                                Row(
-                                    Modifier
-                                        .fillMaxWidth()
-                                        .background(SearchBarDefaults.colors().containerColor)
-                                        .horizontalScroll(rememberScrollState())
-                                        .padding(top = 2.dp)
-                                ) {
-                                    listOf(
-                                        savedLinks.value,
-                                        importantLinks.value,
-                                        archivedLinks.value,
-                                        folders.value,
-                                        archivedFolders.value,
-                                        linksFromFolders.value,
-                                        history.value
-                                    ).forEach {
-                                        if (it == savedLinks.value && queriedSavedLinks.isNotEmpty() || it == importantLinks.value && impLinksQueriedData.isNotEmpty() ||
-                                            it == archivedLinks.value && archiveLinksQueriedData.isNotEmpty() || it == folders.value && queriedUnarchivedFoldersData.isNotEmpty()
-                                            || it == archivedFolders.value && queriedArchivedFoldersData.isNotEmpty() || it == linksFromFolders.value && queriedFolderLinks.isNotEmpty()
-                                            || it == history.value && historyLinksQueriedData.isNotEmpty()
-                                        ) {
-                                            Row(modifier = Modifier.animateContentSize()) {
-                                                Spacer(modifier = Modifier.width(10.dp))
-                                                androidx.compose.material3.FilterChip(
-                                                    selected = selectedSearchFilters.contains(it),
-                                                    onClick = {
-                                                        if (selectedSearchFilters.contains(it)) {
-                                                            selectedSearchFilters.remove(it)
-                                                        } else {
-                                                            selectedSearchFilters.add(it)
-                                                        }
-                                                    },
-                                                    label = {
-                                                        Text(
-                                                            text = it,
-                                                            style = MaterialTheme.typography.titleSmall
-                                                        )
-                                                    }, leadingIcon = {
-                                                        if (selectedSearchFilters.contains(it)) {
-                                                            Icon(
-                                                                imageVector = Icons.Default.Check,
-                                                                contentDescription = null
-                                                            )
-                                                        }
-                                                    })
-                                            }
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.width(10.dp))
-                                }
-                            }
-                        }
-                        when {
-                            searchTextField.isEmpty() -> {
-                                item {
-                                    DataEmptyScreen(text = searchLinkoraRetrieveAllTheLinksYouSaved.value)
-                                }
-                            }
-
-                            searchTextField.isNotEmpty() &&
-                                    queriedUnarchivedFoldersData.isEmpty()
-                                    && queriedArchivedFoldersData.isEmpty()
-                                    && queriedSavedLinks.isEmpty()
-                                    && queriedFolderLinks.isEmpty()
-                                    && impLinksQueriedData.isEmpty()
-                                    && archiveLinksQueriedData.isEmpty()
-                                    && historyLinksQueriedData.isEmpty() -> {
-                                item {
-                                    DataEmptyScreen(text = noMatchingItemsFoundTryADifferentSearch.value)
-                                }
-                            }
-
-                            else -> {
-                                if (queriedUnarchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        foldersStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = fromFolders.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(
-                                        items = queriedUnarchivedFoldersData,
-                                        key = { index, folderData ->
-                                            folderData.folderName + folderData.id.toString() + index
-                                        }) { index, folderData ->
-                                        FolderIndividualComponent(
-                                            showMoreIcon = !isSelectionModeEnabled.value,
-                                            folderName = folderData.folderName,
-                                            folderNote = folderData.infoForSaving,
-                                            onMoreIconClick = {
-                                                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                    OptionsBtmSheetType.FOLDER
-                                                CollectionsScreenVM.selectedFolderData.value =
-                                                    folderData
-                                                clickedFolderNote.value = folderData.infoForSaving
-                                                coroutineScope.launch {
-                                                    optionsBtmSheetVM.updateArchiveFolderCardData(
-                                                        folderData.id
-                                                    )
-                                                }
-                                                clickedFolderName.value = folderData.folderName
-                                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                            },
-                                            onFolderClick = {
-                                                if (!isSelectionModeEnabled.value) {
-                                                    SpecificCollectionsScreenVM.inARegularFolder.value =
-                                                        true
-                                                    SpecificCollectionsScreenVM.screenType.value =
-                                                        SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                                                    CollectionsScreenVM.currentClickedFolderData.value =
-                                                        folderData
-                                                    CollectionsScreenVM.rootFolderID = folderData.id
-                                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                                                }
-                                            },
-                                            onLongClick = {
-                                                if (!isSelectionModeEnabled.value) {
-                                                    isSelectionModeEnabled.value = true
-                                                    searchScreenVM.areAllFoldersChecked.value =
-                                                        false
-                                                    searchScreenVM.changeAllFoldersSelectedData()
-                                                    searchScreenVM.selectedFoldersData.add(
-                                                        folderData
-                                                    )
-                                                }
-                                            },
-                                            showCheckBox = isSelectionModeEnabled,
-                                            isCheckBoxChecked = mutableStateOf(
-                                                searchScreenVM.selectedFoldersData.contains(
-                                                    folderData
-                                                )
-                                            ),
-                                            checkBoxState = { checkBoxState ->
-                                                if (checkBoxState) {
-                                                    searchScreenVM.selectedFoldersData.add(
-                                                        folderData
-                                                    )
-                                                } else {
-                                                    searchScreenVM.selectedFoldersData.removeAll {
-                                                        it == folderData
-                                                    }
-                                                }
-                                            })
-                                    }
-                                }
-                                if (queriedSavedLinks.isNotEmpty() && (selectedSearchFilters.contains(
-                                        savedLinksStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = fromSavedLinks.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(items = queriedSavedLinks,
-                                        key = { index, linksTable ->
-                                            linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, it ->
-                                        LinkUIComponent(
-                                            LinkUIComponentParam(
-                                                onLongClick = {
-                                                    if (!isSelectionModeEnabled.value) {
-                                                        isSelectionModeEnabled.value =
-                                                            true
-                                                        searchScreenVM.selectedLinksTableData.add(it)
-                                                    }
-                                                },
-                                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                                isItemSelected = mutableStateOf(
-                                                    searchScreenVM.selectedLinksTableData.contains(
-                                                        it
-                                                    )
-                                                ),
-                                                title = it.title,
-                                                webBaseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                onMoreIconCLick = {
-                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                        OptionsBtmSheetType.LINK
-                                                    SearchScreenVM.selectedLinkID = it.id
-                                                    selectedLinkTitle.value = it.title
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.SAVED_LINKS
-                                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                                        it.baseURL
-                                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                        it.infoForSaving
-                                                    selectedURLNote.value = it.infoForSaving
-                                                    selectedWebURL.value = it.webURL
-                                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                                    coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
-                                                            optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        }, async {
-                                                            optionsBtmSheetVM.updateImportantCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        })
-                                                    }
-                                                },
-                                                onLinkClick = {
-                                                    if (isSelectionModeEnabled.value) {
-                                                        if (!searchScreenVM.selectedLinksTableData.contains(
-                                                                it
-                                                            )
-                                                        ) {
-                                                            searchScreenVM.selectedLinksTableData.add(
-                                                                it
-                                                            )
-                                                        } else {
-                                                            searchScreenVM.selectedLinksTableData.remove(
-                                                                it
-                                                            )
-                                                        }
-                                                    } else {
-                                                        customWebTab.openInWeb(
-                                                            recentlyVisitedData = RecentlyVisited(
-                                                                title = it.title,
-                                                                webURL = it.webURL,
-                                                                baseURL = it.baseURL,
-                                                                imgURL = it.imgURL,
-                                                                infoForSaving = it.infoForSaving
-                                                            ),
-                                                            context = context,
-                                                            uriHandler = uriHandler,
-                                                            forceOpenInExternalBrowser = false
-                                                        )
-                                                    }
-                                                },
-                                                webURL = it.webURL,
-                                                onForceOpenInExternalBrowserClicked = {
-                                                    searchScreenVM.onLinkClick(
-                                                        RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        onTaskCompleted = {},
-                                                        forceOpenInExternalBrowser = true
-                                                    )
-                                                })
-                                        )
-                                    }
-                                }
-                                if (impLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        impLinksStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = LocalizedStrings.fromImportantLinks.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(items = impLinksQueriedData,
-                                        key = { index, impLink ->
-                                            impLink.id.toString() + impLink.baseURL + index.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, it ->
-                                        LinkUIComponent(
-                                            LinkUIComponentParam(
-                                                onLongClick = {
-                                                    if (!isSelectionModeEnabled.value) {
-                                                        isSelectionModeEnabled.value =
-                                                            true
-                                                        searchScreenVM.selectedImportantLinksData.add(
-                                                            it
-                                                        )
-                                                    }
-                                                },
-                                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                                isItemSelected = mutableStateOf(
-                                                    searchScreenVM.selectedImportantLinksData.contains(
-                                                        it
-                                                    )
-                                                ),
-                                                title = it.title,
-                                                webBaseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                onMoreIconCLick = {
-                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                        OptionsBtmSheetType.LINK
-                                                    SearchScreenVM.selectedLinkID = it.id
-                                                    selectedLinkTitle.value = it.title
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.IMP_LINKS
-                                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                                        it.baseURL
-                                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                        it.infoForSaving
-                                                    selectedURLNote.value = it.infoForSaving
-                                                    selectedWebURL.value = it.webURL
-                                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                                    coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
-                                                            optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        }, async {
-                                                            optionsBtmSheetVM.updateImportantCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        })
-                                                    }
-                                                },
-                                                onLinkClick = {
-                                                    if (isSelectionModeEnabled.value) {
-
-                                                        if (!searchScreenVM.selectedImportantLinksData.contains(
-                                                                it
-                                                            )
-                                                        ) {
-                                                            searchScreenVM.selectedImportantLinksData.add(
-                                                                it
-                                                            )
-                                                        } else {
-                                                            searchScreenVM.selectedImportantLinksData.remove(
-                                                                it
-                                                            )
-                                                        }
-                                                    } else {
-                                                        customWebTab.openInWeb(
-                                                            recentlyVisitedData = RecentlyVisited(
-                                                                title = it.title,
-                                                                webURL = it.webURL,
-                                                                baseURL = it.baseURL,
-                                                                imgURL = it.imgURL,
-                                                                infoForSaving = it.infoForSaving
-                                                            ),
-                                                            context = context,
-                                                            uriHandler = uriHandler,
-                                                            forceOpenInExternalBrowser = false
-                                                        )
-                                                    }
-                                                },
-                                                webURL = it.webURL,
-                                                onForceOpenInExternalBrowserClicked = {
-                                                    searchScreenVM.onLinkClick(
-                                                        RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        onTaskCompleted = {},
-                                                        forceOpenInExternalBrowser = true
-                                                    )
-                                                })
-                                        )
-                                    }
-                                }
-                                if (queriedFolderLinks.isNotEmpty() && (selectedSearchFilters.contains(
-                                        linksFromFoldersStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = linksFromFolders.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(items = queriedFolderLinks,
-                                        key = { index, folderLink ->
-                                            folderLink.baseURL + folderLink.id.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, it ->
-                                        LinkUIComponent(
-                                            LinkUIComponentParam(
-                                                onLongClick = {
-                                                    if (!isSelectionModeEnabled.value) {
-                                                        isSelectionModeEnabled.value =
-                                                            true
-                                                        searchScreenVM.selectedLinksTableData.add(it)
-                                                    }
-                                                },
-                                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                                isItemSelected = mutableStateOf(
-                                                    searchScreenVM.selectedLinksTableData.contains(
-                                                        it
-                                                    )
-                                                ),
-                                                title = it.title,
-                                                webBaseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                onMoreIconCLick = {
-                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                        OptionsBtmSheetType.LINK
-                                                    SearchScreenVM.selectedLinkID = it.id
-                                                    selectedLinkTitle.value = it.title
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
-                                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                                        it.baseURL
-                                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                        it.infoForSaving
-                                                    selectedURLNote.value = it.infoForSaving
-                                                    selectedWebURL.value = it.webURL
-                                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                                    coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
-                                                            optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        }, async {
-                                                            optionsBtmSheetVM.updateImportantCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        })
-                                                    }
-                                                },
-                                                onLinkClick = {
-                                                    if (isSelectionModeEnabled.value) {
-                                                        if (!searchScreenVM.selectedLinksTableData.contains(
-                                                                it
-                                                            )
-                                                        ) {
-                                                            searchScreenVM.selectedLinksTableData.add(
-                                                                it
-                                                            )
-                                                        } else {
-                                                            searchScreenVM.selectedLinksTableData.remove(
-                                                                it
-                                                            )
-                                                        }
-                                                    } else {
-                                                        customWebTab.openInWeb(
-                                                            recentlyVisitedData = RecentlyVisited(
-                                                                title = it.title,
-                                                                webURL = it.webURL,
-                                                                baseURL = it.baseURL,
-                                                                imgURL = it.imgURL,
-                                                                infoForSaving = it.infoForSaving
-                                                            ),
-                                                            context = context,
-                                                            uriHandler = uriHandler,
-                                                            forceOpenInExternalBrowser = false
-                                                        )
-                                                    }
-                                                },
-                                                webURL = it.webURL,
-                                                onForceOpenInExternalBrowserClicked = {
-                                                    searchScreenVM.onLinkClick(
-                                                        RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        onTaskCompleted = {},
-                                                        forceOpenInExternalBrowser = true
-                                                    )
-                                                })
-                                        )
-                                    }
-                                }
-                                if (historyLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        historyStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = LocalizedStrings.linksFromHistory.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(items = historyLinksQueriedData,
-                                        key = { index, historyLink ->
-                                            historyLink.baseURL + historyLink.id.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, it ->
-                                        LinkUIComponent(
-                                            LinkUIComponentParam(
-                                                onLongClick = {
-                                                    if (!isSelectionModeEnabled.value) {
-                                                        isSelectionModeEnabled.value =
-                                                            true
-                                                        searchScreenVM.selectedHistoryLinksData.add(
-                                                            it
-                                                        )
-                                                    }
-                                                },
-                                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                                isItemSelected = mutableStateOf(
-                                                    searchScreenVM.selectedHistoryLinksData.contains(
-                                                        it
-                                                    )
-                                                ),
-                                                title = it.title,
-                                                webBaseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                onMoreIconCLick = {
-                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                        OptionsBtmSheetType.LINK
-                                                    SearchScreenVM.selectedLinkID = it.id
-                                                    selectedLinkTitle.value = it.title
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.HISTORY_LINKS
-                                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                                        it.baseURL
-                                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                        it.infoForSaving
-                                                    selectedURLNote.value = it.infoForSaving
-                                                    selectedWebURL.value = it.webURL
-                                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                                    coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
-                                                            optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        }, async {
-                                                            optionsBtmSheetVM.updateImportantCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        })
-                                                    }
-                                                },
-                                                onLinkClick = {
-                                                    if (isSelectionModeEnabled.value) {
-                                                        if (!searchScreenVM.selectedHistoryLinksData.contains(
-                                                                it
-                                                            )
-                                                        ) {
-                                                            searchScreenVM.selectedHistoryLinksData.add(
-                                                                it
-                                                            )
-                                                        } else {
-                                                            searchScreenVM.selectedHistoryLinksData.remove(
-                                                                it
-                                                            )
-                                                        }
-                                                    } else {
-                                                        customWebTab.openInWeb(
-                                                            recentlyVisitedData = RecentlyVisited(
-                                                                title = it.title,
-                                                                webURL = it.webURL,
-                                                                baseURL = it.baseURL,
-                                                                imgURL = it.imgURL,
-                                                                infoForSaving = it.infoForSaving
-                                                            ),
-                                                            context = context,
-                                                            uriHandler = uriHandler,
-                                                            forceOpenInExternalBrowser = false
-                                                        )
-                                                    }
-                                                },
-                                                webURL = it.webURL,
-                                                onForceOpenInExternalBrowserClicked = {
-                                                    searchScreenVM.onLinkClick(
-                                                        RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        onTaskCompleted = {},
-                                                        forceOpenInExternalBrowser = true
-                                                    )
-                                                })
-                                        )
-                                    }
-                                }
-                                if (archiveLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        archivedLinksStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = LocalizedStrings.linksFromArchive.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(items = archiveLinksQueriedData,
-                                        key = { index, archiveLink ->
-                                            archiveLink.baseURL + archiveLink.id.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, it ->
-                                        LinkUIComponent(
-                                            LinkUIComponentParam(
-                                                onLongClick = {
-                                                    if (!isSelectionModeEnabled.value) {
-                                                        isSelectionModeEnabled.value =
-                                                            true
-                                                        searchScreenVM.selectedArchiveLinksTableData.add(
-                                                            it
-                                                        )
-                                                    }
-                                                },
-                                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                                isItemSelected = mutableStateOf(
-                                                    searchScreenVM.selectedArchiveLinksTableData.contains(
-                                                        it
-                                                    )
-                                                ),
-                                                title = it.title,
-                                                webBaseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                onMoreIconCLick = {
-                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                        OptionsBtmSheetType.LINK
-                                                    SearchScreenVM.selectedLinkID = it.id
-                                                    selectedLinkTitle.value = it.title
-                                                    SearchScreenVM.selectedLinkType =
-                                                        SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
-                                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                                    HomeScreenVM.tempImpLinkData.baseURL =
-                                                        it.baseURL
-                                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                                    HomeScreenVM.tempImpLinkData.infoForSaving =
-                                                        it.infoForSaving
-                                                    selectedURLNote.value = it.infoForSaving
-                                                    selectedWebURL.value = it.webURL
-                                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                                    coroutineScope.launch {
-                                                        kotlinx.coroutines.awaitAll(async {
-                                                            optionsBtmSheetVM.updateArchiveLinkCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        }, async {
-                                                            optionsBtmSheetVM.updateImportantCardData(
-                                                                url = it.webURL
-                                                            )
-                                                        })
-                                                    }
-                                                },
-                                                onLinkClick = {
-                                                    if (isSelectionModeEnabled.value) {
-                                                        if (!searchScreenVM.selectedArchiveLinksTableData.contains(
-                                                                it
-                                                            )
-                                                        ) {
-                                                            searchScreenVM.selectedArchiveLinksTableData.add(
-                                                                it
-                                                            )
-                                                        } else {
-                                                            searchScreenVM.selectedArchiveLinksTableData.remove(
-                                                                it
-                                                            )
-                                                        }
-                                                    } else {
-                                                        customWebTab.openInWeb(
-                                                            recentlyVisitedData = RecentlyVisited(
-                                                                title = it.title,
-                                                                webURL = it.webURL,
-                                                                baseURL = it.baseURL,
-                                                                imgURL = it.imgURL,
-                                                                infoForSaving = it.infoForSaving
-                                                            ),
-                                                            context = context,
-                                                            uriHandler = uriHandler,
-                                                            forceOpenInExternalBrowser = false
-                                                        )
-                                                    }
-                                                },
-                                                webURL = it.webURL,
-                                                onForceOpenInExternalBrowserClicked = {
-                                                    searchScreenVM.onLinkClick(
-                                                        RecentlyVisited(
-                                                            title = it.title,
-                                                            webURL = it.webURL,
-                                                            baseURL = it.baseURL,
-                                                            imgURL = it.imgURL,
-                                                            infoForSaving = it.infoForSaving
-                                                        ),
-                                                        context = context,
-                                                        uriHandler = uriHandler,
-                                                        onTaskCompleted = {},
-                                                        forceOpenInExternalBrowser = true
-                                                    )
-                                                })
-                                        )
-                                    }
-                                }
-                                if (queriedArchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
-                                        archivedFoldersStringRes
-                                    ) || selectedSearchFilters.isEmpty())
-                                ) {
-                                    item {
-                                        Text(
-                                            text = LocalizedStrings.fromArchivedFolders.value,
-                                            style = MaterialTheme.typography.titleMedium,
-                                            color = MaterialTheme.colorScheme.primary,
-                                            fontSize = 14.sp,
-                                            modifier = Modifier.padding(15.dp)
-                                        )
-                                    }
-                                    itemsIndexed(
-                                        items = queriedArchivedFoldersData,
-                                        key = { index, folderData ->
-                                            folderData.folderName + folderData.id.toString() + UUID.randomUUID()
-                                                .toString()
-                                        }) { index, folderData ->
-                                        FolderIndividualComponent(
-                                            showMoreIcon = !isSelectionModeEnabled.value,
-                                            folderName = folderData.folderName,
-                                            folderNote = folderData.infoForSaving,
-                                            onMoreIconClick = {
-                                                SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                                    OptionsBtmSheetType.FOLDER
-                                                CollectionsScreenVM.selectedFolderData.value =
-                                                    folderData
-                                                clickedFolderNote.value = folderData.infoForSaving
-                                                coroutineScope.launch {
-                                                    optionsBtmSheetVM.updateArchiveFolderCardData(
-                                                        folderData.id
-                                                    )
-                                                }
-                                                clickedFolderName.value = folderData.folderName
-                                                CollectionsScreenVM.selectedFolderData.value =
-                                                    folderData
-                                                shouldOptionsBtmModalSheetBeVisible.value = true
-                                            },
-                                            onFolderClick = {
-                                                if (!isSelectionModeEnabled.value) {
-                                                    SpecificCollectionsScreenVM.inARegularFolder.value =
-                                                        true
-                                                    SpecificCollectionsScreenVM.screenType.value =
-                                                        SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
-                                                    CollectionsScreenVM.currentClickedFolderData.value =
-                                                        folderData
-                                                    CollectionsScreenVM.rootFolderID = folderData.id
-                                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                                                }
-                                            },
-                                            onLongClick = {
-                                                if (!isSelectionModeEnabled.value) {
-                                                    isSelectionModeEnabled.value = true
-                                                    SearchScreenVM.selectedArchiveFoldersData.clear()
-                                                    SearchScreenVM.selectedArchiveFoldersData.add(
-                                                        folderData
-                                                    )
-                                                }
-                                            },
-                                            showCheckBox = isSelectionModeEnabled,
-                                            isCheckBoxChecked = mutableStateOf(
-                                                SearchScreenVM.selectedArchiveFoldersData.contains(
-                                                    folderData
-                                                )
-                                            ),
-                                            checkBoxState = { checkBoxState ->
-                                                if (checkBoxState) {
-                                                    SearchScreenVM.selectedArchiveFoldersData.add(
-                                                        folderData
-                                                    )
-                                                } else {
-                                                    SearchScreenVM.selectedArchiveFoldersData.removeAll {
-                                                        it == folderData
-                                                    }
-                                                }
-                                            })
-                                    }
-                                }
-                                item {
-                                    Spacer(modifier = Modifier.height(225.dp))
-                                }
-                            }
-                        }
-                    }
-                })
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background)
-            ) {
-                stickyHeader {
-                    Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
-                        Row(modifier = Modifier
-                            .clickable {
-                                if (historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
-                                    shouldSortingBottomSheetAppear.value = true
-                                }
-                            }
-                            .fillMaxWidth()
-                            .wrapContentHeight(),
-                            horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically) {
-                            if (isSelectionModeEnabled.value) {
+                    },
+                    modifier = Modifier
+                        .animateContentSize()
+                        .padding(
+                            if (!isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) 15.dp else 0.dp
+                        )
+                        .fillMaxWidth()
+                        .then(
+                            if (isSelectionModeEnabled.value && !SearchScreenVM.isSearchEnabled.value) Modifier.height(
+                                0.dp
+                            ) else Modifier.wrapContentHeight()
+                        )
+                        .focusRequester(SearchScreenVM.focusRequester),
+                    query = searchTextField,
+                    onQueryChange = {
+                        searchScreenVM.changeSearchQuery(it)
+                    },
+                    onSearch = {
+                        searchScreenVM.changeSearchQuery(it)
+                    },
+                    active = SearchScreenVM.isSearchEnabled.value,
+                    onActiveChange = {
+                        SearchScreenVM.isSearchEnabled.value = !SearchScreenVM.isSearchEnabled.value
+                    },
+                    leadingIcon = {
+                        Icon(imageVector = Icons.Default.Search, contentDescription = null)
+                    },
+                    placeholder = {
+                        Text(
+                            text = searchTitlesToFindLinksAndFolders.value,
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.basicMarquee(),
+                            maxLines = 1
+                        )
+                    },
+                    content = {
+                        if (isSelectionModeEnabled.value) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight(),
+                                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         isSelectionModeEnabled.value =
@@ -1190,6 +357,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         searchScreenVM.selectedLinksTableData.clear()
                                         searchScreenVM.selectedArchiveLinksTableData.clear()
                                         searchScreenVM.selectedHistoryLinksData.clear()
+                                        searchScreenVM.selectedFoldersData.clear()
+                                        SearchScreenVM.selectedArchiveFoldersData.clear()
                                     }) {
                                         Icon(
                                             imageVector = Icons.Default.Cancel,
@@ -1197,7 +366,10 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         )
                                     }
                                     AnimatedContent(
-                                        targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersData.size,
+                                        targetState = searchScreenVM.selectedLinksTableData.size +
+                                                searchScreenVM.selectedHistoryLinksData.size +
+                                                searchScreenVM.selectedArchiveLinksTableData.size + SearchScreenVM.selectedArchiveFoldersData.size +
+                                                searchScreenVM.selectedImportantLinksData.size + searchScreenVM.selectedFoldersData.size,
                                         label = "",
                                         transitionSpec = {
                                             ContentTransform(
@@ -1207,8 +379,11 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     )
                                                 ) + fadeOut(
                                                     tween(150)
-                                                ), targetContentEnter = slideInVertically(
-                                                    animationSpec = tween(durationMillis = 150)
+                                                ),
+                                                targetContentEnter = slideInVertically(
+                                                    animationSpec = tween(
+                                                        durationMillis = 150
+                                                    )
                                                 ) + fadeIn(
                                                     tween(150)
                                                 )
@@ -1228,49 +403,27 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                         fontSize = 18.sp
                                     )
                                 }
-                            } else {
-                                Text(
-                                    text = history.value,
-                                    color = MaterialTheme.colorScheme.primary,
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontSize = 20.sp,
-                                    modifier = Modifier.padding(
-                                        start = 15.dp
-                                    )
-                                )
-                            }
-                            if (!isSelectionModeEnabled.value) {
-                                IconButton(
-                                    modifier = if (historyLinksData.isNotEmpty()) Modifier
-                                        .clickable(
-                                            onClick = {},
-                                            indication = null,
-                                            interactionSource = remember {
-                                                MutableInteractionSource()
-                                            })
-                                        .pulsateEffect() else Modifier, onClick = {
-                                        if (historyLinksData.isNotEmpty()) {
-                                            shouldSortingBottomSheetAppear.value = true
-                                        }
-                                    }) {
-                                    if (historyLinksData.isNotEmpty()) {
-                                        Icon(
-                                            imageVector = Icons.AutoMirrored.Outlined.Sort,
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            } else if (isSelectionModeEnabled.value) {
                                 Row {
-                                    IconButton(modifier = Modifier.pulsateEffect(), onClick = {
-                                        isSelectionModeEnabled.value =
-                                            false
-                                        searchScreenVM.archiveSelectedHistoryLinks()
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Outlined.Archive,
-                                            contentDescription = null
-                                        )
+                                    if (searchScreenVM.selectedArchiveLinksTableData.isEmpty() && SearchScreenVM.selectedArchiveFoldersData.isEmpty()) {
+                                        IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                            searchScreenVM.archiveSelectedImportantLinks()
+                                            searchScreenVM.archiveSelectedLinksTableLinks()
+                                            searchScreenVM.archiveSelectedHistoryLinks()
+                                            searchScreenVM.archiveSelectedMultipleFolders()
+                                            searchScreenVM.selectedFoldersData.clear()
+                                            searchScreenVM.selectedImportantLinksData.clear()
+                                            searchScreenVM.selectedLinksTableData.clear()
+                                            searchScreenVM.selectedArchiveLinksTableData.clear()
+                                            searchScreenVM.selectedHistoryLinksData.clear()
+                                            isSelectionModeEnabled.value =
+                                                false
+                                            SearchScreenVM.isSearchEnabled.value = false
+                                        }) {
+                                            Icon(
+                                                imageVector = Icons.Outlined.Archive,
+                                                contentDescription = null
+                                            )
+                                        }
                                     }
                                     IconButton(modifier = Modifier.pulsateEffect(), onClick = {
                                         shouldDeleteDialogBoxAppear.value = true
@@ -1282,106 +435,1031 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                     }
                                 }
                             }
+                            Spacer(modifier = Modifier.height(5.dp))
                         }
-                        Spacer(modifier = Modifier.height(5.dp))
-                    }
-                }
-                if (historyLinksData.isNotEmpty()) {
-                    itemsIndexed(
-                        items = historyLinksData,
-                        key = { index, recentlyVisited ->
-                            recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
-                        }) { index, it ->
-                        LinkUIComponent(
-                            LinkUIComponentParam(
-                                onLongClick = {
-                                    if (!isSelectionModeEnabled.value) {
-                                        isSelectionModeEnabled.value =
-                                            true
-                                        searchScreenVM.selectedHistoryLinksData.add(it)
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(SearchBarDefaults.colors().containerColor)
+                        ) {
+                            if (searchScreenVM.searchQuery.value.isNotEmpty()) {
+                                stickyHeader {
+                                    Row(
+                                        Modifier
+                                            .fillMaxWidth()
+                                            .background(SearchBarDefaults.colors().containerColor)
+                                            .horizontalScroll(rememberScrollState())
+                                            .padding(top = 2.dp)
+                                    ) {
+                                        listOf(
+                                            savedLinks.value,
+                                            importantLinks.value,
+                                            archivedLinks.value,
+                                            folders.value,
+                                            archivedFolders.value,
+                                            linksFromFolders.value,
+                                            history.value
+                                        ).forEach {
+                                            if (it == savedLinks.value && queriedSavedLinks.isNotEmpty() || it == importantLinks.value && impLinksQueriedData.isNotEmpty() ||
+                                                it == archivedLinks.value && archiveLinksQueriedData.isNotEmpty() || it == folders.value && queriedUnarchivedFoldersData.isNotEmpty()
+                                                || it == archivedFolders.value && queriedArchivedFoldersData.isNotEmpty() || it == linksFromFolders.value && queriedFolderLinks.isNotEmpty()
+                                                || it == history.value && historyLinksQueriedData.isNotEmpty()
+                                            ) {
+                                                Row(modifier = Modifier.animateContentSize()) {
+                                                    Spacer(modifier = Modifier.width(10.dp))
+                                                    androidx.compose.material3.FilterChip(
+                                                        selected = selectedSearchFilters.contains(it),
+                                                        onClick = {
+                                                            if (selectedSearchFilters.contains(it)) {
+                                                                selectedSearchFilters.remove(it)
+                                                            } else {
+                                                                selectedSearchFilters.add(it)
+                                                            }
+                                                        },
+                                                        label = {
+                                                            Text(
+                                                                text = it,
+                                                                style = MaterialTheme.typography.titleSmall
+                                                            )
+                                                        }, leadingIcon = {
+                                                            if (selectedSearchFilters.contains(it)) {
+                                                                Icon(
+                                                                    imageVector = Icons.Default.Check,
+                                                                    contentDescription = null
+                                                                )
+                                                            }
+                                                        })
+                                                }
+                                            }
+                                        }
+                                        Spacer(modifier = Modifier.width(10.dp))
                                     }
-                                },
-                                isSelectionModeEnabled = isSelectionModeEnabled,
-                                title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconCLick = {
-                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                                        OptionsBtmSheetType.LINK
-                                    SearchScreenVM.selectedLinkID = it.id
-                                    selectedLinkTitle.value = it.title
-                                    SearchScreenVM.selectedLinkType =
-                                        SearchScreenVM.SelectedLinkType.HISTORY_LINKS
-                                    HomeScreenVM.tempImpLinkData.webURL = it.webURL
-                                    HomeScreenVM.tempImpLinkData.baseURL = it.baseURL
-                                    HomeScreenVM.tempImpLinkData.imgURL = it.imgURL
-                                    HomeScreenVM.tempImpLinkData.title = it.title
-                                    HomeScreenVM.tempImpLinkData.infoForSaving = it.infoForSaving
-                                    selectedURLNote.value = it.infoForSaving
-                                    selectedWebURL.value = it.webURL
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    coroutineScope.launch {
-                                        kotlinx.coroutines.awaitAll(async {
-                                            optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                        }, async {
-                                            optionsBtmSheetVM.updateImportantCardData(url = it.webURL)
-                                        })
+                                }
+                            }
+                            when {
+                                searchTextField.isEmpty() -> {
+                                    item {
+                                        DataEmptyScreen(text = searchLinkoraRetrieveAllTheLinksYouSaved.value)
                                     }
-                                },
-                                onLinkClick = {
-                                    if (!isSelectionModeEnabled.value) {
-                                        customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ),
-                                            context = context,
-                                            uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
-                                    } else {
-                                        if (!searchScreenVM.selectedHistoryLinksData.contains(it)) {
-                                            searchScreenVM.selectedHistoryLinksData.add(it)
-                                        } else {
-                                            searchScreenVM.selectedHistoryLinksData.remove(it)
+                                }
+
+                                searchTextField.isNotEmpty() &&
+                                        queriedUnarchivedFoldersData.isEmpty()
+                                        && queriedArchivedFoldersData.isEmpty()
+                                        && queriedSavedLinks.isEmpty()
+                                        && queriedFolderLinks.isEmpty()
+                                        && impLinksQueriedData.isEmpty()
+                                        && archiveLinksQueriedData.isEmpty()
+                                        && historyLinksQueriedData.isEmpty() -> {
+                                    item {
+                                        DataEmptyScreen(text = noMatchingItemsFoundTryADifferentSearch.value)
+                                    }
+                                }
+
+                                else -> {
+                                    if (queriedUnarchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
+                                            foldersStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = fromFolders.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(
+                                            items = queriedUnarchivedFoldersData,
+                                            key = { index, folderData ->
+                                                folderData.folderName + folderData.id.toString() + index
+                                            }) { index, folderData ->
+                                            FolderIndividualComponent(
+                                                showMoreIcon = !isSelectionModeEnabled.value,
+                                                folderName = folderData.folderName,
+                                                folderNote = folderData.infoForSaving,
+                                                onMoreIconClick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.FOLDER
+                                                    CollectionsScreenVM.selectedFolderData.value =
+                                                        folderData
+                                                    clickedFolderNote.value =
+                                                        folderData.infoForSaving
+                                                    coroutineScope.launch {
+                                                        optionsBtmSheetVM.updateArchiveFolderCardData(
+                                                            folderData.id
+                                                        )
+                                                    }
+                                                    clickedFolderName.value = folderData.folderName
+                                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                                },
+                                                onFolderClick = {
+                                                    if (!isSelectionModeEnabled.value) {
+                                                        SpecificCollectionsScreenVM.inARegularFolder.value =
+                                                            true
+                                                        SpecificCollectionsScreenVM.screenType.value =
+                                                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                                                        CollectionsScreenVM.currentClickedFolderData.value =
+                                                            folderData
+                                                        CollectionsScreenVM.rootFolderID =
+                                                            folderData.id
+                                                        navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                    }
+                                                },
+                                                onLongClick = {
+                                                    if (!isSelectionModeEnabled.value) {
+                                                        isSelectionModeEnabled.value = true
+                                                        searchScreenVM.areAllFoldersChecked.value =
+                                                            false
+                                                        searchScreenVM.changeAllFoldersSelectedData()
+                                                        searchScreenVM.selectedFoldersData.add(
+                                                            folderData
+                                                        )
+                                                    }
+                                                },
+                                                showCheckBox = isSelectionModeEnabled,
+                                                isCheckBoxChecked = mutableStateOf(
+                                                    searchScreenVM.selectedFoldersData.contains(
+                                                        folderData
+                                                    )
+                                                ),
+                                                checkBoxState = { checkBoxState ->
+                                                    if (checkBoxState) {
+                                                        searchScreenVM.selectedFoldersData.add(
+                                                            folderData
+                                                        )
+                                                    } else {
+                                                        searchScreenVM.selectedFoldersData.removeAll {
+                                                            it == folderData
+                                                        }
+                                                    }
+                                                })
                                         }
                                     }
-                                },
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = {
-                                    searchScreenVM.onLinkClick(
-                                        RecentlyVisited(
-                                            title = it.title,
-                                            webURL = it.webURL,
-                                            baseURL = it.baseURL,
-                                            imgURL = it.imgURL,
-                                            infoForSaving = it.infoForSaving
-                                        ),
-                                        context = context,
-                                        uriHandler = uriHandler,
-                                        onTaskCompleted = {},
-                                        forceOpenInExternalBrowser = true
-                                    )
-                                },
-                                isItemSelected = mutableStateOf(
-                                    searchScreenVM.selectedHistoryLinksData.contains(
-                                        it
-                                    )
+                                    if (queriedSavedLinks.isNotEmpty() && (selectedSearchFilters.contains(
+                                            savedLinksStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = fromSavedLinks.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(items = queriedSavedLinks,
+                                            key = { index, linksTable ->
+                                                linksTable.id.toString() + linksTable.keyOfLinkedFolder.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, it ->
+                                            ListViewLinkUIComponent(
+                                                LinkUIComponentParam(
+                                                    onLongClick = {
+                                                        if (!isSelectionModeEnabled.value) {
+                                                            isSelectionModeEnabled.value =
+                                                                true
+                                                            searchScreenVM.selectedLinksTableData.add(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    isSelectionModeEnabled = isSelectionModeEnabled,
+                                                    isItemSelected = mutableStateOf(
+                                                        searchScreenVM.selectedLinksTableData.contains(
+                                                            it
+                                                        )
+                                                    ),
+                                                    title = it.title,
+                                                    webBaseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    onMoreIconClick = {
+                                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                            OptionsBtmSheetType.LINK
+                                                        SearchScreenVM.selectedLinkID = it.id
+                                                        selectedLinkTitle.value = it.title
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.SAVED_LINKS
+                                                        HomeScreenVM.tempImpLinkData.webURL =
+                                                            it.webURL
+                                                        HomeScreenVM.tempImpLinkData.baseURL =
+                                                            it.baseURL
+                                                        HomeScreenVM.tempImpLinkData.imgURL =
+                                                            it.imgURL
+                                                        HomeScreenVM.tempImpLinkData.title =
+                                                            it.title
+                                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                            it.infoForSaving
+                                                        selectedURLNote.value = it.infoForSaving
+                                                        selectedWebURL.value = it.webURL
+                                                        shouldOptionsBtmModalSheetBeVisible.value =
+                                                            true
+                                                        coroutineScope.launch {
+                                                            awaitAll(async {
+                                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            }, async {
+                                                                optionsBtmSheetVM.updateImportantCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            })
+                                                        }
+                                                    },
+                                                    onLinkClick = {
+                                                        if (isSelectionModeEnabled.value) {
+                                                            if (!searchScreenVM.selectedLinksTableData.contains(
+                                                                    it
+                                                                )
+                                                            ) {
+                                                                searchScreenVM.selectedLinksTableData.add(
+                                                                    it
+                                                                )
+                                                            } else {
+                                                                searchScreenVM.selectedLinksTableData.remove(
+                                                                    it
+                                                                )
+                                                            }
+                                                        } else {
+                                                            customWebTab.openInWeb(
+                                                                recentlyVisitedData = RecentlyVisited(
+                                                                    title = it.title,
+                                                                    webURL = it.webURL,
+                                                                    baseURL = it.baseURL,
+                                                                    imgURL = it.imgURL,
+                                                                    infoForSaving = it.infoForSaving
+                                                                ),
+                                                                context = context,
+                                                                uriHandler = uriHandler,
+                                                                forceOpenInExternalBrowser = false
+                                                            )
+                                                        }
+                                                    },
+                                                    webURL = it.webURL,
+                                                    onForceOpenInExternalBrowserClicked = {
+                                                        searchScreenVM.onLinkClick(
+                                                            RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            onTaskCompleted = {},
+                                                            forceOpenInExternalBrowser = true
+                                                        )
+                                                    })
+                                            )
+                                        }
+                                    }
+                                    if (impLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
+                                            impLinksStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = LocalizedStrings.fromImportantLinks.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(items = impLinksQueriedData,
+                                            key = { index, impLink ->
+                                                impLink.id.toString() + impLink.baseURL + index.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, it ->
+                                            ListViewLinkUIComponent(
+                                                LinkUIComponentParam(
+                                                    onLongClick = {
+                                                        if (!isSelectionModeEnabled.value) {
+                                                            isSelectionModeEnabled.value =
+                                                                true
+                                                            searchScreenVM.selectedImportantLinksData.add(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    isSelectionModeEnabled = isSelectionModeEnabled,
+                                                    isItemSelected = mutableStateOf(
+                                                        searchScreenVM.selectedImportantLinksData.contains(
+                                                            it
+                                                        )
+                                                    ),
+                                                    title = it.title,
+                                                    webBaseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    onMoreIconClick = {
+                                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                            OptionsBtmSheetType.LINK
+                                                        SearchScreenVM.selectedLinkID = it.id
+                                                        selectedLinkTitle.value = it.title
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.IMP_LINKS
+                                                        HomeScreenVM.tempImpLinkData.webURL =
+                                                            it.webURL
+                                                        HomeScreenVM.tempImpLinkData.baseURL =
+                                                            it.baseURL
+                                                        HomeScreenVM.tempImpLinkData.imgURL =
+                                                            it.imgURL
+                                                        HomeScreenVM.tempImpLinkData.title =
+                                                            it.title
+                                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                            it.infoForSaving
+                                                        selectedURLNote.value = it.infoForSaving
+                                                        selectedWebURL.value = it.webURL
+                                                        shouldOptionsBtmModalSheetBeVisible.value =
+                                                            true
+                                                        coroutineScope.launch {
+                                                            awaitAll(async {
+                                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            }, async {
+                                                                optionsBtmSheetVM.updateImportantCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            })
+                                                        }
+                                                    },
+                                                    onLinkClick = {
+                                                        if (isSelectionModeEnabled.value) {
+
+                                                            if (!searchScreenVM.selectedImportantLinksData.contains(
+                                                                    it
+                                                                )
+                                                            ) {
+                                                                searchScreenVM.selectedImportantLinksData.add(
+                                                                    it
+                                                                )
+                                                            } else {
+                                                                searchScreenVM.selectedImportantLinksData.remove(
+                                                                    it
+                                                                )
+                                                            }
+                                                        } else {
+                                                            customWebTab.openInWeb(
+                                                                recentlyVisitedData = RecentlyVisited(
+                                                                    title = it.title,
+                                                                    webURL = it.webURL,
+                                                                    baseURL = it.baseURL,
+                                                                    imgURL = it.imgURL,
+                                                                    infoForSaving = it.infoForSaving
+                                                                ),
+                                                                context = context,
+                                                                uriHandler = uriHandler,
+                                                                forceOpenInExternalBrowser = false
+                                                            )
+                                                        }
+                                                    },
+                                                    webURL = it.webURL,
+                                                    onForceOpenInExternalBrowserClicked = {
+                                                        searchScreenVM.onLinkClick(
+                                                            RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            onTaskCompleted = {},
+                                                            forceOpenInExternalBrowser = true
+                                                        )
+                                                    })
+                                            )
+                                        }
+                                    }
+                                    if (queriedFolderLinks.isNotEmpty() && (selectedSearchFilters.contains(
+                                            linksFromFoldersStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = linksFromFolders.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(items = queriedFolderLinks,
+                                            key = { index, folderLink ->
+                                                folderLink.baseURL + folderLink.id.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, it ->
+                                            ListViewLinkUIComponent(
+                                                LinkUIComponentParam(
+                                                    onLongClick = {
+                                                        if (!isSelectionModeEnabled.value) {
+                                                            isSelectionModeEnabled.value =
+                                                                true
+                                                            searchScreenVM.selectedLinksTableData.add(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    isSelectionModeEnabled = isSelectionModeEnabled,
+                                                    isItemSelected = mutableStateOf(
+                                                        searchScreenVM.selectedLinksTableData.contains(
+                                                            it
+                                                        )
+                                                    ),
+                                                    title = it.title,
+                                                    webBaseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    onMoreIconClick = {
+                                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                            OptionsBtmSheetType.LINK
+                                                        SearchScreenVM.selectedLinkID = it.id
+                                                        selectedLinkTitle.value = it.title
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.FOLDER_BASED_LINKS
+                                                        HomeScreenVM.tempImpLinkData.webURL =
+                                                            it.webURL
+                                                        HomeScreenVM.tempImpLinkData.baseURL =
+                                                            it.baseURL
+                                                        HomeScreenVM.tempImpLinkData.imgURL =
+                                                            it.imgURL
+                                                        HomeScreenVM.tempImpLinkData.title =
+                                                            it.title
+                                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                            it.infoForSaving
+                                                        selectedURLNote.value = it.infoForSaving
+                                                        selectedWebURL.value = it.webURL
+                                                        shouldOptionsBtmModalSheetBeVisible.value =
+                                                            true
+                                                        coroutineScope.launch {
+                                                            awaitAll(async {
+                                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            }, async {
+                                                                optionsBtmSheetVM.updateImportantCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            })
+                                                        }
+                                                    },
+                                                    onLinkClick = {
+                                                        if (isSelectionModeEnabled.value) {
+                                                            if (!searchScreenVM.selectedLinksTableData.contains(
+                                                                    it
+                                                                )
+                                                            ) {
+                                                                searchScreenVM.selectedLinksTableData.add(
+                                                                    it
+                                                                )
+                                                            } else {
+                                                                searchScreenVM.selectedLinksTableData.remove(
+                                                                    it
+                                                                )
+                                                            }
+                                                        } else {
+                                                            customWebTab.openInWeb(
+                                                                recentlyVisitedData = RecentlyVisited(
+                                                                    title = it.title,
+                                                                    webURL = it.webURL,
+                                                                    baseURL = it.baseURL,
+                                                                    imgURL = it.imgURL,
+                                                                    infoForSaving = it.infoForSaving
+                                                                ),
+                                                                context = context,
+                                                                uriHandler = uriHandler,
+                                                                forceOpenInExternalBrowser = false
+                                                            )
+                                                        }
+                                                    },
+                                                    webURL = it.webURL,
+                                                    onForceOpenInExternalBrowserClicked = {
+                                                        searchScreenVM.onLinkClick(
+                                                            RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            onTaskCompleted = {},
+                                                            forceOpenInExternalBrowser = true
+                                                        )
+                                                    })
+                                            )
+                                        }
+                                    }
+                                    if (historyLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
+                                            historyStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = LocalizedStrings.linksFromHistory.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(items = historyLinksQueriedData,
+                                            key = { index, historyLink ->
+                                                historyLink.baseURL + historyLink.id.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, it ->
+                                            ListViewLinkUIComponent(
+                                                LinkUIComponentParam(
+                                                    onLongClick = {
+                                                        if (!isSelectionModeEnabled.value) {
+                                                            isSelectionModeEnabled.value =
+                                                                true
+                                                            searchScreenVM.selectedHistoryLinksData.add(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    isSelectionModeEnabled = isSelectionModeEnabled,
+                                                    isItemSelected = mutableStateOf(
+                                                        searchScreenVM.selectedHistoryLinksData.contains(
+                                                            it
+                                                        )
+                                                    ),
+                                                    title = it.title,
+                                                    webBaseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    onMoreIconClick = {
+                                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                            OptionsBtmSheetType.LINK
+                                                        SearchScreenVM.selectedLinkID = it.id
+                                                        selectedLinkTitle.value = it.title
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.HISTORY_LINKS
+                                                        HomeScreenVM.tempImpLinkData.webURL =
+                                                            it.webURL
+                                                        HomeScreenVM.tempImpLinkData.baseURL =
+                                                            it.baseURL
+                                                        HomeScreenVM.tempImpLinkData.imgURL =
+                                                            it.imgURL
+                                                        HomeScreenVM.tempImpLinkData.title =
+                                                            it.title
+                                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                            it.infoForSaving
+                                                        selectedURLNote.value = it.infoForSaving
+                                                        selectedWebURL.value = it.webURL
+                                                        shouldOptionsBtmModalSheetBeVisible.value =
+                                                            true
+                                                        coroutineScope.launch {
+                                                            awaitAll(async {
+                                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            }, async {
+                                                                optionsBtmSheetVM.updateImportantCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            })
+                                                        }
+                                                    },
+                                                    onLinkClick = {
+                                                        if (isSelectionModeEnabled.value) {
+                                                            if (!searchScreenVM.selectedHistoryLinksData.contains(
+                                                                    it
+                                                                )
+                                                            ) {
+                                                                searchScreenVM.selectedHistoryLinksData.add(
+                                                                    it
+                                                                )
+                                                            } else {
+                                                                searchScreenVM.selectedHistoryLinksData.remove(
+                                                                    it
+                                                                )
+                                                            }
+                                                        } else {
+                                                            customWebTab.openInWeb(
+                                                                recentlyVisitedData = RecentlyVisited(
+                                                                    title = it.title,
+                                                                    webURL = it.webURL,
+                                                                    baseURL = it.baseURL,
+                                                                    imgURL = it.imgURL,
+                                                                    infoForSaving = it.infoForSaving
+                                                                ),
+                                                                context = context,
+                                                                uriHandler = uriHandler,
+                                                                forceOpenInExternalBrowser = false
+                                                            )
+                                                        }
+                                                    },
+                                                    webURL = it.webURL,
+                                                    onForceOpenInExternalBrowserClicked = {
+                                                        searchScreenVM.onLinkClick(
+                                                            RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            onTaskCompleted = {},
+                                                            forceOpenInExternalBrowser = true
+                                                        )
+                                                    })
+                                            )
+                                        }
+                                    }
+                                    if (archiveLinksQueriedData.isNotEmpty() && (selectedSearchFilters.contains(
+                                            archivedLinksStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = LocalizedStrings.linksFromArchive.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(items = archiveLinksQueriedData,
+                                            key = { index, archiveLink ->
+                                                archiveLink.baseURL + archiveLink.id.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, it ->
+                                            ListViewLinkUIComponent(
+                                                LinkUIComponentParam(
+                                                    onLongClick = {
+                                                        if (!isSelectionModeEnabled.value) {
+                                                            isSelectionModeEnabled.value =
+                                                                true
+                                                            searchScreenVM.selectedArchiveLinksTableData.add(
+                                                                it
+                                                            )
+                                                        }
+                                                    },
+                                                    isSelectionModeEnabled = isSelectionModeEnabled,
+                                                    isItemSelected = mutableStateOf(
+                                                        searchScreenVM.selectedArchiveLinksTableData.contains(
+                                                            it
+                                                        )
+                                                    ),
+                                                    title = it.title,
+                                                    webBaseURL = it.baseURL,
+                                                    imgURL = it.imgURL,
+                                                    onMoreIconClick = {
+                                                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                            OptionsBtmSheetType.LINK
+                                                        SearchScreenVM.selectedLinkID = it.id
+                                                        selectedLinkTitle.value = it.title
+                                                        SearchScreenVM.selectedLinkType =
+                                                            SearchScreenVM.SelectedLinkType.ARCHIVE_LINKS
+                                                        HomeScreenVM.tempImpLinkData.webURL =
+                                                            it.webURL
+                                                        HomeScreenVM.tempImpLinkData.baseURL =
+                                                            it.baseURL
+                                                        HomeScreenVM.tempImpLinkData.imgURL =
+                                                            it.imgURL
+                                                        HomeScreenVM.tempImpLinkData.title =
+                                                            it.title
+                                                        HomeScreenVM.tempImpLinkData.infoForSaving =
+                                                            it.infoForSaving
+                                                        selectedURLNote.value = it.infoForSaving
+                                                        selectedWebURL.value = it.webURL
+                                                        shouldOptionsBtmModalSheetBeVisible.value =
+                                                            true
+                                                        coroutineScope.launch {
+                                                            awaitAll(async {
+                                                                optionsBtmSheetVM.updateArchiveLinkCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            }, async {
+                                                                optionsBtmSheetVM.updateImportantCardData(
+                                                                    url = it.webURL
+                                                                )
+                                                            })
+                                                        }
+                                                    },
+                                                    onLinkClick = {
+                                                        if (isSelectionModeEnabled.value) {
+                                                            if (!searchScreenVM.selectedArchiveLinksTableData.contains(
+                                                                    it
+                                                                )
+                                                            ) {
+                                                                searchScreenVM.selectedArchiveLinksTableData.add(
+                                                                    it
+                                                                )
+                                                            } else {
+                                                                searchScreenVM.selectedArchiveLinksTableData.remove(
+                                                                    it
+                                                                )
+                                                            }
+                                                        } else {
+                                                            customWebTab.openInWeb(
+                                                                recentlyVisitedData = RecentlyVisited(
+                                                                    title = it.title,
+                                                                    webURL = it.webURL,
+                                                                    baseURL = it.baseURL,
+                                                                    imgURL = it.imgURL,
+                                                                    infoForSaving = it.infoForSaving
+                                                                ),
+                                                                context = context,
+                                                                uriHandler = uriHandler,
+                                                                forceOpenInExternalBrowser = false
+                                                            )
+                                                        }
+                                                    },
+                                                    webURL = it.webURL,
+                                                    onForceOpenInExternalBrowserClicked = {
+                                                        searchScreenVM.onLinkClick(
+                                                            RecentlyVisited(
+                                                                title = it.title,
+                                                                webURL = it.webURL,
+                                                                baseURL = it.baseURL,
+                                                                imgURL = it.imgURL,
+                                                                infoForSaving = it.infoForSaving
+                                                            ),
+                                                            context = context,
+                                                            uriHandler = uriHandler,
+                                                            onTaskCompleted = {},
+                                                            forceOpenInExternalBrowser = true
+                                                        )
+                                                    })
+                                            )
+                                        }
+                                    }
+                                    if (queriedArchivedFoldersData.isNotEmpty() && (selectedSearchFilters.contains(
+                                            archivedFoldersStringRes
+                                        ) || selectedSearchFilters.isEmpty())
+                                    ) {
+                                        item {
+                                            Text(
+                                                text = LocalizedStrings.fromArchivedFolders.value,
+                                                style = MaterialTheme.typography.titleMedium,
+                                                color = MaterialTheme.colorScheme.primary,
+                                                fontSize = 14.sp,
+                                                modifier = Modifier.padding(15.dp)
+                                            )
+                                        }
+                                        itemsIndexed(
+                                            items = queriedArchivedFoldersData,
+                                            key = { index, folderData ->
+                                                folderData.folderName + folderData.id.toString() + UUID.randomUUID()
+                                                    .toString()
+                                            }) { index, folderData ->
+                                            FolderIndividualComponent(
+                                                showMoreIcon = !isSelectionModeEnabled.value,
+                                                folderName = folderData.folderName,
+                                                folderNote = folderData.infoForSaving,
+                                                onMoreIconClick = {
+                                                    SpecificCollectionsScreenVM.selectedBtmSheetType.value =
+                                                        OptionsBtmSheetType.FOLDER
+                                                    CollectionsScreenVM.selectedFolderData.value =
+                                                        folderData
+                                                    clickedFolderNote.value =
+                                                        folderData.infoForSaving
+                                                    coroutineScope.launch {
+                                                        optionsBtmSheetVM.updateArchiveFolderCardData(
+                                                            folderData.id
+                                                        )
+                                                    }
+                                                    clickedFolderName.value = folderData.folderName
+                                                    CollectionsScreenVM.selectedFolderData.value =
+                                                        folderData
+                                                    shouldOptionsBtmModalSheetBeVisible.value = true
+                                                },
+                                                onFolderClick = {
+                                                    if (!isSelectionModeEnabled.value) {
+                                                        SpecificCollectionsScreenVM.inARegularFolder.value =
+                                                            true
+                                                        SpecificCollectionsScreenVM.screenType.value =
+                                                            SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
+                                                        CollectionsScreenVM.currentClickedFolderData.value =
+                                                            folderData
+                                                        CollectionsScreenVM.rootFolderID =
+                                                            folderData.id
+                                                        navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                    }
+                                                },
+                                                onLongClick = {
+                                                    if (!isSelectionModeEnabled.value) {
+                                                        isSelectionModeEnabled.value = true
+                                                        SearchScreenVM.selectedArchiveFoldersData.clear()
+                                                        SearchScreenVM.selectedArchiveFoldersData.add(
+                                                            folderData
+                                                        )
+                                                    }
+                                                },
+                                                showCheckBox = isSelectionModeEnabled,
+                                                isCheckBoxChecked = mutableStateOf(
+                                                    SearchScreenVM.selectedArchiveFoldersData.contains(
+                                                        folderData
+                                                    )
+                                                ),
+                                                checkBoxState = { checkBoxState ->
+                                                    if (checkBoxState) {
+                                                        SearchScreenVM.selectedArchiveFoldersData.add(
+                                                            folderData
+                                                        )
+                                                    } else {
+                                                        SearchScreenVM.selectedArchiveFoldersData.removeAll {
+                                                            it == folderData
+                                                        }
+                                                    }
+                                                })
+                                        }
+                                    }
+                                    item {
+                                        Spacer(modifier = Modifier.height(225.dp))
+                                    }
+                                }
+                            }
+                        }
+                    })
+            }
+            Column(modifier = Modifier.background(MaterialTheme.colorScheme.surface)) {
+                Row(modifier = Modifier
+                    .clickable {
+                        if (historyLinksData.isNotEmpty() && !isSelectionModeEnabled.value) {
+                            shouldSortingBottomSheetAppear.value = true
+                        }
+                    }
+                    .fillMaxWidth()
+                    .wrapContentHeight(),
+                    horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically) {
+                    if (isSelectionModeEnabled.value) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                isSelectionModeEnabled.value = false
+                                searchScreenVM.areAllLinksChecked.value = false
+                                searchScreenVM.areAllFoldersChecked.value = false
+                                searchScreenVM.selectedImportantLinksData.clear()
+                                searchScreenVM.selectedLinksTableData.clear()
+                                searchScreenVM.selectedArchiveLinksTableData.clear()
+                                searchScreenVM.selectedHistoryLinksData.clear()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Default.Cancel, contentDescription = null
                                 )
+                            }
+                            AnimatedContent(targetState = searchScreenVM.selectedHistoryLinksData.size + searchScreenVM.selectedFoldersData.size,
+                                label = "",
+                                transitionSpec = {
+                                    ContentTransform(
+                                        initialContentExit = slideOutVertically(
+                                            animationSpec = tween(
+                                                150
+                                            )
+                                        ) + fadeOut(
+                                            tween(150)
+                                        ), targetContentEnter = slideInVertically(
+                                            animationSpec = tween(durationMillis = 150)
+                                        ) + fadeIn(
+                                            tween(150)
+                                        )
+                                    )
+                                }) {
+                                Text(
+                                    text = it.toString(),
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    style = MaterialTheme.typography.titleLarge,
+                                    fontSize = 18.sp
+                                )
+                            }
+                            Text(
+                                text = " " + itemsSelected.value,
+                                color = MaterialTheme.colorScheme.onSurface,
+                                style = MaterialTheme.typography.titleLarge,
+                                fontSize = 18.sp
+                            )
+                        }
+                    } else {
+                        Text(
+                            text = history.value,
+                            color = MaterialTheme.colorScheme.primary,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontSize = 20.sp,
+                            modifier = Modifier.padding(
+                                start = 15.dp
                             )
                         )
                     }
-                } else {
-                    item {
-                        DataEmptyScreen(text = LocalizedStrings.noLinksWereFoundInHistory.value)
+                    if (!isSelectionModeEnabled.value) {
+                        IconButton(modifier = if (historyLinksData.isNotEmpty()) Modifier
+                            .clickable(onClick = {},
+                                indication = null,
+                                interactionSource = remember {
+                                    MutableInteractionSource()
+                                })
+                            .pulsateEffect() else Modifier, onClick = {
+                            if (historyLinksData.isNotEmpty()) {
+                                shouldSortingBottomSheetAppear.value = true
+                            }
+                        }) {
+                            if (historyLinksData.isNotEmpty()) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Outlined.Sort,
+                                    contentDescription = null
+                                )
+                            }
+                        }
+                    } else if (isSelectionModeEnabled.value) {
+                        Row {
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                isSelectionModeEnabled.value = false
+                                searchScreenVM.archiveSelectedHistoryLinks()
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Archive, contentDescription = null
+                                )
+                            }
+                            IconButton(modifier = Modifier.pulsateEffect(), onClick = {
+                                shouldDeleteDialogBoxAppear.value = true
+                            }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.DeleteForever,
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                 }
-                item {
-                    Spacer(modifier = Modifier.height(225.dp))
+                Spacer(modifier = Modifier.height(5.dp))
+            }
+            if (historyLinksData.isNotEmpty()) {
+                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                    LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                ListViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                )
+                            }
+                            item {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
+
+                    LinkLayout.GRID_VIEW.name -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp)
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it), forStaggeredView = false
+                                )
+                            }
+                            item(span = {
+                                GridItemSpan(this.maxCurrentLineSpan)
+                            }) {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
+
+                    LinkLayout.STAGGERED_VIEW.name -> {
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp)
+                                .background(MaterialTheme.colorScheme.background)
+                        ) {
+                            itemsIndexed(items = historyLinksData, key = { index, recentlyVisited ->
+                                recentlyVisited.baseURL + recentlyVisited.webURL + recentlyVisited.id.toString() + index
+                            }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it), forStaggeredView = true
+                                )
+                            }
+                            item(span = StaggeredGridItemSpan.FullLine) {
+                                Spacer(modifier = Modifier.height(225.dp))
+                            }
+                        }
+                    }
                 }
+            } else {
+                DataEmptyScreen(text = LocalizedStrings.noLinksWereFoundInHistory.value)
             }
         }
         SortingBottomSheetUI(
@@ -1398,6 +1476,11 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
         )
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                showQuickActions = mutableStateOf(
+                    !SearchScreenVM.isSearchEnabled.value &&
+                            (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name ||
+                                    SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
+                ),
                 btmModalSheetState = optionsBtmSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,

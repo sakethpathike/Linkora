@@ -61,7 +61,7 @@ class MainActivity : ComponentActivity() {
             LocalizedStrings.loadStrings(this@MainActivity)
         }.invokeOnCompletion {
             val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
+            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value && false)
         }
         setContent {
             LinkoraTheme {

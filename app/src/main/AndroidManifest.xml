@@ -28,9 +28,6 @@
             android:authorities="${applicationId}.androidx-startup"
             tools:node="remove">
         </provider>
-        <meta-data
-            android:name="firebase_analytics_collection_deactivated"
-            android:value="@bool/FIREBASE_ANALYTICS_DEACTIVATED"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"

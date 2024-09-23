@@ -14,6 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.APP_VERSION_CODE
 import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
@@ -55,6 +56,11 @@ object SettingsPreference : ViewModel() {
     val totalLocalAppStrings = mutableIntStateOf(285)
     val totalRemoteStrings = mutableIntStateOf(0)
     val remoteStringsLastUpdatedOn = mutableStateOf("")
+    val currentlySelectedLinkLayout = mutableStateOf(LinkLayout.REGULAR_LIST_VIEW.name)
+    val enableBorderForNonListViews = mutableStateOf(true)
+    val enableTitleForNonListViews = mutableStateOf(true)
+    val enableBaseURLForNonListViews = mutableStateOf(true)
+    val enableFadedEdgeForNonListViews = mutableStateOf(true)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -95,6 +101,20 @@ object SettingsPreference : ViewModel() {
     suspend fun readAllPreferencesValues(context: Context) {
         coroutineScope {
             kotlinx.coroutines.awaitAll(
+                async {
+                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == null
+                    ) {
+                        true
+                    } else {
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            dataStore = context.dataStore
+                        ) == true
+                    }
+                },
                 async {
                     shouldFollowSystemTheme.value = readSettingPreferenceValue(
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
@@ -149,20 +169,6 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
                         dataStore = context.dataStore
                     ) ?: 0
-                },
-                async {
-                    isHomeScreenEnabled.value = if (readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = context.dataStore
-                        ) == null
-                    ) {
-                        true
-                    } else {
-                        readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
-                            dataStore = context.dataStore
-                        ) == true
-                    }
                 },
                 async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
@@ -226,6 +232,34 @@ object SettingsPreference : ViewModel() {
                         ) ?: false
                 },
                 async {
+                    enableBorderForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableBorderForNonListViews.value
+                },
+                async {
+                    enableTitleForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableTitleForNonListViews.value
+                },
+                async {
+                    enableBaseURLForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableBaseURLForNonListViews.value
+                },
+                async {
+                    enableFadedEdgeForNonListViews.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            dataStore = context.dataStore
+                        ) ?: enableFadedEdgeForNonListViews.value
+                },
+                async {
                     localizationServerURL.value =
                         readSettingPreferenceValue(
                             preferenceKey = stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
@@ -238,6 +272,13 @@ object SettingsPreference : ViewModel() {
                             preferenceKey = stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
                             dataStore = context.dataStore
                         ) ?: ""
+                },
+                async {
+                    currentlySelectedLinkLayout.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
+                            dataStore = context.dataStore
+                        ) ?: currentlySelectedLinkLayout.value
                 },
                 async {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(

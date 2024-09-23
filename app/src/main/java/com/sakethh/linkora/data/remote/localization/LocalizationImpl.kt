@@ -18,7 +18,8 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
         return try {
             val localizedStrings = mutableListOf<Translation>()
             RequestResult.updateState(RequestState.REQUESTING)
-            ktorClient.get(SettingsPreference.localizationServerURL.value + languageCode).bodyAsText()
+            ktorClient.get(SettingsPreference.localizationServerURL.value + languageCode)
+                .bodyAsText()
                 .substringAfter("<resources>")
                 .substringBefore("</resources>")
                 .split("<string").forEach {
@@ -47,8 +48,9 @@ class LocalizationImpl @Inject constructor(private val ktorClient: HttpClient) :
     override suspend fun getRemoteLanguages(): RequestResult<RemoteLocalizationInfoDTO> {
         return try {
             RequestResult.updateState(RequestState.REQUESTING)
-            val remoteLanguageData = ktorClient.get(SettingsPreference.localizationServerURL.value + "info")
-                .body<RemoteLocalizationInfoDTO>()
+            val remoteLanguageData =
+                ktorClient.get(SettingsPreference.localizationServerURL.value + "info")
+                    .body<RemoteLocalizationInfoDTO>()
             RequestResult.updateState(RequestState.SUCCESS)
             RequestResult.Success(remoteLanguageData)
         } catch (e: Exception) {

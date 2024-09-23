@@ -2,12 +2,21 @@ package com.sakethh.linkora.ui.screens.collections.archive
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.staggeredgrid.LazyVerticalStaggeredGrid
+import androidx.compose.foundation.lazy.staggeredgrid.StaggeredGridCells
+import androidx.compose.foundation.lazy.staggeredgrid.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -23,6 +32,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -30,10 +40,11 @@ import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetUI
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponent
-import com.sakethh.linkora.ui.commonComposables.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
+import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
+import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -43,9 +54,11 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
+import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.baseUrl
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -71,6 +84,7 @@ fun ChildArchiveScreen(
                 is CommonUiEvent.ShowToast -> {
                     Toast.makeText(context, it.msg, Toast.LENGTH_SHORT).show()
                 }
+
                 else -> {}
             }
         }
@@ -100,102 +114,156 @@ fun ChildArchiveScreen(
         mutableStateOf("")
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
-    LinkoraTheme {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            if (archiveScreenType == ArchiveScreenType.LINKS) {
-                if (archiveLinksData.isNotEmpty()) {
-                    itemsIndexed(
-                        items = archiveLinksData,
-                        key = { _, archivedLinks ->
-                            archivedLinks.id.toString() + archivedLinks.baseURL
-                        }) { index, it ->
-                        LinkUIComponent(
-                            LinkUIComponentParam(
-                                onLongClick = {
-                                    if (!archiveScreenVM.isSelectionModeEnabled.value) {
-                                        archiveScreenVM.isSelectionModeEnabled.value =
-                                            true
-                                        archiveScreenVM.selectedLinksData.add(it)
-                                    }
-                                },
-                                isSelectionModeEnabled = archiveScreenVM.isSelectionModeEnabled,
-                                title = it.title,
-                                webBaseURL = it.baseURL,
-                                imgURL = it.imgURL,
-                                onMoreIconCLick = {
-                                    archiveScreenVM.selectedArchivedLinkData.value = it
-                                    shouldOptionsBtmModalSheetBeVisible.value = true
-                                    selectedURLOrFolderName.value = it.webURL
-                                    selectedItemNote.value = it.infoForSaving
-                                    selectedItemTitle.value = it.title
-                                    selectedURLImgLink.value = it.imgURL
-                                    coroutineScope.launch {
-                                        optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
-                                    }
-                                },
-                                onLinkClick = {
-                                    if (archiveScreenVM.isSelectionModeEnabled.value) {
-                                        if (!archiveScreenVM.selectedLinksData.contains(it)) {
-                                            archiveScreenVM.selectedLinksData.add(
-                                                it
-                                            )
-                                        } else {
-                                            archiveScreenVM.selectedLinksData.remove(
-                                                it
-                                            )
-                                        }
 
-                                    } else {
-                                        coroutineScope.launch {
-                                            customWebTab.openInWeb(
-                                                recentlyVisitedData = RecentlyVisited(
-                                                    title = it.title,
-                                                    webURL = it.webURL,
-                                                    baseURL = it.baseURL,
-                                                    imgURL = it.imgURL,
-                                                    infoForSaving = it.infoForSaving
-                                                ), context = context, uriHandler = uriHandler,
-                                                forceOpenInExternalBrowser = false
-                                            )
-                                        }
-                                    }
-                                },
-                                webURL = it.webURL,
-                                onForceOpenInExternalBrowserClicked = {
-                                    coroutineScope.launch {
-                                        customWebTab.openInWeb(
-                                            recentlyVisitedData = RecentlyVisited(
-                                                title = it.title,
-                                                webURL = it.webURL,
-                                                baseURL = it.baseURL,
-                                                imgURL = it.imgURL,
-                                                infoForSaving = it.infoForSaving
-                                            ), context = context, uriHandler = uriHandler,
-                                            forceOpenInExternalBrowser = false
-                                        )
-                                    }
-                                },
-                                isItemSelected = mutableStateOf(
-                                    archiveScreenVM.selectedLinksData.contains(
-                                        it
-                                    )
-                                )
-                            )
+    fun commonLinkParam(it: ArchivedLinks): LinkUIComponentParam {
+        return LinkUIComponentParam(
+            onLongClick = {
+                if (!archiveScreenVM.isSelectionModeEnabled.value) {
+                    archiveScreenVM.isSelectionModeEnabled.value =
+                        true
+                    archiveScreenVM.selectedLinksData.add(it)
+                }
+            },
+            isSelectionModeEnabled = archiveScreenVM.isSelectionModeEnabled,
+            title = it.title,
+            webBaseURL = it.baseURL,
+            imgURL = it.imgURL,
+            onMoreIconClick = {
+                archiveScreenVM.selectedArchivedLinkData.value = it
+                shouldOptionsBtmModalSheetBeVisible.value = true
+                selectedURLOrFolderName.value = it.webURL
+                selectedItemNote.value = it.infoForSaving
+                selectedItemTitle.value = it.title
+                selectedURLImgLink.value = it.imgURL
+                coroutineScope.launch {
+                    optionsBtmSheetVM.updateArchiveLinkCardData(url = it.webURL)
+                }
+            },
+            onLinkClick = {
+                if (archiveScreenVM.isSelectionModeEnabled.value) {
+                    if (!archiveScreenVM.selectedLinksData.contains(it)) {
+                        archiveScreenVM.selectedLinksData.add(
+                            it
+                        )
+                    } else {
+                        archiveScreenVM.selectedLinksData.remove(
+                            it
                         )
                     }
+
                 } else {
-                    item {
-                        DataEmptyScreen(text = LocalizedStrings.noLinksWereArchived.value)
+                    coroutineScope.launch {
+                        customWebTab.openInWeb(
+                            recentlyVisitedData = RecentlyVisited(
+                                title = it.title,
+                                webURL = it.webURL,
+                                baseURL = it.baseURL,
+                                imgURL = it.imgURL,
+                                infoForSaving = it.infoForSaving
+                            ), context = context, uriHandler = uriHandler,
+                            forceOpenInExternalBrowser = false
+                        )
                     }
-                    item {
-                        Spacer(modifier = Modifier.height(165.dp))
+                }
+            },
+            webURL = it.webURL,
+            onForceOpenInExternalBrowserClicked = {
+                customWebTab.openInWeb(
+                    recentlyVisitedData = RecentlyVisited(
+                        title = it.title,
+                        webURL = it.webURL,
+                        baseURL = it.baseURL,
+                        imgURL = it.imgURL,
+                        infoForSaving = it.infoForSaving
+                    ), context = context, uriHandler = uriHandler,
+                    forceOpenInExternalBrowser = false
+                )
+            },
+            isItemSelected = mutableStateOf(
+                archiveScreenVM.selectedLinksData.contains(
+                    it
+                )
+            )
+        )
+    }
+
+    LinkoraTheme {
+        if (archiveScreenType == ArchiveScreenType.LINKS) {
+            if (archiveLinksData.isNotEmpty()) {
+                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                    LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                ListViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                )
+                            }
+                        }
+                    }
+
+                    LinkLayout.GRID_VIEW.name -> {
+                        LazyVerticalGrid(
+                            columns = GridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forStaggeredView = false
+                                )
+                            }
+                        }
+                    }
+
+                    LinkLayout.STAGGERED_VIEW.name -> {
+                        LazyVerticalStaggeredGrid(
+                            columns = StaggeredGridCells.Adaptive(150.dp),
+                            modifier = Modifier
+                                .padding(5.dp)
+                                .fillMaxSize()
+                                .animateContentSize()
+                        ) {
+                            itemsIndexed(
+                                items = archiveLinksData,
+                                key = { _, archivedLinks ->
+                                    archivedLinks.id.toString() + archivedLinks.baseURL
+                                }) { index, it ->
+                                GridViewLinkUIComponent(
+                                    commonLinkParam(it),
+                                    forStaggeredView = true
+                                )
+                            }
+                        }
                     }
                 }
             } else {
+                Column(modifier = Modifier.fillMaxSize()) {
+                    DataEmptyScreen(text = LocalizedStrings.noLinksWereArchived.value)
+                    Spacer(modifier = Modifier.height(165.dp))
+                }
+            }
+        } else {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
                 if (archiveFoldersDataV9.isNotEmpty()) {
                     itemsIndexed(items = archiveFoldersDataV9, key = { _, archivedFolders ->
                         archivedFolders.id.toString() + archivedFolders.archiveFolderName + archivedFolders.id.toString()
@@ -316,6 +384,12 @@ fun ChildArchiveScreen(
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                showQuickActions = mutableStateOf(
+                    archiveScreenType == ArchiveScreenType.LINKS && (
+                            SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                    || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name
+                            )
+                ),
                 inArchiveScreen = mutableStateOf(true),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
@@ -352,7 +426,20 @@ fun ChildArchiveScreen(
                     if (archiveScreenType == ArchiveScreenType.LINKS) {
                         archiveScreenVM.refreshArchivedLinkData(archiveScreenVM.selectedArchivedLinkData.value.id)
                     }
-                }
+                },
+                webUrl = selectedURLOrFolderName.value,
+                onForceOpenInExternalBrowserClicked = {
+                    customWebTab.openInWeb(
+                        recentlyVisitedData = RecentlyVisited(
+                            title = selectedItemTitle.value,
+                            webURL = selectedURLOrFolderName.value,
+                            baseURL = selectedURLOrFolderName.value.baseUrl(),
+                            imgURL = selectedURLImgLink.value,
+                            infoForSaving = selectedItemNote.value
+                        ), context = context, uriHandler = uriHandler,
+                        forceOpenInExternalBrowser = false
+                    )
+                },
             )
         )
 
