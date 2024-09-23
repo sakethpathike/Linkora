@@ -116,7 +116,17 @@ class SearchScreenVM @Inject constructor(
     init {
         viewModelScope.launch {
             searchQuery.collectLatest { query ->
-                retrieveQueryData(query.trim())
+                if (query.trim().isNotBlank() && query.trim().isNotEmpty()) {
+                    retrieveQueryData(query.trim())
+                } else {
+                    _queriedArchivedFoldersData.emit(emptyList())
+                    _queriedFolderLinks.emit(emptyList())
+                    _historyLinksQueriedData.emit(emptyList())
+                    _archiveLinksQueriedData.emit(emptyList())
+                    _impLinksQueriedData.emit(emptyList())
+                    _queriedSavedLinks.emit(emptyList())
+                    _queriedUnarchivedFoldersData.emit(emptyList())
+                }
             }
         }
     }
