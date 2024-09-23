@@ -89,7 +89,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                         onClick = {
                             navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
                         },
-                        sectionTitle = "Link Layout",
+                        sectionTitle = LocalizedStrings.linkLayout.value,
                         sectionIcon = Icons.Default.Dashboard
                     )
                 }

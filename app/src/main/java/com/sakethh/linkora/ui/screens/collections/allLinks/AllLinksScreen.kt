@@ -217,7 +217,10 @@ fun AllLinksScreen(navController: NavController) {
                 )
             })
     }
-    SpecificScreenScaffold(topAppBarText = "All Links", navController = navController, actions = {
+    SpecificScreenScaffold(
+        topAppBarText = LocalizedStrings.allLinks.value,
+        navController = navController,
+        actions = {
         if (!isAllTablesEmpty) {
             IconButton(onClick = {
                 navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
@@ -235,7 +238,7 @@ fun AllLinksScreen(navController: NavController) {
                 .background(MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation))
         ) {
             Text(
-                "Filter based on",
+                LocalizedStrings.filterBasedOn.value,
                 style = MaterialTheme.typography.titleSmall,
                 modifier = Modifier.padding(start = 15.dp, top = 15.dp)
             )
@@ -247,15 +250,23 @@ fun AllLinksScreen(navController: NavController) {
             ) {
                 Spacer(Modifier.width(15.dp))
                 allLinksScreenVM.linkTypes.forEach {
-                    if (it.linkType == "Saved Links" && savedLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == "Important Links" && impLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == "History Links" && historyLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == "Archived Links" && archivedLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == "Folders Links" && regularFoldersLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == LinkType.SAVED_LINK && savedLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == LinkType.IMP_LINK && impLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == LinkType.HISTORY_LINK && historyLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == LinkType.ARCHIVE_LINK && archivedLinks.value.isEmpty()) return@forEach
+                    if (it.linkType == LinkType.FOLDER_LINK && regularFoldersLinks.value.isEmpty()) return@forEach
                     FilterChip(modifier = Modifier.animateContentSize(), onClick = {
                         it.isChecked.value = !it.isChecked.value
                     }, selected = it.isChecked.value, label = {
-                        Text(it.linkType, style = MaterialTheme.typography.titleSmall)
+                        Text(
+                            when (it.linkType) {
+                                LinkType.SAVED_LINK -> LocalizedStrings.savedLinks.value
+                                LinkType.IMP_LINK -> LocalizedStrings.importantLinks.value
+                                LinkType.FOLDER_LINK -> LocalizedStrings.foldersLinks.value
+                                LinkType.HISTORY_LINK -> LocalizedStrings.linksFromHistory.value
+                                LinkType.ARCHIVE_LINK -> LocalizedStrings.archivedLinks.value
+                            }, style = MaterialTheme.typography.titleSmall
+                        )
                     })
                     Spacer(Modifier.width(10.dp))
                 }
@@ -283,7 +294,7 @@ fun AllLinksScreen(navController: NavController) {
                 LazyColumn(
                     modifier = commonModifier
                 ) {
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.SAVED_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             ListViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
@@ -295,7 +306,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.IMP_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -321,7 +332,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.HISTORY_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -347,7 +358,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.ARCHIVE_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -373,7 +384,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.FOLDER_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 ListViewLinkUIComponent(
@@ -392,7 +403,7 @@ fun AllLinksScreen(navController: NavController) {
             LinkLayout.GRID_VIEW.name -> {
                 LazyVerticalGrid(columns = GridCells.Adaptive(150.dp), modifier = commonModifier) {
 
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.SAVED_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
@@ -404,7 +415,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.IMP_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -430,7 +441,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.HISTORY_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -456,7 +467,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.ARCHIVE_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -482,7 +493,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.FOLDER_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 GridViewLinkUIComponent(
@@ -503,7 +514,7 @@ fun AllLinksScreen(navController: NavController) {
                     columns = StaggeredGridCells.Adaptive(150.dp), modifier = commonModifier
                 ) {
 
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Saved Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.SAVED_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(savedLinks.value) {
                             GridViewLinkUIComponent(
                                 linkUIComponentParam = modifiedLinkUIComponentParam(
@@ -515,7 +526,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Important Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.IMP_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(impLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -541,7 +552,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "History Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.HISTORY_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(historyLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -567,7 +578,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Archived Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.ARCHIVE_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(archivedLinks.value.map {
                             LinksTable(
                                 id = it.id,
@@ -593,7 +604,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         }
                     }
-                    if (allLinksScreenVM.linkTypes.find { it.linkType == "Folders Links" }!!.isChecked.value || noLinksSelectedState) {
+                    if (allLinksScreenVM.linkTypes.find { it.linkType == LinkType.FOLDER_LINK }!!.isChecked.value || noLinksSelectedState) {
                         items(regularFoldersLinks.value) {
                             if (!it.isLinkedWithArchivedFolder)
                                 GridViewLinkUIComponent(

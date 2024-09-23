@@ -35,11 +35,26 @@ class AllLinksScreenVM @Inject constructor(
 
 
     val linkTypes = listOf(
-        LinkTypeSelection(linkType = "Saved Links", isChecked = mutableStateOf(false)),
-        LinkTypeSelection(linkType = "Important Links", isChecked = mutableStateOf(false)),
-        LinkTypeSelection(linkType = "History Links", isChecked = mutableStateOf(false)),
-        LinkTypeSelection(linkType = "Archived Links", isChecked = mutableStateOf(false)),
-        LinkTypeSelection(linkType = "Folders Links", isChecked = mutableStateOf(false)),
+        LinkTypeSelection(
+            linkType = LinkType.SAVED_LINK,
+            isChecked = mutableStateOf(false)
+        ),
+        LinkTypeSelection(
+            linkType = LinkType.IMP_LINK,
+            isChecked = mutableStateOf(false)
+        ),
+        LinkTypeSelection(
+            linkType = LinkType.HISTORY_LINK,
+            isChecked = mutableStateOf(false)
+        ),
+        LinkTypeSelection(
+            linkType = LinkType.ARCHIVE_LINK,
+            isChecked = mutableStateOf(false)
+        ),
+        LinkTypeSelection(
+            linkType = LinkType.FOLDER_LINK,
+            isChecked = mutableStateOf(false)
+        ),
     )
 
     val savedLinks = when (SettingsPreference.selectedSortingType.value) {

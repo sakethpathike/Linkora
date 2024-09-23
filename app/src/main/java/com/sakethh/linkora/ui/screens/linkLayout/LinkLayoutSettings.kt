@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
@@ -120,7 +121,7 @@ fun LinkLayoutSettings(navController: NavController) {
                         newValue = SettingsPreference.enableBorderForNonListViews.value
                     )
                 },
-                title = "Show Border Around Links",
+                title = LocalizedStrings.showBorderAroundLinks.value,
                 isSwitchChecked = SettingsPreference.enableBorderForNonListViews
             ),
             LinkPref(
@@ -133,7 +134,7 @@ fun LinkLayoutSettings(navController: NavController) {
                         newValue = SettingsPreference.enableTitleForNonListViews.value
                     )
                 },
-                title = "Show Title",
+                title = LocalizedStrings.showTitle.value,
                 isSwitchChecked = SettingsPreference.enableTitleForNonListViews
             ),
             LinkPref(
@@ -146,7 +147,7 @@ fun LinkLayoutSettings(navController: NavController) {
                         newValue = SettingsPreference.enableBaseURLForNonListViews.value
                     )
                 },
-                title = "Show Base URL",
+                title = LocalizedStrings.showBaseUrl.value,
                 isSwitchChecked = SettingsPreference.enableBaseURLForNonListViews
             ),
             LinkPref(
@@ -159,14 +160,14 @@ fun LinkLayoutSettings(navController: NavController) {
                         newValue = SettingsPreference.enableFadedEdgeForNonListViews.value
                     )
                 },
-                title = "Show Bottom Faded Edge",
+                title = LocalizedStrings.showBottomFadedEdge.value,
                 isSwitchChecked = SettingsPreference.enableFadedEdgeForNonListViews
             ),
         )
     }
 
     SpecificScreenScaffold(
-        topAppBarText = "Link Layout Settings",
+        topAppBarText = LocalizedStrings.linkLayoutSettings.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         if (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.REGULAR_LIST_VIEW.name
@@ -181,7 +182,7 @@ fun LinkLayoutSettings(navController: NavController) {
             ) {
                 item {
                     Text(
-                        text = "Choose the layout you like best",
+                        text = LocalizedStrings.chooseTheLayoutYouLikeBest.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(15.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -202,7 +203,7 @@ fun LinkLayoutSettings(navController: NavController) {
 
                 item {
                     Text(
-                        text = "Feed Preview",
+                        text = LocalizedStrings.feedPreview.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(15.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -231,7 +232,7 @@ fun LinkLayoutSettings(navController: NavController) {
                     GridItemSpan(maxLineSpan)
                 }) {
                     Text(
-                        text = "Choose the layout you like best",
+                        text = LocalizedStrings.chooseTheLayoutYouLikeBest.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 5.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -270,7 +271,7 @@ fun LinkLayoutSettings(navController: NavController) {
                     GridItemSpan(maxLineSpan)
                 }) {
                     Text(
-                        text = "Feed Preview",
+                        text = LocalizedStrings.feedPreview.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(top = 10.dp, bottom = 15.dp, start = 5.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -298,7 +299,7 @@ fun LinkLayoutSettings(navController: NavController) {
                     span = StaggeredGridItemSpan.FullLine
                 ) {
                     Text(
-                        text = "Choose the layout you like best",
+                        text = LocalizedStrings.chooseTheLayoutYouLikeBest.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, start = 5.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -334,7 +335,7 @@ fun LinkLayoutSettings(navController: NavController) {
 
                 item(span = StaggeredGridItemSpan.FullLine) {
                     Text(
-                        text = "Feed Preview",
+                        text = LocalizedStrings.feedPreview.value,
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.padding(top = 10.dp, bottom = 15.dp, start = 5.dp),
                         color = MaterialTheme.colorScheme.primary
@@ -413,11 +414,12 @@ private fun LinkViewRadioButtonComponent(
                 )
             })
         Text(
-            text = linkLayout.name.replace("_", " ").split(" ").map {
-                it.lowercase()
-            }.map {
-                it.replaceFirstChar { char -> char.uppercaseChar() }
-            }.joinToString().replace(",", ""),
+            text = when (linkLayout) {
+                LinkLayout.REGULAR_LIST_VIEW -> LocalizedStrings.regularListView.value
+                LinkLayout.TITLE_ONLY_LIST_VIEW -> LocalizedStrings.titleOnlyListView.value
+                LinkLayout.GRID_VIEW -> LocalizedStrings.gridView.value
+                LinkLayout.STAGGERED_VIEW -> LocalizedStrings.staggeredView.value
+            },
             style = MaterialTheme.typography.titleSmall
         )
     }

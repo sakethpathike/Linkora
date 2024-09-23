@@ -893,7 +893,69 @@ object LocalizedStrings : ViewModel() {
     val viewAll =
         _viewAll
 
+    private val _linkLayout = mutableStateOf("")
+    val linkLayout =
+        _linkLayout
+
+    private val _showBorderAroundLinks = mutableStateOf("")
+    val showBorderAroundLinks =
+        _showBorderAroundLinks
+
+    private val _showTitle = mutableStateOf("")
+    val showTitle =
+        _showTitle
+
+    private val _showBaseUrl = mutableStateOf("")
+    val showBaseUrl =
+        _showBaseUrl
+
+    private val _showBottomFadedEdge = mutableStateOf("")
+    val showBottomFadedEdge =
+        _showBottomFadedEdge
+
+    private val _linkLayoutSettings = mutableStateOf("")
+    val linkLayoutSettings =
+        _linkLayoutSettings
+
+    private val _chooseTheLayoutYouLikeBest = mutableStateOf("")
+    val chooseTheLayoutYouLikeBest =
+        _chooseTheLayoutYouLikeBest
+
+    private val _feedPreview = mutableStateOf("")
+    val feedPreview =
+        _feedPreview
+
+    private val _allLinks = mutableStateOf("")
+    val allLinks =
+        _allLinks
+
+    private val _filterBasedOn = mutableStateOf("")
+    val filterBasedOn =
+        _filterBasedOn
+
+    private val _foldersLinks = mutableStateOf("")
+    val foldersLinks =
+        _foldersLinks
+
+    private val _regularListView = mutableStateOf("")
+    val regularListView =
+        _regularListView
+
+    private val _titleOnlyListView = mutableStateOf("")
+    val titleOnlyListView =
+        _titleOnlyListView
+
+    private val _gridView = mutableStateOf("")
+    val gridView =
+        _gridView
+
+    private val _staggeredView = mutableStateOf("")
+    val staggeredView =
+        _staggeredView
+
     private var count = 0
+
+    // lot of duplication going on, this will be fixed soon
     fun loadStrings(context: Context) {
 
         val translationsRepo =
@@ -902,6 +964,261 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _staggeredView.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "staggered_view",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.staggered_view)
+                                }
+                            })
+                    } else {
+                        _staggeredView.value =
+                            context.getString(R.string.staggered_view)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _gridView.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "grid_view",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.grid_view)
+                                }
+                            })
+                    } else {
+                        _gridView.value =
+                            context.getString(R.string.grid_view)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _titleOnlyListView.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "title_only_list_view",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.title_only_list_view)
+                                }
+                            })
+                    } else {
+                        _titleOnlyListView.value =
+                            context.getString(R.string.title_only_list_view)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _regularListView.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "regular_list_view",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.regular_list_view)
+                                }
+                            })
+                    } else {
+                        _regularListView.value =
+                            context.getString(R.string.regular_list_view)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _foldersLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "folders_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.folders_links)
+                                }
+                            })
+                    } else {
+                        _foldersLinks.value =
+                            context.getString(R.string.folders_links)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _filterBasedOn.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "filter_based_on",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.filter_based_on)
+                                }
+                            })
+                    } else {
+                        _filterBasedOn.value =
+                            context.getString(R.string.filter_based_on)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _allLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "all_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.all_links)
+                                }
+                            })
+                    } else {
+                        _allLinks.value =
+                            context.getString(R.string.all_links)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _feedPreview.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "feed_preview",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.feed_preview)
+                                }
+                            })
+                    } else {
+                        _feedPreview.value =
+                            context.getString(R.string.feed_preview)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _chooseTheLayoutYouLikeBest.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "choose_the_layout_you_like_best",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.choose_the_layout_you_like_best)
+                                }
+                            })
+                    } else {
+                        _chooseTheLayoutYouLikeBest.value =
+                            context.getString(R.string.choose_the_layout_you_like_best)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkLayoutSettings.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "link_layout_settings",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.link_layout_settings)
+                                }
+                            })
+                    } else {
+                        _linkLayoutSettings.value =
+                            context.getString(R.string.link_layout_settings)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showBottomFadedEdge.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_bottom_faded_edge",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_bottom_faded_edge)
+                                }
+                            })
+                    } else {
+                        _showBottomFadedEdge.value =
+                            context.getString(R.string.show_bottom_faded_edge)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showBaseUrl.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_base_url",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_base_url)
+                                }
+                            })
+                    } else {
+                        _showBaseUrl.value =
+                            context.getString(R.string.show_base_url)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showTitle.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_title",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_title)
+                                }
+                            })
+                    } else {
+                        _showTitle.value =
+                            context.getString(R.string.show_title)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _showBorderAroundLinks.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "show_border_around_links",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.show_border_around_links)
+                                }
+                            })
+                    } else {
+                        _showBorderAroundLinks.value =
+                            context.getString(R.string.show_border_around_links)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _linkLayout.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "link_layout",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.link_layout)
+                                }
+                            })
+                    } else {
+                        _linkLayout.value =
+                            context.getString(R.string.link_layout)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
