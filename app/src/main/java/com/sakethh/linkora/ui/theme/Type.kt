@@ -10,8 +10,7 @@ import com.sakethh.linkora.R
 val poppinsFontFamily = FontFamily(
     Font(R.font.semibold, weight = FontWeight.SemiBold),
     Font(R.font.medium, weight = FontWeight.Medium),
-    Font(R.font.regular, weight = FontWeight.Normal),
-    Font(R.font.playwriteittrad, weight = FontWeight.Normal)
+    Font(R.font.regular, weight = FontWeight.Normal)
 )
 
 val playWriteITTradFontFamily = FontFamily(
