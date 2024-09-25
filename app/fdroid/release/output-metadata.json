@@ -11,8 +11,8 @@
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 27,
-      "versionName": "0.7.2",
+      "versionCode": 29,
+      "versionName": "0.8.1",
       "outputFile": "app-fdroid-release.apk"
     }
   ],
