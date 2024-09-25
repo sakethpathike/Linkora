@@ -2,8 +2,6 @@ package com.sakethh.linkora
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.LocalizedStrings.archivedFoldersDataMigratedSuccessfully
-import com.sakethh.linkora.LocalizedStrings.rootFoldersDataMigratedSuccessfully
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
@@ -31,7 +29,6 @@ class MainActivityVM @Inject constructor(
                     .isNotEmpty()
             ) {
                 importRepo.migrateArchiveFoldersV9toV10()
-                pushUIEvent(CommonUiEvent.ShowToast(archivedFoldersDataMigratedSuccessfully.value))
             }
         }
     }
@@ -43,7 +40,6 @@ class MainActivityVM @Inject constructor(
             ) {
                 importRepo.migrateRegularFoldersLinksDataFromV9toV10()
             }
-            pushUIEvent(CommonUiEvent.ShowToast(rootFoldersDataMigratedSuccessfully.value))
         }
     }
 
