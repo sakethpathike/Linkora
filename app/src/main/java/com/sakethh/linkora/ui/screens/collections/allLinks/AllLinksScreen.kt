@@ -620,6 +620,10 @@ fun AllLinksScreen(navController: NavController) {
                 }
             }
         }
+        val showQuickActions =
+            rememberSaveable(SettingsPreference.currentlySelectedLinkLayout.value) {
+                mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
+            }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
                 shouldImportantLinkOptionBeVisible = mutableStateOf(selectedLinkType.value == LinkType.IMP_LINK.name),
@@ -642,9 +646,7 @@ fun AllLinksScreen(navController: NavController) {
                 inArchiveScreen = rememberSaveable(selectedLinkType.value) {
                     mutableStateOf(selectedLinkType.value == LinkType.ARCHIVE_LINK.name)
                 },
-                showQuickActions = rememberSaveable(SettingsPreference.currentlySelectedLinkLayout.value) {
-                    mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
-                },
+                showQuickActions = showQuickActions,
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = when (SpecificCollectionsScreenVM.screenType.value) {

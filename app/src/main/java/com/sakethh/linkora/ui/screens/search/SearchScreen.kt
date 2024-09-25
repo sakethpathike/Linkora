@@ -1476,6 +1476,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
         )
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                webUrl = selectedWebURL.value,
                 showQuickActions = mutableStateOf(
                     !SearchScreenVM.isSearchEnabled.value &&
                             (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name ||

@@ -596,6 +596,7 @@ fun ChildHomeScreen(
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                webUrl = selectedWebURL.value,
                 showQuickActions = mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
