@@ -3,3 +3,5 @@
 - Fix issue where deleting an `Important Link` from the `Saved Links` tab deletes the link from `Saved Links` instead of `Important Links` on the home screen [#25].
 
 - Fix navigation to `Default` panel in Home Screen.
+
+- Fix "empty links" when copying, sharing, or opening links from non-list layouts.
