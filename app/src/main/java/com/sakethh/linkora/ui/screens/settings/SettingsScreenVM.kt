@@ -7,7 +7,6 @@ import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShortText
-import androidx.compose.material.icons.filled.BugReport
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material.icons.filled.FileUpload
@@ -22,10 +21,10 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.androidJetpack
 import com.sakethh.linkora.LocalizedStrings.apacheLicense
@@ -38,17 +37,14 @@ import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanently
 import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanentlyDesc
 import com.sakethh.linkora.LocalizedStrings.enableHomeScreen
 import com.sakethh.linkora.LocalizedStrings.enableHomeScreenDesc
-import com.sakethh.linkora.LocalizedStrings.everySingleBitOfDataIsStoredLocallyOnYourDevice
 import com.sakethh.linkora.LocalizedStrings.exportData
 import com.sakethh.linkora.LocalizedStrings.exportDataDesc
 import com.sakethh.linkora.LocalizedStrings.importData
 import com.sakethh.linkora.LocalizedStrings.importDataFromExternalJsonFile
 import com.sakethh.linkora.LocalizedStrings.kotlin
-import com.sakethh.linkora.LocalizedStrings.linkoraCollectsDataRelatedToAppCrashes
 import com.sakethh.linkora.LocalizedStrings.materialDesign3
 import com.sakethh.linkora.LocalizedStrings.materialIcons
 import com.sakethh.linkora.LocalizedStrings.permissionDeniedTitle
-import com.sakethh.linkora.LocalizedStrings.sendCrashReports
 import com.sakethh.linkora.LocalizedStrings.showDescriptionForSettings
 import com.sakethh.linkora.LocalizedStrings.showDescriptionForSettingsDesc
 import com.sakethh.linkora.LocalizedStrings.successfullyExported
@@ -65,7 +61,6 @@ import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.isSendCrashReportsEnabled
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -427,31 +422,6 @@ open class SettingsScreenVM @Inject constructor(
         )
     }
 
-    val privacySection: (context: Context) -> SettingsUIElement = { context ->
-        SettingsUIElement(
-            title = sendCrashReports.value,
-            doesDescriptionExists = true,
-            description = if (!isSendCrashReportsEnabled.value) everySingleBitOfDataIsStoredLocallyOnYourDevice.value else linkoraCollectsDataRelatedToAppCrashes.value,
-            isSwitchNeeded = true,
-            isSwitchEnabled = isSendCrashReportsEnabled,
-            isIconNeeded = mutableStateOf(true),
-            icon = Icons.Default.BugReport,
-            onSwitchStateChange = {
-                viewModelScope.launch {
-                    SettingsPreference.changeSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(
-                            SettingsPreferences.SEND_CRASH_REPORTS.name
-                        ),
-                        dataStore = context.dataStore,
-                        newValue = !isSendCrashReportsEnabled.value
-                    )
-                    isSendCrashReportsEnabled.value = !isSendCrashReportsEnabled.value
-                }.invokeOnCompletion {
-                    val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(isSendCrashReportsEnabled.value)
-                }
-            })
-    }
     val generalSection: (context: Context) -> List<SettingsUIElement> = { context ->
         listOf(
             SettingsUIElement(
@@ -695,10 +665,16 @@ open class SettingsScreenVM @Inject constructor(
         }
     }
 
-    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
+    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}, context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 localDatabase.clearAllTables()
+                SettingsPreference.lastSelectedPanelID.longValue = -1
+                SettingsPreference.changeSettingPreferenceValue(
+                    intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                    context.dataStore,
+                    newValue = -1
+                )
             }
         }.invokeOnCompletion {
             onTaskCompleted()
