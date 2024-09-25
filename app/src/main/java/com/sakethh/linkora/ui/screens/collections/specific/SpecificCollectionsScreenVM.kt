@@ -763,13 +763,14 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         context: Context,
         onTaskCompleted: () -> Unit,
         linkID: Long,
+        impLinkURL: String = "",
         shouldShowToastOnCompletion: Boolean = true
     ) {
         when (screenType.value) {
             SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                 viewModelScope.launch {
                     linksRepo
-                        .deleteALinkFromImpLinks(linkID = linkID)
+                        .deleteALinkFromImpLinksBasedOnURL(impLinkURL)
                 }.invokeOnCompletion {
                     onTaskCompleted()
                 }

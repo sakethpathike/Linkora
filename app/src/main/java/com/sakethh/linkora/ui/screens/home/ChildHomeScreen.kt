@@ -170,6 +170,11 @@ fun ChildHomeScreen(
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
+                SpecificCollectionsScreenVM.screenType.value = when (homeScreenType) {
+                    HomeScreenVM.HomeScreenType.SAVED_LINKS -> SpecificScreenType.SAVED_LINKS_SCREEN
+                    HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                    else -> SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                }
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                     OptionsBtmSheetType.LINK
                 selectedElementID.longValue = linksTable.id
@@ -594,7 +599,7 @@ fun ChildHomeScreen(
                 showQuickActions = mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
-                btmSheetFor = SpecificCollectionsScreenVM.selectedBtmSheetType.value,
+                btmSheetFor = if (homeScreenType.name == HomeScreenVM.HomeScreenType.IMP_LINKS.name) OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN else SpecificCollectionsScreenVM.selectedBtmSheetType.value,
                 onRenameClick = {
                     coroutineScope.launch {
                         btmModalSheetState.hide()
@@ -602,6 +607,11 @@ fun ChildHomeScreen(
                     shouldRenameDialogBoxAppear.value = true
                 },
                 onDeleteCardClick = {
+                    SpecificCollectionsScreenVM.screenType.value = when (homeScreenType) {
+                        HomeScreenVM.HomeScreenType.SAVED_LINKS -> SpecificScreenType.SAVED_LINKS_SCREEN
+                        HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificScreenType.IMPORTANT_LINKS_SCREEN
+                        else -> SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
+                    }
                     shouldDeleteDialogBoxAppear.value = true
                 },
                 onArchiveClick = {
@@ -668,6 +678,8 @@ fun ChildHomeScreen(
                         homeScreenType = homeScreenType
                     )
                 }, onImportantLinkClick = {
+                    SpecificCollectionsScreenVM.screenType.value =
+                        SpecificScreenType.IMPORTANT_LINKS_SCREEN
                     homeScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
                             ImportantLinks(
@@ -687,32 +699,21 @@ fun ChildHomeScreen(
         DeleteDialogBoxParam(
             folderName = selectedURLTitle,
             shouldDialogBoxAppear = shouldDeleteDialogBoxAppear,
-            deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) DataDialogBoxType.LINK else DataDialogBoxType.FOLDER,
+            deleteDialogBoxType = if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) DataDialogBoxType.FOLDER else DataDialogBoxType.LINK,
             onDeleteClick = {
-                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.LINK) {
-                    when (homeScreenType) {
-                        HomeScreenVM.HomeScreenType.SAVED_LINKS -> {
-                            SpecificCollectionsScreenVM.screenType.value =
-                                SpecificScreenType.SAVED_LINKS_SCREEN
-                        }
-
-                        HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificCollectionsScreenVM.screenType.value =
-                            SpecificScreenType.IMPORTANT_LINKS_SCREEN
-
-                        HomeScreenVM.HomeScreenType.CUSTOM_LIST -> SpecificCollectionsScreenVM.screenType.value =
-                            SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
-                    }
-                    homeScreenVM.onDeleteClick(
-                        folderID = 0,
-                        context = context,
-                        onTaskCompleted = {},
-                        linkID = selectedElementID.longValue
-                    )
-                } else {
+                if (SpecificCollectionsScreenVM.selectedBtmSheetType.value == OptionsBtmSheetType.FOLDER) {
                     homeScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.DeleteAFolder(
                             selectedElementID.longValue
                         )
+                    )
+                } else {
+                    homeScreenVM.onDeleteClick(
+                        folderID = 0,
+                        context = context,
+                        onTaskCompleted = {},
+                        linkID = selectedElementID.longValue,
+                        impLinkURL = selectedWebURL.value
                     )
                 }
             })
