@@ -163,7 +163,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             onDeleteExistingDataClick = {
                 settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                     activityResultLauncher.launch("text/*")
-                })
+                }, context)
             },
             onDataExportClick = {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -214,7 +214,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                     ).show()
                     settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
                         activityResultLauncher.launch("text/*")
-                    })
+                    }, context)
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     exportDataToAFile()
@@ -241,7 +241,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
                 onDeleteClick = {
-                    settingsScreenVM.deleteEntireLinksAndFoldersData()
+                    settingsScreenVM.deleteEntireLinksAndFoldersData(context = context)
                     Toast.makeText(
                         context,
                         deletedEntireDataFromTheLocalDatabase.value,

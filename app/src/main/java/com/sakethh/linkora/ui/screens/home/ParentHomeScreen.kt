@@ -109,7 +109,6 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
-import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -353,14 +352,20 @@ fun ParentHomeScreen(
                     item {
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = (-1).toLong() == SettingsPreference.lastSelectedPanelID.longValue,
+                            selected = SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong(),
                             onClick = {
                                 coroutineScope.launch {
-                                    async {
-                                        pagerState.animateScrollToPage(0)
-                                    }.await()
-                                    SettingsPreference.lastSelectedPanelID.longValue =
-                                        (-1).toLong()
+                                    if (shelfData.value.isEmpty() || homeScreenList.isEmpty()) {
+                                        SettingsPreference.lastSelectedPanelID.longValue = -1
+                                        SettingsPreference.changeSettingPreferenceValue(
+                                            intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                                            context.dataStore,
+                                            newValue = -1
+                                        )
+                                    }
+                                    pagerState.animateScrollToPage(0)
+                                }.invokeOnCompletion {
+                                    SettingsPreference.lastSelectedPanelID.longValue = -1
                                     SettingsPreference.changeSettingPreferenceValue(
                                         intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
                                         context.dataStore,
@@ -835,7 +840,6 @@ fun ParentHomeScreen(
         key2 = shelfData.value.size
     ) {
         if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && shelfData.value.isNotEmpty()) {
-            linkoraLog(shelfData.value.size.toString())
             shelfData.value.find {
                 it.id == SettingsPreference.lastSelectedPanelID.longValue
             }?.let {

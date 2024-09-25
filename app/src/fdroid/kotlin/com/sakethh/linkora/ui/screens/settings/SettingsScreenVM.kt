@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.UriHandler
 import androidx.core.content.ContextCompat
 import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
@@ -691,10 +693,16 @@ open class SettingsScreenVM @Inject constructor(
         }
     }
 
-    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}) {
+    fun deleteEntireLinksAndFoldersData(onTaskCompleted: () -> Unit = {}, context: Context) {
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 localDatabase.clearAllTables()
+                SettingsPreference.lastSelectedPanelID.longValue = -1
+                SettingsPreference.changeSettingPreferenceValue(
+                    intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                    context.dataStore,
+                    newValue = -1
+                )
             }
         }.invokeOnCompletion {
             onTaskCompleted()

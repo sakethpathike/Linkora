@@ -26,8 +26,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
@@ -46,6 +48,9 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Shelf
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,6 +67,7 @@ fun ShelfPanelsScreen(navController: NavController) {
         mutableStateOf(false)
     }
     val topAppBarState = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
+    val context = LocalContext.current
     Scaffold(modifier = Modifier.fillMaxSize(), bottomBar = {
         BottomAppBar {
             Button(
@@ -155,10 +161,18 @@ fun ShelfPanelsScreen(navController: NavController) {
             isDialogBoxVisible = isDeleteAShelfDialogBoxVisible,
             onDeleteClick = { ->
                 shelfBtmSheetVM.onShelfUiEvent(
-                    ShelfUIEvent.DeleteAShelf(
+                    ShelfUIEvent.DeleteAPanel(
                         ShelfBtmSheetVM.selectedShelfData
                     )
                 )
+                if (SettingsPreference.lastSelectedPanelID.longValue == ShelfBtmSheetVM.selectedShelfData.id) {
+                    SettingsPreference.lastSelectedPanelID.longValue = -1
+                    SettingsPreference.changeSettingPreferenceValue(
+                        intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                        context.dataStore,
+                        newValue = -1
+                    )
+                }
             }
         )
     )

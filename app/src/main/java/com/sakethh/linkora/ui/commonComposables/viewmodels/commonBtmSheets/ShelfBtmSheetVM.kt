@@ -94,7 +94,7 @@ class ShelfBtmSheetVM @Inject constructor(
                 }
             }
 
-            is ShelfUIEvent.DeleteAShelf -> {
+            is ShelfUIEvent.DeleteAPanel -> {
                 viewModelScope.launch {
                     shelfRepo.deleteAShelf(shelfUIEvent.shelf)
                 }

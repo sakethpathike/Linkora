@@ -14,7 +14,7 @@ sealed class ShelfUIEvent {
         val shelf: Shelf
     ) : ShelfUIEvent()
 
-    data class DeleteAShelf(
+    data class DeleteAPanel(
         val shelf: Shelf
     ) : ShelfUIEvent()
 
