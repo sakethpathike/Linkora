@@ -48,7 +48,7 @@ object SettingsPreference : ViewModel() {
     private val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
     val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
     val jsoupUserAgent =
-        mutableStateOf("Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0")
+        mutableStateOf("Twitterbot/1.0")
     val localizationServerURL =
         mutableStateOf(Constants.LINKORA_LOCALIZATION_SERVER)
     val isShelfMinimizedInHomeScreen = mutableStateOf(false)
@@ -140,7 +140,7 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                         dataStore = context.dataStore
                     )
-                        ?: "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0"
+                        ?: "Twitterbot/1.0"
                 },
                 async {
                     showDescriptionForSettingsState.value = readSettingPreferenceValue(

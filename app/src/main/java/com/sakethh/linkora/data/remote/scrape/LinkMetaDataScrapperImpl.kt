@@ -3,7 +3,6 @@ package com.sakethh.linkora.data.remote.scrape
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -28,61 +27,37 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                             .followRedirects(true)
                             .header("Accept", "text/html")
                             .header("Accept-Encoding", "gzip,deflate")
-                            .header(
-                                "Accept-Language",
-                                "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
-                            )
-                            .header("Connection", "keep-alive")
-                            .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true).get()
+                            .header("Accept-Language", "en;q=1.0")
+                            .header("Connection", "keep-alive").ignoreContentType(true)
+                            .maxBodySize(0).ignoreHttpErrors(true).get()
                             .toString()
                     } catch (e: Exception) {
-                        return@withContext RequestResult.Failure("reported an error that has been found while scarping the meta data of the given link : " + e.message.toString())
+                        return@withContext RequestResult.Failure(e.message.toString())
+                    }
+                Jsoup.parse(rawHTML).let { document ->
+                    val ogImage = document.select("meta[property=og:image]").attr("content")
+                    val twitterImage = document.select("meta[name=twitter:image]").attr("content")
+                    val favicon = document.select("link[rel=icon]").attr("href")
+                    val ogTitle = document.select("meta[property=og:title]").attr("content")
+                    val pageTitle = document.title()
+
+                    val imgURL = when {
+                        !ogImage.isNullOrBlank() -> ogImage
+                        ogImage.isNullOrBlank() && !twitterImage.isNullOrBlank() -> twitterImage
+                        ogImage.isNullOrBlank() && twitterImage.isNullOrBlank() && !favicon.isNullOrBlank() -> favicon
+                        else -> ""
                     }
 
-                val imgURL = rawHTML.split("\n").firstOrNull {
-                    it.contains("og:image")
-                }.let {
-                    if (it?.contains("http") == false) {
-                        "https://" + url.substringAfter("://")
-                            .substringBefore("/") + it.substringAfter("content=\"")
-                            .substringBefore("\">")
-                    } else {
-                        "http" + it?.substringAfter("http")?.substringBefore("\"")
+                    val title = when {
+                        !ogTitle.isNullOrBlank() -> ogTitle
+                        else -> pageTitle
                     }
-                }.trim().let {
-                    linkoraLog(it)
-                    val statusValue = withContext(Dispatchers.IO) {
-                        try {
-                            Jsoup.connect(it)
-                                .userAgent(SettingsPreference.jsoupUserAgent.value)
-                                .referrer("http://www.google.com")
-                                .followRedirects(true)
-                                .header("Accept", "text/html")
-                                .header("Accept-Encoding", "gzip,deflate")
-                                .header(
-                                    "Accept-Language",
-                                    "it-IT,en;q=0.8,en-US;q=0.6,de;q=0.4,it;q=0.2,es;q=0.2"
-                                )
-                                .header("Connection", "keep-alive")
-                                .ignoreContentType(true).maxBodySize(0).ignoreHttpErrors(true)
-                                .execute()
-                                .statusCode()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        }
-                    }
-                    if (statusValue == 200) {
-                        it
-                    } else {
-                        ""
-                    }
+
+                    RequestResult.Success(
+                        LinkMetaData(baseURL = urlHost, imgURL, title)
+                    )
                 }
-                val title =
-                    rawHTML.substringAfter("<title").substringAfter(">").substringBefore("</title>")
-                        .trim()
-                RequestResult.Success(
-                    LinkMetaData(baseURL = urlHost, imgURL, title)
-                )
+
             } catch (e: Exception) {
                 RequestResult.Failure(e.message.toString())
             }
