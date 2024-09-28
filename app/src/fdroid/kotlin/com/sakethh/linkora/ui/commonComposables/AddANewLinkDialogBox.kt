@@ -156,11 +156,11 @@ fun AddANewLinkDialogBox(
         val noteTextFieldValue = rememberSaveable {
             mutableStateOf("")
         }
-        val selectedFolderName = rememberSaveable {
+        val selectedFolderName = rememberSaveable(LocalizedStrings.savedLinks.value) {
             mutableStateOf(LocalizedStrings.savedLinks.value)
         }
         val selectedFolderID = rememberSaveable {
-            mutableLongStateOf(0)
+            mutableLongStateOf(-1)
         }
         val childFolders =
             addANewLinkDialogBoxVM.childFolders
@@ -385,22 +385,24 @@ fun AddANewLinkDialogBox(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         isDropDownMenuIconClicked.value = false
-                                        selectedFolderName.value = "Saved Links"
+                                        selectedFolderName.value = LocalizedStrings.savedLinks.value
+                                        selectedFolderID.longValue = -1
                                     },
                                     folderName = LocalizedStrings.savedLinks.value,
                                     imageVector = Icons.Outlined.Link,
-                                    isComponentSelected = selectedFolderName.value == "Saved Links"
+                                    isComponentSelected = selectedFolderID.longValue == (-1).toLong()
                                 )
                             }
                             item {
                                 SelectableFolderUIComponent(
                                     onClick = {
-                                        selectedFolderName.value = "Important Links"
+                                        selectedFolderName.value = LocalizedStrings.importantLinks.value
                                         isDropDownMenuIconClicked.value = false
+                                        selectedFolderID.longValue = -2
                                     },
                                     folderName = LocalizedStrings.importantLinks.value,
                                     imageVector = Icons.Outlined.StarOutline,
-                                    isComponentSelected = selectedFolderName.value == "Important Links"
+                                    isComponentSelected = selectedFolderID.longValue == (-2).toLong()
                                 )
                             }
                             items(parentFoldersData.value) {

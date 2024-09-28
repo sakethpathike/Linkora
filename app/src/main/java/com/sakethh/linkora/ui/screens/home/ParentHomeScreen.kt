@@ -109,6 +109,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -748,19 +749,20 @@ fun ParentHomeScreen(
             screenType = SpecificScreenType.ROOT_SCREEN,
             onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
                 isDataExtractingForTheLink.value = true
-                if (selectedDefaultFolderName == "Saved Links") {
-                    homeScreenVM.onUiEvent(SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
-                        title = title,
-                        webURL = webURL,
-                        noteForSaving = note,
-                        autoDetectTitle = isAutoDetectSelected,
-                        onTaskCompleted = {
-                            shouldDialogForNewLinkAppear.value = false
-                            isDataExtractingForTheLink.value = false
-                        }
-                    ))
+                if (selectedNonDefaultFolderID == (-1).toLong()) {
+                    linkoraLog("add in saved links, webURL is $webURL")
+                    homeScreenVM.onUiEvent(
+                        SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
+                            title, webURL, note, isAutoDetectSelected, onTaskCompleted = {
+                                shouldDialogForNewLinkAppear.value = false
+                                isDataExtractingForTheLink.value = false
+                            }
+                        )
+                    )
+                    return@AddANewLinkDialogBox
                 }
-                if (selectedDefaultFolderName == "Important Links") {
+                if (selectedNonDefaultFolderID == (-2).toLong()) {
+                    linkoraLog("add in imp links, webURL is $webURL")
                     homeScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
                             onTaskCompleted = {
@@ -773,11 +775,13 @@ fun ParentHomeScreen(
                             autoDetectTitle = isAutoDetectSelected
                         )
                     )
+                    return@AddANewLinkDialogBox
                 }
                 when {
-                    selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
-                        if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
-                            homeScreenVM.onUiEvent(SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
+                    selectedNonDefaultFolderID != null && selectedDefaultFolderName != null -> {
+                        linkoraLog("add in folder; id is $selectedNonDefaultFolderID, name is $selectedDefaultFolderName\n webURL is $webURL")
+                        homeScreenVM.onUiEvent(
+                            SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
                                 title = title,
                                 webURL = webURL,
                                 noteForSaving = note,
@@ -788,8 +792,8 @@ fun ParentHomeScreen(
                                     shouldDialogForNewLinkAppear.value = false
                                     isDataExtractingForTheLink.value = false
                                 }
-                            ))
-                        }
+                            )
+                        )
                     }
                 }
             },

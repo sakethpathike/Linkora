@@ -16,6 +16,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 
@@ -52,7 +53,8 @@ class IntentActivity : ComponentActivity() {
                     screenType = SpecificScreenType.INTENT_ACTIVITY,
                     onSaveClick = { isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolderName: String?, selectedNonDefaultFolderID: Long? ->
                         isDataExtractingForTheLink.value = true
-                        if (selectedDefaultFolderName == "Saved Links") {
+                        if (selectedNonDefaultFolderID == (-1).toLong()) {
+                            linkoraLog("add in saved links, webURL is $webURL")
                             specificCollectionsScreenVM.onUiEvent(
                                 SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks(
                                     title, webURL, note, isAutoDetectSelected, onTaskCompleted = {
@@ -61,8 +63,10 @@ class IntentActivity : ComponentActivity() {
                                     }
                                 )
                             )
+                            return@AddANewLinkDialogBox
                         }
-                        if (selectedDefaultFolderName == "Important Links") {
+                        if (selectedNonDefaultFolderID == (-2).toLong()) {
+                            linkoraLog("add in imp links, webURL is $webURL")
                             specificCollectionsScreenVM.onUiEvent(
                                 SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks(
                                     onTaskCompleted = {
@@ -75,11 +79,12 @@ class IntentActivity : ComponentActivity() {
                                     autoDetectTitle = isAutoDetectSelected
                                 )
                             )
+                            return@AddANewLinkDialogBox
                         }
                         when {
-                            selectedDefaultFolderName != "Important Links" && selectedDefaultFolderName != "Saved Links" -> {
-                                if (selectedNonDefaultFolderID != null && selectedDefaultFolderName != null) {
-                                    specificCollectionsScreenVM.onUiEvent(
+                            selectedNonDefaultFolderID != null && selectedDefaultFolderName != null -> {
+                                linkoraLog("add in folder; id is $selectedNonDefaultFolderID, name is $selectedDefaultFolderName\n webURL is $webURL")
+                                specificCollectionsScreenVM.onUiEvent(
                                         SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
                                             title = title,
                                             webURL = webURL,
@@ -94,7 +99,6 @@ class IntentActivity : ComponentActivity() {
                                         )
                                     )
                                 }
-                            }
                         }
                     },
                     isDataExtractingForTheLink = isDataExtractingForTheLink.value,
