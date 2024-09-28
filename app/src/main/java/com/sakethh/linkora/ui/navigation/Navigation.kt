@@ -16,6 +16,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.AdvancedSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
@@ -107,6 +108,9 @@ fun MainNavigation(
         }
         composable(route = NavigationRoutes.ALL_LINKS_SCREEN.name) {
             AllLinksScreen(navController)
+        }
+        composable(route = NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name) {
+            AdvancedSettingsScreen(navController)
         }
     }
 

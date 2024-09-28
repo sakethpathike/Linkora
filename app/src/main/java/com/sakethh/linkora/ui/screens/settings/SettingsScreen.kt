@@ -7,7 +7,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Build
 import androidx.compose.material.icons.filled.ColorLens
 import androidx.compose.material.icons.filled.Dashboard
 import androidx.compose.material.icons.filled.Group
@@ -23,7 +25,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
@@ -33,6 +37,7 @@ import androidx.navigation.compose.rememberNavController
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.currentSelectedSettingSection
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -44,6 +49,9 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 fun SettingsScreen(navController: NavController = rememberNavController()) {
     val topAppBarScrollState = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     LinkoraTheme {
+        val settingsScreenOptions = remember {
+            settingsScreenOptions(navController)
+        }
         Scaffold(topBar = {
             Column {
                 LargeTopAppBar(scrollBehavior = topAppBarScrollState, title = {
@@ -62,92 +70,15 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
                     .padding(it)
                     .nestedScroll(topAppBarScrollState.nestedScrollConnection)
             ) {
-                item(key = "themeRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.THEME
-                            navController.navigate(NavigationRoutes.THEME_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.theme.value,
-                        sectionIcon = Icons.Default.ColorLens
-                    )
-                }
-                item(key = "generalRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.GENERAL
-                            navController.navigate(NavigationRoutes.GENERAL_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.general.value,
-                        sectionIcon = Icons.Default.SettingsInputSvideo
-                    )
-                }
-                item(key = "layoutRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
-                        },
-                        sectionTitle = LocalizedStrings.linkLayout.value,
-                        sectionIcon = Icons.Default.Dashboard
-                    )
-                }
-                item(key = "languageRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.LANGUAGE
-                            navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.language.value,
-                        sectionIcon = Icons.Default.Language
-                    )
-                }
-                item(key = "dataRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.DATA
-                            navController.navigate(NavigationRoutes.DATA_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.data.value,
-                        sectionIcon = Icons.Default.Storage
-                    )
-                }
-                if (BuildConfig.FLAVOR != "fdroid") {
-                    item(key = "privacyRow") {
-                        SettingsSectionComposable(
-                            onClick = {
-                                SettingsScreenVM.currentSelectedSettingSection.value =
-                                    SettingsSections.PRIVACY
-                                navController.navigate(NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name)
-                            },
-                            sectionTitle = LocalizedStrings.privacy.value,
-                            sectionIcon = Icons.Default.PrivacyTip
-                        )
+                items(settingsScreenOptions) {
+                    if (LocalizedStrings.privacy.value == it.sectionTitle && BuildConfig.FLAVOR == "fdroid") {
+                        return@items
                     }
-                }
-                item(key = "aboutRow") {
                     SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.ABOUT
-                            navController.navigate(NavigationRoutes.ABOUT_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.about.value,
-                        sectionIcon = Icons.Default.Info
-                    )
-                }
-                item(key = "acknowledgmentsRow") {
-                    SettingsSectionComposable(
-                        onClick = {
-                            SettingsScreenVM.currentSelectedSettingSection.value =
-                                SettingsSections.ACKNOWLEDGMENT
-                            navController.navigate(NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name)
-                        },
-                        sectionTitle = LocalizedStrings.acknowledgments.value,
-                        sectionIcon = Icons.Default.Group
+                        onClick = it.onClick,
+                        sectionTitle = it.sectionTitle,
+                        sectionIcon = it.sectionIcon,
+                        shouldArrowIconAppear = it.shouldArrowIconAppear
                     )
                 }
                 item {
@@ -167,4 +98,95 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             }
         }
     }
+}
+
+private data class SettingsScreenOption(
+    val onClick: () -> Unit,
+    val sectionTitle: String,
+    val sectionIcon: ImageVector,
+    val shouldArrowIconAppear: Boolean = true
+)
+
+private fun settingsScreenOptions(navController: NavController): List<SettingsScreenOption> {
+    return listOf(
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.THEME
+                navController.navigate(NavigationRoutes.THEME_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.theme.value,
+            sectionIcon = Icons.Default.ColorLens
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.GENERAL
+                navController.navigate(NavigationRoutes.GENERAL_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.general.value,
+            sectionIcon = Icons.Default.SettingsInputSvideo
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.ADVANCED
+                navController.navigate(NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = "Advanced",
+            sectionIcon = Icons.Default.Build
+        ),
+        SettingsScreenOption(
+            onClick = {
+                navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+            },
+            sectionTitle = LocalizedStrings.linkLayout.value,
+            sectionIcon = Icons.Default.Dashboard
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.LANGUAGE
+                navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.language.value,
+            sectionIcon = Icons.Default.Language
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.DATA
+                navController.navigate(NavigationRoutes.DATA_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.data.value,
+            sectionIcon = Icons.Default.Storage
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.PRIVACY
+                navController.navigate(NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.privacy.value,
+            sectionIcon = Icons.Default.PrivacyTip
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.ABOUT
+                navController.navigate(NavigationRoutes.ABOUT_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.about.value,
+            sectionIcon = Icons.Default.Info
+        ),
+        SettingsScreenOption(
+            onClick = {
+                currentSelectedSettingSection.value =
+                    SettingsSections.ACKNOWLEDGMENT
+                navController.navigate(NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name)
+            },
+            sectionTitle = LocalizedStrings.acknowledgments.value,
+            sectionIcon = Icons.Default.Group
+        ),
+    )
 }

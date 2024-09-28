@@ -42,7 +42,6 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -53,21 +52,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.localizationServerURL
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.ui.theme.poppinsFontFamily
-import com.sakethh.linkora.utils.Constants
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
 
@@ -91,15 +84,6 @@ fun GeneralSettingsScreen(
     }
     val successfulRefreshLinkCount =
         RefreshLinksWorker.successfulRefreshLinksCount
-    val jsoupStringAgent = SettingsPreference.jsoupUserAgent
-    val isReadOnlyTextFieldForUserAgent = rememberSaveable {
-        mutableStateOf(true)
-    }
-    val isReadOnlyTextFieldForLocalizationServer = rememberSaveable {
-        mutableStateOf(true)
-    }
-    val jsoupUserAgentFocusRequester = remember { FocusRequester() }
-    val localizationServerTextFieldFocusRequester = remember { FocusRequester() }
     val successfulRefreshLinksCount =
         RefreshLinksWorker.successfulRefreshLinksCount
 
@@ -148,84 +132,6 @@ fun GeneralSettingsScreen(
                     }
                 }
             }
-
-            item(key = "JsoupUserAgent") {
-                TextFieldForPreferenceComposable(
-                    textFieldDescText = LocalizedStrings.userAgentDesc.value,
-                    textFieldLabel = LocalizedStrings.userAgent.value,
-                    textFieldValue = jsoupStringAgent.value,
-                    onResetButtonClick = {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
-                            context.dataStore,
-                            "Twitterbot/1.0"
-                        )
-                        SettingsPreference.jsoupUserAgent.value =
-                            "Twitterbot/1.0"
-                    },
-                    onTextFieldValueChange = {
-                        jsoupStringAgent.value = it
-                    },
-                    onConfirmButtonClick = {
-                        isReadOnlyTextFieldForUserAgent.value =
-                            !isReadOnlyTextFieldForUserAgent.value
-                        if (!isReadOnlyTextFieldForUserAgent.value) {
-                            jsoupUserAgentFocusRequester.requestFocus()
-                        } else {
-                            jsoupUserAgentFocusRequester.freeFocus()
-                        }
-                        if (isReadOnlyTextFieldForUserAgent.value) {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
-                                context.dataStore,
-                                jsoupStringAgent.value
-                            )
-                            SettingsPreference.jsoupUserAgent.value =
-                                jsoupStringAgent.value
-                        }
-                    },
-                    focusRequester = jsoupUserAgentFocusRequester,
-                    readonly = isReadOnlyTextFieldForUserAgent.value
-                )
-            }
-
-            item(key = "LinkoraLocalizationServerURL") {
-                TextFieldForPreferenceComposable(
-                    textFieldDescText = LocalizedStrings.localizationServerDesc.value,
-                    textFieldLabel = LocalizedStrings.localizationServer.value,
-                    textFieldValue = localizationServerURL.value,
-                    onResetButtonClick = {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
-                            context.dataStore,
-                            Constants.LINKORA_LOCALIZATION_SERVER
-                        )
-                        localizationServerURL.value =
-                            Constants.LINKORA_LOCALIZATION_SERVER
-                    },
-                    onTextFieldValueChange = {
-                        localizationServerURL.value = it
-                    },
-                    onConfirmButtonClick = {
-                        isReadOnlyTextFieldForLocalizationServer.value =
-                            !isReadOnlyTextFieldForLocalizationServer.value
-                        if (!isReadOnlyTextFieldForLocalizationServer.value) {
-                            localizationServerTextFieldFocusRequester.requestFocus()
-                        } else {
-                            localizationServerTextFieldFocusRequester.freeFocus()
-                        }
-                        if (isReadOnlyTextFieldForLocalizationServer.value) {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
-                                context.dataStore,
-                                localizationServerURL.value
-                            )
-                        }
-                    },
-                    focusRequester = localizationServerTextFieldFocusRequester,
-                    readonly = isReadOnlyTextFieldForLocalizationServer.value
-                )
-            }
             item {
                 Box(
                     modifier = Modifier
@@ -243,7 +149,7 @@ fun GeneralSettingsScreen(
                                 Modifier.padding(
                                     start = 15.dp,
                                     end = 15.dp,
-                                    bottom = 15.dp
+                                    bottom = 10.dp
                                 ),
                                 color = DividerDefaults.color.copy(0.5f)
                             )
@@ -349,7 +255,7 @@ fun GeneralSettingsScreen(
 }
 
 @Composable
-private fun TextFieldForPreferenceComposable(
+fun TextFieldForPreferenceComposable(
     textFieldDescText: String,
     textFieldLabel: String,
     textFieldValue: String,
