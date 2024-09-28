@@ -221,58 +221,62 @@ fun AllLinksScreen(navController: NavController) {
         topAppBarText = LocalizedStrings.allLinks.value,
         navController = navController,
         actions = {
-        if (!isAllTablesEmpty) {
-            IconButton(onClick = {
-                navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
-            }) {
-                Icon(Icons.Default.Dashboard, null)
-            }
-        }
-    }, bottomBar = {
-        if (isAllTablesEmpty) {
-            return@SpecificScreenScaffold
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(MaterialTheme.colorScheme.surfaceColorAtElevation(BottomAppBarDefaults.ContainerElevation))
-        ) {
-            Text(
-                LocalizedStrings.filterBasedOn.value,
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(start = 15.dp, top = 15.dp)
-            )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .horizontalScroll(rememberScrollState()),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Spacer(Modifier.width(15.dp))
-                allLinksScreenVM.linkTypes.forEach {
-                    if (it.linkType == LinkType.SAVED_LINK && savedLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == LinkType.IMP_LINK && impLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == LinkType.HISTORY_LINK && historyLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == LinkType.ARCHIVE_LINK && archivedLinks.value.isEmpty()) return@forEach
-                    if (it.linkType == LinkType.FOLDER_LINK && regularFoldersLinks.value.isEmpty()) return@forEach
-                    FilterChip(modifier = Modifier.animateContentSize(), onClick = {
-                        it.isChecked.value = !it.isChecked.value
-                    }, selected = it.isChecked.value, label = {
-                        Text(
-                            when (it.linkType) {
-                                LinkType.SAVED_LINK -> LocalizedStrings.savedLinks.value
-                                LinkType.IMP_LINK -> LocalizedStrings.importantLinks.value
-                                LinkType.FOLDER_LINK -> LocalizedStrings.foldersLinks.value
-                                LinkType.HISTORY_LINK -> LocalizedStrings.linksFromHistory.value
-                                LinkType.ARCHIVE_LINK -> LocalizedStrings.archivedLinks.value
-                            }, style = MaterialTheme.typography.titleSmall
-                        )
-                    })
-                    Spacer(Modifier.width(10.dp))
+            if (!isAllTablesEmpty) {
+                IconButton(onClick = {
+                    navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+                }) {
+                    Icon(Icons.Default.Dashboard, null)
                 }
             }
-        }
-    }) { paddingValues, topAppBarScrollBehaviour ->
+        }, bottomBar = {
+            if (isAllTablesEmpty) {
+                return@SpecificScreenScaffold
+            }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(
+                            BottomAppBarDefaults.ContainerElevation
+                        )
+                    )
+            ) {
+                Text(
+                    LocalizedStrings.filterBasedOn.value,
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(start = 15.dp, top = 15.dp)
+                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Spacer(Modifier.width(15.dp))
+                    allLinksScreenVM.linkTypes.forEach {
+                        if (it.linkType == LinkType.SAVED_LINK && savedLinks.value.isEmpty()) return@forEach
+                        if (it.linkType == LinkType.IMP_LINK && impLinks.value.isEmpty()) return@forEach
+                        if (it.linkType == LinkType.HISTORY_LINK && historyLinks.value.isEmpty()) return@forEach
+                        if (it.linkType == LinkType.ARCHIVE_LINK && archivedLinks.value.isEmpty()) return@forEach
+                        if (it.linkType == LinkType.FOLDER_LINK && regularFoldersLinks.value.isEmpty()) return@forEach
+                        FilterChip(modifier = Modifier.animateContentSize(), onClick = {
+                            it.isChecked.value = !it.isChecked.value
+                        }, selected = it.isChecked.value, label = {
+                            Text(
+                                when (it.linkType) {
+                                    LinkType.SAVED_LINK -> LocalizedStrings.savedLinks.value
+                                    LinkType.IMP_LINK -> LocalizedStrings.importantLinks.value
+                                    LinkType.FOLDER_LINK -> LocalizedStrings.foldersLinks.value
+                                    LinkType.HISTORY_LINK -> LocalizedStrings.linksFromHistory.value
+                                    LinkType.ARCHIVE_LINK -> LocalizedStrings.archivedLinks.value
+                                }, style = MaterialTheme.typography.titleSmall
+                            )
+                        })
+                        Spacer(Modifier.width(10.dp))
+                    }
+                }
+            }
+        }) { paddingValues, topAppBarScrollBehaviour ->
         val commonModifier = Modifier
             .fillMaxSize()
             .padding(paddingValues)

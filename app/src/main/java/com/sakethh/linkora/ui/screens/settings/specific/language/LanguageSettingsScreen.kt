@@ -130,7 +130,9 @@ fun LanguageSettingsScreen(
         topAppBarText = language.value,
         navController = navController,
         floatingActionButton = {
-            ExtendedFloatingActionButton(onClick = {
+            ExtendedFloatingActionButton(
+                modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                onClick = {
                 isRetrieveLanguageInfoFABTriggered.value = true
                 languageSettingsScreenVM.onClick(
                     LanguageSettingsScreenUIEvent.RetrieveRemoteLanguagesInfo(
@@ -139,10 +141,11 @@ fun LanguageSettingsScreen(
                 )
             }) {
                 Icon(imageVector = Icons.Default.Refresh, contentDescription = "")
-                Spacer(modifier = Modifier.width(5.dp))
+                Spacer(modifier = Modifier.width(15.dp))
                 Text(
                     text = LocalizedStrings.retrieveLanguageInfoFromServer.value,
-                    style = MaterialTheme.typography.titleSmall
+                    style = MaterialTheme.typography.titleSmall,
+                    modifier = Modifier.padding(end = 5.dp)
                 )
             }
         }
@@ -566,7 +569,6 @@ fun LanguageSettingsScreen(
             "\$\$\$\$",
             currentlySelectedLanguageName.value
         ),
-        shouldCancelButtonBeVisible = false,
         shouldDialogBoxAppear = languageSettingsScreenVM.shouldRequestingDataFromServerDialogBoxShouldAppear
     )
     LaunchedEffect(key1 = Unit) {

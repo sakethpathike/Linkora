@@ -85,20 +85,20 @@ class IntentActivity : ComponentActivity() {
                             selectedNonDefaultFolderID != null && selectedDefaultFolderName != null -> {
                                 linkoraLog("add in folder; id is $selectedNonDefaultFolderID, name is $selectedDefaultFolderName\n webURL is $webURL")
                                 specificCollectionsScreenVM.onUiEvent(
-                                        SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
-                                            title = title,
-                                            webURL = webURL,
-                                            noteForSaving = note,
-                                            folderID = selectedNonDefaultFolderID,
-                                            folderName = selectedDefaultFolderName,
-                                            autoDetectTitle = isAutoDetectSelected,
-                                            onTaskCompleted = {
-                                                shouldUIBeVisible.value = false
-                                                isDataExtractingForTheLink.value = false
-                                            }
-                                        )
+                                    SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder(
+                                        title = title,
+                                        webURL = webURL,
+                                        noteForSaving = note,
+                                        folderID = selectedNonDefaultFolderID,
+                                        folderName = selectedDefaultFolderName,
+                                        autoDetectTitle = isAutoDetectSelected,
+                                        onTaskCompleted = {
+                                            shouldUIBeVisible.value = false
+                                            isDataExtractingForTheLink.value = false
+                                        }
                                     )
-                                }
+                                )
+                            }
                         }
                     },
                     isDataExtractingForTheLink = isDataExtractingForTheLink.value,

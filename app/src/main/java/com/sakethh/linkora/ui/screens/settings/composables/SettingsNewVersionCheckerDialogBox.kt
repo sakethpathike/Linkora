@@ -1,16 +1,22 @@
 package com.sakethh.linkora.ui.screens.settings.composables
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,9 +28,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.sakethh.linkora.LocalizedStrings.cancel
 import com.sakethh.linkora.LocalizedStrings.retrievingLatestInformation
-import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
@@ -34,8 +38,7 @@ fun SettingsNewVersionCheckerDialogBox(
     shouldDialogBoxAppear: MutableState<Boolean> = mutableStateOf(
         true
     ),
-    text: String = retrievingLatestInformation.value,
-    shouldCancelButtonBeVisible: Boolean = true
+    text: String = retrievingLatestInformation.value
 ) {
     if (shouldDialogBoxAppear.value && !SettingsPreference.didServerTimeOutErrorOccurred.value) {
         LinkoraTheme {
@@ -43,24 +46,22 @@ fun SettingsNewVersionCheckerDialogBox(
                 onDismissRequest = { }, modifier = Modifier
                     .clip(RoundedCornerShape(20.dp))
                     .background(AlertDialogDefaults.containerColor)
+                    .border(
+                        1.dp,
+                        AlertDialogDefaults.iconContentColor.copy(0.5f),
+                        RoundedCornerShape(20.dp)
+                    )
             ) {
-                Column {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                            .then(
-                                if (shouldCancelButtonBeVisible)
-                                    Modifier.padding(top = 20.dp, end = 20.dp)
-                                else Modifier.padding(20.dp)
-                            )
-                            .fillMaxWidth()
-                    ) {
-                        CircularProgressIndicator(
-                            color = AlertDialogDefaults.textContentColor,
-                            modifier = Modifier
-                                .padding(20.dp)
-                                .align(Alignment.CenterVertically),
-                            strokeWidth = 4.dp
-                        )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Spacer(Modifier.width(20.dp))
+                    Box(contentAlignment = Alignment.Center) {
+                        CircularProgressIndicator()
+                        Icon(Icons.Default.Info, null, modifier = Modifier.size(30.dp))
+                    }
+                    Spacer(Modifier.width(5.dp))
                         Text(
                             text = text,
                             color = AlertDialogDefaults.textContentColor,
@@ -68,25 +69,13 @@ fun SettingsNewVersionCheckerDialogBox(
                             fontSize = 20.sp,
                             lineHeight = 28.sp,
                             textAlign = TextAlign.Start,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                    }
-                    if (shouldCancelButtonBeVisible) {
-                        Button(
                             modifier = Modifier
-                                .padding(20.dp)
                                 .fillMaxWidth()
-                                .pulsateEffect(),
-                            onClick = {
-                                shouldDialogBoxAppear.value = false
-                            }) {
-                            Text(
-                                text = cancel.value,
-                                style = MaterialTheme.typography.titleSmall,
-                                fontSize = 16.sp
-                            )
-                        }
-                    }
+                                .then(
+                                    Modifier.padding(20.dp)
+                                )
+                                .fillMaxWidth()
+                        )
                 }
             }
         }
