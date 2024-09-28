@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
@@ -163,7 +164,7 @@ fun AddANewLinkDialogBox(
             mutableLongStateOf(-1)
         }
         val childFolders =
-            addANewLinkDialogBoxVM.childFolders
+            addANewLinkDialogBoxVM.childFolders.collectAsStateWithLifecycle()
         LinkoraTheme {
             BasicAlertDialog(
                 onDismissRequest = {
