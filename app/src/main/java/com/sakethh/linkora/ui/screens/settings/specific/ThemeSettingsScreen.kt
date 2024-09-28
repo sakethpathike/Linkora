@@ -108,6 +108,29 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                     )
                 }
             }
+            /*item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
+                RegularSettingComponent(
+                    settingsUIElement = SettingsUIElement(
+                        title = "Use Amoled Theme",
+                        doesDescriptionExists = true,
+                        description = "",
+                        isSwitchNeeded = true,
+                        isSwitchEnabled = SettingsPreference.shouldFollowAmoledTheme,
+                        onSwitchStateChange = {
+                            SettingsPreference.changeSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(
+                                    SettingsPreferences.AMOLED_THEME_STATE.name
+                                ),
+                                dataStore = context.dataStore,
+                                newValue = !SettingsPreference.shouldFollowAmoledTheme.value
+                            )
+                            SettingsPreference.shouldFollowAmoledTheme.value =
+                                !SettingsPreference.shouldFollowAmoledTheme.value
+                        }, isIconNeeded = remember {
+                            mutableStateOf(false)
+                        })
+                )
+            }*/
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 item(key = "Use dynamic theming") {
                     RegularSettingComponent(

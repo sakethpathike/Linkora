@@ -63,6 +63,7 @@ object SettingsPreference : ViewModel() {
     val enableTitleForNonListViews = mutableStateOf(true)
     val enableBaseURLForNonListViews = mutableStateOf(true)
     val enableFadedEdgeForNonListViews = mutableStateOf(true)
+    val shouldFollowAmoledTheme = mutableStateOf(false)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -281,6 +282,13 @@ object SettingsPreference : ViewModel() {
                             preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
                             dataStore = context.dataStore
                         ) ?: currentlySelectedLinkLayout.value
+                },
+                async {
+                    shouldFollowAmoledTheme.value =
+                        readSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AMOLED_THEME_STATE.name),
+                            dataStore = context.dataStore
+                        ) ?: false
                 },
                 async {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(

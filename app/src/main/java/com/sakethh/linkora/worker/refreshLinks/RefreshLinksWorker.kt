@@ -128,11 +128,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                 "https://t.co/"
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
-                                            imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                                it.contains(
-                                                    "jpg"
-                                                )
-                                            }
+                                            imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
                                 }
                             }
@@ -185,11 +181,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                 "https://t.co/"
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
-                                            imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                                it.contains(
-                                                    "jpg"
-                                                )
-                                            }
+                                            imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
                                 }
                             }
@@ -242,11 +234,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                 "https://t.co/"
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
-                                            imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                                it.contains(
-                                                    "jpg"
-                                                )
-                                            }
+                                            imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
                                 }
                             }
@@ -301,11 +289,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                     "https://t.co/"
                                                 )
                                             ) tweetMetaData.data.text else modifiedLink.title,
-                                                imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                                    it.contains(
-                                                        "jpg"
-                                                    )
-                                                }
+                                                imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                     ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url)
                                     }
                                 }

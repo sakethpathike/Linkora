@@ -182,11 +182,7 @@ class LinksImpl @Inject constructor(
                                     title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) tweetMetaData.data.text else linksTable!!.title,
                                     webURL = tweetMetaData.data.tweetURL,
                                     baseURL = "twitter.com",
-                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.endsWith(
-                                            ".jpg"
-                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
-                                    }
+                                    imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = linksTable!!.infoForSaving,
                                     isLinkedWithSavedLinks = linkType == LinkType.SAVED_LINK,
@@ -216,11 +212,7 @@ class LinksImpl @Inject constructor(
                                         tweetMetaData.data.text else importantLink!!.title,
                                     webURL = sanitizeLink(importantLink!!.webURL),
                                     baseURL = "twitter.com",
-                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.endsWith(
-                                            ".jpg"
-                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
-                                    }
+                                    imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = importantLink.infoForSaving
                                 )
@@ -243,11 +235,7 @@ class LinksImpl @Inject constructor(
                                     ) tweetMetaData.data.text else recentlyVisited!!.title,
                                     webURL = sanitizeLink(recentlyVisited!!.webURL),
                                     baseURL = "twitter.com",
-                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.endsWith(
-                                            ".jpg"
-                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
-                                    }
+                                    imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = recentlyVisited.infoForSaving
                                 )
@@ -272,11 +260,7 @@ class LinksImpl @Inject constructor(
                                     ) tweetMetaData.data.text else archivedLinks!!.title,
                                     webURL = sanitizeLink(archivedLinks!!.webURL),
                                     baseURL = "twitter.com",
-                                    imgURL = if (tweetMetaData.data.hasMedia) tweetMetaData.data.mediaURLs.find {
-                                        it.endsWith(
-                                            ".jpg"
-                                        ) || it.endsWith(".png") || it.endsWith(".jpeg")
-                                    }
+                                    imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                         ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                     infoForSaving = archivedLinks.infoForSaving
                                 )
