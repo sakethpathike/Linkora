@@ -1,0 +1,8 @@
+## Updates
+
+- Added the "Clear Image Cache" option under `Data` settings.
+- Enhanced image and title recognition (thanks to @cris16228 on GitHub). The default user agent has been changed to a Twitter bot.
+- Resolved issues with loading subfolders when saving links.
+- Settings reorganized for clarity: User agent and URL settings are now in the **Advanced** screen, and the "Refresh All Links" option is in **Data** settings.
+
+For detailed release notes, visit: https://github.com/sakethpathike/Linkora/releases/tag/release-v0.8.2.
