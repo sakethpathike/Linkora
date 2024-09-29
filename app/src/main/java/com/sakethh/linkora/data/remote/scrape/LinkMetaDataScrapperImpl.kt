@@ -23,7 +23,6 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                             "http" + url.substringAfter("http").substringBefore(" ").trim()
                         )
                             .userAgent(SettingsPreference.jsoupUserAgent.value)
-                            .referrer("http://www.google.com")
                             .followRedirects(true)
                             .header("Accept", "text/html")
                             .header("Accept-Encoding", "gzip,deflate")
@@ -44,7 +43,14 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                     val imgURL = when {
                         !ogImage.isNullOrBlank() -> ogImage
                         ogImage.isNullOrBlank() && !twitterImage.isNullOrBlank() -> twitterImage
-                        ogImage.isNullOrBlank() && twitterImage.isNullOrBlank() && !favicon.isNullOrBlank() -> favicon
+                        ogImage.isNullOrBlank() && twitterImage.isNullOrBlank() && !favicon.isNullOrBlank() -> {
+                            if (favicon.startsWith("/")) {
+                                "https://" + url.substringAfter("://")
+                                    .substringBefore("/") + favicon
+                            } else {
+                                favicon
+                            }
+                        }
                         else -> ""
                     }
 
