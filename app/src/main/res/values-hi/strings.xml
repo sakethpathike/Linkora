@@ -300,4 +300,7 @@
     <string name="title_only_list_view">केवल शीर्षक सूची दृश्य</string>
     <string name="grid_view">ग्रिड दृश्य</string>
     <string name="staggered_view">स्टैगरड दृश्य</string>
+    <string name="advanced">एडवांस्ड</string>
+    <string name="clear_image_cache">इमेज कैश हटाएं</string>
+    <string name="clear_image_cache_desc">इमेज डिफ़ॉल्ट रूप से कैश होती हैं। यूज़र एजेंट बदलने से आपको जो दिखता है उस पर असर पड़ सकता है। इसे ठीक करने के लिए कैश हटाएं।</string>
 </resources>

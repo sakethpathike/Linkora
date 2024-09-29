@@ -69,7 +69,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
@@ -78,7 +77,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.bottomSheets.menu.MenuBtmSheetParam
@@ -320,7 +318,7 @@ fun CollectionsScreen(navController: NavController) {
                                             contentAlignment = Alignment.CenterStart
                                         ) {
                                             Text(
-                                                text = stringResource(R.string.all_links),
+                                                text = LocalizedStrings.allLinks.value,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 16.sp
                                             )

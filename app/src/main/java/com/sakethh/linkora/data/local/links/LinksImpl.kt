@@ -43,6 +43,7 @@ class LinksImpl @Inject constructor(
         existingLinkID: Long,
         updateExistingLink: Boolean
     ): CommonUiEvent {
+        linkoraLog("User agent is : ${SettingsPreference.jsoupUserAgent.value}")
         if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> !isAValidURL(linksTable!!.webURL)

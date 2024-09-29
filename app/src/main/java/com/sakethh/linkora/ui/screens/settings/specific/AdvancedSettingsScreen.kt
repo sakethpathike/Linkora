@@ -40,7 +40,7 @@ fun AdvancedSettingsScreen(navController: NavController) {
     val jsoupUserAgentFocusRequester = remember { FocusRequester() }
     val localizationServerTextFieldFocusRequester = remember { FocusRequester() }
     SpecificScreenScaffold(
-        topAppBarText = "Advanced",
+        topAppBarText = LocalizedStrings.advanced.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
         LazyColumn(

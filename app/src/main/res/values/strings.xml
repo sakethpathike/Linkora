@@ -299,4 +299,7 @@
     <string name="title_only_list_view">Title Only List View</string>
     <string name="grid_view">Grid View</string>
     <string name="staggered_view">Staggered View</string>
+    <string name="advanced">Advanced</string>
+    <string name="clear_image_cache">Clear Image Cache</string>
+    <string name="clear_image_cache_desc">Images are cached by default. Changing the user agent might affect what you see. Clear the cache to resolve it.</string>
 </resources>

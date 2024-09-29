@@ -36,6 +36,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.currentSelectedSettingSection
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
@@ -133,7 +134,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
                     SettingsSections.ADVANCED
                 navController.navigate(NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name)
             },
-            sectionTitle = "Advanced",
+            sectionTitle = LocalizedStrings.advanced.value,
             sectionIcon = Icons.Default.Build
         ),
         SettingsScreenOption(

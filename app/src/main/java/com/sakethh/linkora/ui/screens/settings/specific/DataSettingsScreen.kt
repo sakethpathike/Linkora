@@ -49,6 +49,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,6 +64,7 @@ import com.sakethh.linkora.LocalizedStrings.deletedEntireDataFromTheLocalDatabas
 import com.sakethh.linkora.LocalizedStrings.importFeatureIsPolishedNotPerfectDesc
 import com.sakethh.linkora.LocalizedStrings.permissionRequiredToWriteTheData
 import com.sakethh.linkora.LocalizedStrings.successfullyExported
+import com.sakethh.linkora.R
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
@@ -178,9 +180,9 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 )
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
-                        title = "Clear Image Cache",
+                        title = LocalizedStrings.clearImageCache.value,
                         doesDescriptionExists = true,
-                        description = "Images are cached by default (thank you, Coil). Changing the user agent might affect what you see. Clear the cache to resolve it.",
+                        description = LocalizedStrings.clearImageCacheDesc.value,
                         isSwitchNeeded = false,
                         isIconNeeded = rememberSaveable {
                             mutableStateOf(true)

@@ -953,6 +953,18 @@ object LocalizedStrings : ViewModel() {
     val staggeredView =
         _staggeredView
 
+    private val _advanced = mutableStateOf("")
+    val advanced =
+        _advanced
+
+    private val _clearImageCache = mutableStateOf("")
+    val clearImageCache =
+        _clearImageCache
+
+    private val _clearImageCacheDesc = mutableStateOf("")
+    val clearImageCacheDesc =
+        _clearImageCacheDesc
+
     private var count = 0
 
     // lot of duplication going on, this will be fixed soon
@@ -964,6 +976,57 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _clearImageCacheDesc.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "clear_image_cache_desc",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.clear_image_cache_desc)
+                                }
+                            })
+                    } else {
+                        _clearImageCacheDesc.value =
+                            context.getString(R.string.clear_image_cache_desc)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _clearImageCache.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "clear_image_cache",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.clear_image_cache)
+                                }
+                            })
+                    } else {
+                        _clearImageCache.value =
+                            context.getString(R.string.clear_image_cache)
+                    }
+                },
+                async {
+                    count++
+                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+                        _advanced.value =
+                            (translationsRepo.getLocalizedStringValueFor(
+                                "advanced",
+                                SettingsPreference.preferredAppLanguageCode.value
+                            ).let {
+                                it.ifNullOrBlank {
+                                    context.getString(R.string.advanced)
+                                }
+                            })
+                    } else {
+                        _advanced.value =
+                            context.getString(R.string.advanced)
+                    }
+                },
                 async {
                     count++
                     if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
