@@ -24,6 +24,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Info
@@ -54,6 +55,8 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import coil.annotation.ExperimentalCoilApi
+import coil.imageLoader
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.data
 import com.sakethh.linkora.LocalizedStrings.deletedEntireDataFromTheLocalDatabase
@@ -75,7 +78,7 @@ import com.sakethh.linkora.utils.openApplicationSettings
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import kotlinx.coroutines.flow.collectLatest
 
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalCoilApi::class)
 @Composable
 fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsScreenVM) {
     val context = LocalContext.current
@@ -162,6 +165,37 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             ) {
                 RegularSettingComponent(
                     settingsUIElement = it
+                )
+            }
+            item {
+                HorizontalDivider(
+                    Modifier.padding(
+                        start = 15.dp,
+                        end = 15.dp,
+                        bottom = if (SettingsScreenVM.isAnyRefreshingTaskGoingOn.value) 0.dp else 30.dp
+                    ),
+                    color = DividerDefaults.color.copy(0.5f)
+                )
+                RegularSettingComponent(
+                    settingsUIElement = SettingsUIElement(
+                        title = "Clear Image Cache",
+                        doesDescriptionExists = true,
+                        description = "Images are cached by default (thank you, Coil). Changing the user agent might affect what you see. Clear the cache to resolve it.",
+                        isSwitchNeeded = false,
+                        isIconNeeded = rememberSaveable {
+                            mutableStateOf(true)
+                        },
+                        icon = Icons.Default.BrokenImage,
+                        isSwitchEnabled = rememberSaveable {
+                            mutableStateOf(false)
+                        },
+                        onSwitchStateChange = {
+                            context.imageLoader.memoryCache?.clear()
+                            context.imageLoader.diskCache?.clear()
+                        }, shouldFilledIconBeUsed = rememberSaveable {
+                            mutableStateOf(true)
+                        }
+                    )
                 )
             }
             item {
