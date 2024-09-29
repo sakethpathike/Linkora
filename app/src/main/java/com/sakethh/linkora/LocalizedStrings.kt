@@ -1,6 +1,8 @@
 package com.sakethh.linkora
 
 import android.content.Context
+import androidx.annotation.StringRes
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -967,9 +969,31 @@ object LocalizedStrings : ViewModel() {
 
     private var count = 0
 
-    // lot of duplication going on, this will be fixed soon
-    fun loadStrings(context: Context) {
+    private suspend fun loadStringsHelper(
+        translationsRepo: TranslationsRepo,
+        remoteStringID: String,
+        @StringRes localId: Int,
+        mutableString: MutableState<String>,
+        context: Context
+    ) {
+        count++
+        if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+            mutableString.value =
+                (translationsRepo.getLocalizedStringValueFor(
+                    remoteStringID,
+                    SettingsPreference.preferredAppLanguageCode.value
+                ).let {
+                    it.ifNullOrBlank {
+                        context.getString(localId)
+                    }
+                })
+        } else {
+            mutableString.value =
+                context.getString(localId)
+        }
+    }
 
+    fun loadStrings(context: Context) {
         val translationsRepo =
             EntryPoints.get(context.applicationContext, TranslationRepoInstance::class.java)
                 .getTranslationRepo()
@@ -977,4642 +1001,2685 @@ object LocalizedStrings : ViewModel() {
             count = 0
             awaitAll(
                 async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _clearImageCacheDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "clear_image_cache_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.clear_image_cache_desc)
-                                }
-                            })
-                    } else {
-                        _clearImageCacheDesc.value =
-                            context.getString(R.string.clear_image_cache_desc)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _clearImageCache.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "clear_image_cache",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.clear_image_cache)
-                                }
-                            })
-                    } else {
-                        _clearImageCache.value =
-                            context.getString(R.string.clear_image_cache)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _advanced.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "advanced",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.advanced)
-                                }
-                            })
-                    } else {
-                        _advanced.value =
-                            context.getString(R.string.advanced)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _staggeredView.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "staggered_view",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.staggered_view)
-                                }
-                            })
-                    } else {
-                        _staggeredView.value =
-                            context.getString(R.string.staggered_view)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _gridView.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "grid_view",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.grid_view)
-                                }
-                            })
-                    } else {
-                        _gridView.value =
-                            context.getString(R.string.grid_view)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleOnlyListView.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "title_only_list_view",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.title_only_list_view)
-                                }
-                            })
-                    } else {
-                        _titleOnlyListView.value =
-                            context.getString(R.string.title_only_list_view)
-                    }
-                },
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "clear_image_cache_desc",
+                        localId = R.string.clear_image_cache_desc,
+                        mutableString = _clearImageCacheDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "clear_image_cache",
+                        localId = R.string.clear_image_cache,
+                        mutableString = _clearImageCache,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "advanced",
+                        localId = R.string.advanced,
+                        mutableString = _advanced,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "staggered_view",
+                        localId = R.string.staggered_view,
+                        mutableString = _staggeredView,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "grid_view",
+                        localId = R.string.grid_view,
+                        mutableString = _gridView,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "title_only_list_view",
+                        localId = R.string.title_only_list_view,
+                        mutableString = _titleOnlyListView,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "regular_list_view",
+                        localId = R.string.regular_list_view,
+                        mutableString = _regularListView,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folders_links",
+                        localId = R.string.folders_links,
+                        mutableString = _foldersLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "filter_based_on",
+                        localId = R.string.filter_based_on,
+                        mutableString = _filterBasedOn,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "all_links",
+                        localId = R.string.all_links,
+                        mutableString = _allLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "feed_preview",
+                        localId = R.string.feed_preview,
+                        mutableString = _feedPreview,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "choose_the_layout_you_like_best",
+                        localId = R.string.choose_the_layout_you_like_best,
+                        mutableString = _chooseTheLayoutYouLikeBest,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_layout_settings",
+                        localId = R.string.link_layout_settings,
+                        mutableString = _linkLayoutSettings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_bottom_faded_edge",
+                        localId = R.string.show_bottom_faded_edge,
+                        mutableString = _showBottomFadedEdge,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_base_url",
+                        localId = R.string.show_base_url,
+                        mutableString = _showBaseUrl,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_title",
+                        localId = R.string.show_title,
+                        mutableString = _showTitle,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_border_around_links",
+                        localId = R.string.show_border_around_links,
+                        mutableString = _showBorderAroundLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_layout",
+                        localId = R.string.link_layout,
+                        mutableString = _linkLayout,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "view_all",
+                        localId = R.string.view_all,
+                        mutableString = _viewAll,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "enables_the_display_of_an_associated_image_within_the_link_menu",
+                        localId = R.string.enables_the_display_of_an_associated_image_within_the_link_menu,
+                        mutableString = _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_associated_image_in_link_menu",
+                        localId = R.string.show_associated_image_in_link_menu,
+                        mutableString = _showAssociatedImageInLinkMenu,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "create_a_new_internal_folder_in",
+                        localId = R.string.create_a_new_internal_folder_in,
+                        mutableString = _createANewInternalFolderIn,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "rename_folder",
+                        localId = R.string.rename_folder,
+                        mutableString = _renameFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_want_to_delete_the_folder",
+                        localId = R.string.are_you_sure_want_to_delete_the_folder,
+                        mutableString = _areYouSureWantToDeleteTheFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_want_to_delete_the_panel",
+                        localId = R.string.are_you_sure_want_to_delete_the_panel,
+                        mutableString = _areYouSureWantToDeleteThePanel,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "edit_panel_name",
+                        localId = R.string.edit_panel_name,
+                        mutableString = _editPanelName,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "help_translate_linkora",
+                        localId = R.string.help_translate_linkora,
+                        mutableString = _helpTranslateLinkora,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "changelog",
+                        localId = R.string.changelog,
+                        mutableString = _changelog,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "open_a_github_issue",
+                        localId = R.string.open_a_github_issue,
+                        mutableString = _openAGithubIssue,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "language_info_and_strings_are_up_to_date",
+                        localId = R.string.language_info_and_strings_are_up_to_date,
+                        mutableString = _languageInfoAndStringsAreUpToDate,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "updated_language_info_successfully",
+                        localId = R.string.updated_language_info_successfully,
+                        mutableString = _updatedLanguageInfoSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "help_make_linkora_accessible_in_more_languages_by_contributing_translations",
+                        localId = R.string.help_make_linkora_accessible_in_more_languages_by_contributing_translations,
+                        mutableString = _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "track_recent_changes_and_updates_to_linkora",
+                        localId = R.string.track_recent_changes_and_updates_to_linkora,
+                        mutableString = _trackRecentChangesAndUpdatesToLinkora,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "have_a_suggestion_create_an_issue_on_github_to_improve_linkora",
+                        localId = R.string.have_a_suggestion_create_an_issue_on_github_to_improve_linkora,
+                        mutableString = _haveASuggestionCreateAnIssueOnGithubToImproveLinkora,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "development",
+                        localId = R.string.development,
+                        mutableString = _development,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "socials",
+                        localId = R.string.socials,
+                        mutableString = _socials,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "fetched_successfully",
+                        localId = R.string.fetched_successfully,
+                        mutableString = _fetchedSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "cannot_retrieve_now_please_try_again",
+                        localId = R.string.cannot_retrieve_now_please_try_again,
+                        mutableString = _cannotRetrieveNowPleaseTryAgain,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "syncing_translations_for_this_may_take_some_time",
+                        localId = R.string.syncing_translations_for_this_may_take_some_time,
+                        mutableString = _syncingTranslationsForCurrentlySelectedLanguage,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "syncing_language_details_this_may_take_some_time",
+                        localId = R.string.syncing_language_details_this_may_take_some_time,
+                        mutableString = _syncingLanguageDetailsThisMayTakeSomeTime,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "remove_from_important_links",
+                        localId = R.string.remove_from_important_links,
+                        mutableString = _removeFromImportantLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_to_important_links",
+                        localId = R.string.add_to_important_links,
+                        mutableString = _addToImportantLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "remove_from_archive",
+                        localId = R.string.remove_from_archive,
+                        mutableString = _moveToArchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "move_to_archive",
+                        localId = R.string.move_to_archive,
+                        mutableString = _moveToArchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "you_can_find_saved_links_and_important_links_in_the_default_panel",
+                        localId = R.string.you_can_find_saved_links_and_important_links_in_the_default_panel,
+                        mutableString = _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_folders_available_in_this_panel_add_folders_to_begin",
+                        localId = R.string.no_folders_available_in_this_panel_add_folders_to_begin,
+                        mutableString = _noFoldersAvailableInThisPanelAddFoldersToBegin,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "localization_server",
+                        localId = R.string.localization_server,
+                        mutableString = _localizationServer,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "localization_server_desc",
+                        localId = R.string.localization_server_desc,
+                        mutableString = _localizationServerDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "strings_localized",
+                        localId = R.string.strings_localized,
+                        mutableString = _stringsLocalized,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "discord",
+                        localId = R.string.discord,
+                        mutableString = _discord,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "help_improve_language_strings",
+                        localId = R.string.help_improve_language_strings,
+                        mutableString = _helpImproveLanguageStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "remove_remote_language_strings",
+                        localId = R.string.remove_remote_language_strings,
+                        mutableString = _removeLanguageStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "load_compiled_strings",
+                        localId = R.string.load_compiled_strings,
+                        mutableString = _loadCompiledStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "update_remote_language_strings",
+                        localId = R.string.update_remote_language_strings,
+                        mutableString = _updateRemoteLanguageStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "load_server_strings",
+                        localId = R.string.load_server_strings,
+                        mutableString = _loadServerStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "retrieve_language_info_from_server",
+                        localId = R.string.retrieve_language_info_from_server,
+                        mutableString = _retrieveLanguageInfoFromServer,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "displaying_remote_strings",
+                        localId = R.string.displaying_remote_strings,
+                        mutableString = _displayingRemoteStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "displaying_compiled_strings",
+                        localId = R.string.displaying_compiled_strings,
+                        mutableString = _displayingCompiledStrings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_history_links_by",
+                        localId = R.string.sort_history_links_by,
+                        mutableString = _sortHistoryLinksBy,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_by",
+                        localId = R.string.sort_by,
+                        mutableString = _sortBy,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_saved_links_by",
+                        localId = R.string.sort_saved_links_by,
+                        mutableString = _sortSavedLinksBy,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_important_links_by",
+                        localId = R.string.sort_important_links_by,
+                        mutableString = _sortImportantLinksBy,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_based_on",
+                        localId = R.string.sort_based_on,
+                        mutableString = _sortBasedOn,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folders",
+                        localId = R.string.folders,
+                        mutableString = _folders,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_link_in_important_links",
+                        localId = R.string.add_a_new_link_in_important_links,
+                        mutableString = _addANewLinkInImportantLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_link_in_saved_links",
+                        localId = R.string.add_a_new_link_in_saved_links,
+                        mutableString = _addANewLinkInSavedLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_link_in",
+                        localId = R.string.add_a_new_link_in,
+                        mutableString = _addANewLinkIn,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_link",
+                        localId = R.string.add_a_new_link,
+                        mutableString = _addANewLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_address",
+                        localId = R.string.link_address,
+                        mutableString = _linkAddress,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "title_for_the_link",
+                        localId = R.string.title_for_the_link,
+                        mutableString = _titleForTheLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "note_for_saving_the_link",
+                        localId = R.string.note_for_saving_the_link,
+                        mutableString = _noteForSavingTheLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "title_will_be_automatically_detected",
+                        localId = R.string.title_will_be_automatically_detected,
+                        mutableString = _titleWillBeAutomaticallyDetected,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_in",
+                        localId = R.string.add_in,
+                        mutableString = _addIn,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "saved_links",
+                        localId = R.string.saved_links,
+                        mutableString = _savedLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "important_links",
+                        localId = R.string.important_links,
+                        mutableString = _importantLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "force_auto_detect_title",
+                        localId = R.string.force_auto_detect_title,
+                        mutableString = _forceAutoDetectTitle,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "cancel",
+                        localId = R.string.cancel,
+                        mutableString = _cancel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "save",
+                        localId = R.string.save,
+                        mutableString = _save,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "this_folder_has_no_subfolders",
+                        localId = R.string.this_folder_has_no_subfolders,
+                        mutableString = _thisFolderHasNoSubfolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "save_in_this_folder",
+                        localId = R.string.save_in_this_folder,
+                        mutableString = _saveInThisFolder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_panel_to_the_shelf",
+                        localId = R.string.add_a_new_panel_to_the_shelf,
+                        mutableString = _addANewPanelToTheShelf,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "panel_name",
+                        localId = R.string.panel_name,
+                        mutableString = _panelName,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_new_panel",
+                        localId = R.string.add_new_panel,
+                        mutableString = _addNewPanel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_name_cannnot_be_empty",
+                        localId = R.string.folder_name_cannnot_be_empty,
+                        mutableString = _folderNameCannnotBeEmpty,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_name",
+                        localId = R.string.folder_name,
+                        mutableString = _folderName,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "note_for_creating_the_folder",
+                        localId = R.string.note_for_creating_the_folder,
+                        mutableString = _noteForCreatingTheFolder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "create_a_new_internal_folder_in",
+                        localId = R.string.create_a_new_internal_folder_in,
+                        mutableString = _createANewFolderIn,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "create_a_new_folder",
+                        localId = R.string.create_a_new_folder,
+                        mutableString = _createANewFolder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "create",
+                        localId = R.string.create,
+                        mutableString = _create,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_want_to_delete",
+                        localId = R.string.are_you_sure_want_to_delete,
+                        mutableString = _areYouSureWantToDelete,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "permanently_delete_the_panel",
+                        localId = R.string.permanently_delete_the_panel,
+                        mutableString = _permanentlyDeleteThePanel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "once_deleted_this_panel_cannot_be_restarted",
+                        localId = R.string.once_deleted_this_panel_cannot_be_restarted,
+                        mutableString = _onceDeletedThisPanelCannotBeRestarted,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_it",
+                        localId = R.string.delete_it,
+                        mutableString = _deleteIt,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "this_folder_deletion_will_also_delete_all_its_internal_folders",
+                        localId = R.string.this_folder_deletion_will_also_delete_all_its_internal_folders,
+                        mutableString = _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_you_want_to_delete_all_selected_links",
+                        localId = R.string.are_you_sure_you_want_to_delete_all_selected_links,
+                        mutableString = _areYouSureYouWantToDeleteAllSelectedLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_you_want_to_delete_the_link",
+                        localId = R.string.are_you_sure_you_want_to_delete_the_link,
+                        mutableString = _areYouSureYouWantToDeleteTheLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_you_want_to_delete_all_selected_folders",
+                        localId = R.string.are_you_sure_you_want_to_delete_all_selected_folders,
+                        mutableString = _areYouSureYouWantToDeleteAllSelectedFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_want_to_delete_the",
+                        localId = R.string.are_you_sure_want_to_delete_the,
+                        mutableString = _areYouSureWantToDeleteThe,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder",
+                        localId = R.string.folder,
+                        mutableString = _folder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_you_want_to_delete_all_selected_items",
+                        localId = R.string.are_you_sure_you_want_to_delete_all_selected_items,
+                        mutableString = _areYouSureYouWantToDeleteAllSelectedItems,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "are_you_sure_you_want_to_delete_all_folders_and_links",
+                        localId = R.string.are_you_sure_you_want_to_delete_all_folders_and_links,
+                        mutableString = _areYouSureYouWantToDeleteAllFoldersAndLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_activity_found_to_handle_intent",
+                        localId = R.string.no_activity_found_to_handle_intent,
+                        mutableString = _noActivityFoundToHandleIntent,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_copied_to_the_clipboard",
+                        localId = R.string.link_copied_to_the_clipboard,
+                        mutableString = _linkCopiedToTheClipboard,
+                        context = context
+                    )
+                },
+
                 async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _regularListView.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "regular_list_view",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.regular_list_view)
-                                }
-                            })
-                    } else {
-                        _regularListView.value =
-                            context.getString(R.string.regular_list_view)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _foldersLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folders_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folders_links)
-                                }
-                            })
-                    } else {
-                        _foldersLinks.value =
-                            context.getString(R.string.folders_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _filterBasedOn.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "filter_based_on",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.filter_based_on)
-                                }
-                            })
-                    } else {
-                        _filterBasedOn.value =
-                            context.getString(R.string.filter_based_on)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _allLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "all_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.all_links)
-                                }
-                            })
-                    } else {
-                        _allLinks.value =
-                            context.getString(R.string.all_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _feedPreview.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "feed_preview",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.feed_preview)
-                                }
-                            })
-                    } else {
-                        _feedPreview.value =
-                            context.getString(R.string.feed_preview)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _chooseTheLayoutYouLikeBest.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "choose_the_layout_you_like_best",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.choose_the_layout_you_like_best)
-                                }
-                            })
-                    } else {
-                        _chooseTheLayoutYouLikeBest.value =
-                            context.getString(R.string.choose_the_layout_you_like_best)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkLayoutSettings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "link_layout_settings",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.link_layout_settings)
-                                }
-                            })
-                    } else {
-                        _linkLayoutSettings.value =
-                            context.getString(R.string.link_layout_settings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showBottomFadedEdge.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_bottom_faded_edge",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_bottom_faded_edge)
-                                }
-                            })
-                    } else {
-                        _showBottomFadedEdge.value =
-                            context.getString(R.string.show_bottom_faded_edge)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showBaseUrl.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_base_url",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_base_url)
-                                }
-                            })
-                    } else {
-                        _showBaseUrl.value =
-                            context.getString(R.string.show_base_url)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showTitle.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_title",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_title)
-                                }
-                            })
-                    } else {
-                        _showTitle.value =
-                            context.getString(R.string.show_title)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showBorderAroundLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_border_around_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_border_around_links)
-                                }
-                            })
-                    } else {
-                        _showBorderAroundLinks.value =
-                            context.getString(R.string.show_border_around_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkLayout.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "link_layout",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.link_layout)
-                                }
-                            })
-                    } else {
-                        _linkLayout.value =
-                            context.getString(R.string.link_layout)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _viewAll.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "view_all",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.view_all)
-                                }
-                            })
-                    } else {
-                        _viewAll.value =
-                            context.getString(R.string.view_all)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "enables_the_display_of_an_associated_image_within_the_link_menu",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.enables_the_display_of_an_associated_image_within_the_link_menu)
-                                }
-                            })
-                    } else {
-                        _enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value =
-                            context.getString(R.string.enables_the_display_of_an_associated_image_within_the_link_menu)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showAssociatedImageInLinkMenu.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_associated_image_in_link_menu",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_associated_image_in_link_menu)
-                                }
-                            })
-                    } else {
-                        _showAssociatedImageInLinkMenu.value =
-                            context.getString(R.string.show_associated_image_in_link_menu)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _createANewInternalFolderIn.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "create_a_new_internal_folder_in",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.create_a_new_internal_folder_in)
-                                }
-                            })
-                    } else {
-                        _createANewInternalFolderIn.value =
-                            context.getString(R.string.create_a_new_internal_folder_in)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _renameFolder.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "rename_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.rename_folder)
-                                }
-                            })
-                    } else {
-                        _renameFolder.value =
-                            context.getString(R.string.rename_folder)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureWantToDeleteTheFolder.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_want_to_delete_the_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_want_to_delete_the_folder)
-                                }
-                            })
-                    } else {
-                        _areYouSureWantToDeleteTheFolder.value =
-                            context.getString(R.string.are_you_sure_want_to_delete_the_folder)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureWantToDeleteThePanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_want_to_delete_the_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_want_to_delete_the_panel)
-                                }
-                            })
-                    } else {
-                        _areYouSureWantToDeleteThePanel.value =
-                            context.getString(R.string.are_you_sure_want_to_delete_the_panel)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _editPanelName.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "edit_panel_name",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.edit_panel_name)
-                                }
-                            })
-                    } else {
-                        _editPanelName.value =
-                            context.getString(R.string.edit_panel_name)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _helpTranslateLinkora.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "help_translate_linkora",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.help_translate_linkora)
-                                }
-                            })
-                    } else {
-                        _helpTranslateLinkora.value =
-                            context.getString(R.string.help_translate_linkora)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _changelog.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "changelog",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.changelog)
-                                }
-                            })
-                    } else {
-                        _changelog.value =
-                            context.getString(R.string.changelog)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _openAGithubIssue.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "open_a_github_issue",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.open_a_github_issue)
-                                }
-                            })
-                    } else {
-                        _openAGithubIssue.value =
-                            context.getString(R.string.open_a_github_issue)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _languageInfoAndStringsAreUpToDate.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "language_info_and_strings_are_up_to_date",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.language_info_and_strings_are_up_to_date)
-                                }
-                            })
-                    } else {
-                        _languageInfoAndStringsAreUpToDate.value =
-                            context.getString(R.string.language_info_and_strings_are_up_to_date)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _updatedLanguageInfoSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "updated_language_info_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.updated_language_info_successfully)
-                                }
-                            })
-                    } else {
-                        _updatedLanguageInfoSuccessfully.value =
-                            context.getString(R.string.updated_language_info_successfully)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "help_make_linkora_accessible_in_more_languages_by_contributing_translations",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.help_make_linkora_accessible_in_more_languages_by_contributing_translations)
-                                }
-                            })
-                    } else {
-                        _helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value =
-                            context.getString(R.string.help_make_linkora_accessible_in_more_languages_by_contributing_translations)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _trackRecentChangesAndUpdatesToLinkora.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "track_recent_changes_and_updates_to_linkora",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.track_recent_changes_and_updates_to_linkora)
-                                }
-                            })
-                    } else {
-                        _trackRecentChangesAndUpdatesToLinkora.value =
-                            context.getString(R.string.track_recent_changes_and_updates_to_linkora)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _haveASuggestionCreateAnIssueOnGithubToImproveLinkora.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "have_a_suggestion_create_an_issue_on_github_to_improve_linkora",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.have_a_suggestion_create_an_issue_on_github_to_improve_linkora)
-                                }
-                            })
-                    } else {
-                        _haveASuggestionCreateAnIssueOnGithubToImproveLinkora.value =
-                            context.getString(R.string.have_a_suggestion_create_an_issue_on_github_to_improve_linkora)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _development.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "development",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.development)
-                                }
-                            })
-                    } else {
-                        _development.value =
-                            context.getString(R.string.development)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _socials.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "socials",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.socials)
-                                }
-                            })
-                    } else {
-                        _socials.value =
-                            context.getString(R.string.socials)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _fetchedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "fetched_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.fetched_successfully)
-                                }
-                            })
-                    } else {
-                        _fetchedSuccessfully.value =
-                            context.getString(R.string.fetched_successfully)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _cannotRetrieveNowPleaseTryAgain.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "cannot_retrieve_now_please_try_again",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.cannot_retrieve_now_please_try_again)
-                                }
-                            })
-                    } else {
-                        _cannotRetrieveNowPleaseTryAgain.value =
-                            context.getString(R.string.cannot_retrieve_now_please_try_again)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _syncingTranslationsForCurrentlySelectedLanguage.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "syncing_translations_for_this_may_take_some_time",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.syncing_translations_for_this_may_take_some_time)
-                                }
-                            })
-                    } else {
-                        _syncingTranslationsForCurrentlySelectedLanguage.value =
-                            context.getString(R.string.syncing_translations_for_this_may_take_some_time)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _syncingLanguageDetailsThisMayTakeSomeTime.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "syncing_language_details_this_may_take_some_time",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.syncing_language_details_this_may_take_some_time)
-                                }
-                            })
-                    } else {
-                        _syncingLanguageDetailsThisMayTakeSomeTime.value =
-                            context.getString(R.string.syncing_language_details_this_may_take_some_time)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _removeFromImportantLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "remove_from_important_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.remove_from_important_links)
-                                }
-                            })
-                    } else {
-                        _removeFromImportantLinks.value =
-                            context.getString(R.string.remove_from_important_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addToImportantLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "add_to_important_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.add_to_important_links)
-                                }
-                            })
-                    } else {
-                        _addToImportantLinks.value =
-                            context.getString(R.string.add_to_important_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _moveToArchive.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "remove_from_archive",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.remove_from_archive)
-                                }
-                            })
-                    } else {
-                        _moveToArchive.value =
-                            context.getString(R.string.remove_from_archive)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _moveToArchive.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "move_to_archive",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.move_to_archive)
-                                }
-                            })
-                    } else {
-                        _moveToArchive.value =
-                            context.getString(R.string.move_to_archive)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "you_can_find_saved_links_and_important_links_in_the_default_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.you_can_find_saved_links_and_important_links_in_the_default_panel)
-                                }
-                            })
-                    } else {
-                        _youCanFindSavedLinksAndImportantLinksInTheDefaultPanel.value =
-                            context.getString(R.string.you_can_find_saved_links_and_important_links_in_the_default_panel)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noFoldersAvailableInThisPanelAddFoldersToBegin.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_folders_available_in_this_panel_add_folders_to_begin",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_folders_available_in_this_panel_add_folders_to_begin)
-                                }
-                            })
-                    } else {
-                        _noFoldersAvailableInThisPanelAddFoldersToBegin.value =
-                            context.getString(R.string.no_folders_available_in_this_panel_add_folders_to_begin)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _localizationServer.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "localization_server",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.localization_server)
-                                }
-                            })
-                    } else {
-                        _localizationServer.value =
-                            context.getString(R.string.localization_server)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _localizationServerDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "localization_server_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.localization_server_desc)
-                                }
-                            })
-                    } else {
-                        _localizationServerDesc.value =
-                            context.getString(R.string.localization_server_desc)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _stringsLocalized.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "strings_localized",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.strings_localized)
-                                }
-                            })
-                    } else {
-                        _stringsLocalized.value =
-                            context.getString(R.string.strings_localized)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _discord.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "discord",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.discord)
-                                }
-                            })
-                    } else {
-                        _discord.value =
-                            context.getString(R.string.discord)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _helpImproveLanguageStrings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "help_improve_language_strings",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.help_improve_language_strings)
-                            }
-                        })
-                    } else {
-                        _helpImproveLanguageStrings.value =
-                            context.getString(R.string.help_improve_language_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _removeLanguageStrings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "remove_remote_language_strings",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.remove_remote_language_strings)
-                            }
-                        })
-                    } else {
-                        _removeLanguageStrings.value =
-                            context.getString(R.string.remove_remote_language_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _loadCompiledStrings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "load_compiled_strings",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.load_compiled_strings)
-                            }
-                        })
-                    } else {
-                        _loadCompiledStrings.value =
-                            context.getString(R.string.load_compiled_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _updateRemoteLanguageStrings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "update_remote_language_strings",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.update_remote_language_strings)
-                                }
-                            })
-                    } else {
-                        _updateRemoteLanguageStrings.value =
-                            context.getString(R.string.update_remote_language_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _loadServerStrings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "load_server_strings",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.load_server_strings)
-                            }
-                        })
-                    } else {
-                        _loadServerStrings.value =
-                            context.getString(R.string.load_server_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _retrieveLanguageInfoFromServer.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "retrieve_language_info_from_server",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.retrieve_language_info_from_server)
-                                }
-                            })
-                    } else {
-                        _retrieveLanguageInfoFromServer.value =
-                            context.getString(R.string.retrieve_language_info_from_server)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _displayingRemoteStrings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "displaying_remote_strings",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.displaying_remote_strings)
-                                }
-                            })
-                    } else {
-                        _displayingRemoteStrings.value =
-                            context.getString(R.string.displaying_remote_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _displayingCompiledStrings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "displaying_compiled_strings",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.displaying_compiled_strings)
-                                }
-                            })
-                    } else {
-                        _displayingCompiledStrings.value =
-                            context.getString(R.string.displaying_compiled_strings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortHistoryLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_history_links_by",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_history_links_by)
-                            }
-                        })
-                    } else {
-                        _sortHistoryLinksBy.value =
-                            context.getString(R.string.sort_history_links_by)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortBy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_by", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_by)
-                            }
-                        })
-                    } else {
-                        _sortBy.value = context.getString(R.string.sort_by)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortSavedLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_saved_links_by", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_saved_links_by)
-                            }
-                        })
-                    } else {
-                        _sortSavedLinksBy.value = context.getString(R.string.sort_saved_links_by)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortImportantLinksBy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_important_links_by",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_important_links_by)
-                            }
-                        })
-                    } else {
-                        _sortImportantLinksBy.value =
-                            context.getString(R.string.sort_important_links_by)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortBasedOn.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_based_on", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_based_on)
-                            }
-                        })
-                    } else {
-                        _sortBasedOn.value = context.getString(R.string.sort_based_on)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "folders", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.folders)
-                            }
-                        })
-                    } else {
-                        _folders.value = context.getString(R.string.folders)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addANewLinkInImportantLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "add_a_new_link_in_important_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.add_a_new_link_in_important_links)
-                                }
-                            })
-                    } else {
-                        _addANewLinkInImportantLinks.value =
-                            context.getString(R.string.add_a_new_link_in_important_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addANewLinkInSavedLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "add_a_new_link_in_saved_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.add_a_new_link_in_saved_links)
-                                }
-                            })
-                    } else {
-                        _addANewLinkInSavedLinks.value =
-                            context.getString(R.string.add_a_new_link_in_saved_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addANewLinkIn.value = (translationsRepo.getLocalizedStringValueFor(
-                            "add_a_new_link_in", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.add_a_new_link_in)
-                            }
-                        })
-                    } else {
-                        _addANewLinkIn.value = context.getString(R.string.add_a_new_link_in)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addANewLink.value = (translationsRepo.getLocalizedStringValueFor(
-                            "add_a_new_link", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.add_a_new_link)
-                            }
-                        })
-                    } else {
-                        _addANewLink.value = context.getString(R.string.add_a_new_link)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkAddress.value = (translationsRepo.getLocalizedStringValueFor(
-                            "link_address", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.link_address)
-                            }
-                        })
-                    } else {
-                        _linkAddress.value = context.getString(R.string.link_address)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleForTheLink.value = (translationsRepo.getLocalizedStringValueFor(
-                            "title_for_the_link", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.title_for_the_link)
-                            }
-                        })
-                    } else {
-                        _titleForTheLink.value = context.getString(R.string.title_for_the_link)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noteForSavingTheLink.value = (translationsRepo.getLocalizedStringValueFor(
-                            "note_for_saving_the_link",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.note_for_saving_the_link)
-                            }
-                        })
-                    } else {
-                        _noteForSavingTheLink.value =
-                            context.getString(R.string.note_for_saving_the_link)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleWillBeAutomaticallyDetected.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "title_will_be_automatically_detected",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.title_will_be_automatically_detected)
-                                }
-                            })
-                    } else {
-                        _titleWillBeAutomaticallyDetected.value =
-                            context.getString(R.string.title_will_be_automatically_detected)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addIn.value = (translationsRepo.getLocalizedStringValueFor(
-                            "add_in", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.add_in)
-                            }
-                        })
-                    } else {
-                        _addIn.value = context.getString(R.string.add_in)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _savedLinks.value = (translationsRepo.getLocalizedStringValueFor(
-                            "saved_links", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.saved_links)
-                            }
-                        })
-                    } else {
-                        _savedLinks.value = context.getString(R.string.saved_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importantLinks.value = (translationsRepo.getLocalizedStringValueFor(
-                            "important_links", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.important_links)
-                            }
-                        })
-                    } else {
-                        _importantLinks.value = context.getString(R.string.important_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _forceAutoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
-                            "force_auto_detect_title",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.force_auto_detect_title)
-                            }
-                        })
-                    } else {
-                        _forceAutoDetectTitle.value =
-                            context.getString(R.string.force_auto_detect_title)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _cancel.value = (translationsRepo.getLocalizedStringValueFor(
-                            "cancel", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.cancel)
-                            }
-                        })
-                    } else {
-                        _cancel.value = context.getString(R.string.cancel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _save.value = (translationsRepo.getLocalizedStringValueFor(
-                            "save", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.save)
-                            }
-                        })
-                    } else {
-                        _save.value = context.getString(R.string.save)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _thisFolderHasNoSubfolders.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "this_folder_has_no_subfolders",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.this_folder_has_no_subfolders)
-                                }
-                            })
-                    } else {
-                        _thisFolderHasNoSubfolders.value =
-                            context.getString(R.string.this_folder_has_no_subfolders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _saveInThisFolder.value = (translationsRepo.getLocalizedStringValueFor(
-                            "save_in_this_folder", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.save_in_this_folder)
-                            }
-                        })
-                    } else {
-                        _saveInThisFolder.value = context.getString(R.string.save_in_this_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addANewPanelToTheShelf.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "add_a_new_panel_to_the_shelf",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.add_a_new_panel_to_the_shelf)
-                                }
-                            })
-                    } else {
-                        _addANewPanelToTheShelf.value =
-                            context.getString(R.string.add_a_new_panel_to_the_shelf)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _panelName.value = (translationsRepo.getLocalizedStringValueFor(
-                            "panel_name", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.panel_name)
-                            }
-                        })
-                    } else {
-                        _panelName.value = context.getString(R.string.panel_name)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addNewPanel.value = (translationsRepo.getLocalizedStringValueFor(
-                            "add_new_panel", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.add_new_panel)
-                            }
-                        })
-                    } else {
-                        _addNewPanel.value = context.getString(R.string.add_new_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderNameCannnotBeEmpty.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folder_name_cannnot_be_empty",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folder_name_cannnot_be_empty)
-                                }
-                            })
-                    } else {
-                        _folderNameCannnotBeEmpty.value =
-                            context.getString(R.string.folder_name_cannnot_be_empty)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderName.value = (translationsRepo.getLocalizedStringValueFor(
-                            "folder_name", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.folder_name)
-                            }
-                        })
-                    } else {
-                        _folderName.value = context.getString(R.string.folder_name)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noteForCreatingTheFolder.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "note_for_creating_the_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.note_for_creating_the_folder)
-                                }
-                            })
-                    } else {
-                        _noteForCreatingTheFolder.value =
-                            context.getString(R.string.note_for_creating_the_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _createANewFolderIn.value = (translationsRepo.getLocalizedStringValueFor(
-                            "create_a_new_internal_folder_in",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.create_a_new_internal_folder_in)
-                            }
-                        })
-                    } else {
-                        _createANewFolderIn.value =
-                            context.getString(R.string.create_a_new_internal_folder_in)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _createANewFolder.value = (translationsRepo.getLocalizedStringValueFor(
-                            "create_a_new_folder", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.create_a_new_folder)
-                            }
-                        })
-                    } else {
-                        _createANewFolder.value = context.getString(R.string.create_a_new_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _create.value = (translationsRepo.getLocalizedStringValueFor(
-                            "create", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.create)
-                            }
-                        })
-                    } else {
-                        _create.value = context.getString(R.string.create)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureWantToDelete.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_want_to_delete",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_want_to_delete)
-                                }
-                            })
-                    } else {
-                        _areYouSureWantToDelete.value =
-                            context.getString(R.string.are_you_sure_want_to_delete)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _permanentlyDeleteThePanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "permanently_delete_the_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.permanently_delete_the_panel)
-                                }
-                            })
-                    } else {
-                        _permanentlyDeleteThePanel.value =
-                            context.getString(R.string.permanently_delete_the_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _onceDeletedThisPanelCannotBeRestarted.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "once_deleted_this_panel_cannot_be_restarted",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.once_deleted_this_panel_cannot_be_restarted)
-                                }
-                            })
-                    } else {
-                        _onceDeletedThisPanelCannotBeRestarted.value =
-                            context.getString(R.string.once_deleted_this_panel_cannot_be_restarted)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteIt.value = (translationsRepo.getLocalizedStringValueFor(
-                            "delete_it", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.delete_it)
-                            }
-                        })
-                    } else {
-                        _deleteIt.value = context.getString(R.string.delete_it)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "this_folder_deletion_will_also_delete_all_its_internal_folders",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.this_folder_deletion_will_also_delete_all_its_internal_folders)
-                                }
-                            })
-                    } else {
-                        _thisFolderDeletionWillAlsoDeleteAllItsInternalFolders.value =
-                            context.getString(R.string.this_folder_deletion_will_also_delete_all_its_internal_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureYouWantToDeleteAllSelectedLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_you_want_to_delete_all_selected_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_links)
-                                }
-                            })
-                    } else {
-                        _areYouSureYouWantToDeleteAllSelectedLinks.value =
-                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureYouWantToDeleteTheLink.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_you_want_to_delete_the_link",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_you_want_to_delete_the_link)
-                                }
-                            })
-                    } else {
-                        _areYouSureYouWantToDeleteTheLink.value =
-                            context.getString(R.string.are_you_sure_you_want_to_delete_the_link)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureYouWantToDeleteAllSelectedFolders.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_you_want_to_delete_all_selected_folders",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_folders)
-                                }
-                            })
-                    } else {
-                        _areYouSureYouWantToDeleteAllSelectedFolders.value =
-                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureWantToDeleteThe.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_want_to_delete_the",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_want_to_delete_the)
-                                }
-                            })
-                    } else {
-                        _areYouSureWantToDeleteThe.value =
-                            context.getString(R.string.are_you_sure_want_to_delete_the)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folder.value = (translationsRepo.getLocalizedStringValueFor(
-                            "folder", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.folder)
-                            }
-                        })
-                    } else {
-                        _folder.value = context.getString(R.string.folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureYouWantToDeleteAllSelectedItems.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_you_want_to_delete_all_selected_items",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_items)
-                                }
-                            })
-                    } else {
-                        _areYouSureYouWantToDeleteAllSelectedItems.value =
-                            context.getString(R.string.are_you_sure_you_want_to_delete_all_selected_items)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _areYouSureYouWantToDeleteAllFoldersAndLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "are_you_sure_you_want_to_delete_all_folders_and_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.are_you_sure_you_want_to_delete_all_folders_and_links)
-                                }
-                            })
-                    } else {
-                        _areYouSureYouWantToDeleteAllFoldersAndLinks.value =
-                            context.getString(R.string.are_you_sure_you_want_to_delete_all_folders_and_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noActivityFoundToHandleIntent.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_activity_found_to_handle_intent",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_activity_found_to_handle_intent)
-                                }
-                            })
-                    } else {
-                        _noActivityFoundToHandleIntent.value =
-                            context.getString(R.string.no_activity_found_to_handle_intent)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkCopiedToTheClipboard.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "link_copied_to_the_clipboard",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.link_copied_to_the_clipboard)
-                                }
-                            })
-                    } else {
-                        _linkCopiedToTheClipboard.value =
-                            context.getString(R.string.link_copied_to_the_clipboard)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _changePanelName.value = (translationsRepo.getLocalizedStringValueFor(
-                            "change_panel_name", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.change_panel_name)
-                            }
-                        })
-                    } else {
-                        _changePanelName.value = context.getString(R.string.change_panel_name)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _edit.value = (translationsRepo.getLocalizedStringValueFor(
-                            "edit", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.edit)
-                            }
-                        })
-                    } else {
-                        _edit.value = context.getString(R.string.edit)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newNameForPanel.value = (translationsRepo.getLocalizedStringValueFor(
-                            "new_name_for_panel", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.new_name_for_panel)
-                            }
-                        })
-                    } else {
-                        _newNameForPanel.value = context.getString(R.string.new_name_for_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _changeNoteOnly.value = (translationsRepo.getLocalizedStringValueFor(
-                            "change_note_only", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.change_note_only)
-                            }
-                        })
-                    } else {
-                        _changeNoteOnly.value = context.getString(R.string.change_note_only)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _changeBothNameAndNote.value = (translationsRepo.getLocalizedStringValueFor(
-                            "change_both_name_and_note",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.change_both_name_and_note)
-                            }
-                        })
-                    } else {
-                        _changeBothNameAndNote.value =
-                            context.getString(R.string.change_both_name_and_note)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleCannotBeEmpty.value = (translationsRepo.getLocalizedStringValueFor(
-                            "title_cannot_be_empty",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.title_cannot_be_empty)
-                            }
-                        })
-                    } else {
-                        _titleCannotBeEmpty.value =
-                            context.getString(R.string.title_cannot_be_empty)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _changeLinkData.value = (translationsRepo.getLocalizedStringValueFor(
-                            "change_link_data", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.change_link_data)
-                            }
-                        })
-                    } else {
-                        _changeLinkData.value = context.getString(R.string.change_link_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newName.value = (translationsRepo.getLocalizedStringValueFor(
-                            "new_name", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.new_name)
-                            }
-                        })
-                    } else {
-                        _newName.value = context.getString(R.string.new_name)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newTitle.value = (translationsRepo.getLocalizedStringValueFor(
-                            "new_title", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.new_title)
-                            }
-                        })
-                    } else {
-                        _newTitle.value = context.getString(R.string.new_title)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newNote.value = (translationsRepo.getLocalizedStringValueFor(
-                            "new_note", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.new_note)
-                            }
-                        })
-                    } else {
-                        _newNote.value = context.getString(R.string.new_note)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "leave_above_field_empty_if_you_do_not_want_to_change_the_note",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note)
-                                }
-                            })
-                    } else {
-                        _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote.value =
-                            context.getString(R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _home.value = (translationsRepo.getLocalizedStringValueFor(
-                            "home", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.home)
-                            }
-                        })
-                    } else {
-                        _home.value = context.getString(R.string.home)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _shelfNameAlreadyExists.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "shelf_name_already_exists",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.shelf_name_already_exists)
-                                }
-                            })
-                    } else {
-                        _shelfNameAlreadyExists.value =
-                            context.getString(R.string.shelf_name_already_exists)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newestToOldest.value = (translationsRepo.getLocalizedStringValueFor(
-                            "newest_to_oldest", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.newest_to_oldest)
-                            }
-                        })
-                    } else {
-                        _newestToOldest.value = context.getString(R.string.newest_to_oldest)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _oldestToNewest.value = (translationsRepo.getLocalizedStringValueFor(
-                            "oldest_to_newest", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.oldest_to_newest)
-                            }
-                        })
-                    } else {
-                        _oldestToNewest.value = context.getString(R.string.oldest_to_newest)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _aToZSequence.value = (translationsRepo.getLocalizedStringValueFor(
-                            "a_to_z_sequence", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.a_to_z_sequence)
-                            }
-                        })
-                    } else {
-                        _aToZSequence.value = context.getString(R.string.a_to_z_sequence)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _ztoASequence.value = (translationsRepo.getLocalizedStringValueFor(
-                            "z_to_a_sequence", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.z_to_a_sequence)
-                            }
-                        })
-                    } else {
-                        _ztoASequence.value = context.getString(R.string.z_to_a_sequence)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _search.value = (translationsRepo.getLocalizedStringValueFor(
-                            "search", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.search)
-                            }
-                        })
-                    } else {
-                        _search.value = context.getString(R.string.search)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _collections.value = (translationsRepo.getLocalizedStringValueFor(
-                            "collections", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.collections)
-                            }
-                        })
-                    } else {
-                        _collections.value = context.getString(R.string.collections)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _settings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "settings", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.settings)
-                            }
-                        })
-                    } else {
-                        _settings.value = context.getString(R.string.settings)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _links.value = (translationsRepo.getLocalizedStringValueFor(
-                            "links", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.links)
-                            }
-                        })
-                    } else {
-                        _links.value = context.getString(R.string.links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedFoldersUnarchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_folders_unarchived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_folders_unarchived_successfully)
-                                }
-                            })
-                    } else {
-                        _selectedFoldersUnarchivedSuccessfully.value =
-                            context.getString(R.string.selected_folders_unarchived_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedLinksDeletedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_links_deleted_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_links_deleted_successfully)
-                                }
-                            })
-                    } else {
-                        _selectedLinksDeletedSuccessfully.value =
-                            context.getString(R.string.selected_links_deleted_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedFoldersDeletedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_folders_deleted_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_folders_deleted_successfully)
-                                }
-                            })
-                    } else {
-                        _selectedFoldersDeletedSuccessfully.value =
-                            context.getString(R.string.selected_folders_deleted_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedLinksUnarchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_links_unarchived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_links_unarchived_successfully)
-                                }
-                            })
-                    } else {
-                        _selectedLinksUnarchivedSuccessfully.value =
-                            context.getString(R.string.selected_links_unarchived_successfully)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkUnarchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "link_unarchived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.link_unarchived_successfully)
-                                }
-                            })
-                    } else {
-                        _linkUnarchivedSuccessfully.value =
-                            context.getString(R.string.link_unarchived_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkInfoUpdatedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "link_info_updated_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.link_info_updated_successfully)
-                                }
-                            })
-                    } else {
-                        _linkInfoUpdatedSuccessfully.value =
-                            context.getString(R.string.link_info_updated_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderInfoUpdatedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folder_info_updated_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folder_info_updated_successfully)
-                                }
-                            })
-                    } else {
-                        _folderInfoUpdatedSuccessfully.value =
-                            context.getString(R.string.folder_info_updated_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _archivedLinkDeletedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "archived_link_deleted_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.archived_link_deleted_successfully)
-                                }
-                            })
-                    } else {
-                        _archivedLinkDeletedSuccessfully.value =
-                            context.getString(R.string.archived_link_deleted_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deletedTheNoteSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "deleted_the_note_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.deleted_the_note_successfully)
-                                }
-                            })
-                    } else {
-                        _deletedTheNoteSuccessfully.value =
-                            context.getString(R.string.deleted_the_note_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderUnarchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folder_unarchived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folder_unarchived_successfully)
-                                }
-                            })
-                    } else {
-                        _folderUnarchivedSuccessfully.value =
-                            context.getString(R.string.folder_unarchived_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noLinksWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
-                            "no_links_were_archived",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.no_links_were_archived)
-                            }
-                        })
-                    } else {
-                        _noLinksWereArchived.value =
-                            context.getString(R.string.no_links_were_archived)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noFoldersWereArchived.value = (translationsRepo.getLocalizedStringValueFor(
-                            "no_folders_were_archived",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.no_folders_were_archived)
-                            }
-                        })
-                    } else {
-                        _noFoldersWereArchived.value =
-                            context.getString(R.string.no_folders_were_archived)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _itemsSelected.value = (translationsRepo.getLocalizedStringValueFor(
-                            "items_selected", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.items_selected)
-                            }
-                        })
-                    } else {
-                        _itemsSelected.value = context.getString(R.string.items_selected)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _archive.value = (translationsRepo.getLocalizedStringValueFor(
-                            "archive", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.archive)
-                            }
-                        })
-                    } else {
-                        _archive.value = context.getString(R.string.archive)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "this_folder_does_not_contain_any_links_add_links_for_further_usage",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage)
-                                }
-                            })
-                    } else {
-                        _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage.value =
-                            context.getString(R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noLinksWereFound.value = (translationsRepo.getLocalizedStringValueFor(
-                            "no_links_were_found", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.no_links_were_found)
-                            }
-                        })
-                    } else {
-                        _noLinksWereFound.value = context.getString(R.string.no_links_were_found)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noImportantLinksWereFound.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_important_links_were_found",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_important_links_were_found)
-                                }
-                            })
-                    } else {
-                        _noImportantLinksWereFound.value =
-                            context.getString(R.string.no_important_links_were_found)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noLinksFoundInThisArchivedFolder.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_links_found_in_this_archived_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_links_found_in_this_archived_folder)
-                                }
-                            })
-                    } else {
-                        _noLinksFoundInThisArchivedFolder.value =
-                            context.getString(R.string.no_links_found_in_this_archived_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deletedTheLinkSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "deleted_the_link_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.deleted_the_link_successfully)
-                                }
-                            })
-                    } else {
-                        _deletedTheLinkSuccessfully.value =
-                            context.getString(R.string.deleted_the_link_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _foldersSelected.value = (translationsRepo.getLocalizedStringValueFor(
-                            "folders_selected", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.folders_selected)
-                            }
-                        })
-                    } else {
-                        _foldersSelected.value = context.getString(R.string.folders_selected)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectAllFolders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "select_all_folders", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.select_all_folders)
-                            }
-                        })
-                    } else {
-                        _selectAllFolders.value = context.getString(R.string.select_all_folders)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedFoldersArchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_folders_archived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_folders_archived_successfully)
-                                }
-                            })
-                    } else {
-                        _selectedFoldersArchivedSuccessfully.value =
-                            context.getString(R.string.selected_folders_archived_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newLinkAddedToTheFolder.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "new_link_added_to_the_folder",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.new_link_added_to_the_folder)
-                                }
-                            })
-                    } else {
-                        _newLinkAddedToTheFolder.value =
-                            context.getString(R.string.new_link_added_to_the_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newLinkAddedToImportantLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "new_link_added_to_important_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.new_link_added_to_important_links)
-                                }
-                            })
-                    } else {
-                        _newLinkAddedToImportantLinks.value =
-                            context.getString(R.string.new_link_added_to_important_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newLinkAddedToSavedLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "new_link_added_to_saved_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.new_link_added_to_saved_links)
-                                }
-                            })
-                    } else {
-                        _newLinkAddedToSavedLinks.value =
-                            context.getString(R.string.new_link_added_to_saved_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderArchivedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folder_archived_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folder_archived_successfully)
-                                }
-                            })
-                    } else {
-                        _folderArchivedSuccessfully.value =
-                            context.getString(R.string.folder_archived_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _folderCreatedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folder_created_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folder_created_successfully)
-                                }
-                            })
-                    } else {
-                        _folderCreatedSuccessfully.value =
-                            context.getString(R.string.folder_created_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deletedTheFolder.value = (translationsRepo.getLocalizedStringValueFor(
-                            "deleted_the_folder", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.deleted_the_folder)
-                            }
-                        })
-                    } else {
-                        _deletedTheFolder.value = context.getString(R.string.deleted_the_folder)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _removedLinkFromImportantLinksSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "removed_link_from_important_links_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.removed_link_from_important_links_successfully)
-                                }
-                            })
-                    } else {
-                        _removedLinkFromImportantLinksSuccessfully.value =
-                            context.getString(R.string.removed_link_from_important_links_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addedLinkToImportantLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "added_link_to_important_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.added_link_to_important_links)
-                                }
-                            })
-                    } else {
-                        _addedLinkToImportantLinks.value =
-                            context.getString(R.string.added_link_to_important_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _welcomeBackToLinkora.value = (translationsRepo.getLocalizedStringValueFor(
-                            "welcome_back_to_linkora",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.welcome_back_to_linkora)
-                            }
-                        })
-                    } else {
-                        _welcomeBackToLinkora.value =
-                            context.getString(R.string.welcome_back_to_linkora)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _goodMorning.value = (translationsRepo.getLocalizedStringValueFor(
-                            "good_morning", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.good_morning)
-                            }
-                        })
-                    } else {
-                        _goodMorning.value = context.getString(R.string.good_morning)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _goodAfternoon.value = (translationsRepo.getLocalizedStringValueFor(
-                            "good_afternoon", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.good_afternoon)
-                            }
-                        })
-                    } else {
-                        _goodAfternoon.value = context.getString(R.string.good_afternoon)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _goodEvening.value = (translationsRepo.getLocalizedStringValueFor(
-                            "good_evening", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.good_evening)
-                            }
-                        })
-                    } else {
-                        _goodEvening.value = context.getString(R.string.good_evening)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _goodNight.value = (translationsRepo.getLocalizedStringValueFor(
-                            "good_night", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.good_night)
-                            }
-                        })
-                    } else {
-                        _goodNight.value = context.getString(R.string.good_night)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _heyHi.value = (translationsRepo.getLocalizedStringValueFor(
-                            "hey_hi", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.hey_hi)
-                            }
-                        })
-                    } else {
-                        _heyHi.value = context.getString(R.string.hey_hi)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _defaultShelf.value = (translationsRepo.getLocalizedStringValueFor(
-                            "default_shelf", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.default_shelf)
-                            }
-                        })
-                    } else {
-                        _defaultShelf.value = context.getString(R.string.default_shelf)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _and.value = (translationsRepo.getLocalizedStringValueFor(
-                            "and", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.and)
-                            }
-                        })
-                    } else {
-                        _and.value = context.getString(R.string.and)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _archivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "archived_folders", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.archived_folders)
-                            }
-                        })
-                    } else {
-                        _archivedFolders.value = context.getString(R.string.archived_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _archivedLinks.value = (translationsRepo.getLocalizedStringValueFor(
-                            "archived_links", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.archived_links)
-                            }
-                        })
-                    } else {
-                        _archivedLinks.value = context.getString(R.string.archived_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _history.value = (translationsRepo.getLocalizedStringValueFor(
-                            "history", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.history)
-                            }
-                        })
-                    } else {
-                        _history.value = context.getString(R.string.history)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linksFromFolders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "links_from_folders", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.links_from_folders)
-                            }
-                        })
-                    } else {
-                        _linksFromFolders.value = context.getString(R.string.links_from_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _searchTitlesToFindLinksAndFolders.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "search_titles_to_find_links_and_folders",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.search_titles_to_find_links_and_folders)
-                                }
-                            })
-                    } else {
-                        _searchTitlesToFindLinksAndFolders.value =
-                            context.getString(R.string.search_titles_to_find_links_and_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _searchLinkoraRetrieveAllTheLinksYouSaved.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "search_linkora_retrieve_all_the_links_you_saved",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.search_linkora_retrieve_all_the_links_you_saved)
-                                }
-                            })
-                    } else {
-                        _searchLinkoraRetrieveAllTheLinksYouSaved.value =
-                            context.getString(R.string.search_linkora_retrieve_all_the_links_you_saved)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noMatchingItemsFoundTryADifferentSearch.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_matching_items_found_try_a_different_search",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_matching_items_found_try_a_different_search)
-                                }
-                            })
-                    } else {
-                        _noMatchingItemsFoundTryADifferentSearch.value =
-                            context.getString(R.string.no_matching_items_found_try_a_different_search)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _fromFolders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "from_folders", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.from_folders)
-                            }
-                        })
-                    } else {
-                        _fromFolders.value = context.getString(R.string.from_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _fromSavedLinks.value = (translationsRepo.getLocalizedStringValueFor(
-                            "from_saved_links", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.from_saved_links)
-                            }
-                        })
-                    } else {
-                        _fromSavedLinks.value = context.getString(R.string.from_saved_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _fromImportantLinks.value = (translationsRepo.getLocalizedStringValueFor(
-                            "from_important_links",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.from_important_links)
-                            }
-                        })
-                    } else {
-                        _fromImportantLinks.value = context.getString(R.string.from_important_links)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linksFromHistory.value = (translationsRepo.getLocalizedStringValueFor(
-                            "links_from_history", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.links_from_history)
-                            }
-                        })
-                    } else {
-                        _linksFromHistory.value = context.getString(R.string.links_from_history)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linksFromArchive.value = (translationsRepo.getLocalizedStringValueFor(
-                            "links_from_archive", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.links_from_archive)
-                            }
-                        })
-                    } else {
-                        _linksFromArchive.value = context.getString(R.string.links_from_archive)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _fromArchivedFolders.value = (translationsRepo.getLocalizedStringValueFor(
-                            "from_archived_folders",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.from_archived_folders)
-                            }
-                        })
-                    } else {
-                        _fromArchivedFolders.value =
-                            context.getString(R.string.from_archived_folders)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noLinksWereFoundInHistory.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_links_were_found_in_history",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_links_were_found_in_history)
-                                }
-                            })
-                    } else {
-                        _noLinksWereFoundInHistory.value =
-                            context.getString(R.string.no_links_were_found_in_history)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _headsUp.value = (translationsRepo.getLocalizedStringValueFor(
-                            "heads_up", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.heads_up)
-                            }
-                        })
-                    } else {
-                        _headsUp.value = context.getString(R.string.heads_up)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youAlreadyHaveLinksSaved.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "you_already_have_links_saved",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.you_already_have_links_saved)
-                                }
-                            })
-                    } else {
-                        _youAlreadyHaveLinksSaved.value =
-                            context.getString(R.string.you_already_have_links_saved)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _exportData.value = (translationsRepo.getLocalizedStringValueFor(
-                            "export_data", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.export_data)
-                            }
-                        })
-                    } else {
-                        _exportData.value = context.getString(R.string.export_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importDataAndKeepTheExistingData.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "import_data_and_keep_the_existing_data",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.import_data_and_keep_the_existing_data)
-                                }
-                            })
-                    } else {
-                        _importDataAndKeepTheExistingData.value =
-                            context.getString(R.string.import_data_and_keep_the_existing_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importDataExportAndDeleteTheExistingData.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "import_data_export_and_delete_the_existing_data",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.import_data_export_and_delete_the_existing_data)
-                                }
-                            })
-                    } else {
-                        _importDataExportAndDeleteTheExistingData.value =
-                            context.getString(R.string.import_data_export_and_delete_the_existing_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importDataAndDeleteTheExistingData.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "import_data_and_delete_the_existing_data",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.import_data_and_delete_the_existing_data)
-                                }
-                            })
-                    } else {
-                        _importDataAndDeleteTheExistingData.value =
-                            context.getString(R.string.import_data_and_delete_the_existing_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _incompatibleFileType.value = (translationsRepo.getLocalizedStringValueFor(
-                            "incompatible_file_type",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.incompatible_file_type)
-                            }
-                        })
-                    } else {
-                        _incompatibleFileType.value =
-                            context.getString(R.string.incompatible_file_type)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _dataConversionFailed.value = (translationsRepo.getLocalizedStringValueFor(
-                            "data_conversion_failed",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.data_conversion_failed)
-                            }
-                        })
-                    } else {
-                        _dataConversionFailed.value =
-                            context.getString(R.string.data_conversion_failed)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _selectedFileDoesNotMatchLinkoraSchema.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "selected_file_does_not_match_linkora_schema",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.selected_file_does_not_match_linkora_schema)
-                                }
-                            })
-                    } else {
-                        _selectedFileDoesNotMatchLinkoraSchema.value =
-                            context.getString(R.string.selected_file_does_not_match_linkora_schema)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _thereWasAnIssueImportingTheLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "there_was_an_issue_importing_the_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.there_was_an_issue_importing_the_links)
-                                }
-                            })
-                    } else {
-                        _thereWasAnIssueImportingTheLinks.value =
-                            context.getString(R.string.there_was_an_issue_importing_the_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _chooseAnotherFile.value = (translationsRepo.getLocalizedStringValueFor(
-                            "choose_another_file", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.choose_another_file)
-                            }
-                        })
-                    } else {
-                        _chooseAnotherFile.value = context.getString(R.string.choose_another_file)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _permissionDeniedTitle.value = (translationsRepo.getLocalizedStringValueFor(
-                            "permission_denied_title",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.permission_denied_title)
-                            }
-                        })
-                    } else {
-                        _permissionDeniedTitle.value =
-                            context.getString(R.string.permission_denied_title)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _permissionIsDeniedDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "permission_is_denied_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.permission_is_denied_desc)
-                                }
-                            })
-                    } else {
-                        _permissionIsDeniedDesc.value =
-                            context.getString(R.string.permission_is_denied_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _goToSettings.value = (translationsRepo.getLocalizedStringValueFor(
-                            "go_to_settings", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.go_to_settings)
-                            }
-                        })
-                    } else {
-                        _goToSettings.value = context.getString(R.string.go_to_settings)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _retrievingLatestInformation.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "retrieving_latest_information",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.retrieving_latest_information)
-                                }
-                            })
-                    } else {
-                        _retrievingLatestInformation.value =
-                            context.getString(R.string.retrieving_latest_information)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _newUpdateIsAvailable.value = (translationsRepo.getLocalizedStringValueFor(
-                            "new_update_is_available",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.new_update_is_available)
-                            }
-                        })
-                    } else {
-                        _newUpdateIsAvailable.value =
-                            context.getString(R.string.new_update_is_available)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _currentVersion.value = (translationsRepo.getLocalizedStringValueFor(
-                            "current_version", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.current_version)
-                            }
-                        })
-                    } else {
-                        _currentVersion.value = context.getString(R.string.current_version)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _latestVersion.value = (translationsRepo.getLocalizedStringValueFor(
-                            "latest_version", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.latest_version)
-                            }
-                        })
-                    } else {
-                        _latestVersion.value = context.getString(R.string.latest_version)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkora.value = (translationsRepo.getLocalizedStringValueFor(
-                            "linkora", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.app_name)
-                            }
-                        })
-                    } else {
-                        _linkora.value = context.getString(R.string.app_name)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _releasePageOnGithub.value = (translationsRepo.getLocalizedStringValueFor(
-                            "release_page_on_github",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.release_page_on_github)
-                            }
-                        })
-                    } else {
-                        _releasePageOnGithub.value =
-                            context.getString(R.string.release_page_on_github)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _redirectToLatestReleasePage.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "redirect_to_latest_release_page",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.redirect_to_latest_release_page)
-                                }
-                            })
-                    } else {
-                        _redirectToLatestReleasePage.value =
-                            context.getString(R.string.redirect_to_latest_release_page)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _download.value = (translationsRepo.getLocalizedStringValueFor(
-                            "download", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.download)
-                            }
-                        })
-                    } else {
-                        _download.value = context.getString(R.string.download)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _beta.value = (translationsRepo.getLocalizedStringValueFor(
-                            "beta", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.beta)
-                            }
-                        })
-                    } else {
-                        _beta.value = context.getString(R.string.beta)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _language.value = (translationsRepo.getLocalizedStringValueFor(
-                            "language", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.language)
-                            }
-                        })
-                    } else {
-                        _language.value = context.getString(R.string.language)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _appLanguage.value = (translationsRepo.getLocalizedStringValueFor(
-                            "app_language", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.app_language)
-                            }
-                        })
-                    } else {
-                        _appLanguage.value = context.getString(R.string.app_language)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _resetAppLanguage.value = (translationsRepo.getLocalizedStringValueFor(
-                            "reset_app_language", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.reset_app_language)
-                            }
-                        })
-                    } else {
-                        _resetAppLanguage.value = context.getString(R.string.reset_app_language)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _availableLanguages.value = (translationsRepo.getLocalizedStringValueFor(
-                            "available_languages", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.available_languages)
-                            }
-                        })
-                    } else {
-                        _availableLanguages.value = context.getString(R.string.available_languages)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _about.value = (translationsRepo.getLocalizedStringValueFor(
-                            "about", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.about)
-                            }
-                        })
-                    } else {
-                        _about.value = context.getString(R.string.about)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _checkForLatestVersion.value = (translationsRepo.getLocalizedStringValueFor(
-                            "check_for_latest_version",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.check_for_latest_version)
-                            }
-                        })
-                    } else {
-                        _checkForLatestVersion.value =
-                            context.getString(R.string.check_for_latest_version)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _networkError.value = (translationsRepo.getLocalizedStringValueFor(
-                            "network_error", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.network_error)
-                            }
-                        })
-                    } else {
-                        _networkError.value = context.getString(R.string.network_error)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _isNowAvailable.value = (translationsRepo.getLocalizedStringValueFor(
-                            "is_now_available", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.is_now_available)
-                            }
-                        })
-                    } else {
-                        _isNowAvailable.value = context.getString(R.string.is_now_available)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youAreUsingLatestVersionOfLinkora.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "you_are_using_latest_version_of_linkora",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.you_are_using_latest_version_of_linkora)
-                                }
-                            })
-                    } else {
-                        _youAreUsingLatestVersionOfLinkora.value =
-                            context.getString(R.string.you_are_using_latest_version_of_linkora)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _githubDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "github_desc", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.github_desc)
-                            }
-                        })
-                    } else {
-                        _githubDesc.value = context.getString(R.string.github_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _github.value = (translationsRepo.getLocalizedStringValueFor(
-                            "github", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.github)
-                            }
-                        })
-                    } else {
-                        _github.value = context.getString(R.string.github)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _twitter.value = (translationsRepo.getLocalizedStringValueFor(
-                            "twitter", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.twitter)
-                            }
-                        })
-                    } else {
-                        _twitter.value = context.getString(R.string.twitter)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _autoCheckForUpdates.value = (translationsRepo.getLocalizedStringValueFor(
-                            "auto_check_for_updates",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.auto_check_for_updates)
-                            }
-                        })
-                    } else {
-                        _autoCheckForUpdates.value =
-                            context.getString(R.string.auto_check_for_updates)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _autoCheckForUpdatesDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "auto_check_for_updates_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.auto_check_for_updates_desc)
-                                }
-                            })
-                    } else {
-                        _autoCheckForUpdatesDesc.value =
-                            context.getString(R.string.auto_check_for_updates_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _acknowledgments.value = (translationsRepo.getLocalizedStringValueFor(
-                            "acknowledgments", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.acknowledgments)
-                            }
-                        })
-                    } else {
-                        _acknowledgments.value = context.getString(R.string.acknowledgments)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _data.value = (translationsRepo.getLocalizedStringValueFor(
-                            "data", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.data)
-                            }
-                        })
-                    } else {
-                        _data.value = context.getString(R.string.data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importFeatureIsPolishedNotPerfectDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "import_feature_is_polished_not_perfect_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.import_feature_is_polished_not_perfect_desc)
-                                }
-                            })
-                    } else {
-                        _importFeatureIsPolishedNotPerfectDesc.value =
-                            context.getString(R.string.import_feature_is_polished_not_perfect_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _successfullyExported.value = (translationsRepo.getLocalizedStringValueFor(
-                            "successfully_exported",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.successfully_exported)
-                            }
-                        })
-                    } else {
-                        _successfullyExported.value =
-                            context.getString(R.string.successfully_exported)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _privacy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "privacy", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.privacy)
-                            }
-                        })
-                    } else {
-                        _privacy.value = context.getString(R.string.privacy)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _theme.value = (translationsRepo.getLocalizedStringValueFor(
-                            "theme", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.theme)
-                            }
-                        })
-                    } else {
-                        _theme.value = context.getString(R.string.theme)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _followSystemTheme.value = (translationsRepo.getLocalizedStringValueFor(
-                            "follow_system_theme", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.follow_system_theme)
-                            }
-                        })
-                    } else {
-                        _followSystemTheme.value = context.getString(R.string.follow_system_theme)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useDarkMode.value = (translationsRepo.getLocalizedStringValueFor(
-                            "use_dark_mode", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.use_dark_mode)
-                            }
-                        })
-                    } else {
-                        _useDarkMode.value = context.getString(R.string.use_dark_mode)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useDynamicTheming.value = (translationsRepo.getLocalizedStringValueFor(
-                            "use_dynamic_theming", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.use_dynamic_theming)
-                            }
-                        })
-                    } else {
-                        _useDynamicTheming.value = context.getString(R.string.use_dynamic_theming)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useDynamicThemingDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "use_dynamic_theming_desc",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.use_dynamic_theming_desc)
-                            }
-                        })
-                    } else {
-                        _useDynamicThemingDesc.value =
-                            context.getString(R.string.use_dynamic_theming_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _kotlin.value = (translationsRepo.getLocalizedStringValueFor(
-                            "kotlin", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.kotlin)
-                            }
-                        })
-                    } else {
-                        _kotlin.value = context.getString(R.string.kotlin)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _apacheLicense.value = (translationsRepo.getLocalizedStringValueFor(
-                            "apache_license", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.apache_license)
-                            }
-                        })
-                    } else {
-                        _apacheLicense.value = context.getString(R.string.apache_license)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _androidJetpack.value = (translationsRepo.getLocalizedStringValueFor(
-                            "android_jetpack", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.android_jetpack)
-                            }
-                        })
-                    } else {
-                        _androidJetpack.value = context.getString(R.string.android_jetpack)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _coil.value = (translationsRepo.getLocalizedStringValueFor(
-                            "coil", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.coil)
-                            }
-                        })
-                    } else {
-                        _coil.value = context.getString(R.string.coil)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _materialDesign3.value = (translationsRepo.getLocalizedStringValueFor(
-                            "material_design_3", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.material_design_3)
-                            }
-                        })
-                    } else {
-                        _materialDesign3.value = context.getString(R.string.material_design_3)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _materialIcons.value = (translationsRepo.getLocalizedStringValueFor(
-                            "material_icons", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.material_icons)
-                            }
-                        })
-                    } else {
-                        _materialIcons.value = context.getString(R.string.material_icons)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sendCrashReports.value = (translationsRepo.getLocalizedStringValueFor(
-                            "send_crash_reports", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.send_crash_reports)
-                            }
-                        })
-                    } else {
-                        _sendCrashReports.value = context.getString(R.string.send_crash_reports)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useInAppBrowser.value = (translationsRepo.getLocalizedStringValueFor(
-                            "use_in_app_browser", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.use_in_app_browser)
-                            }
-                        })
-                    } else {
-                        _useInAppBrowser.value = context.getString(R.string.use_in_app_browser)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _useInAppBrowserDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "use_in_app_browser_desc",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.use_in_app_browser_desc)
-                            }
-                        })
-                    } else {
-                        _useInAppBrowserDesc.value =
-                            context.getString(R.string.use_in_app_browser_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _enableHomeScreen.value = (translationsRepo.getLocalizedStringValueFor(
-                            "enable_home_screen", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.enable_home_screen)
-                            }
-                        })
-                    } else {
-                        _enableHomeScreen.value = context.getString(R.string.enable_home_screen)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _enableHomeScreenDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "enable_home_screen_desc",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.enable_home_screen_desc)
-                            }
-                        })
-                    } else {
-                        _enableHomeScreenDesc.value =
-                            context.getString(R.string.enable_home_screen_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _autoDetectTitle.value = (translationsRepo.getLocalizedStringValueFor(
-                            "auto_detect_title", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.auto_detect_title)
-                            }
-                        })
-                    } else {
-                        _autoDetectTitle.value = context.getString(R.string.auto_detect_title)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _autoDetectTitleDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "auto_detect_title_desc",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.auto_detect_title_desc)
-                            }
-                        })
-                    } else {
-                        _autoDetectTitleDesc.value =
-                            context.getString(R.string.auto_detect_title_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showDescriptionForSettings.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_description_for_settings",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_description_for_settings)
-                                }
-                            })
-                    } else {
-                        _showDescriptionForSettings.value =
-                            context.getString(R.string.show_description_for_settings)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _showDescriptionForSettingsDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "show_description_for_settings_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.show_description_for_settings_desc)
-                                }
-                            })
-                    } else {
-                        _showDescriptionForSettingsDesc.value =
-                            context.getString(R.string.show_description_for_settings_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importData.value = (translationsRepo.getLocalizedStringValueFor(
-                            "import_data", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.import_data)
-                            }
-                        })
-                    } else {
-                        _importData.value = context.getString(R.string.import_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _importDataFromExternalJsonFile.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "import_data_from_external_json_file",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.import_data_from_external_json_file)
-                                }
-                            })
-                    } else {
-                        _importDataFromExternalJsonFile.value =
-                            context.getString(R.string.import_data_from_external_json_file)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _exportDataDesc.value = (translationsRepo.getLocalizedStringValueFor(
-                            "export_data_desc", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.export_data_desc)
-                            }
-                        })
-                    } else {
-                        _exportDataDesc.value = context.getString(R.string.export_data_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _addNewPanelToShelf.value = (translationsRepo.getLocalizedStringValueFor(
-                            "add_new_panel_to_shelf",
-                            SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.add_new_panel_to_shelf)
-                            }
-                        })
-                    } else {
-                        _addNewPanelToShelf.value =
-                            context.getString(R.string.add_new_panel_to_shelf)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _panelsInTheShelf.value = (translationsRepo.getLocalizedStringValueFor(
-                            "panels_in_the_shelf", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.panels_in_the_shelf)
-                            }
-                        })
-                    } else {
-                        _panelsInTheShelf.value = context.getString(R.string.panels_in_the_shelf)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noPanelsFound.value = (translationsRepo.getLocalizedStringValueFor(
-                            "no_panels_found", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.no_panels_found)
-                            }
-                        })
-                    } else {
-                        _noPanelsFound.value = context.getString(R.string.no_panels_found)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _shelf.value = (translationsRepo.getLocalizedStringValueFor(
-                            "shelf", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.shelf)
-                            }
-                        })
-                    } else {
-                        _shelf.value = context.getString(R.string.shelf)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _foldersListedInThisPanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "folders_listed_in_this_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.folders_listed_in_this_panel)
-                                }
-                            })
-                    } else {
-                        _foldersListedInThisPanel.value =
-                            context.getString(R.string.folders_listed_in_this_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noFoldersFoundInThisPanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_folders_found_in_this_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_folders_found_in_this_panel)
-                                }
-                            })
-                    } else {
-                        _noFoldersFoundInThisPanel.value =
-                            context.getString(R.string.no_folders_found_in_this_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youCanAddTheFollowingFoldersToThisPanel.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "you_can_add_the_following_folders_to_this_panel",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.you_can_add_the_following_folders_to_this_panel)
-                                }
-                            })
-                    } else {
-                        _youCanAddTheFollowingFoldersToThisPanel.value =
-                            context.getString(R.string.you_can_add_the_following_folders_to_this_panel)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _archivedFoldersDataMigratedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "archived_folders_data_migrated_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.archived_folders_data_migrated_successfully)
-                                }
-                            })
-                    } else {
-                        _archivedFoldersDataMigratedSuccessfully.value =
-                            context.getString(R.string.archived_folders_data_migrated_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _rootFoldersDataMigratedSuccessfully.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "root_folders_data_migrated_successfully",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.root_folders_data_migrated_successfully)
-                                }
-                            })
-                    } else {
-                        _rootFoldersDataMigratedSuccessfully.value =
-                            context.getString(R.string.root_folders_data_migrated_successfully)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteEntireDataPermanently.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "delete_entire_data_permanently",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.delete_entire_data_permanently)
-                                }
-                            })
-                    } else {
-                        _deleteEntireDataPermanently.value =
-                            context.getString(R.string.delete_entire_data_permanently)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteEntireDataPermanentlyDesc.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "delete_entire_data_permanently_desc",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.delete_entire_data_permanently_desc)
-                                }
-                            })
-                    } else {
-                        _deleteEntireDataPermanentlyDesc.value =
-                            context.getString(R.string.delete_entire_data_permanently_desc)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _everySingleBitOfDataIsStoredLocallyOnYourDevice.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "every_single_bit_of_data_is_stored_locally_on_your_device",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.every_single_bit_of_data_is_stored_locally_on_your_device)
-                                }
-                            })
-                    } else {
-                        _everySingleBitOfDataIsStoredLocallyOnYourDevice.value =
-                            context.getString(R.string.every_single_bit_of_data_is_stored_locally_on_your_device)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkoraCollectsDataRelatedToAppCrashes.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "linkora_collects_data_related_to_app_crashes",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.linkora_collects_data_related_to_app_crashes)
-                                }
-                            })
-                    } else {
-                        _linkoraCollectsDataRelatedToAppCrashes.value =
-                            context.getString(R.string.linkora_collects_data_related_to_app_crashes)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _permissionRequiredToWriteTheData.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "permission_required_to_write_the_data",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.permission_required_to_write_the_data)
-                                }
-                            })
-                    } else {
-                        _permissionRequiredToWriteTheData.value =
-                            context.getString(R.string.permission_required_to_write_the_data)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deletedEntireDataFromTheLocalDatabase.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "deleted_entire_data_from_the_local_database",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.deleted_entire_data_from_the_local_database)
-                                }
-                            })
-                    } else {
-                        _deletedEntireDataFromTheLocalDatabase.value =
-                            context.getString(R.string.deleted_entire_data_from_the_local_database)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "linkora_would_not_be_possible_without_the_following_open_source_software_libraries",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries)
-                                }
-                            })
-                    } else {
-                        _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries.value =
-                            context.getString(R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value =
-                            (translationsRepo.getLocalizedStringValueFor(
-                                "no_folders_are_found_create_folders_for_better_organization_of_your_links",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                it.ifNullOrBlank {
-                                    context.getString(R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links)
-                                }
-                            })
-                    } else {
-                        _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks.value =
-                            context.getString(R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links)
-                    }
-                },
-
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _sortFoldersBy.value = (translationsRepo.getLocalizedStringValueFor(
-                            "sort_folders_by", SettingsPreference.preferredAppLanguageCode.value
-                        ).let {
-                            it.ifNullOrBlank {
-                                context.getString(R.string.sort_folders_by)
-                            }
-                        })
-                    } else {
-                        _sortFoldersBy.value = context.getString(R.string.sort_folders_by)
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _general.value =
-                            translationsRepo.getLocalizedStringValueFor(
-                                "general",
-                                SettingsPreference.preferredAppLanguageCode.value
-                            ).let {
-                                if (it.isNullOrBlank()) {
-                                    context.getString(R.string.general)
-                                } else {
-                                    it
-                                }
-                            }
-                    } else {
-                        _general.value = (context.getString(R.string.general))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _userAgentDesc.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "user_agent_desc",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.user_agent_desc)
-                                    }
-                                }
-                                )
-                    } else {
-                        _userAgentDesc.value = (context.getString(R.string.user_agent_desc))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _userAgent.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "user_agent",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.user_agent)
-                                    }
-                                }
-                                )
-                    } else {
-                        _userAgent.value = (context.getString(R.string.user_agent))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingLinks.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refreshing_links",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refreshing_links)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshingLinks.value = (context.getString(R.string.refreshing_links))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _workManagerDesc.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "work_manager_desc",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.work_manager_desc)
-                                    }
-                                }
-                                )
-                    } else {
-                        _workManagerDesc.value = (context.getString(R.string.work_manager_desc))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _linksRefreshed.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "links_refreshed",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.links_refreshed)
-                                    }
-                                }
-                                )
-                    } else {
-                        _linksRefreshed.value = (context.getString(R.string.links_refreshed))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingLinksInfo.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refreshing_links_info",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refreshing_links_info)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshingLinksInfo.value =
-                            (context.getString(R.string.refreshing_links_info))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshAllLinksTitlesAndImages.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refresh_all_links_titles_and_images",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refresh_all_links_titles_and_images)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshAllLinksTitlesAndImages.value =
-                            (context.getString(R.string.refresh_all_links_titles_and_images))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshAllLinksTitlesAndImagesDesc.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refresh_all_links_titles_and_images_desc",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refresh_all_links_titles_and_images_desc)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshAllLinksTitlesAndImagesDesc.value =
-                            (context.getString(R.string.refresh_all_links_titles_and_images_desc))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _of.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "of",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.of)
-                                    }
-                                }
-                                )
-                    } else {
-                        _of.value = (context.getString(R.string.of))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _titleCopiedToClipboard.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "title_copied_to_clipboard",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.title_copied_to_clipboard)
-                                    }
-                                }
-                                )
-                    } else {
-                        _titleCopiedToClipboard.value =
-                            (context.getString(R.string.title_copied_to_clipboard))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _viewNote.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "view_note",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.view_note)
-                                    }
-                                }
-                                )
-                    } else {
-                        _viewNote.value = (context.getString(R.string.view_note))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _rename.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "rename",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.rename)
-                                    }
-                                }
-                                )
-                    } else {
-                        _rename.value = (context.getString(R.string.rename))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshingTitleAndImage.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refreshing_title_and_image",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refreshing_title_and_image)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshingTitleAndImage.value =
-                            (context.getString(R.string.refreshing_title_and_image))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _refreshImageAndTitle.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "refresh_image_and_title",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.refresh_image_and_title)
-                                    }
-                                }
-                                )
-                    } else {
-                        _refreshImageAndTitle.value =
-                            (context.getString(R.string.refresh_image_and_title))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _unarchive.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "unarchive",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.unarchive)
-                                    }
-                                }
-                                )
-                    } else {
-                        _unarchive.value = (context.getString(R.string.unarchive))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteTheNote.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "delete_the_note",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.delete_the_note)
-                                    }
-                                }
-                                )
-                    } else {
-                        _deleteTheNote.value = (context.getString(R.string.delete_the_note))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteFolder.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "delete_folder",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.delete_folder)
-                                    }
-                                }
-                                )
-                    } else {
-                        _deleteFolder.value = (context.getString(R.string.delete_folder))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _deleteLink.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "delete_link",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.delete_link)
-                                    }
-                                }
-                                )
-                    } else {
-                        _deleteLink.value = (context.getString(R.string.delete_link))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _savedNote.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "saved_note",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.saved_note)
-                                    }
-                                }
-                                )
-                    } else {
-                        _savedNote.value = (context.getString(R.string.saved_note))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _noteCopiedToClipboard.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "note_copied_to_clipboard",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.note_copied_to_clipboard)
-                                    }
-                                }
-                                )
-                    } else {
-                        _noteCopiedToClipboard.value =
-                            (context.getString(R.string.note_copied_to_clipboard))
-                    }
-                },
-                async {
-                    count++
-                    if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
-                        _youDidNotAddNoteForThis.value = (
-                                translationsRepo.getLocalizedStringValueFor(
-                                    "you_did_not_add_note_for_this",
-                                    SettingsPreference.preferredAppLanguageCode.value
-                                ).let {
-                                    it.ifNullOrBlank {
-                                        context.getString(R.string.you_did_not_add_note_for_this)
-                                    }
-                                }
-                                )
-                    } else {
-                        _youDidNotAddNoteForThis.value =
-                            (context.getString(R.string.you_did_not_add_note_for_this))
-                    }
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "change_panel_name",
+                        localId = R.string.change_panel_name,
+                        mutableString = _changePanelName,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "edit",
+                        localId = R.string.edit,
+                        mutableString = _edit,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_name_for_panel",
+                        localId = R.string.new_name_for_panel,
+                        mutableString = _newNameForPanel,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "change_note_only",
+                        localId = R.string.change_note_only,
+                        mutableString = _changeNoteOnly,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "change_both_name_and_note",
+                        localId = R.string.change_both_name_and_note,
+                        mutableString = _changeBothNameAndNote,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "title_cannot_be_empty",
+                        localId = R.string.title_cannot_be_empty,
+                        mutableString = _titleCannotBeEmpty,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "change_link_data",
+                        localId = R.string.change_link_data,
+                        mutableString = _changeLinkData,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_name",
+                        localId = R.string.new_name,
+                        mutableString = _newName,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_title",
+                        localId = R.string.new_title,
+                        mutableString = _newTitle,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_note",
+                        localId = R.string.new_note,
+                        mutableString = _newNote,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "leave_above_field_empty_if_you_do_not_want_to_change_the_note",
+                        localId = R.string.leave_above_field_empty_if_you_do_not_want_to_change_the_note,
+                        mutableString = _leaveAboveFieldEmptyIfYouDoNotWantToChangeTheNote,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "home",
+                        localId = R.string.home,
+                        mutableString = _home,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "shelf_name_already_exists",
+                        localId = R.string.shelf_name_already_exists,
+                        mutableString = _shelfNameAlreadyExists,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "newest_to_oldest",
+                        localId = R.string.newest_to_oldest,
+                        mutableString = _newestToOldest,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "oldest_to_newest",
+                        localId = R.string.oldest_to_newest,
+                        mutableString = _oldestToNewest,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "a_to_z_sequence",
+                        localId = R.string.a_to_z_sequence,
+                        mutableString = _aToZSequence,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "z_to_a_sequence",
+                        localId = R.string.z_to_a_sequence,
+                        mutableString = _ztoASequence,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "search",
+                        localId = R.string.search,
+                        mutableString = _search,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "collections",
+                        localId = R.string.collections,
+                        mutableString = _collections,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "settings",
+                        localId = R.string.settings,
+                        mutableString = _settings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links",
+                        localId = R.string.links,
+                        mutableString = _links,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_folders_unarchived_successfully",
+                        localId = R.string.selected_folders_unarchived_successfully,
+                        mutableString = _selectedFoldersUnarchivedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_links_deleted_successfully",
+                        localId = R.string.selected_links_deleted_successfully,
+                        mutableString = _selectedLinksDeletedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_folders_deleted_successfully",
+                        localId = R.string.selected_folders_deleted_successfully,
+                        mutableString = _selectedFoldersDeletedSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_links_unarchived_successfully",
+                        localId = R.string.selected_links_unarchived_successfully,
+                        mutableString = _selectedLinksUnarchivedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_unarchived_successfully",
+                        localId = R.string.link_unarchived_successfully,
+                        mutableString = _linkUnarchivedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "link_info_updated_successfully",
+                        localId = R.string.link_info_updated_successfully,
+                        mutableString = _linkInfoUpdatedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_info_updated_successfully",
+                        localId = R.string.folder_info_updated_successfully,
+                        mutableString = _folderInfoUpdatedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "archived_link_deleted_successfully",
+                        localId = R.string.archived_link_deleted_successfully,
+                        mutableString = _archivedLinkDeletedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "deleted_the_note_successfully",
+                        localId = R.string.deleted_the_note_successfully,
+                        mutableString = _deletedTheNoteSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_unarchived_successfully",
+                        localId = R.string.folder_unarchived_successfully,
+                        mutableString = _folderUnarchivedSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_links_were_archived",
+                        localId = R.string.no_links_were_archived,
+                        mutableString = _noLinksWereArchived,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_folders_were_archived",
+                        localId = R.string.no_folders_were_archived,
+                        mutableString = _noFoldersWereArchived,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "items_selected",
+                        localId = R.string.items_selected,
+                        mutableString = _itemsSelected,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "archive",
+                        localId = R.string.archive,
+                        mutableString = _archive,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "this_folder_does_not_contain_any_links_add_links_for_further_usage",
+                        localId = R.string.this_folder_does_not_contain_any_links_add_links_for_further_usage,
+                        mutableString = _thisFolderDoesNotContainAnyLinksAddLinksForFurtherUsage,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_links_were_found",
+                        localId = R.string.no_links_were_found,
+                        mutableString = _noLinksWereFound,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_important_links_were_found",
+                        localId = R.string.no_important_links_were_found,
+                        mutableString = _noImportantLinksWereFound,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_links_found_in_this_archived_folder",
+                        localId = R.string.no_links_found_in_this_archived_folder,
+                        mutableString = _noLinksFoundInThisArchivedFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "deleted_the_link_successfully",
+                        localId = R.string.deleted_the_link_successfully,
+                        mutableString = _deletedTheLinkSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folders_selected",
+                        localId = R.string.folders_selected,
+                        mutableString = _foldersSelected,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "select_all_folders",
+                        localId = R.string.select_all_folders,
+                        mutableString = _selectAllFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_folders_archived_successfully",
+                        localId = R.string.selected_folders_archived_successfully,
+                        mutableString = _selectedFoldersArchivedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_link_added_to_the_folder",
+                        localId = R.string.new_link_added_to_the_folder,
+                        mutableString = _newLinkAddedToTheFolder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_link_added_to_important_links",
+                        localId = R.string.new_link_added_to_important_links,
+                        mutableString = _newLinkAddedToImportantLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_link_added_to_saved_links",
+                        localId = R.string.new_link_added_to_saved_links,
+                        mutableString = _newLinkAddedToSavedLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_archived_successfully",
+                        localId = R.string.folder_archived_successfully,
+                        mutableString = _folderArchivedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_created_successfully",
+                        localId = R.string.folder_created_successfully,
+                        mutableString = _folderCreatedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "deleted_the_folder",
+                        localId = R.string.deleted_the_folder,
+                        mutableString = _deletedTheFolder,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "removed_link_from_important_links_successfully",
+                        localId = R.string.removed_link_from_important_links_successfully,
+                        mutableString = _removedLinkFromImportantLinksSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "added_link_to_important_links",
+                        localId = R.string.added_link_to_important_links,
+                        mutableString = _addedLinkToImportantLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "welcome_back_to_linkora",
+                        localId = R.string.welcome_back_to_linkora,
+                        mutableString = _welcomeBackToLinkora,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "good_morning",
+                        localId = R.string.good_morning,
+                        mutableString = _goodMorning,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "good_afternoon",
+                        localId = R.string.good_afternoon,
+                        mutableString = _goodAfternoon,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "good_evening",
+                        localId = R.string.good_evening,
+                        mutableString = _goodEvening,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "good_night",
+                        localId = R.string.good_night,
+                        mutableString = _goodNight,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "hey_hi",
+                        localId = R.string.hey_hi,
+                        mutableString = _heyHi,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "default_shelf",
+                        localId = R.string.default_shelf,
+                        mutableString = _defaultShelf,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "and",
+                        localId = R.string.and,
+                        mutableString = _and,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "archived_folders",
+                        localId = R.string.archived_folders,
+                        mutableString = _archivedFolders,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "archived_links",
+                        localId = R.string.archived_links,
+                        mutableString = _archivedLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "history",
+                        localId = R.string.history,
+                        mutableString = _history,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links_from_folders",
+                        localId = R.string.links_from_folders,
+                        mutableString = _linksFromFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "search_titles_to_find_links_and_folders",
+                        localId = R.string.search_titles_to_find_links_and_folders,
+                        mutableString = _searchTitlesToFindLinksAndFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "search_linkora_retrieve_all_the_links_you_saved",
+                        localId = R.string.search_linkora_retrieve_all_the_links_you_saved,
+                        mutableString = _searchLinkoraRetrieveAllTheLinksYouSaved,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_matching_items_found_try_a_different_search",
+                        localId = R.string.no_matching_items_found_try_a_different_search,
+                        mutableString = _noMatchingItemsFoundTryADifferentSearch,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "from_folders",
+                        localId = R.string.from_folders,
+                        mutableString = _fromFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "from_saved_links",
+                        localId = R.string.from_saved_links,
+                        mutableString = _fromSavedLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "from_important_links",
+                        localId = R.string.from_important_links,
+                        mutableString = _fromImportantLinks,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links_from_history",
+                        localId = R.string.links_from_history,
+                        mutableString = _linksFromHistory,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links_from_archive",
+                        localId = R.string.links_from_archive,
+                        mutableString = _linksFromArchive,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "from_archived_folders",
+                        localId = R.string.from_archived_folders,
+                        mutableString = _fromArchivedFolders,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_links_were_found_in_history",
+                        localId = R.string.no_links_were_found_in_history,
+                        mutableString = _noLinksWereFoundInHistory,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "heads_up",
+                        localId = R.string.heads_up,
+                        mutableString = _headsUp,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "you_already_have_links_saved",
+                        localId = R.string.you_already_have_links_saved,
+                        mutableString = _youAlreadyHaveLinksSaved,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data",
+                        localId = R.string.export_data,
+                        mutableString = _exportData,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_and_keep_the_existing_data",
+                        localId = R.string.import_data_and_keep_the_existing_data,
+                        mutableString = _importDataAndKeepTheExistingData,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_export_and_delete_the_existing_data",
+                        localId = R.string.import_data_export_and_delete_the_existing_data,
+                        mutableString = _importDataExportAndDeleteTheExistingData,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_and_delete_the_existing_data",
+                        localId = R.string.import_data_and_delete_the_existing_data,
+                        mutableString = _importDataAndDeleteTheExistingData,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "incompatible_file_type",
+                        localId = R.string.incompatible_file_type,
+                        mutableString = _incompatibleFileType,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "data_conversion_failed",
+                        localId = R.string.data_conversion_failed,
+                        mutableString = _dataConversionFailed,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "selected_file_does_not_match_linkora_schema",
+                        localId = R.string.selected_file_does_not_match_linkora_schema,
+                        mutableString = _selectedFileDoesNotMatchLinkoraSchema,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "there_was_an_issue_importing_the_links",
+                        localId = R.string.there_was_an_issue_importing_the_links,
+                        mutableString = _thereWasAnIssueImportingTheLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "choose_another_file",
+                        localId = R.string.choose_another_file,
+                        mutableString = _chooseAnotherFile,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "permission_denied_title",
+                        localId = R.string.permission_denied_title,
+                        mutableString = _permissionDeniedTitle,
+                        context = context
+                    )
                 },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "permission_is_denied_desc",
+                        localId = R.string.permission_is_denied_desc,
+                        mutableString = _permissionIsDeniedDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "go_to_settings",
+                        localId = R.string.go_to_settings,
+                        mutableString = _goToSettings,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "retrieving_latest_information",
+                        localId = R.string.retrieving_latest_information,
+                        mutableString = _retrievingLatestInformation,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "new_update_is_available",
+                        localId = R.string.new_update_is_available,
+                        mutableString = _newUpdateIsAvailable,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "current_version",
+                        localId = R.string.current_version,
+                        mutableString = _currentVersion,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "latest_version",
+                        localId = R.string.latest_version,
+                        mutableString = _latestVersion,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "linkora",
+                        localId = R.string.app_name,
+                        mutableString = _linkora,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "release_page_on_github",
+                        localId = R.string.release_page_on_github,
+                        mutableString = _releasePageOnGithub,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "redirect_to_latest_release_page",
+                        localId = R.string.redirect_to_latest_release_page,
+                        mutableString = _redirectToLatestReleasePage,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "download",
+                        localId = R.string.download,
+                        mutableString = _download,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "beta",
+                        localId = R.string.beta,
+                        mutableString = _beta,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "language",
+                        localId = R.string.language,
+                        mutableString = _language,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "app_language",
+                        localId = R.string.app_language,
+                        mutableString = _appLanguage,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "reset_app_language",
+                        localId = R.string.reset_app_language,
+                        mutableString = _resetAppLanguage,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "available_languages",
+                        localId = R.string.available_languages,
+                        mutableString = _availableLanguages,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "about",
+                        localId = R.string.about,
+                        mutableString = _about,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "check_for_latest_version",
+                        localId = R.string.check_for_latest_version,
+                        mutableString = _checkForLatestVersion,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "network_error",
+                        localId = R.string.network_error,
+                        mutableString = _networkError,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "is_now_available",
+                        localId = R.string.is_now_available,
+                        mutableString = _isNowAvailable,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "you_are_using_latest_version_of_linkora",
+                        localId = R.string.you_are_using_latest_version_of_linkora,
+                        mutableString = _youAreUsingLatestVersionOfLinkora,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "github_desc",
+                        localId = R.string.github_desc,
+                        mutableString = _githubDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "github",
+                        localId = R.string.github,
+                        mutableString = _github,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "twitter",
+                        localId = R.string.twitter,
+                        mutableString = _twitter,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "auto_check_for_updates",
+                        localId = R.string.auto_check_for_updates,
+                        mutableString = _autoCheckForUpdates,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "auto_check_for_updates_desc",
+                        localId = R.string.auto_check_for_updates_desc,
+                        mutableString = _autoCheckForUpdatesDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "acknowledgments",
+                        localId = R.string.acknowledgments,
+                        mutableString = _acknowledgments,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "data",
+                        localId = R.string.data,
+                        mutableString = _data,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_feature_is_polished_not_perfect_desc",
+                        localId = R.string.import_feature_is_polished_not_perfect_desc,
+                        mutableString = _importFeatureIsPolishedNotPerfectDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "successfully_exported",
+                        localId = R.string.successfully_exported,
+                        mutableString = _successfullyExported,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "privacy",
+                        localId = R.string.privacy,
+                        mutableString = _privacy,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "theme",
+                        localId = R.string.theme,
+                        mutableString = _theme,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "follow_system_theme",
+                        localId = R.string.follow_system_theme,
+                        mutableString = _followSystemTheme,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_dark_mode",
+                        localId = R.string.use_dark_mode,
+                        mutableString = _useDarkMode,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_dynamic_theming",
+                        localId = R.string.use_dynamic_theming,
+                        mutableString = _useDynamicTheming,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_dynamic_theming_desc",
+                        localId = R.string.use_dynamic_theming_desc,
+                        mutableString = _useDynamicThemingDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "kotlin",
+                        localId = R.string.kotlin,
+                        mutableString = _kotlin,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "apache_license",
+                        localId = R.string.apache_license,
+                        mutableString = _apacheLicense,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "android_jetpack",
+                        localId = R.string.android_jetpack,
+                        mutableString = _androidJetpack,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "coil",
+                        localId = R.string.coil,
+                        mutableString = _coil,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "material_design_3",
+                        localId = R.string.material_design_3,
+                        mutableString = _materialDesign3,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "material_icons",
+                        localId = R.string.material_icons,
+                        mutableString = _materialIcons,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "send_crash_reports",
+                        localId = R.string.send_crash_reports,
+                        mutableString = _sendCrashReports,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_in_app_browser",
+                        localId = R.string.use_in_app_browser,
+                        mutableString = _useInAppBrowser,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_in_app_browser_desc",
+                        localId = R.string.use_in_app_browser_desc,
+                        mutableString = _useInAppBrowserDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "enable_home_screen",
+                        localId = R.string.enable_home_screen,
+                        mutableString = _enableHomeScreen,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "enable_home_screen_desc",
+                        localId = R.string.enable_home_screen_desc,
+                        mutableString = _enableHomeScreenDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "auto_detect_title",
+                        localId = R.string.auto_detect_title,
+                        mutableString = _autoDetectTitle,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "auto_detect_title_desc",
+                        localId = R.string.auto_detect_title_desc,
+                        mutableString = _autoDetectTitleDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_description_for_settings",
+                        localId = R.string.show_description_for_settings,
+                        mutableString = _showDescriptionForSettings,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "show_description_for_settings_desc",
+                        localId = R.string.show_description_for_settings_desc,
+                        mutableString = _showDescriptionForSettingsDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data",
+                        localId = R.string.import_data,
+                        mutableString = _importData,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_from_external_json_file",
+                        localId = R.string.import_data_from_external_json_file,
+                        mutableString = _importDataFromExternalJsonFile,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data_desc",
+                        localId = R.string.export_data_desc,
+                        mutableString = _exportDataDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_new_panel_to_shelf",
+                        localId = R.string.add_new_panel_to_shelf,
+                        mutableString = _addNewPanelToShelf,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "panels_in_the_shelf",
+                        localId = R.string.panels_in_the_shelf,
+                        mutableString = _panelsInTheShelf,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_panels_found",
+                        localId = R.string.no_panels_found,
+                        mutableString = _noPanelsFound,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "shelf",
+                        localId = R.string.shelf,
+                        mutableString = _shelf,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folders_listed_in_this_panel",
+                        localId = R.string.folders_listed_in_this_panel,
+                        mutableString = _foldersListedInThisPanel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_folders_found_in_this_panel",
+                        localId = R.string.no_folders_found_in_this_panel,
+                        mutableString = _noFoldersFoundInThisPanel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "you_can_add_the_following_folders_to_this_panel",
+                        localId = R.string.you_can_add_the_following_folders_to_this_panel,
+                        mutableString = _youCanAddTheFollowingFoldersToThisPanel,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "archived_folders_data_migrated_successfully",
+                        localId = R.string.archived_folders_data_migrated_successfully,
+                        mutableString = _archivedFoldersDataMigratedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "root_folders_data_migrated_successfully",
+                        localId = R.string.root_folders_data_migrated_successfully,
+                        mutableString = _rootFoldersDataMigratedSuccessfully,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_entire_data_permanently",
+                        localId = R.string.delete_entire_data_permanently,
+                        mutableString = _deleteEntireDataPermanently,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_entire_data_permanently_desc",
+                        localId = R.string.delete_entire_data_permanently_desc,
+                        mutableString = _deleteEntireDataPermanentlyDesc,
+                        context = context
+                    )
+                },
+
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "every_single_bit_of_data_is_stored_locally_on_your_device",
+                        localId = R.string.every_single_bit_of_data_is_stored_locally_on_your_device,
+                        mutableString = _everySingleBitOfDataIsStoredLocallyOnYourDevice,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "linkora_collects_data_related_to_app_crashes",
+                        localId = R.string.linkora_collects_data_related_to_app_crashes,
+                        mutableString = _linkoraCollectsDataRelatedToAppCrashes,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "permission_required_to_write_the_data",
+                        localId = R.string.permission_required_to_write_the_data,
+                        mutableString = _permissionRequiredToWriteTheData,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "deleted_entire_data_from_the_local_database",
+                        localId = R.string.deleted_entire_data_from_the_local_database,
+                        mutableString = _deletedEntireDataFromTheLocalDatabase,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "linkora_would_not_be_possible_without_the_following_open_source_software_libraries",
+                        localId = R.string.linkora_would_not_be_possible_without_the_following_open_source_software_libraries,
+                        mutableString = _linkoraWouldNotBePossibleWithoutTheFollowingOpenSourceSoftwareLibraries,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_folders_are_found_create_folders_for_better_organization_of_your_links",
+                        localId = R.string.no_folders_are_found_create_folders_for_better_organization_of_your_links,
+                        mutableString = _noFoldersAreFoundCreateFoldersForBetterOrganizationOfYourLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "sort_folders_by",
+                        localId = R.string.sort_folders_by,
+                        mutableString = _sortFoldersBy,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "general",
+                        localId = R.string.general,
+                        mutableString = _general,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "user_agent_desc",
+                        localId = R.string.user_agent_desc,
+                        mutableString = _userAgentDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "user_agent",
+                        localId = R.string.user_agent,
+                        mutableString = _userAgent,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refreshing_links",
+                        localId = R.string.refreshing_links,
+                        mutableString = _refreshingLinks,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "work_manager_desc",
+                        localId = R.string.work_manager_desc,
+                        mutableString = _workManagerDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links_refreshed",
+                        localId = R.string.links_refreshed,
+                        mutableString = _linksRefreshed,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refreshing_links_info",
+                        localId = R.string.refreshing_links_info,
+                        mutableString = _refreshingLinksInfo,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refresh_all_links_titles_and_images",
+                        localId = R.string.refresh_all_links_titles_and_images,
+                        mutableString = _refreshAllLinksTitlesAndImages,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refresh_all_links_titles_and_images_desc",
+                        localId = R.string.refresh_all_links_titles_and_images_desc,
+                        mutableString = _refreshAllLinksTitlesAndImagesDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "of",
+                        localId = R.string.of,
+                        mutableString = _of,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "title_copied_to_clipboard",
+                        localId = R.string.title_copied_to_clipboard,
+                        mutableString = _titleCopiedToClipboard,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "view_note",
+                        localId = R.string.view_note,
+                        mutableString = _viewNote,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "rename",
+                        localId = R.string.rename,
+                        mutableString = _rename,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refreshing_title_and_image",
+                        localId = R.string.refreshing_title_and_image,
+                        mutableString = _refreshingTitleAndImage,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "refresh_image_and_title",
+                        localId = R.string.refresh_image_and_title,
+                        mutableString = _refreshImageAndTitle,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "unarchive",
+                        localId = R.string.unarchive,
+                        mutableString = _unarchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_the_note",
+                        localId = R.string.delete_the_note,
+                        mutableString = _deleteTheNote,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_folder",
+                        localId = R.string.delete_folder,
+                        mutableString = _deleteFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete_link",
+                        localId = R.string.delete_link,
+                        mutableString = _deleteLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "saved_note",
+                        localId = R.string.saved_note,
+                        mutableString = _savedNote,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "note_copied_to_clipboard",
+                        localId = R.string.note_copied_to_clipboard,
+                        mutableString = _noteCopiedToClipboard,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "you_did_not_add_note_for_this",
+                        localId = R.string.you_did_not_add_note_for_this,
+                        mutableString = _youDidNotAddNoteForThis,
+                        context = context
+                    )
+                }
             )
         }.invokeOnCompletion {
             linkoraLog(count.toString())
