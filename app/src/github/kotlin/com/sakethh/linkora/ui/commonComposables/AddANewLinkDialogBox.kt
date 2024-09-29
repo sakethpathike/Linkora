@@ -77,6 +77,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
@@ -124,7 +125,6 @@ fun AddANewLinkDialogBox(
     val intentData = rememberSaveable(inputs = arrayOf(intent)) {
         mutableStateOf(intent)
     }
-    val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
     val isChildFoldersBottomSheetExpanded = mutableStateOf(false)
     val btmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LaunchedEffect(key1 = Unit) {
@@ -133,7 +133,8 @@ fun AddANewLinkDialogBox(
                 this.launch {
                     SettingsPreference.readAllPreferencesValues(context)
                 }.invokeOnCompletion {
-                    firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
+                    FirebaseCrashlytics.getInstance()
+                        .setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
                 }
             }
         })
@@ -160,14 +161,14 @@ fun AddANewLinkDialogBox(
         val noteTextFieldValue = rememberSaveable {
             mutableStateOf("")
         }
-        val selectedFolderName = rememberSaveable {
+        val selectedFolderName = rememberSaveable(LocalizedStrings.savedLinks.value) {
             mutableStateOf(LocalizedStrings.savedLinks.value)
         }
         val selectedFolderID = rememberSaveable {
-            mutableLongStateOf(0)
+            mutableLongStateOf(-1)
         }
         val childFolders =
-            addANewLinkDialogBoxVM.childFolders
+            addANewLinkDialogBoxVM.childFolders.collectAsStateWithLifecycle()
         LinkoraTheme {
             BasicAlertDialog(
                 onDismissRequest = {
@@ -389,22 +390,25 @@ fun AddANewLinkDialogBox(
                                 SelectableFolderUIComponent(
                                     onClick = {
                                         isDropDownMenuIconClicked.value = false
-                                        selectedFolderName.value = "Saved Links"
+                                        selectedFolderName.value = LocalizedStrings.savedLinks.value
+                                        selectedFolderID.longValue = -1
                                     },
                                     folderName = LocalizedStrings.savedLinks.value,
                                     imageVector = Icons.Outlined.Link,
-                                    isComponentSelected = selectedFolderName.value == "Saved Links"
+                                    isComponentSelected = selectedFolderID.longValue == (-1).toLong()
                                 )
                             }
                             item {
                                 SelectableFolderUIComponent(
                                     onClick = {
-                                        selectedFolderName.value = "Important Links"
+                                        selectedFolderName.value =
+                                            LocalizedStrings.importantLinks.value
                                         isDropDownMenuIconClicked.value = false
+                                        selectedFolderID.longValue = -2
                                     },
                                     folderName = LocalizedStrings.importantLinks.value,
                                     imageVector = Icons.Outlined.StarOutline,
-                                    isComponentSelected = selectedFolderName.value == "Important Links"
+                                    isComponentSelected = selectedFolderID.longValue == (-2).toLong()
                                 )
                             }
                             items(parentFoldersData.value) {

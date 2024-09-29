@@ -3,6 +3,7 @@ package com.sakethh.linkora.data.remote.scrape
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
@@ -41,12 +42,28 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                     val pageTitle = document.title()
 
                     val imgURL = when {
-                        !ogImage.isNullOrBlank() -> ogImage
-                        ogImage.isNullOrBlank() && !twitterImage.isNullOrBlank() -> twitterImage
+                        !ogImage.isNullOrBlank() -> {
+                            if (ogImage.startsWith("/")) {
+                                linkoraLog("https://$urlHost$ogImage")
+                                "https://$urlHost$ogImage"
+                            } else {
+                                ogImage
+                            }
+                        }
+
+                        ogImage.isNullOrBlank() && !twitterImage.isNullOrBlank() -> if (twitterImage.startsWith(
+                                "/"
+                            )
+                        ) {
+                            linkoraLog("https://$urlHost$twitterImage")
+                            "https://$urlHost$twitterImage"
+                        } else {
+                            twitterImage
+                        }
                         ogImage.isNullOrBlank() && twitterImage.isNullOrBlank() && !favicon.isNullOrBlank() -> {
                             if (favicon.startsWith("/")) {
-                                "https://" + url.substringAfter("://")
-                                    .substringBefore("/") + favicon
+                                linkoraLog("https://$urlHost$favicon")
+                                "https://$urlHost$favicon"
                             } else {
                                 favicon
                             }

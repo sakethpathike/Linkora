@@ -25,8 +25,8 @@ import java.util.UUID
 
 object SettingsPreference : ViewModel() {
 
-    const val APP_VERSION_NAME = "v0.8.1"
-    const val APP_VERSION_CODE = 29
+    const val APP_VERSION_NAME = "v0.8.2"
+    private const val APP_VERSION_CODE = 30
 
     val Context.dataStore by preferencesDataStore("linkoraDataStore")
 
@@ -55,7 +55,7 @@ object SettingsPreference : ViewModel() {
     val lastSelectedPanelID = mutableLongStateOf(-1)
     val preferredAppLanguageName = mutableStateOf("English")
     val preferredAppLanguageCode = mutableStateOf("en")
-    val totalLocalAppStrings = mutableIntStateOf(285)
+    val totalLocalAppStrings = mutableIntStateOf(303)
     val totalRemoteStrings = mutableIntStateOf(0)
     val remoteStringsLastUpdatedOn = mutableStateOf("")
     val currentlySelectedLinkLayout = mutableStateOf(LinkLayout.REGULAR_LIST_VIEW.name)
