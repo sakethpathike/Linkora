@@ -21,6 +21,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
+import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -208,7 +209,7 @@ open class CollectionsScreenVM @Inject constructor(
         when (specificCollectionsScreenUIEvent) {
             is SpecificCollectionsScreenUIEvent.AddANewLinkInAFolder -> {
                 viewModelScope.launch {
-                    linksRepo.addANewLinkInAFolder(
+                    when (val data = linksRepo.addANewLinkInAFolder(
                         linksTable = LinksTable(
                             title = specificCollectionsScreenUIEvent.title,
                             webURL = specificCollectionsScreenUIEvent.webURL,
@@ -225,14 +226,22 @@ open class CollectionsScreenVM @Inject constructor(
                         ),
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
-                    )
-                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.newLinkAddedToTheFolder.value))
+                    )) {
+                        CommonUiEvent.ShowDeleteDialogBox -> {
+
+                        }
+
+                        is CommonUiEvent.ShowToast -> {
+                            linkoraLog(data.msg)
+                            pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
+                        }
+                    }
                 }
             }
 
             is SpecificCollectionsScreenUIEvent.AddANewLinkInImpLinks -> {
                 viewModelScope.launch {
-                    linksRepo.addANewLinkToImpLinks(
+                    when (val data = linksRepo.addANewLinkToImpLinks(
                         importantLink = ImportantLinks(
                             title = specificCollectionsScreenUIEvent.title,
                             webURL = specificCollectionsScreenUIEvent.webURL,
@@ -242,14 +251,19 @@ open class CollectionsScreenVM @Inject constructor(
                         ),
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle,
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted
-                    )
-                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.newLinkAddedToImportantLinks.value))
+                    )) {
+                        CommonUiEvent.ShowDeleteDialogBox -> pushAUIEvent(CommonUiEvent.ShowDeleteDialogBox)
+                        is CommonUiEvent.ShowToast -> {
+                            linkoraLog(data.msg)
+                            pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
+                        }
+                    }
                 }
             }
 
             is SpecificCollectionsScreenUIEvent.AddANewLinkInSavedLinks -> {
                 viewModelScope.launch {
-                    linksRepo.addANewLinkToSavedLinks(
+                    when (val data = linksRepo.addANewLinkToSavedLinks(
                         linksTable = LinksTable(
                             title = specificCollectionsScreenUIEvent.title,
                             webURL = specificCollectionsScreenUIEvent.webURL,
@@ -266,8 +280,16 @@ open class CollectionsScreenVM @Inject constructor(
                         ),
                         onTaskCompleted = specificCollectionsScreenUIEvent.onTaskCompleted,
                         autoDetectTitle = specificCollectionsScreenUIEvent.autoDetectTitle
-                    )
-                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.newLinkAddedToSavedLinks.value))
+                    )) {
+                        CommonUiEvent.ShowDeleteDialogBox -> {
+
+                        }
+
+                        is CommonUiEvent.ShowToast -> {
+                            linkoraLog(data.msg)
+                            pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
+                        }
+                    }
                 }
             }
 

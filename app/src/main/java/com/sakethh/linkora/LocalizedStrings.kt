@@ -1003,6 +1003,69 @@ object LocalizedStrings : ViewModel() {
                 async {
                     loadStringsHelper(
                         translationsRepo = translationsRepo,
+                        remoteStringID = "invalid_url",
+                        localId = R.string.invalid_url,
+                        mutableString = _invalidUrl,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "given_link_already_exists",
+                        localId = R.string.given_link_already_exists,
+                        mutableString = _givenLinkAlreadyExists,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "could_not_retrieve_metadata_now_but_linkora_saved_the_link",
+                        localId = R.string.could_not_retrieve_metadata_now_but_linkora_saved_the_link,
+                        mutableString = _couldNotRetrieveMetadataNowButLinkoraSavedTheLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "added_the_url",
+                        localId = R.string.added_the_url,
+                        mutableString = _addedTheUrl,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "removed_the_link_from_archive",
+                        localId = R.string.removed_the_link_from_archive,
+                        mutableString = _removedTheLinkFromArchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "moved_the_link_to_archive",
+                        localId = R.string.moved_the_link_to_archive,
+                        mutableString = _movedTheLinkToArchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "remove_from_archive",
+                        localId = R.string.remove_from_archive,
+                        mutableString = _removeFromArchive,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
                         remoteStringID = "clear_image_cache_desc",
                         localId = R.string.clear_image_cache_desc,
                         mutableString = _clearImageCacheDesc,
