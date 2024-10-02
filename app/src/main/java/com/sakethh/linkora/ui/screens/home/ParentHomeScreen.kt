@@ -87,6 +87,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -100,7 +101,6 @@ import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
-import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType

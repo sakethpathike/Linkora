@@ -17,7 +17,7 @@ import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSortingRepo
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences

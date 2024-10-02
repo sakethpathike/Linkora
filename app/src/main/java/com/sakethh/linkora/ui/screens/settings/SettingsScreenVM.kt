@@ -59,7 +59,7 @@ import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder

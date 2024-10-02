@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens
+package com.sakethh.linkora.ui
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier

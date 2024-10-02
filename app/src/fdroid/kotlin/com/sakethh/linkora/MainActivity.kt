@@ -29,10 +29,11 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.ui.CommonUiEvent
+import com.sakethh.linkora.ui.ContentMovingBtmBar
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
-import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -116,7 +117,11 @@ class MainActivity : ComponentActivity() {
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState,
                         sheetContent = {
-                            BottomNavigationBar(navController = navController)
+                            if (true) {
+                                ContentMovingBtmBar()
+                            } else {
+                                BottomNavigationBar(navController = navController)
+                            }
                         }) {
                         Scaffold {
                             MainNavigation(

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreen
 import com.sakethh.linkora.ui.screens.collections.allLinks.AllLinksScreen
 import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen

@@ -51,7 +51,7 @@ import com.sakethh.linkora.data.remote.releases.GitHubReleasesImpl
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperImpl
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import dagger.Module
 import dagger.Provides

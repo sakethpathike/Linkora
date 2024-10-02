@@ -45,9 +45,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.CoilImage
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.CoilImage
 
 
 @OptIn(ExperimentalFoundationApi::class)

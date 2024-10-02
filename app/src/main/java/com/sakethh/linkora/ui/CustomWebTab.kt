@@ -1,6 +1,6 @@
 @file:Suppress("LocalVariableName")
 
-package com.sakethh.linkora.ui.screens
+package com.sakethh.linkora.ui
 
 import android.content.Context
 import android.content.Intent

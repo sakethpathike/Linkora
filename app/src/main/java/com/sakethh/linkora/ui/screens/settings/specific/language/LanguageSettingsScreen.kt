@@ -67,8 +67,8 @@ import com.sakethh.linkora.LocalizedStrings.availableLanguages
 import com.sakethh.linkora.LocalizedStrings.language
 import com.sakethh.linkora.LocalizedStrings.resetAppLanguage
 import com.sakethh.linkora.ui.CommonUiEvent
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageCode

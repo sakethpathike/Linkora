@@ -58,7 +58,7 @@ import com.sakethh.linkora.LocalizedStrings.youAreUsingLatestVersionOfLinkora
 import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent

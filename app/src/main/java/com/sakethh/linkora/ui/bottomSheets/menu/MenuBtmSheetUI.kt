@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.DriveFileMove
 import androidx.compose.material.icons.automirrored.outlined.TextSnippet
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.DriveFileRenameOutline
@@ -33,6 +34,7 @@ import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
 import androidx.compose.material.icons.outlined.Folder
+import androidx.compose.material.icons.outlined.FolderCopy
 import androidx.compose.material.icons.outlined.FolderDelete
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.OpenInBrowser
@@ -68,10 +70,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.CoilImage
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.screens.CoilImage
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.fadedEdges
@@ -310,6 +312,24 @@ fun MenuBtmSheetUI(
                             },
                             elementName = LocalizedStrings.deleteTheNote.value,
                             elementImageVector = Icons.Outlined.Delete
+                        )
+                    }
+                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                        IndividualMenuComponent(
+                            onOptionClick = {
+
+                            },
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else LocalizedStrings.deleteLink.value,
+                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.DeleteForever
+                        )
+                    }
+                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                        IndividualMenuComponent(
+                            onOptionClick = {
+
+                            },
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else LocalizedStrings.deleteLink.value,
+                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.AutoMirrored.Outlined.DriveFileMove else Icons.Outlined.DeleteForever
                         )
                     }
                     if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {

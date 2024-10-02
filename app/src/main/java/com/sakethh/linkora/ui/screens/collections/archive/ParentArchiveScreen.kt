@@ -46,6 +46,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetUI
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBtmSheetType
@@ -53,7 +54,6 @@ import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.launch
 

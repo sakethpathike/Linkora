@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.HomeScreenListTable
@@ -22,9 +23,9 @@ import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolde
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.navigation.NavigationVM
-import com.sakethh.linkora.ui.screens.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -162,34 +163,35 @@ open class HomeScreenVM @Inject constructor(
     }
 
     init {
-        viewModelScope.launch {
-            awaitAll(async {
-                NavigationVM.startDestination.value =
+        NavigationVM.startDestination.value =
                     if (SettingsPreference.isHomeScreenEnabled.value) {
                         NavigationRoutes.HOME_SCREEN.name
                     } else {
                         NavigationRoutes.COLLECTIONS_SCREEN.name
                     }
-            }, async {
-                when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
-                    in 0..11 -> {
-                        currentPhaseOfTheDay.value = LocalizedStrings.goodMorning.value
-                    }
 
-                    in 12..15 -> {
-                        currentPhaseOfTheDay.value = LocalizedStrings.goodAfternoon.value
-                    }
-
-                    in 16..23 -> {
-                        currentPhaseOfTheDay.value = LocalizedStrings.goodEvening.value
-                    }
-
-                    else -> {
-                        currentPhaseOfTheDay.value = LocalizedStrings.heyHi.value
-                    }
+        if (BuildConfig.DEBUG) {
+            currentPhaseOfTheDay.value = "Hello, Dev \uD83D\uDC4B"
+        } else {
+            currentPhaseOfTheDay.value = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
+                in 0..11 -> {
+                    LocalizedStrings.goodMorning.value
                 }
-            })
+
+                in 12..15 -> {
+                    LocalizedStrings.goodAfternoon.value
+                }
+
+                in 16..23 -> {
+                    LocalizedStrings.goodEvening.value
+                }
+
+                else -> {
+                    LocalizedStrings.heyHi.value
+                }
+            }
         }
+
 
         viewModelScope.launch {
             shelfRepo.getAllShelfItems().collectLatest {

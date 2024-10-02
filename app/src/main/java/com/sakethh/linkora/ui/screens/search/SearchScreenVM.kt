@@ -24,7 +24,7 @@ import com.sakethh.linkora.data.local.sorting.links.history.HistoryLinksSortingR
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.CustomWebTab
+import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
