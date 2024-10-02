@@ -108,11 +108,11 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                     )
                 }
             }
-            /*item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
+            item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
                         title = "Use Amoled Theme",
-                        doesDescriptionExists = true,
+                        doesDescriptionExists = false,
                         description = "",
                         isSwitchNeeded = true,
                         isSwitchEnabled = SettingsPreference.shouldFollowAmoledTheme,
@@ -130,7 +130,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                             mutableStateOf(false)
                         })
                 )
-            }*/
+            }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 item(key = "Use dynamic theming") {
                     RegularSettingComponent(

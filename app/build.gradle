@@ -6,9 +6,9 @@ plugins {
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
 
-    // id 'com.google.gms.google-services'
-    // id 'com.google.firebase.crashlytics'
-    // id("com.google.android.gms.oss-licenses-plugin")
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'

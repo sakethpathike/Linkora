@@ -8,7 +8,7 @@ buildscript {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.48.1'
 
 
-        // classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
+        classpath("com.google.android.gms:oss-licenses-plugin:0.10.6")
     }
     repositories {
         google()
@@ -25,6 +25,6 @@ plugins {
     id("com.google.dagger.hilt.android") version "2.48.1" apply false
 
 
-    // id 'com.google.gms.google-services' version '4.3.15' apply false
-    // id 'com.google.firebase.crashlytics' version '2.9.9' apply false
+    id 'com.google.gms.google-services' version '4.3.15' apply false
+    id 'com.google.firebase.crashlytics' version '2.9.9' apply false
 }
