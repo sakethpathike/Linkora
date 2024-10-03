@@ -43,8 +43,16 @@ object TransferActionsBtmBarValues {
             snapshotFlow {
                 sourceFolders.toList()
             }.collectLatest {
+                if (it.toList().isEmpty()) {
+                    reset()
+                }
                 linkoraLog(it.toList().map { it.folderName }.toString())
             }
         }
+    }
+
+    fun reset() {
+        currentTransferActionType.value = TransferActionType.NOTHING
+        sourceFolders.clear()
     }
 }

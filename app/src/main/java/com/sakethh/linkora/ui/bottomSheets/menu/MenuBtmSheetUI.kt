@@ -75,7 +75,6 @@ import com.sakethh.linkora.ui.CoilImage
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.transferActions.TransferActionType
 import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
@@ -177,24 +176,50 @@ fun MenuBtmSheetUI(
                         color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
                 } else {
-                    FolderIndividualComponent(
-                        folderName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle,
-                        folderNote = "",
-                        onMoreIconClick = {
-                            localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
-                            Toast.makeText(
-                                context,
-                                LocalizedStrings.titleCopiedToClipboard.value,
-                                Toast.LENGTH_SHORT
-                            )
-                                .show()
-                        },
-                        onFolderClick = { },
-                        maxLines = 2,
-                        showMoreIcon = false,
-                        folderIcon = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link
+                    Row(
+                        modifier = Modifier
+                            .combinedClickable(interactionSource = remember {
+                                MutableInteractionSource()
+                            }, indication = null,
+                                onClick = {
+                                    localClipBoardManager.setText(AnnotatedString(if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle))
+                                    Toast
+                                        .makeText(
+                                            context,
+                                            LocalizedStrings.titleCopiedToClipboard.value,
+                                            Toast.LENGTH_SHORT
+                                        )
+                                        .show()
+                                })
+                            .pulsateEffect()
+                            .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            imageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.Folder else Icons.Outlined.Link,
+                            null,
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .size(28.dp)
+                        )
+
+                        Text(
+                            text = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) menuBtmSheetParam.folderName else menuBtmSheetParam.linkTitle,
+                            color = MaterialTheme.colorScheme.onSurface,
+                            style = MaterialTheme.typography.titleSmall,
+                            fontSize = 16.sp,
+                            modifier = Modifier.padding(
+                                end = 20.dp
+                            ),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis,
+                            lineHeight = 20.sp
+                        )
+                    }
+                    HorizontalDivider(
+                        modifier = Modifier.padding(start = 25.dp, end = 25.dp),
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
                     )
-                    Spacer(modifier = Modifier.height(5.dp))
                 }
                 if (!isNoteBtnSelected.value) {
                     IndividualMenuComponent(

@@ -1,12 +1,13 @@
 package com.sakethh.linkora.ui.transferActions
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material.icons.Icons
@@ -25,12 +26,13 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TransferActionsBtmBar() {
     val transferActionsBtmBarVM: TransferActionsBtmBarVM = hiltViewModel()
     BottomAppBar {
         IconButton(onClick = {
-            TransferActionsBtmBarVM.reset()
+            TransferActionsBtmBarValues.reset()
         }) {
             Icon(Icons.Default.Cancel, null)
         }
@@ -45,13 +47,15 @@ fun TransferActionsBtmBar() {
                 style = MaterialTheme.typography.titleSmall,
                 fontSize = 12.sp
             )
+            Spacer(Modifier.height(2.dp))
             Text(
-                text = TransferActionsBtmBarValues.sourceFolders.toList()
-                    .joinToString { it.toString() },
+                text = TransferActionsBtmBarValues.sourceFolders.toList().map { it.folderName }
+                    .asReversed()
+                    .joinToString { it },
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 16.sp,
                 modifier = Modifier
-                    .padding(end = 100.dp)
+                    .fillMaxWidth(0.8f)
                     .horizontalScroll(rememberScrollState()),
                 maxLines = 1
             )
@@ -72,7 +76,7 @@ fun TransferActionsBtmBar() {
                         TransferActionType.MOVING_OF_LINKS -> TODO()
                         TransferActionType.NOTHING -> TODO()
                     }
-                    TransferActionsBtmBarVM.reset()
+                    TransferActionsBtmBarValues.reset()
                 }) {
                     Icon(Icons.Default.ContentPaste, null)
                 }

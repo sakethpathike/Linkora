@@ -19,11 +19,4 @@ class TransferActionsBtmBarVM @Inject constructor(
             foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
         }
     }
-
-    companion object {
-        fun reset() {
-            TransferActionsBtmBarValues.currentTransferActionType.value = TransferActionType.NOTHING
-            TransferActionsBtmBarValues.sourceFolders.clear()
-        }
-    }
 }
