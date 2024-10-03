@@ -66,6 +66,9 @@ interface FoldersDao {
     @Query("SELECT COUNT(id) FROM folders_table")
     fun getFoldersCount(): Flow<Int>
 
+    @Query("UPDATE FOLDERS_TABLE SET parentFolderID = :targetParentId WHERE id = :sourceFolderId")
+    suspend fun changeTheParentIdOfASpecificFolder(sourceFolderId: Long, targetParentId: Long?)
+
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
 

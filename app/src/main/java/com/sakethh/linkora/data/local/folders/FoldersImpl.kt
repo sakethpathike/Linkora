@@ -73,6 +73,14 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().getAllArchiveFoldersV9()
     }
 
+    override suspend fun changeTheParentIdOfASpecificFolder(
+        sourceFolderId: Long,
+        targetParentId: Long?
+    ) {
+        localDatabase.foldersDao()
+            .changeTheParentIdOfASpecificFolder(sourceFolderId, targetParentId)
+    }
+
     override suspend fun getAllArchiveFoldersV9List(): List<ArchivedFolders> {
         return localDatabase.foldersDao().getAllArchiveFoldersV9List()
     }

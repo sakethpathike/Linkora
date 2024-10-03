@@ -41,6 +41,7 @@ import androidx.compose.material.icons.outlined.OpenInBrowser
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material.icons.outlined.Share
 import androidx.compose.material.icons.outlined.Unarchive
+import androidx.compose.material.icons.outlined.VerticalAlignTop
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.HorizontalDivider
@@ -317,7 +318,16 @@ fun MenuBtmSheetUI(
                     if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         IndividualMenuComponent(
                             onOptionClick = {
-
+                                menuBtmSheetParam.onMoveToRootFoldersClick()
+                            },
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move to Root Folders" else LocalizedStrings.deleteLink.value,
+                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.VerticalAlignTop else Icons.Outlined.DeleteForever
+                        )
+                    }
+                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                        IndividualMenuComponent(
+                            onOptionClick = {
+                                menuBtmSheetParam.onCopyItemClick()
                             },
                             elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else LocalizedStrings.deleteLink.value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.DeleteForever
@@ -326,7 +336,7 @@ fun MenuBtmSheetUI(
                     if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         IndividualMenuComponent(
                             onOptionClick = {
-
+                                menuBtmSheetParam.onMoveItemClick()
                             },
                             elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else LocalizedStrings.deleteLink.value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.AutoMirrored.Outlined.DriveFileMove else Icons.Outlined.DeleteForever

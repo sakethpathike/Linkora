@@ -171,7 +171,7 @@ open class HomeScreenVM @Inject constructor(
                     }
 
         if (BuildConfig.DEBUG) {
-            currentPhaseOfTheDay.value = "Hello, Dev \uD83D\uDC4B"
+            currentPhaseOfTheDay.value = "Linkora Dev"
         } else {
             currentPhaseOfTheDay.value = when (Calendar.getInstance().get(Calendar.HOUR_OF_DAY)) {
                 in 0..11 -> {

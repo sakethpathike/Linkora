@@ -29,7 +29,6 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.ContentMovingBtmBar
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
 import com.sakethh.linkora.ui.navigation.MainNavigation
@@ -40,6 +39,9 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.transferActions.TransferActionType
+import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBar
+import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -117,8 +119,9 @@ class MainActivity : ComponentActivity() {
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState,
                         sheetContent = {
-                            if (true) {
-                                ContentMovingBtmBar()
+                            if (TransferActionType.entries.filterNot { it == TransferActionType.NOTHING }
+                                    .contains(TransferActionsBtmBarValues.currentTransferActionType.value)) {
+                                TransferActionsBtmBar()
                             } else {
                                 BottomNavigationBar(navController = navController)
                             }
