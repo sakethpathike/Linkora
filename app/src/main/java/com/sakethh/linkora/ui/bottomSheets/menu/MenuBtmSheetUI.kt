@@ -77,6 +77,8 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.transferActions.TransferActionType
+import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
 import com.sakethh.linkora.utils.fadedEdges
 import kotlinx.coroutines.launch
 
@@ -315,7 +317,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
-                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                    if (menuBtmSheetParam.forAChildFolder.value) {
                         IndividualMenuComponent(
                             onOptionClick = {
                                 menuBtmSheetParam.onMoveToRootFoldersClick()
@@ -324,23 +326,26 @@ fun MenuBtmSheetUI(
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.VerticalAlignTop else Icons.Outlined.DeleteForever
                         )
                     }
-                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                        IndividualMenuComponent(
-                            onOptionClick = {
-                                menuBtmSheetParam.onCopyItemClick()
-                            },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else LocalizedStrings.deleteLink.value,
-                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.DeleteForever
-                        )
-                    }
-                    if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
-                        IndividualMenuComponent(
-                            onOptionClick = {
-                                menuBtmSheetParam.onMoveItemClick()
-                            },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else LocalizedStrings.deleteLink.value,
-                            elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.AutoMirrored.Outlined.DriveFileMove else Icons.Outlined.DeleteForever
-                        )
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                        if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                            IndividualMenuComponent(
+                                onOptionClick = {
+                                    menuBtmSheetParam.onCopyItemClick()
+                                },
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else LocalizedStrings.deleteLink.value,
+                                elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.DeleteForever
+                            )
+                        }
+
+                        if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
+                            IndividualMenuComponent(
+                                onOptionClick = {
+                                    menuBtmSheetParam.onMoveItemClick()
+                                },
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else LocalizedStrings.deleteLink.value,
+                                elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.AutoMirrored.Outlined.DriveFileMove else Icons.Outlined.DeleteForever
+                            )
+                        }
                     }
                     if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         IndividualMenuComponent(

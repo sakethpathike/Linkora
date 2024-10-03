@@ -102,6 +102,8 @@ import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.transferActions.TransferActionType
+import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -933,84 +935,35 @@ fun SpecificCollectionScreen(navController: NavController) {
                 )
             }
 
-            @Composable
-            fun CommonArchivedSubFolders(folderData: FoldersTable) {
-                FolderIndividualComponent(
-                    showCheckBox = areElementsSelectable,
-                    isCheckBoxChecked = mutableStateOf(
-                        specificCollectionsScreenVM.selectedFoldersData.contains(
-                            folderData
-                        )
-                    ),
-                    checkBoxState = { checkBoxState ->
-                        if (checkBoxState) {
-                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                folderData
-                            )
-                        } else {
-                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
-                                it == folderData
-                            }
-                        }
-                    },
-                    folderName = folderData.folderName,
-                    folderNote = folderData.infoForSaving,
-                    onMoreIconClick = {
-                        selectedItemTitle.value = folderData.folderName
-                        selectedItemNote.value = folderData.infoForSaving
-                        CollectionsScreenVM.selectedFolderData.value =
-                            folderData
-                        selectedURLOrFolderNote.value =
-                            folderData.infoForSaving
-                        clickedFolderNote.value = folderData.infoForSaving
-                        coroutineScope.launch {
-                            optionsBtmSheetVM.updateArchiveFolderCardData(
-                                folderData.id
-                            )
-                        }
-                        clickedFolderName.value = folderData.folderName
-                        shouldOptionsBtmModalSheetBeVisible.value = true
-                        SpecificCollectionsScreenVM.selectedBtmSheetType.value =
-                            OptionsBtmSheetType.FOLDER
-                    },
-                    showMoreIcon = !areElementsSelectable.value,
-                    onLongClick = {
-                        if (!areElementsSelectable.value) {
-                            areElementsSelectable.value = true
-                            specificCollectionsScreenVM.areAllFoldersChecked.value =
-                                false
-                            specificCollectionsScreenVM.changeAllFoldersSelectedData()
-                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                folderData
-                            )
-                        }
-                    },
-                    onFolderClick = { _ ->
-                        if (!areElementsSelectable.value) {
-                            CollectionsScreenVM.currentClickedFolderData.value =
-                                folderData
-                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                        }
-                    })
-            }
 
             @Composable
             fun CommonRegularSubFolders(folderData: FoldersTable) {
                 FolderIndividualComponent(
-                    showCheckBox = areElementsSelectable,
-                    isCheckBoxChecked = mutableStateOf(
+                    showCheckBoxInsteadOfMoreIcon = areElementsSelectable,
+                    isCheckBoxChecked = if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
                         specificCollectionsScreenVM.selectedFoldersData.contains(
                             folderData
                         )
-                    ),
+                    ) else mutableStateOf(TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                        .contains(folderData.id)),
                     checkBoxState = { checkBoxState ->
-                        if (checkBoxState) {
-                            specificCollectionsScreenVM.selectedFoldersData.add(
-                                folderData
-                            )
+                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                            if (checkBoxState) {
+                                specificCollectionsScreenVM.selectedFoldersData.add(
+                                    folderData
+                                )
+                            } else {
+                                specificCollectionsScreenVM.selectedFoldersData.removeAll {
+                                    it == folderData
+                                }
+                            }
                         } else {
-                            specificCollectionsScreenVM.selectedFoldersData.removeAll {
-                                it == folderData
+                            if (checkBoxState) {
+                                TransferActionsBtmBarValues.sourceFolders.add(folderData)
+                            } else {
+                                TransferActionsBtmBarValues.sourceFolders.removeAll {
+                                    it == folderData
+                                }
                             }
                         }
                     },
@@ -1036,10 +989,19 @@ fun SpecificCollectionScreen(navController: NavController) {
                     },
                     showMoreIcon = !areElementsSelectable.value,
                     onFolderClick = { _ ->
-                        if (!areElementsSelectable.value) {
+                        if (!areElementsSelectable.value && !TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                .contains(folderData.id)) {
                             CollectionsScreenVM.currentClickedFolderData.value =
                                 folderData
                             navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                        }
+                        if (TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                .contains(folderData.id)) {
+                            Toast.makeText(
+                                context,
+                                "You cannot move a folder in itself",
+                                Toast.LENGTH_SHORT
+                            ).show()
                         }
                     }, onLongClick = {
                         if (!areElementsSelectable.value) {
@@ -1143,7 +1105,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         key = { folderIndex, foldersTable ->
                                             foldersTable.folderName + foldersTable.id.toString()
                                         }) { folderIndex, folderData ->
-                                        CommonArchivedSubFolders(folderData)
+                                        CommonRegularSubFolders(folderData)
                                     }
                                 }
                                 if (archivedFoldersLinksData.isNotEmpty()) {
@@ -1261,7 +1223,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }, span = { _, _ ->
                                             GridItemSpan(this.maxLineSpan)
                                         }) { folderIndex, folderData ->
-                                        CommonArchivedSubFolders(folderData)
+                                        CommonRegularSubFolders(folderData)
                                     }
                                 }
                                 if (archivedFoldersLinksData.isNotEmpty()) {
@@ -1375,7 +1337,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }, span = { _, _ ->
                                             StaggeredGridItemSpan.FullLine
                                         }) { folderIndex, folderData ->
-                                        CommonArchivedSubFolders(folderData)
+                                        CommonRegularSubFolders(folderData)
                                     }
                                 }
                                 if (archivedFoldersLinksData.isNotEmpty()) {
@@ -1431,9 +1393,19 @@ fun SpecificCollectionScreen(navController: NavController) {
             MenuBtmSheetParam(
                 onMoveToRootFoldersClick = {
                     specificCollectionsScreenVM.changeTheParentIdOfASpecificFolder(
-                        sourceFolderId = CollectionsScreenVM.selectedFolderData.value.id,
+                        sourceFolderId = listOf(CollectionsScreenVM.selectedFolderData.value.id),
                         targetParentId = null
                     )
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }.invokeOnCompletion {
+                        shouldOptionsBtmModalSheetBeVisible.value = false
+                    }
+                },
+                onMoveItemClick = {
+                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                        TransferActionType.MOVING_OF_FOLDERS
+                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
                     coroutineScope.launch {
                         btmModalSheetState.hide()
                     }.invokeOnCompletion {

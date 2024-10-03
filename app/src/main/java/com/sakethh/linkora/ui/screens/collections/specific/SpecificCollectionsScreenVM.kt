@@ -204,7 +204,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
         }
     }
 
-    fun changeTheParentIdOfASpecificFolder(sourceFolderId: Long, targetParentId: Long?) {
+    fun changeTheParentIdOfASpecificFolder(sourceFolderId: List<Long>, targetParentId: Long?) {
         viewModelScope.launch {
             foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderId, targetParentId)
         }

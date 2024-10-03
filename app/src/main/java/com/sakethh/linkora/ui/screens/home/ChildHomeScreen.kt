@@ -245,7 +245,7 @@ fun ChildHomeScreen(
     @Composable
     fun FolderIndividualComponentImpl(folderElement: FoldersTable) {
         FolderIndividualComponent(
-            showCheckBox = homeScreenVM.isSelectionModeEnabled,
+            showCheckBoxInsteadOfMoreIcon = homeScreenVM.isSelectionModeEnabled,
             isCheckBoxChecked = mutableStateOf(
                 homeScreenVM.selectedFoldersData.contains(
                     folderElement

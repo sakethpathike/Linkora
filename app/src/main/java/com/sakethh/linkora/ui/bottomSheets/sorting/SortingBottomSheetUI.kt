@@ -104,7 +104,7 @@ fun SortingBottomSheetUI(
                                 didAnyCheckBoxStateChanged.value = true
                             },
                             showMoreIcon = false,
-                            showCheckBox = mutableStateOf(true),
+                            showCheckBoxInsteadOfMoreIcon = mutableStateOf(true),
                             checkBoxState = {
                                 didAnyCheckBoxStateChanged.value = true
                                 foldersSortingSelectedState.value = it
@@ -122,7 +122,7 @@ fun SortingBottomSheetUI(
                                 didAnyCheckBoxStateChanged.value = true
                             },
                             showMoreIcon = false,
-                            showCheckBox = mutableStateOf(true),
+                            showCheckBoxInsteadOfMoreIcon = mutableStateOf(true),
                             checkBoxState = {
                                 linksSortingSelectedState.value = it
                                 didAnyCheckBoxStateChanged.value = true

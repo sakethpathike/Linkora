@@ -105,6 +105,8 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.transferActions.TransferActionType
+import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -281,7 +283,10 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Box(modifier = Modifier.animateContentSize()) {
                         Column {
-                            if (!areFoldersSelectable.value || foldersData.isEmpty()) {
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty())
+                                && TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.MOVING_OF_FOLDERS
+                                && TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.COPYING_OF_FOLDERS
+                            ) {
                                 Card(
                                     modifier = Modifier
                                         .padding(
@@ -555,7 +560,7 @@ fun CollectionsScreen(navController: NavController) {
                                     collectionsScreenVM.selectedFoldersData.add(folderData)
                                 }
                             },
-                            showCheckBox = areFoldersSelectable,
+                            showCheckBoxInsteadOfMoreIcon = areFoldersSelectable,
                             isCheckBoxChecked = mutableStateOf(
                                 collectionsScreenVM.selectedFoldersData.contains(
                                     folderData
@@ -835,7 +840,7 @@ fun FolderIndividualComponent(
     maxLines: Int = 1,
     showMoreIcon: Boolean,
     folderIcon: ImageVector = Icons.Outlined.Folder,
-    showCheckBox: MutableState<Boolean> = rememberSaveable {
+    showCheckBoxInsteadOfMoreIcon: MutableState<Boolean> = rememberSaveable {
         mutableStateOf(false)
     },
     checkBoxState: (Boolean) -> Unit = {},
@@ -844,12 +849,13 @@ fun FolderIndividualComponent(
     },
     onLongClick: () -> Unit = {},
     inSelectionMode: Boolean = false,
+    inTransferringContentMode: MutableState<Boolean> = mutableStateOf(TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING)
 ) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                if (showCheckBox.value && isCheckBoxChecked.value) MaterialTheme.colorScheme.primary.copy(
+                if ((showCheckBoxInsteadOfMoreIcon.value || inTransferringContentMode.value) && isCheckBoxChecked.value) MaterialTheme.colorScheme.primary.copy(
                     0.25f
                 ) else Color.Transparent
             )
@@ -870,16 +876,29 @@ fun FolderIndividualComponent(
                 .pulsateEffect()
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(
-                imageVector = folderIcon,
-                contentDescription = null,
-                modifier = Modifier
-                    .padding(20.dp)
-                    .size(28.dp)
-            )
+            if (!inTransferringContentMode.value) {
+                Icon(
+                    imageVector = folderIcon,
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(28.dp)
+                )
+            } else {
+                Checkbox(
+                    checked = isCheckBoxChecked.value,
+                    onCheckedChange = {
+                        checkBoxState(it)
+                        isCheckBoxChecked.value = it
+                    },
+                    modifier = Modifier
+                        .padding(20.dp)
+                        .size(28.dp)
+                )
+            }
             Column(
                 modifier = Modifier
-                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBox.value) 0.78f else 1f),
+                    .fillMaxWidth(if (showMoreIcon) 0.80f else if (showCheckBoxInsteadOfMoreIcon.value) 0.78f else 1f),
                 verticalArrangement = Arrangement.SpaceEvenly
             ) {
                 Text(
@@ -919,14 +938,7 @@ fun FolderIndividualComponent(
                         )
                     }
                 }
-                if (showCheckBox.value && inSelectionMode) {
-                    Checkbox(
-                        checked = isCheckBoxChecked.value,
-                        onCheckedChange = {
-                            checkBoxState(it)
-                            isCheckBoxChecked.value = it
-                        })
-                } else if (showCheckBox.value && !inSelectionMode) {
+                if (showCheckBoxInsteadOfMoreIcon.value) {
                     Checkbox(
                         checked = isCheckBoxChecked.value,
                         onCheckedChange = {
