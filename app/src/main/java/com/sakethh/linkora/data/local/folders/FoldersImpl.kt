@@ -74,7 +74,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
     }
 
     override suspend fun changeTheParentIdOfASpecificFolder(
-        sourceFolderId: Long,
+        sourceFolderId: List<Long>,
         targetParentId: Long?
     ) {
         localDatabase.foldersDao()

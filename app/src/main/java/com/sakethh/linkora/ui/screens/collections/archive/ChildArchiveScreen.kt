@@ -269,7 +269,7 @@ fun ChildArchiveScreen(
                         archivedFolders.id.toString() + archivedFolders.archiveFolderName + archivedFolders.id.toString()
                     }) { index, it ->
                         FolderIndividualComponent(
-                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            showCheckBoxInsteadOfMoreIcon = archiveScreenVM.isSelectionModeEnabled,
                             isCheckBoxChecked = mutableStateOf(
                                 archiveScreenVM.selectedFoldersID.contains(
                                     it.id
@@ -321,7 +321,7 @@ fun ChildArchiveScreen(
                             foldersTable.folderName + foldersTable.id.toString() + foldersTable.folderName
                         }) { index, it ->
                         FolderIndividualComponent(
-                            showCheckBox = archiveScreenVM.isSelectionModeEnabled,
+                            showCheckBoxInsteadOfMoreIcon = archiveScreenVM.isSelectionModeEnabled,
                             isCheckBoxChecked = mutableStateOf(
                                 archiveScreenVM.selectedFoldersID.contains(
                                     it.id

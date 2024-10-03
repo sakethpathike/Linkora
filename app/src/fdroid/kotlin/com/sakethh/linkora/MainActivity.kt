@@ -85,10 +85,14 @@ class MainActivity : ComponentActivity() {
                         NavigationRoutes.SETTINGS_SCREEN.name
                     )
                 }
-                LaunchedEffect(key1 = currentRoute, key2 = SearchScreenVM.isSearchEnabled.value) {
-                    if (rootRoutes.any {
+                LaunchedEffect(
+                    key1 = currentRoute,
+                    key2 = SearchScreenVM.isSearchEnabled.value,
+                    key3 = TransferActionsBtmBarValues.currentTransferActionType.value
+                ) {
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING || (rootRoutes.any {
                             it == currentRoute
-                        } && !SearchScreenVM.isSearchEnabled.value) {
+                        } && !SearchScreenVM.isSearchEnabled.value)) {
                         coroutineScope.launch {
                             bottomBarSheetState.bottomSheetState.expand()
                         }
@@ -119,8 +123,7 @@ class MainActivity : ComponentActivity() {
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState,
                         sheetContent = {
-                            if (TransferActionType.entries.filterNot { it == TransferActionType.NOTHING }
-                                    .contains(TransferActionsBtmBarValues.currentTransferActionType.value)) {
+                            if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
                                 TransferActionsBtmBar()
                             } else {
                                 BottomNavigationBar(navController = navController)

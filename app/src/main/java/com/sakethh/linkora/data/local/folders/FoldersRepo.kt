@@ -16,7 +16,10 @@ interface FoldersRepo {
 
     fun getAllArchiveFoldersV9(): Flow<List<ArchivedFolders>>
 
-    suspend fun changeTheParentIdOfASpecificFolder(sourceFolderId: Long, targetParentId: Long?)
+    suspend fun changeTheParentIdOfASpecificFolder(
+        sourceFolderId: List<Long>,
+        targetParentId: Long?
+    )
 
     suspend fun getAllArchiveFoldersV9List(): List<ArchivedFolders>
 

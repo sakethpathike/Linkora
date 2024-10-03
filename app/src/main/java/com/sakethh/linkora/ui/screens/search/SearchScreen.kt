@@ -578,7 +578,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     }
                                                 },
-                                                showCheckBox = isSelectionModeEnabled,
+                                                showCheckBoxInsteadOfMoreIcon = isSelectionModeEnabled,
                                                 isCheckBoxChecked = mutableStateOf(
                                                     searchScreenVM.selectedFoldersData.contains(
                                                         folderData
@@ -1255,7 +1255,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     }
                                                 },
-                                                showCheckBox = isSelectionModeEnabled,
+                                                showCheckBoxInsteadOfMoreIcon = isSelectionModeEnabled,
                                                 isCheckBoxChecked = mutableStateOf(
                                                     SearchScreenVM.selectedArchiveFoldersData.contains(
                                                         folderData
