@@ -529,6 +529,34 @@ fun CollectionsScreen(navController: NavController) {
                             foldersData.id.toString() + foldersData.folderName
                         }) { folderIndex, folderData ->
                         FolderIndividualComponent(
+                            isCheckBoxChecked = if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
+                                collectionsScreenVM.selectedFoldersData.contains(
+                                    folderData
+                                )
+                            ) else mutableStateOf(TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                .contains(folderData.id)),
+                            checkBoxState = { checkBoxState ->
+                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                                    if (checkBoxState) {
+                                        collectionsScreenVM.selectedFoldersData.add(
+                                            folderData
+                                        )
+                                    } else {
+                                        collectionsScreenVM.selectedFoldersData.removeAll {
+                                            it == folderData
+                                        }
+                                    }
+                                } else {
+                                    if (checkBoxState) {
+                                        TransferActionsBtmBarValues.sourceFolders.add(folderData)
+                                    } else {
+                                        TransferActionsBtmBarValues.sourceFolders.removeAll {
+                                            it == folderData
+                                        }
+                                    }
+                                }
+                            },
+                            showCheckBoxInsteadOfMoreIcon = areFoldersSelectable,
                             showMoreIcon = !areFoldersSelectable.value,
                             folderName = folderData.folderName,
                             folderNote = folderData.infoForSaving,
@@ -543,13 +571,22 @@ fun CollectionsScreen(navController: NavController) {
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             },
                             onFolderClick = {
-                                if (!areFoldersSelectable.value) {
+                                if (!areFoldersSelectable.value && !TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                        .contains(folderData.id)) {
                                     SpecificCollectionsScreenVM.inARegularFolder.value = true
                                     SpecificCollectionsScreenVM.screenType.value =
                                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     CollectionsScreenVM.currentClickedFolderData.value = folderData
                                     CollectionsScreenVM.rootFolderID = folderData.id
                                     navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                }
+                                if (TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                        .contains(folderData.id)) {
+                                    Toast.makeText(
+                                        context,
+                                        "You cannot move a folder in itself",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                 }
                             },
                             onLongClick = {
@@ -558,21 +595,6 @@ fun CollectionsScreen(navController: NavController) {
                                     collectionsScreenVM.areAllFoldersChecked.value = false
                                     collectionsScreenVM.changeAllFoldersSelectedData()
                                     collectionsScreenVM.selectedFoldersData.add(folderData)
-                                }
-                            },
-                            showCheckBoxInsteadOfMoreIcon = areFoldersSelectable,
-                            isCheckBoxChecked = mutableStateOf(
-                                collectionsScreenVM.selectedFoldersData.contains(
-                                    folderData
-                                )
-                            ),
-                            checkBoxState = { checkBoxState ->
-                                if (checkBoxState) {
-                                    collectionsScreenVM.selectedFoldersData.add(folderData)
-                                } else {
-                                    collectionsScreenVM.selectedFoldersData.removeAll {
-                                        it == folderData
-                                    }
                                 }
                             })
                     }
@@ -609,6 +631,16 @@ fun CollectionsScreen(navController: NavController) {
         }
         MenuBtmSheetUI(
             MenuBtmSheetParam(
+                onMoveItemClick = {
+                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                        TransferActionType.MOVING_OF_FOLDERS
+                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }.invokeOnCompletion {
+                        shouldOptionsBtmModalSheetBeVisible.value = false
+                    }
+                },
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = OptionsBtmSheetType.FOLDER,
@@ -795,7 +827,9 @@ fun CollectionsScreen(navController: NavController) {
         )
     }
     BackHandler {
-        if (isMainFabRotated.value) {
+        if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+            TransferActionsBtmBarValues.reset()
+        } else if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false
             coroutineScope.launch {
                 awaitAll(async {
@@ -867,8 +901,10 @@ fun FolderIndividualComponent(
                 }, indication = null,
                     onClick = {
                         onFolderClick(isCheckBoxChecked.value)
-                        isCheckBoxChecked.value = !isCheckBoxChecked.value
-                        checkBoxState(isCheckBoxChecked.value)
+                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                            isCheckBoxChecked.value = !isCheckBoxChecked.value
+                            checkBoxState(isCheckBoxChecked.value)
+                        }
                     },
                     onLongClick = {
                         onLongClick()
