@@ -1,5 +1,5 @@
-![Linkora Header](https://github.com/user-attachments/assets/f691072c-a515-4ad1-b5d4-4fdbf2eff401)
-**Linkora** is your straightforward solution for organizing links on Android. Whether you’re saving a single link or categorizing them into folders, Linkora simplifies the process.
+![Linkora Header](https://github.com/user-attachments/assets/30302044-6c21-4179-88e0-ed0c513a4a59)
+**Linkora** is the ultimate tool for organizing links on Android. Whether you need to save a quick link or manage them in detailed folders, Linkora gets it done.
 
 ## Download
 
@@ -12,67 +12,47 @@ height="80">](https://github.com/sakethpathike/Linkora/releases) [<img src="http
 
 ## Features
 
-- Save links effortlessly.
-- Organize links into folders for a cleaner view.
-- Create subfolders for detailed organization.
-- Mark links as important for quick access.
-- Archive old links or folders to keep your space clutter-free.
-- Customize link names to fit your needs.
-- Share links seamlessly from other apps.
-- Quickly find and sort through your links and folders.
-- Import and export your data.
-- Linkora automatically recognizes images and titles when available.
-- Customize your home screen by adding any folders you want to the **_Shelf_**, making it easy to
-  access
-  the most important ones.
-- Linkora's latest update supports Hindi locally and features remote string loading, making it
-  easier to add languages without app updates. To contribute language strings, please refer to [this guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md).
+- Save and organize links with ease.
+- Categorize links into folders and subfolders.
+- Highlight important links for quick access.
+- Archive old links to keep things tidy.
+- Customize link names to your preference.
+- Share directly from other apps.
+- Sort and search links and folders quickly.
+- Import and export data easily (this is being written and will be updated with the standard HTML-based schema).
+- Auto-recognize link images and titles.
+- Add folders to your **_Shelf_** for instant home screen access.
+- Hindi language support, with remote string loading to update languages seamlessly. For details on contributing language strings, check [this guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md).
 
 ## Screenshots
 
-|  |  |  |
-|-----------------------|-----------------------|-----------------------|
-| ![Linkora UI Screenshot](assets/1.png) | ![Linkora UI Screenshot](assets/2.png) | ![Linkora UI Screenshot](assets/3.png) |
-| ![Linkora UI Screenshot](assets/4.png) | ![Linkora UI Screenshot](assets/5.png) | ![Linkora UI Screenshot](assets/6.png) |
-| ![Linkora UI Screenshot](assets/7.png) | ![Linkora UI Screenshot](assets/8.png) | ![Linkora UI Screenshot](assets/9.png) |
+|                                         |  |  |  |
+|-----------------------------------------|-----------------------|-----------------------|-----------------------|
+| ![Linkora UI Screenshot](assets/1.jpeg) | ![Linkora UI Screenshot](assets/2.jpeg) | ![Linkora UI Screenshot](assets/3.jpeg) | ![Linkora UI Screenshot](assets/4.jpeg) |
+| ![Linkora UI Screenshot](assets/5.jpeg) | ![Linkora UI Screenshot](assets/6.jpeg) | ![Linkora UI Screenshot](assets/7.jpeg) | ![Linkora UI Screenshot](assets/8.jpeg) |
 
 |                            Sharing links from other apps                            |
 |:-----------------------------------------------------------------------------------:|
-| <video src="https://github.com/user-attachments/assets/49b5ff34-6b9d-4e85-8f93-fd6a762d782f"></video> |
+| <video src="https://github.com/user-attachments/assets/b1614d54-2df6-46d0-865a-f6ba16854c6c"></video> |
 
 ## Tech Stack
 
-- **Kotlin**: The project is developed entirely in Kotlin.
-- **Jetpack Compose**: The UI is built with Jetpack Compose, making the project fully Compose-based.
-- **Material 3**: Utilizes the latest Material 3 components for a modern UI.
-- **Room**: Manages local data storage efficiently.
-- **Kotlin Coroutines**: Handles background tasks efficiently.
-- **Kotlin Flows**: Manages asynchronous data streams.
-- **Kotlin Channels**: Sends events to the UI for real-time updates.
-- **Kotlinx Serialization**: Parses API responses.
-- **WorkManager**: Ensures reliable execution of tasks, such as refreshing links metadata in Linkora.
-- **Coil**: Utilized for image loading.
-- **Dagger Hilt**: Manages dependencies to simplify and organize dependency injection.
-- **Architecture Components**: Utilizes DataStore, Navigation, and ViewModel to maintain project structure and functionality.
+- **Kotlin**: Built entirely in Kotlin.
+- **Jetpack Compose**: Fully Compose-based UI.
+- **Material 3**: Modern Material design components.
+- **Room**: Efficient local storage.
+- **Kotlin Coroutines**: Smooth background processing.
+- **Kotlin Flows**: For asynchronous data streams.
+- **Kotlin Channels**: Real-time UI updates.
+- **Kotlinx Serialization**: API response handling.
+- **WorkManager**: Reliable background tasks (e.g., refreshing link metadata).
+- **Coil**: Image loading.
+- **Dagger Hilt**: Dependency Injection.
+- **Architecture Components**: DataStore, Navigation, and ViewModel for structured development.
 
+## FAQ
 
-## Upcoming Updates
-
-- [x] Sorting
-- [x] Searching
-- [x] Importing and exporting links
-- [x] Improved title and image parsing for links
-- [x] Sub-folders
-- [ ] Backup data to cloud (Dropbox, Google Drive)
-- [ ] Folder lock
-- [ ] Read links from QR codes and text
-- [x] Lists similar to Twitter Lists
-- [x] Selectable items for different operations
-- [x] Shelf on Home Screen
-- [ ] Save multiple links with a single click
-- [x] Translations
-- [ ] Import links from other link management apps, including Raindrop and others
-
+For frequently asked questions, refer to [FAQs](./wiki/FAQs.md).
 
 ## Join the Community
 
@@ -80,13 +60,13 @@ height="80">](https://github.com/sakethpathike/Linkora/releases) [<img src="http
 
 ## Contribute
 
-Contributions are welcome! You can help by:
+Want to help improve Linkora? You can contribute by:
 
 - Reporting issues
 - Submitting pull requests
-- Contributing to language translations
+- Translating into other languages
 
-For more details on contributing to language strings, please refer to the [localization guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md).
+For more on translating, check the [localization guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md).
 
 ## License
 
