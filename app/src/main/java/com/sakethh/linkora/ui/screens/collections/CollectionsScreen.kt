@@ -337,7 +337,7 @@ fun CollectionsScreen(navController: NavController) {
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
-                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) || (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS)) {
+                            if (TransferActionsBtmBarValues.sourceFolders.isEmpty() && ((!areFoldersSelectable.value || foldersData.isEmpty()) || (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS))) {
                                 if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
                                     Spacer(Modifier.height(15.dp))
                                 }

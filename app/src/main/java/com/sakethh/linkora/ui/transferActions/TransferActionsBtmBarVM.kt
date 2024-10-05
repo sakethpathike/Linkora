@@ -22,16 +22,18 @@ class TransferActionsBtmBarVM @Inject constructor(
     fun changeTheParentIdOfASpecificFolder(sourceFolderIds: List<Long>, targetParentId: Long?) {
         viewModelScope.launch {
             foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
+            linkoraLog("2")
         }
     }
 
     fun movingTheLinks(sourceLinks: List<LinksTable>, targetFolder: SpecificScreenType) {
-        sourceLinks.forEach { currentLink ->
+        linkoraLog("4")
+        viewModelScope.launch {
+            sourceLinks.forEach { currentLink ->
             when (targetFolder) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
-                    if (currentLink.isLinkedWithImpFolder) return
+                    if (currentLink.isLinkedWithImpFolder) return@forEach
 
-                    viewModelScope.launch {
                         linksRepo.addANewLinkToImpLinks(
                             ImportantLinks(
                                 title = currentLink.title,
@@ -43,14 +45,12 @@ class TransferActionsBtmBarVM @Inject constructor(
                         )
 
                         linksRepo.deleteALinkFromLinksTable(currentLink.id)
-                    }
                 }
 
                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                    if (currentLink.isLinkedWithSavedLinks) return
+                    if (currentLink.isLinkedWithSavedLinks) return@forEach
 
-                    viewModelScope.launch {
-                        if (currentLink.isLinkedWithFolders) {
+                    if (currentLink.isLinkedWithFolders) {
                             linksRepo.markThisLinkFromLinksTableAsSavedLink(linkID = currentLink.id)
                         } else {
 
@@ -72,14 +72,12 @@ class TransferActionsBtmBarVM @Inject constructor(
                             )
                             linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
-                    }
                 }
 
                 else /* else = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN */ -> {
-                    if (currentLink.isLinkedWithFolders) return
+                    if (currentLink.isLinkedWithFolders && currentLink.keyOfLinkedFolderV10 == CollectionsScreenVM.currentClickedFolderData.value.id) return@forEach
 
-                    viewModelScope.launch {
-                        if (currentLink.isLinkedWithSavedLinks) {
+                    if (currentLink.isLinkedWithSavedLinks || currentLink.isLinkedWithFolders) {
                             linkoraLog(currentLink.title + " in ${CollectionsScreenVM.currentClickedFolderData.value.folderName}")
                             linksRepo.markThisLinkFromLinksTableAsFolderLink(
                                 linkID = currentLink.id,
@@ -106,9 +104,11 @@ class TransferActionsBtmBarVM @Inject constructor(
                             )
                             linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
-                    }
                 }
             }
+        }
+        }.invokeOnCompletion {
+            TransferActionsBtmBarValues.reset()
         }
     }
 }

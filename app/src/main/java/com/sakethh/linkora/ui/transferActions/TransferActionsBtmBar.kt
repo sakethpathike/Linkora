@@ -50,9 +50,7 @@ fun TransferActionsBtmBar() {
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = TransferActionsBtmBarValues.sourceFolders.toList().map { it.folderName }
-                    .asReversed()
-                    .joinToString { it },
+                text = "Folders selcted : ${TransferActionsBtmBarValues.sourceFolders.size}, Links selected",
                 style = MaterialTheme.typography.titleMedium,
                 fontSize = 16.sp,
                 modifier = Modifier
@@ -65,25 +63,27 @@ fun TransferActionsBtmBar() {
             Row {
                 IconButton(onClick = {
                     when (TransferActionsBtmBarValues.currentTransferActionType.value) {
-                        TransferActionType.COPYING_OF_FOLDERS -> TODO()
-                        TransferActionType.MOVING_OF_FOLDERS -> {
+
+                        TransferActionType.MOVING_OF_FOLDERS, TransferActionType.MOVING_OF_LINKS -> {
                             transferActionsBtmBarVM.changeTheParentIdOfASpecificFolder(
                                 sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
                                     .map { it.id },
                                 targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
                             )
-                        }
-
-                        TransferActionType.COPYING_OF_LINKS -> TODO()
-                        TransferActionType.MOVING_OF_LINKS -> {
                             transferActionsBtmBarVM.movingTheLinks(
                                 TransferActionsBtmBarValues.sourceLinks.toList(),
                                 SpecificCollectionsScreenVM.screenType.value
                             )
                         }
-                        TransferActionType.NOTHING -> TODO()
+
+                        TransferActionType.COPYING_OF_FOLDERS, TransferActionType.COPYING_OF_LINKS -> {
+
+                        }
+
+                        else -> {
+
+                        }
                     }
-                    TransferActionsBtmBarValues.reset()
                 }) {
                     Icon(Icons.Default.ContentPaste, null)
                 }

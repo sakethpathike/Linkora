@@ -19,13 +19,13 @@ interface LinksDao {
     @Insert
     suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
 
-    @Query("UPDATE links_table SET isLinkedWithSavedLinks = 1 AND isLinkedWithFolders = 0 AND keyOfLinkedFolderV10 = NULL WHERE id =:linkID")
+    @Query("UPDATE links_table SET isLinkedWithSavedLinks = 1, isLinkedWithFolders = 0, keyOfLinkedFolderV10 = NULL WHERE id =:linkID")
     suspend fun markThisLinkFromLinksTableAsSavedLink(linkID: Long)
 
     @Insert
     suspend fun addALinkInLinksTable(linksTable: LinksTable)
 
-    @Query("UPDATE links_table SET isLinkedWithSavedLinks = 0 AND isLinkedWithFolders = 1 WHERE id =:linkID AND keyOfLinkedFolderV10 = :targetFolderId")
+    @Query("UPDATE links_table SET isLinkedWithSavedLinks = 0, isLinkedWithFolders = 1, keyOfLinkedFolderV10 = :targetFolderId WHERE id =:linkID")
     suspend fun markThisLinkFromLinksTableAsFolderLink(linkID: Long, targetFolderId: Long)
 
     @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
