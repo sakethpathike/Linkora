@@ -5,37 +5,39 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshotFlow
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LinksTable
-import com.sakethh.linkora.data.local.links.LinkType
 import com.sakethh.linkora.utils.linkoraLog
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.flow.combine
 
 object TransferActionsBtmBarValues {
     val currentTransferActionType = mutableStateOf(TransferActionType.NOTHING)
 
     var sourceFolders = mutableStateListOf<FoldersTable>()
 
-    var sourceLink = mutableStateListOf<LinksTable>()
-
-    var sourceLinkType = LinkType.SAVED_LINK
+    var sourceLinks = mutableStateListOf<LinksTable>()
 
     init {
-        CoroutineScope(Dispatchers.Main).launch {
+        combine(
+            snapshotFlow {
+                sourceLinks.toList()
+            },
             snapshotFlow {
                 sourceFolders.toList()
-            }.collectLatest {
-                if (it.toList().isEmpty()) {
+            }
+        ) { linkData, folderData ->
+            if (folderData.toList().isEmpty() && linkData.toList().isEmpty()) {
                     reset()
                 }
-                linkoraLog(it.toList().map { it.folderName }.toString())
+            linkoraLog(
+                "sourceLinks : " + linkData.toList()
+                    .map { "${it.title}, S.L : ${it.isLinkedWithSavedLinks}, I.L : ${it.isLinkedWithImpFolder}, F.L : ${it.isLinkedWithFolders}" }
+                    .toString() + "\nTotal sourceLinks : ${linkData.count()}" + "sourceFolders : " + folderData.toList()
+                    .map { it.folderName } + "\nTotal sourceFolders : ${folderData.count()}")
             }
-        }
     }
 
     fun reset() {
         currentTransferActionType.value = TransferActionType.NOTHING
         sourceFolders.clear()
+        sourceLinks.clear()
     }
 }

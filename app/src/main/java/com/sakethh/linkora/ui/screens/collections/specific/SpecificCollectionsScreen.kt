@@ -550,7 +550,7 @@ fun SpecificCollectionScreen(navController: NavController) {
             fun commonLinkParam(linkData: LinksTable): LinkUIComponentParam {
                 return LinkUIComponentParam(
                     onLongClick = {
-                        if (!areElementsSelectable.value) {
+                        if (!areElementsSelectable.value && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
                             areElementsSelectable.value = true
                             if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                                 specificCollectionsScreenVM.selectedLinksID.add(
@@ -563,7 +563,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         }
                     },
-                    isSelectionModeEnabled = areElementsSelectable,
+                    isSelectionModeEnabled = if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) mutableStateOf(
+                        true
+                    ) else areElementsSelectable,
                     title = linkData.title,
                     webBaseURL = linkData.baseURL,
                     imgURL = linkData.imgURL,
@@ -597,6 +599,28 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     },
                     onLinkClick = {
+                        if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                            val linkElement = LinksTable(
+                                id = linkData.id,
+                                title = linkData.title,
+                                webURL = linkData.webURL,
+                                baseURL = linkData.baseURL,
+                                imgURL = linkData.imgURL,
+                                infoForSaving = linkData.infoForSaving,
+                                isLinkedWithSavedLinks = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN,
+                                isLinkedWithFolders = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                                isLinkedWithImpFolder = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                            if (TransferActionsBtmBarValues.sourceLinks.contains(linkElement)) {
+                                TransferActionsBtmBarValues.sourceLinks.remove(linkElement)
+                            } else {
+                                TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                            }
+                            return@LinkUIComponentParam
+                        }
+
                         if (areElementsSelectable.value) {
                             if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                                 if (!specificCollectionsScreenVM.selectedLinksID.contains(
@@ -657,16 +681,37 @@ fun SpecificCollectionScreen(navController: NavController) {
                             forceOpenInExternalBrowser = true
                         )
                     },
-                    isItemSelected = if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
+                    isItemSelected =
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
                         mutableStateOf(
-                        specificCollectionsScreenVM.selectedLinksID.contains(
-                            linkData.id
+                            TransferActionsBtmBarValues.sourceLinks.contains(
+                                LinksTable(
+                                    id = linkData.id,
+                                    title = linkData.title,
+                                    webURL = linkData.webURL,
+                                    baseURL = linkData.baseURL,
+                                    imgURL = linkData.imgURL,
+                                    infoForSaving = linkData.infoForSaving,
+                                    isLinkedWithSavedLinks = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN,
+                                    isLinkedWithFolders = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                                    isLinkedWithImpFolder = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                                    keyOfImpLinkedFolder = "",
+                                    isLinkedWithArchivedFolder = false
+                                )
+                            )
                         )
-                        ) else mutableStateOf(
-                        specificCollectionsScreenVM.selectedImpLinks.contains(
-                            linkData.webURL
+                    } else {
+                        if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN)
+                            mutableStateOf(
+                                specificCollectionsScreenVM.selectedLinksID.contains(
+                                    linkData.id
+                                )
+                            ) else mutableStateOf(
+                            specificCollectionsScreenVM.selectedImpLinks.contains(
+                                linkData.webURL
+                            )
                         )
-                    )
+                    }
                 )
             }
 
@@ -1181,8 +1226,26 @@ fun SpecificCollectionScreen(navController: NavController) {
                 },
                 onMoveItemClick = {
                     TransferActionsBtmBarValues.currentTransferActionType.value =
-                        TransferActionType.MOVING_OF_FOLDERS
-                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                        if (SpecificCollectionsScreenVM.selectedBtmSheetType.value != OptionsBtmSheetType.LINK) {
+                            TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                            TransferActionType.MOVING_OF_FOLDERS
+                        } else {
+                            val linkElement = LinksTable(
+                                id = CollectionsScreenVM.selectedFolderData.value.id,
+                                title = tempImpLinkData.title.value,
+                                webURL = tempImpLinkData.webURL.value,
+                                baseURL = tempImpLinkData.baseURL.value,
+                                imgURL = tempImpLinkData.imgURL.value,
+                                infoForSaving = tempImpLinkData.infoForSaving.value,
+                                isLinkedWithSavedLinks = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN,
+                                isLinkedWithFolders = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                                isLinkedWithImpFolder = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                            TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                            TransferActionType.MOVING_OF_LINKS
+                        }
                     coroutineScope.launch {
                         btmModalSheetState.hide()
                     }.invokeOnCompletion {
