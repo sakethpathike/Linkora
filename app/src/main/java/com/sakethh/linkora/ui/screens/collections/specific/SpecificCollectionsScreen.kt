@@ -1224,6 +1224,34 @@ fun SpecificCollectionScreen(navController: NavController) {
                         shouldOptionsBtmModalSheetBeVisible.value = false
                     }
                 },
+                onCopyItemClick = {
+                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                        if (SpecificCollectionsScreenVM.selectedBtmSheetType.value != OptionsBtmSheetType.LINK) {
+                            TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                            TransferActionType.COPYING_OF_FOLDERS
+                        } else {
+                            val linkElement = LinksTable(
+                                id = CollectionsScreenVM.selectedFolderData.value.id,
+                                title = tempImpLinkData.title.value,
+                                webURL = tempImpLinkData.webURL.value,
+                                baseURL = tempImpLinkData.baseURL.value,
+                                imgURL = tempImpLinkData.imgURL.value,
+                                infoForSaving = tempImpLinkData.infoForSaving.value,
+                                isLinkedWithSavedLinks = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN,
+                                isLinkedWithFolders = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                                isLinkedWithImpFolder = SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.IMPORTANT_LINKS_SCREEN,
+                                keyOfImpLinkedFolder = "",
+                                isLinkedWithArchivedFolder = false
+                            )
+                            TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                            TransferActionType.COPYING_OF_LINKS
+                        }
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }.invokeOnCompletion {
+                        shouldOptionsBtmModalSheetBeVisible.value = false
+                    }
+                },
                 onMoveItemClick = {
                     TransferActionsBtmBarValues.currentTransferActionType.value =
                         if (SpecificCollectionsScreenVM.selectedBtmSheetType.value != OptionsBtmSheetType.LINK) {

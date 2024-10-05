@@ -655,6 +655,16 @@ fun CollectionsScreen(navController: NavController) {
                         shouldOptionsBtmModalSheetBeVisible.value = false
                     }
                 },
+                onCopyItemClick = {
+                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                        TransferActionType.COPYING_OF_FOLDERS
+                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                    coroutineScope.launch {
+                        btmModalSheetState.hide()
+                    }.invokeOnCompletion {
+                        shouldOptionsBtmModalSheetBeVisible.value = false
+                    }
+                },
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = OptionsBtmSheetType.FOLDER,
