@@ -148,9 +148,11 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
 
         localDatabase.foldersDao().getChildFoldersOfThisParentIDAsAList(folderID).forEach {
             deleteAFolder(it.id)
+            localDatabase.linksDao().deleteThisFolderLinks(it.id)
         }
 
         localDatabase.foldersDao().deleteAFolder(folderID)
+        localDatabase.linksDao().deleteThisFolderLinks(folderID)
     }
 
     override suspend fun deleteMultipleFolders(folderIDs: Array<Long>) {

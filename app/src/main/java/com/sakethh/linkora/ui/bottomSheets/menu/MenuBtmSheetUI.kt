@@ -354,7 +354,6 @@ fun MenuBtmSheetUI(
                         )
                     }
                     if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
-                        if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                             IndividualMenuComponent(
                                 onOptionClick = {
                                     menuBtmSheetParam.onCopyItemClick()
@@ -362,9 +361,7 @@ fun MenuBtmSheetUI(
                                 elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else "Copy Link",
                                 elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.CopyAll
                             )
-                        }
 
-                        if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                             IndividualMenuComponent(
                                 onOptionClick = {
                                     menuBtmSheetParam.onMoveItemClick()
@@ -372,7 +369,6 @@ fun MenuBtmSheetUI(
                                 elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else "Move Link",
                                 elementImageVector = Icons.AutoMirrored.Outlined.DriveFileMove
                             )
-                        }
                     }
                     if (menuBtmSheetParam.inSpecificArchiveScreen.value || menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN) {
                         IndividualMenuComponent(
