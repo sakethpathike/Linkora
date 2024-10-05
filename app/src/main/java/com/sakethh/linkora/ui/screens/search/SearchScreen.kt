@@ -1529,7 +1529,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                         SearchScreenVM.selectedLinkID,
                         homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST
                     )
-                }, onImportantLinkClick = {
+                },
+                onImportantLinkClick = {
                     searchScreenVM.onUiEvent(
                         SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(
                             ImportantLinks(

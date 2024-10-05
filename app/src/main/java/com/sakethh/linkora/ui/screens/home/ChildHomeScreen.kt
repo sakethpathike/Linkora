@@ -678,7 +678,8 @@ fun ChildHomeScreen(
                         selectedElementID.longValue,
                         homeScreenType = homeScreenType
                     )
-                }, onImportantLinkClick = {
+                },
+                onImportantLinkClick = {
                     SpecificCollectionsScreenVM.screenType.value =
                         SpecificScreenType.IMPORTANT_LINKS_SCREEN
                     homeScreenVM.onUiEvent(

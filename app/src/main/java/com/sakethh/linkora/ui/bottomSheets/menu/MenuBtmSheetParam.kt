@@ -30,5 +30,6 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val shouldImportantLinkOptionBeVisible: MutableState<Boolean> = mutableStateOf(true),
     val onCopyItemClick: () -> Unit = {},
     val onMoveToRootFoldersClick: () -> Unit = {},
-    val onMoveItemClick: () -> Unit = {}
+    val onMoveItemClick: () -> Unit = {},
+    val shouldTransferringOptionShouldBeVisible: Boolean = false
 )
