@@ -62,28 +62,26 @@ fun TransferActionsBtmBar() {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
             Row {
                 IconButton(onClick = {
-                    when (TransferActionsBtmBarValues.currentTransferActionType.value) {
 
-                        TransferActionType.MOVING_OF_FOLDERS, TransferActionType.MOVING_OF_LINKS -> {
-                            transferActionsBtmBarVM.changeTheParentIdOfASpecificFolder(
-                                sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
-                                    .map { it.id },
-                                targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
-                            )
-                            transferActionsBtmBarVM.movingTheLinks(
-                                TransferActionsBtmBarValues.sourceLinks.toList(),
-                                SpecificCollectionsScreenVM.screenType.value
-                            )
+                    val applyCopyImpl =
+                        when (TransferActionsBtmBarValues.currentTransferActionType.value) {
+                            TransferActionType.MOVING_OF_FOLDERS, TransferActionType.MOVING_OF_LINKS -> false
+                            else -> true
                         }
 
-                        TransferActionType.COPYING_OF_FOLDERS, TransferActionType.COPYING_OF_LINKS -> {
+                    transferActionsBtmBarVM.transferFolders(
+                        applyCopyImpl = applyCopyImpl,
+                        sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
+                            .map { it.id },
+                        targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
+                    )
 
-                        }
+                    transferActionsBtmBarVM.transferLinks(
+                        applyCopyImpl = applyCopyImpl,
+                        TransferActionsBtmBarValues.sourceLinks.toList(),
+                        SpecificCollectionsScreenVM.screenType.value,
+                    )
 
-                        else -> {
-
-                        }
-                    }
                 }) {
                     Icon(Icons.Default.ContentPaste, null)
                 }

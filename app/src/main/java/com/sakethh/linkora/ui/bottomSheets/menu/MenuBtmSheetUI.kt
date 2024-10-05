@@ -344,7 +344,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
-                    if (menuBtmSheetParam.shouldTransferringOptionShouldBeVisible && menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.LINK) {
+                    if (menuBtmSheetParam.forAChildFolder.value && menuBtmSheetParam.shouldTransferringOptionShouldBeVisible && menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.LINK) {
                         IndividualMenuComponent(
                             onOptionClick = {
                                 menuBtmSheetParam.onMoveToRootFoldersClick()

@@ -13,6 +13,12 @@ interface FoldersDao {
     @Insert
     suspend fun createANewFolder(foldersTable: FoldersTable)
 
+    @Query("INSERT INTO folders_table(folderName, infoForSaving,parentFolderID) SELECT folderName, infoForSaving, :parentFolderID FROM folders_table WHERE id= :actualFolderId")
+    suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?)
+
+    @Insert
+    suspend fun createMultipleNewFolders(foldersTable: List<FoldersTable>)
+
     @Query("UPDATE archived_folders_table SET infoForSaving = \"\"  WHERE id= :folderID")
     suspend fun deleteArchiveFolderNote(
         folderID: Long,

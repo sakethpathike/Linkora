@@ -8,7 +8,6 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,15 +18,30 @@ class TransferActionsBtmBarVM @Inject constructor(
     private val linksRepo: LinksRepo
 ) : ViewModel() {
 
-    fun changeTheParentIdOfASpecificFolder(sourceFolderIds: List<Long>, targetParentId: Long?) {
+    fun transferFolders(
+        applyCopyImpl: Boolean, sourceFolderIds: List<Long>, targetParentId: Long?
+    ) {
         viewModelScope.launch {
-            foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
-            linkoraLog("2")
+            if (applyCopyImpl) {
+                /*sourceFolderIds.forEach { currentFolderId ->
+                    foldersRepo.duplicateAFolder(
+                        actualFolderId = currentFolderId,
+                        parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id
+                    )
+
+                    foldersRepo.getLastIDOfFoldersTable()
+                }*/
+            } else {
+                foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
+            }
         }
     }
 
-    fun movingTheLinks(sourceLinks: List<LinksTable>, targetFolder: SpecificScreenType) {
-        linkoraLog("4")
+    fun transferLinks(
+        applyCopyImpl: Boolean,
+        sourceLinks: List<LinksTable>,
+        targetFolder: SpecificScreenType
+    ) {
         viewModelScope.launch {
             sourceLinks.forEach { currentLink ->
             when (targetFolder) {
@@ -44,6 +58,7 @@ class TransferActionsBtmBarVM @Inject constructor(
                             )
                         )
 
+                    if (applyCopyImpl) return@forEach
                         linksRepo.deleteALinkFromLinksTable(currentLink.id)
                 }
 
@@ -51,7 +66,11 @@ class TransferActionsBtmBarVM @Inject constructor(
                     if (currentLink.isLinkedWithSavedLinks) return@forEach
 
                     if (currentLink.isLinkedWithFolders) {
+                        if (applyCopyImpl) {
+                            linksRepo.addALinkInLinksTable(currentLink)
+                        } else {
                             linksRepo.markThisLinkFromLinksTableAsSavedLink(linkID = currentLink.id)
+                        }
                         } else {
 
                             // if link is located in `Important Links`
@@ -70,6 +89,8 @@ class TransferActionsBtmBarVM @Inject constructor(
                                     isLinkedWithArchivedFolder = false
                                 )
                             )
+
+                        if (applyCopyImpl) return@forEach
                             linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
                 }
@@ -78,12 +99,16 @@ class TransferActionsBtmBarVM @Inject constructor(
                     if (currentLink.isLinkedWithFolders && currentLink.keyOfLinkedFolderV10 == CollectionsScreenVM.currentClickedFolderData.value.id) return@forEach
 
                     if (currentLink.isLinkedWithSavedLinks || currentLink.isLinkedWithFolders) {
-                            linkoraLog(currentLink.title + " in ${CollectionsScreenVM.currentClickedFolderData.value.folderName}")
+                        if (applyCopyImpl) {
+                            linksRepo.addALinkInLinksTable(currentLink)
+                        } else {
                             linksRepo.markThisLinkFromLinksTableAsFolderLink(
                                 linkID = currentLink.id,
                                 targetFolderId = CollectionsScreenVM.currentClickedFolderData.value.id
                             )
-                        } else {
+                        }
+
+                    } else {
 
                             // if link is located in `Important Links`
 
@@ -102,6 +127,8 @@ class TransferActionsBtmBarVM @Inject constructor(
                                     keyOfLinkedFolderV10 = CollectionsScreenVM.currentClickedFolderData.value.id
                                 )
                             )
+
+                        if (applyCopyImpl) return@forEach
                             linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
                 }
