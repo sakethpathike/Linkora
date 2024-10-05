@@ -75,6 +75,9 @@ interface FoldersDao {
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
 
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
+    suspend fun getChildFoldersOfThisParentIDAsAList(parentFolderID: Long?): List<FoldersTable>
+
     @Query("SELECT COUNT(*) FROM folders_table WHERE parentFolderID = :parentFolderID")
     suspend fun getSizeOfChildFoldersOfThisParentID(parentFolderID: Long?): Int
 
@@ -116,8 +119,8 @@ interface FoldersDao {
     @Query("DELETE from folders_table WHERE id = :folderID")
     suspend fun deleteAFolder(folderID: Long)
 
-    @Query("DELETE from folders_table WHERE id in (:folderIDs)")
-    suspend fun deleteMultipleFolders(folderIDs: Array<Long>)
+    @Query("DELETE from folders_table WHERE parentFolderID = :parentFolderId")
+    suspend fun deleteChildFoldersOfThisParentID(parentFolderId: Long)
 
     @Query("DELETE from archived_folders_table WHERE id= :folderID")
     suspend fun deleteAnArchiveFolderV9(folderID: Long)

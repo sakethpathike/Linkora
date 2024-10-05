@@ -3,10 +3,7 @@ package com.sakethh.linkora.data.local.folders
 import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
-import okhttp3.internal.toImmutableList
 import javax.inject.Inject
 
 class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) : FoldersRepo {
@@ -20,49 +17,6 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
 
     override suspend fun createANewFolder(foldersTable: FoldersTable) {
         localDatabase.foldersDao().createANewFolder(foldersTable)
-        if (foldersTable.parentFolderID != null) {
-
-            // add folder id into root parent folder
-            val rootFolder = getThisFolderData(CollectionsScreenVM.rootFolderID)
-            updateAFolderData(
-                rootFolder.apply {
-                    val modifiedChildIdsList = childFolderIDs?.toMutableList() ?: mutableListOf()
-                    modifiedChildIdsList.add(getLatestAddedFolder().id)
-                    childFolderIDs = modifiedChildIdsList
-                }
-            )
-
-            // add folder id into hierarchy except root folder
-            addIdsIntoParentHierarchy(getLatestAddedFolder().id)
-        }
-    }
-
-    private suspend fun addIdsIntoParentHierarchy(currentID: Long) {
-
-        var currentFolderIteratorID = currentID
-
-        while (true) {
-
-            val currentFolder = getThisFolderData(currentFolderIteratorID)
-            val parentFolderOfCurrentFolder =
-                getThisFolderData(currentFolder.parentFolderID ?: break)
-
-            val parentFolderOfCurrentFolderChildIds =
-                parentFolderOfCurrentFolder.childFolderIDs?.toMutableList() ?: mutableListOf()
-
-            parentFolderOfCurrentFolderChildIds.add(currentFolderIteratorID)
-
-            if (!parentFolderOfCurrentFolderChildIds.contains(currentID)) {
-                parentFolderOfCurrentFolderChildIds.add(currentID)
-            }
-
-            parentFolderOfCurrentFolder.childFolderIDs =
-                parentFolderOfCurrentFolderChildIds.toImmutableList().distinct()
-
-            updateAFolderData(parentFolderOfCurrentFolder)
-
-            currentFolderIteratorID = parentFolderOfCurrentFolder.id
-        }
     }
 
     override suspend fun deleteArchiveFolderNote(folderID: Long) {
@@ -190,36 +144,18 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
     }
 
     override suspend fun deleteAFolder(folderID: Long) {
-        localDatabase.shelfDao().getShelvesOfThisFolder(folderID).forEach { shelf ->
-            val newFolderIdsList = shelf.folderIds.toMutableList()
-            newFolderIdsList.removeAll {
-                it == folderID
-            }
-            localDatabase.shelfDao()
-                .updateFoldersOfThisShelf(folderIds = newFolderIdsList.toList(), shelf.id)
-        }
-        localDatabase.shelfListDao().deleteAShelfFolder(folderID)
+        // TODO: folder id which exists in a panel should also be deleted
 
-        localDatabase.linksDao().deleteThisFolderLinks(folderID)
-        deleteAllChildFoldersAndLinksOfASpecificFolder(folderID)
-        return localDatabase.foldersDao().deleteAFolder(folderID)
-    }
-
-    private suspend fun deleteAllChildFoldersAndLinksOfASpecificFolder(folderID: Long) {
-        val childFolders = getThisFolderData(folderID)
-        coroutineScope {
-            try {
-                childFolders.childFolderIDs?.forEach {
-                    deleteAFolder(it)
-                    localDatabase.linksDao().deleteThisFolderLinks(it)
-                }
-            } catch (e: NullPointerException) {
-                e.printStackTrace()
-            }
+        localDatabase.foldersDao().getChildFoldersOfThisParentIDAsAList(folderID).forEach {
+            deleteAFolder(it.id)
         }
+
+        localDatabase.foldersDao().deleteAFolder(folderID)
     }
 
     override suspend fun deleteMultipleFolders(folderIDs: Array<Long>) {
-        return localDatabase.foldersDao().deleteMultipleFolders(folderIDs)
+        folderIDs.forEach {
+            deleteAFolder(it)
+        }
     }
 }
