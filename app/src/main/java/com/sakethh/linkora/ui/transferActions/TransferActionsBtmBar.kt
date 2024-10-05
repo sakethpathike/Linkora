@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
+import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -67,13 +68,19 @@ fun TransferActionsBtmBar() {
                         TransferActionType.COPYING_OF_FOLDERS -> TODO()
                         TransferActionType.MOVING_OF_FOLDERS -> {
                             transferActionsBtmBarVM.changeTheParentIdOfASpecificFolder(
-                                sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.map { it.id },
+                                sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
+                                    .map { it.id },
                                 targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
                             )
                         }
 
                         TransferActionType.COPYING_OF_LINKS -> TODO()
-                        TransferActionType.MOVING_OF_LINKS -> TODO()
+                        TransferActionType.MOVING_OF_LINKS -> {
+                            transferActionsBtmBarVM.movingTheLinks(
+                                TransferActionsBtmBarValues.sourceLinks.toList(),
+                                SpecificCollectionsScreenVM.screenType.value
+                            )
+                        }
                         TransferActionType.NOTHING -> TODO()
                     }
                     TransferActionsBtmBarValues.reset()

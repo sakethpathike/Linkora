@@ -455,10 +455,24 @@ class LinksImpl @Inject constructor(
         )
     }
 
+    override suspend fun markThisLinkFromLinksTableAsFolderLink(
+        linkID: Long,
+        targetFolderId: Long
+    ) {
+        localDatabase.linksDao().markThisLinkFromLinksTableAsFolderLink(linkID, targetFolderId)
+    }
+
+    override suspend fun markThisLinkFromLinksTableAsSavedLink(linkID: Long) {
+        localDatabase.linksDao().markThisLinkFromLinksTableAsSavedLink(linkID)
+    }
+
     override suspend fun addListOfDataInLinksTable(list: List<LinksTable>) {
         return localDatabase.linksDao().addListOfDataInLinksTable(list)
     }
 
+    override suspend fun addALinkInLinksTable(linksTable: LinksTable) {
+        localDatabase.linksDao().addALinkInLinksTable(linksTable)
+    }
     override suspend fun deleteANoteFromArchiveLinks(linkID: Long) {
         localDatabase.linksDao().deleteANoteFromArchiveLinks(linkID)
     }

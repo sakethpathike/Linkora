@@ -417,6 +417,18 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
+                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(
+                                            top = 15.dp,
+                                            start = 20.dp,
+                                            end = 20.dp,
+                                            bottom = if (foldersData.isNotEmpty()) 11.dp else 25.dp
+                                        ),
+                                        thickness = 0.5.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                    )
+                                }
                             }
                             if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
                                 Card(

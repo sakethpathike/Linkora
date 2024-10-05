@@ -22,7 +22,12 @@ interface LinksRepo {
         autoDetectTitle: Boolean
     ): CommonUiEvent
 
+    suspend fun markThisLinkFromLinksTableAsFolderLink(linkID: Long, targetFolderId: Long)
+
+    suspend fun markThisLinkFromLinksTableAsSavedLink(linkID: Long)
+
     suspend fun addListOfDataInLinksTable(list: List<LinksTable>)
+    suspend fun addALinkInLinksTable(linksTable: LinksTable)
 
     suspend fun deleteANoteFromArchiveLinks(linkID: Long)
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
