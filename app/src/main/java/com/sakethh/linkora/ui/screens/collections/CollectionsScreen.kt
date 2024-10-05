@@ -283,9 +283,7 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Box(modifier = Modifier.animateContentSize()) {
                         Column {
-                            if ((!areFoldersSelectable.value || foldersData.isEmpty())
-                                && TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.MOVING_OF_FOLDERS
-                                && TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.COPYING_OF_FOLDERS
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING
                             ) {
                                 Card(
                                     modifier = Modifier
@@ -301,15 +299,13 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                         .combinedClickable(interactionSource = remember {
                                             MutableInteractionSource()
-                                        }, indication = null,
-                                            onClick = {
-                                                SpecificCollectionsScreenVM.screenType.value =
-                                                    SpecificScreenType.ALL_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.ALL_LINKS_SCREEN.name)
-                                            },
-                                            onLongClick = {
+                                        }, indication = null, onClick = {
+                                            SpecificCollectionsScreenVM.screenType.value =
+                                                SpecificScreenType.ALL_LINKS_SCREEN
+                                            navController.navigate(NavigationRoutes.ALL_LINKS_SCREEN.name)
+                                        }, onLongClick = {
 
-                                            })
+                                        })
                                         .pulsateEffect()
                                 ) {
                                     Row(horizontalArrangement = Arrangement.Center) {
@@ -340,6 +336,11 @@ fun CollectionsScreen(navController: NavController) {
                                     thickness = 0.5.dp,
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
+                            }
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) || (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS)) {
+                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
+                                    Spacer(Modifier.height(15.dp))
+                                }
                                 Card(
                                     modifier = Modifier
                                         .padding(end = 20.dp, start = 20.dp)
@@ -347,13 +348,11 @@ fun CollectionsScreen(navController: NavController) {
                                         .fillMaxWidth()
                                         .combinedClickable(interactionSource = remember {
                                             MutableInteractionSource()
-                                        }, indication = null,
-                                            onClick = {
-                                                SpecificCollectionsScreenVM.screenType.value =
-                                                    SpecificScreenType.SAVED_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
-                                            },
-                                            onLongClick = {})
+                                        }, indication = null, onClick = {
+                                            SpecificCollectionsScreenVM.screenType.value =
+                                                SpecificScreenType.SAVED_LINKS_SCREEN
+                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                        }, onLongClick = {})
                                         .pulsateEffect()
                                 ) {
                                     Row {
@@ -374,6 +373,7 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
+
                                 Card(
                                     modifier = Modifier
                                         .padding(
@@ -417,6 +417,8 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
+                            }
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
                                 Card(
                                     modifier = Modifier
                                         .padding(
@@ -464,9 +466,9 @@ fun CollectionsScreen(navController: NavController) {
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
+                            }
                         }
                     }
-                }
                 item {
                     Row(modifier = Modifier
                         .clickable {
@@ -907,7 +909,9 @@ fun FolderIndividualComponent(
                         }
                     },
                     onLongClick = {
-                        onLongClick()
+                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                            onLongClick()
+                        }
                     })
                 .pulsateEffect()
                 .fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
