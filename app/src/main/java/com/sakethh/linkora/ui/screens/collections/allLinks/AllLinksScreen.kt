@@ -697,7 +697,8 @@ fun AllLinksScreen(navController: NavController) {
                             selectedElementID.longValue, LinkType.valueOf(selectedLinkType.value)
                         )
                     )
-                }, onImportantLinkClick = {
+                },
+                onImportantLinkClick = {
                     onImportantLinkClickTriggered.value = true
                     allLinksScreenVM.onUIEvent(
                         SpecificCollectionsScreenUIEvent.AddExistingLinkToImportantLink(

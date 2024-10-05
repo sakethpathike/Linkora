@@ -1331,6 +1331,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 folderName = selectedItemTitle.value,
                 linkTitle = tempImpLinkData.title.value,
                 imgLink = tempImpLinkData.imgURL.value,
+                shouldTransferringOptionShouldBeVisible = SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN,
                 onRefreshClick = {
                     specificCollectionsScreenVM.reloadLinkData(
                         CollectionsScreenVM.selectedFolderData.value.id,

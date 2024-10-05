@@ -344,7 +344,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
-                    if (menuBtmSheetParam.forAChildFolder.value && menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.LINK) {
+                    if (menuBtmSheetParam.shouldTransferringOptionShouldBeVisible && menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.LINK) {
                         IndividualMenuComponent(
                             onOptionClick = {
                                 menuBtmSheetParam.onMoveToRootFoldersClick()
@@ -353,7 +353,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.VerticalAlignTop else Icons.Outlined.DeleteForever
                         )
                     }
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING && menuBtmSheetParam.shouldTransferringOptionShouldBeVisible) {
                             IndividualMenuComponent(
                                 onOptionClick = {
                                     menuBtmSheetParam.onCopyItemClick()
