@@ -17,24 +17,7 @@ object TransferActionsBtmBarValues {
 
     var sourceFolders = mutableStateListOf<FoldersTable>()
 
-    var sourceLink = LinksTable(
-        id = 0L,
-        title = "",
-        webURL = "",
-        baseURL = "",
-        imgURL = "",
-        infoForSaving = "",
-        isLinkedWithSavedLinks = false,
-        isLinkedWithFolders = false,
-        keyOfLinkedFolderV10 = null,
-        keyOfLinkedFolder = null,
-        isLinkedWithImpFolder = false,
-        keyOfImpLinkedFolder = "",
-        keyOfImpLinkedFolderV10 = null,
-        isLinkedWithArchivedFolder = false,
-        keyOfArchiveLinkedFolderV10 = null,
-        keyOfArchiveLinkedFolder = null
-    )
+    var sourceLink = mutableStateListOf<LinksTable>()
 
     var sourceLinkType = LinkType.SAVED_LINK
 

@@ -30,6 +30,7 @@ import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Tune
 import androidx.compose.material.icons.outlined.ContentCopy
+import androidx.compose.material.icons.outlined.CopyAll
 import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material.icons.outlined.DeleteForever
 import androidx.compose.material.icons.outlined.DriveFileRenameOutline
@@ -238,6 +239,7 @@ fun MenuBtmSheetUI(
                         elementName = LocalizedStrings.viewNote.value,
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) return@Column
                     IndividualMenuComponent(
                         onOptionClick = {
                             coroutineScope.launch {
@@ -342,7 +344,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = Icons.Outlined.Delete
                         )
                     }
-                    if (menuBtmSheetParam.forAChildFolder.value) {
+                    if (menuBtmSheetParam.forAChildFolder.value && menuBtmSheetParam.btmSheetFor != OptionsBtmSheetType.LINK) {
                         IndividualMenuComponent(
                             onOptionClick = {
                                 menuBtmSheetParam.onMoveToRootFoldersClick()
@@ -357,8 +359,8 @@ fun MenuBtmSheetUI(
                                 onOptionClick = {
                                     menuBtmSheetParam.onCopyItemClick()
                                 },
-                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else LocalizedStrings.deleteLink.value,
-                                elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.DeleteForever
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else "Copy Link",
+                                elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.CopyAll
                             )
                         }
 
@@ -367,8 +369,8 @@ fun MenuBtmSheetUI(
                                 onOptionClick = {
                                     menuBtmSheetParam.onMoveItemClick()
                                 },
-                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else LocalizedStrings.deleteLink.value,
-                                elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.AutoMirrored.Outlined.DriveFileMove else Icons.Outlined.DeleteForever
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else "Move Link",
+                                elementImageVector = Icons.AutoMirrored.Outlined.DriveFileMove
                             )
                         }
                     }
