@@ -33,26 +33,18 @@ class TransferActionsBtmBarVM @Inject constructor(
 
                     foldersRepo.duplicateAFolder(originalFolderId, targetParentId)
 
-                    val newlyDuplicatedParentFolderId = foldersRepo.getLastIDOfFoldersTable()
+                    val newlyDuplicatedFolderId = foldersRepo.getLastIDOfFoldersTable()
                     linksRepo.duplicateFolderBasedLinks(
                         currentIdOfLinkedFolder = originalFolderId,
-                        newIdOfLinkedFolder = newlyDuplicatedParentFolderId
+                        newIdOfLinkedFolder = newlyDuplicatedFolderId
                     )
 
                     foldersRepo.getChildFoldersOfThisParentIDAsList(originalFolderId).map { it.id }
                         .forEach {
-                            foldersRepo.duplicateAFolder(it, newlyDuplicatedParentFolderId)
-
-                            val newChildDuplicatedFolderId = foldersRepo.getLastIDOfFoldersTable()
-
-                            linksRepo.duplicateFolderBasedLinks(
-                                currentIdOfLinkedFolder = it,
-                                newIdOfLinkedFolder = newChildDuplicatedFolderId
-                            )
                             transferFolders(
                                 applyCopyImpl = true,
                                 sourceFolderIds = listOf(it),
-                                targetParentId = newChildDuplicatedFolderId
+                                targetParentId = newlyDuplicatedFolderId
                             )
                         }
                 }
