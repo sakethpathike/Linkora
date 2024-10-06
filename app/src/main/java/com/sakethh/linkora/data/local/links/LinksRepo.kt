@@ -22,6 +22,8 @@ interface LinksRepo {
         autoDetectTitle: Boolean
     ): CommonUiEvent
 
+    suspend fun duplicateFolderBasedLinks(currentIdOfLinkedFolder: Long, newIdOfLinkedFolder: Long)
+
     suspend fun markThisLinkFromLinksTableAsFolderLink(linkID: Long, targetFolderId: Long)
 
     suspend fun markThisLinkFromLinksTableAsSavedLink(linkID: Long)

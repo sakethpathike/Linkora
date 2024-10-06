@@ -1,6 +1,5 @@
 package com.sakethh.linkora.ui.transferActions
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,17 +18,19 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
+import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun TransferActionsBtmBar() {
+fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
     val transferActionsBtmBarVM: TransferActionsBtmBarVM = hiltViewModel()
     BottomAppBar {
         IconButton(onClick = {
@@ -62,6 +63,17 @@ fun TransferActionsBtmBar() {
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
             Row {
                 IconButton(onClick = {
+
+                    if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
+                        // if in collections screen then we are supposed to mark selected folders as root folders
+                        transferActionsBtmBarVM.transferFolders(
+                            applyCopyImpl = false,
+                            sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
+                                .map { it.id },
+                            targetParentId = null
+                        )
+                        return@IconButton
+                    }
 
                     val applyCopyImpl =
                         when (TransferActionsBtmBarValues.currentTransferActionType.value) {

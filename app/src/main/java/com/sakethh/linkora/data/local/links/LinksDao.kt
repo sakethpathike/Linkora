@@ -28,6 +28,20 @@ interface LinksDao {
     @Query("UPDATE links_table SET isLinkedWithSavedLinks = 0, isLinkedWithFolders = 1, keyOfLinkedFolderV10 = :targetFolderId WHERE id =:linkID")
     suspend fun markThisLinkFromLinksTableAsFolderLink(linkID: Long, targetFolderId: Long)
 
+    @Query(
+        "INSERT INTO links_table (title, webURL, baseURL, imgURL, infoForSaving, \n" +
+                "                        isLinkedWithSavedLinks, isLinkedWithFolders, \n" +
+                "                        isLinkedWithImpFolder, keyOfImpLinkedFolder, \n" +
+                "                        isLinkedWithArchivedFolder, keyOfLinkedFolderV10)\n" +
+                "SELECT title, webURL, baseURL, imgURL, infoForSaving, \n" +
+                "       isLinkedWithSavedLinks, isLinkedWithFolders, \n" +
+                "       isLinkedWithImpFolder, keyOfImpLinkedFolder, \n" +
+                "       isLinkedWithArchivedFolder, :newIdOfLinkedFolder\n" +
+                "FROM links_table\n" +
+                "WHERE keyOfLinkedFolderV10 = :currentIdOfLinkedFolder\n"
+    )
+    suspend fun duplicateFolderBasedLinks(currentIdOfLinkedFolder: Long, newIdOfLinkedFolder: Long)
+
     @Query("UPDATE archived_links_table SET infoForSaving = \"\" WHERE webURL = :webURL")
     suspend fun deleteANoteFromArchiveLinks(webURL: String)
 
