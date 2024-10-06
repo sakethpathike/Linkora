@@ -13,7 +13,7 @@ interface FoldersDao {
     @Insert
     suspend fun createANewFolder(foldersTable: FoldersTable)
 
-    @Query("INSERT INTO folders_table(folderName, infoForSaving,parentFolderID) SELECT folderName, infoForSaving, :parentFolderID FROM folders_table WHERE id= :actualFolderId")
+    @Query("INSERT INTO folders_table(folderName, infoForSaving,parentFolderID,isFolderArchived,isMarkedAsImportant) SELECT folderName, infoForSaving, :parentFolderID, isFolderArchived, isMarkedAsImportant FROM folders_table WHERE id= :actualFolderId")
     suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?)
 
     @Insert
@@ -80,6 +80,9 @@ interface FoldersDao {
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
+
+    @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
+    suspend fun getChildFoldersOfThisParentIDAsList(parentFolderID: Long?): List<FoldersTable>
 
     @Query("SELECT * FROM folders_table WHERE parentFolderID = :parentFolderID AND isFolderArchived=0")
     suspend fun getChildFoldersOfThisParentIDAsAList(parentFolderID: Long?): List<FoldersTable>

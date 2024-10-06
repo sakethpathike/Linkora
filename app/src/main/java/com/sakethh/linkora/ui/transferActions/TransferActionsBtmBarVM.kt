@@ -8,6 +8,7 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
+import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,17 +24,43 @@ class TransferActionsBtmBarVM @Inject constructor(
     ) {
         viewModelScope.launch {
             if (applyCopyImpl) {
-                /*sourceFolderIds.forEach { currentFolderId ->
-                    foldersRepo.duplicateAFolder(
-                        actualFolderId = currentFolderId,
-                        parentFolderID = CollectionsScreenVM.currentClickedFolderData.value.id
+                sourceFolderIds.forEach { originalFolderId ->
+
+                    foldersRepo.getChildFoldersOfThisParentIDAsList(originalFolderId)
+                        .map { it.folderName }.toString().let {
+                        linkoraLog(it)
+                    }
+
+                    foldersRepo.duplicateAFolder(originalFolderId, targetParentId)
+
+                    val newlyDuplicatedParentFolderId = foldersRepo.getLastIDOfFoldersTable()
+                    linksRepo.duplicateFolderBasedLinks(
+                        currentIdOfLinkedFolder = originalFolderId,
+                        newIdOfLinkedFolder = newlyDuplicatedParentFolderId
                     )
 
-                    foldersRepo.getLastIDOfFoldersTable()
-                }*/
+                    foldersRepo.getChildFoldersOfThisParentIDAsList(originalFolderId).map { it.id }
+                        .forEach {
+                            foldersRepo.duplicateAFolder(it, newlyDuplicatedParentFolderId)
+
+                            val newChildDuplicatedFolderId = foldersRepo.getLastIDOfFoldersTable()
+
+                            linksRepo.duplicateFolderBasedLinks(
+                                currentIdOfLinkedFolder = it,
+                                newIdOfLinkedFolder = newChildDuplicatedFolderId
+                            )
+                            transferFolders(
+                                applyCopyImpl = true,
+                                sourceFolderIds = listOf(it),
+                                targetParentId = newChildDuplicatedFolderId
+                            )
+                        }
+                }
             } else {
                 foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
             }
+        }.invokeOnCompletion {
+            TransferActionsBtmBarValues.reset()
         }
     }
 
@@ -58,7 +85,9 @@ class TransferActionsBtmBarVM @Inject constructor(
                             )
                         )
 
-                    if (applyCopyImpl) return@forEach
+                    if (applyCopyImpl) {
+                        return@forEach
+                    }
                         linksRepo.deleteALinkFromLinksTable(currentLink.id)
                 }
 
@@ -90,7 +119,9 @@ class TransferActionsBtmBarVM @Inject constructor(
                                 )
                             )
 
-                        if (applyCopyImpl) return@forEach
+                        if (applyCopyImpl) {
+                            return@forEach
+                        }
                             linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
                 }

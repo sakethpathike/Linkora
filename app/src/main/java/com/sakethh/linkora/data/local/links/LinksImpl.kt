@@ -462,6 +462,13 @@ class LinksImpl @Inject constructor(
         localDatabase.linksDao().markThisLinkFromLinksTableAsFolderLink(linkID, targetFolderId)
     }
 
+    override suspend fun duplicateFolderBasedLinks(
+        currentIdOfLinkedFolder: Long,
+        newIdOfLinkedFolder: Long
+    ) {
+        localDatabase.linksDao()
+            .duplicateFolderBasedLinks(currentIdOfLinkedFolder, newIdOfLinkedFolder)
+    }
     override suspend fun markThisLinkFromLinksTableAsSavedLink(linkID: Long) {
         localDatabase.linksDao().markThisLinkFromLinksTableAsSavedLink(linkID)
     }

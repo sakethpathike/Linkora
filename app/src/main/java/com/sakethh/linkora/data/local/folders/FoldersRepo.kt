@@ -55,6 +55,8 @@ interface FoldersRepo {
 
     fun getChildFoldersOfThisParentID(parentFolderID: Long?): Flow<List<FoldersTable>>
 
+    suspend fun getChildFoldersOfThisParentIDAsList(parentFolderID: Long?): List<FoldersTable>
+
     suspend fun getSizeOfChildFoldersOfThisParentID(parentFolderID: Long?): Int
 
     suspend fun renameInfoOfArchiveFoldersV9(

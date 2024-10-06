@@ -106,6 +106,9 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().getChildFoldersOfThisParentID(parentFolderID)
     }
 
+    override suspend fun getChildFoldersOfThisParentIDAsList(parentFolderID: Long?): List<FoldersTable> {
+        return localDatabase.foldersDao().getChildFoldersOfThisParentIDAsList(parentFolderID)
+    }
     override suspend fun getSizeOfChildFoldersOfThisParentID(parentFolderID: Long?): Int {
         return localDatabase.foldersDao().getSizeOfChildFoldersOfThisParentID(parentFolderID)
     }
