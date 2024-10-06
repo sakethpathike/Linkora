@@ -67,7 +67,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                     if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
                         // if in collections screen then we are supposed to mark selected folders as root folders
                         transferActionsBtmBarVM.transferFolders(
-                            applyCopyImpl = false,
+                            applyCopyImpl = TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_FOLDERS,
                             sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
                                 .map { it.id },
                             targetParentId = null
