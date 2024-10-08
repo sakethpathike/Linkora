@@ -223,18 +223,23 @@ fun SpecificCollectionScreen(navController: NavController) {
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
-                FloatingActionBtn(
-                    FloatingActionBtnParam(
-                        newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
-                        shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
-                        shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
-                        shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
-                        shouldDialogForNewLinkAppear = shouldNewLinkDialogBoxBeVisible,
-                        isMainFabRotated = isMainFabRotated,
-                        rotationAnimation = rotationAnimation,
-                        inASpecificScreen = true
+                Column(modifier = Modifier.animateContentSize()) {
+                    FloatingActionBtn(
+                        FloatingActionBtnParam(
+                            newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
+                            shouldBtmSheetForNewLinkAdditionBeEnabled = shouldBtmSheetForNewLinkAdditionBeEnabled,
+                            shouldScreenTransparencyDecreasedBoxVisible = shouldScreenTransparencyDecreasedBoxVisible,
+                            shouldDialogForNewFolderAppear = shouldDialogForNewFolderAppear,
+                            shouldDialogForNewLinkAppear = shouldNewLinkDialogBoxBeVisible,
+                            isMainFabRotated = isMainFabRotated,
+                            rotationAnimation = rotationAnimation,
+                            inASpecificScreen = true
+                        )
                     )
-                )
+                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                        Spacer(Modifier.height(70.dp))
+                    }
+                }
             } else if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                 FloatingActionButton(onClick = {
                     if (!SettingsPreference.isBtmSheetEnabledForSavingLinks.value) {

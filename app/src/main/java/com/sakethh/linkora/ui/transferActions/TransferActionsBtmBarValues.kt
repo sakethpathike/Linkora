@@ -38,5 +38,7 @@ object TransferActionsBtmBarValues {
         currentTransferActionType.value = TransferActionType.NOTHING
         sourceFolders.clear()
         sourceLinks.clear()
+        TransferActionsBtmBarVM.currentFolderTransferProgressCount.longValue = 0
+        TransferActionsBtmBarVM.currentLinkTransferProgressCount.longValue = 0
     }
 }
