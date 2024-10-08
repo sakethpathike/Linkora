@@ -222,6 +222,9 @@ fun SpecificCollectionScreen(navController: NavController) {
     }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
+            if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                return@Scaffold
+            }
             if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
                 Column(modifier = Modifier.animateContentSize()) {
                     FloatingActionBtn(
@@ -604,6 +607,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     },
                     onLinkClick = {
+                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                            return@LinkUIComponentParam
+                        }
                         if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
                             val linkElement = LinksTable(
                                 id = linkData.id,
@@ -732,6 +738,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                     ) else mutableStateOf(TransferActionsBtmBarValues.sourceFolders.map { it.id }
                         .contains(folderData.id)),
                     checkBoxState = { checkBoxState ->
+                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                            return@FolderIndividualComponent
+                        }
                         if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
                             if (checkBoxState) {
                                 specificCollectionsScreenVM.selectedFoldersData.add(

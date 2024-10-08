@@ -852,7 +852,9 @@ fun CollectionsScreen(navController: NavController) {
         )
     }
     BackHandler {
-        if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+            Toast.makeText(context, "wait until this action completes", Toast.LENGTH_SHORT).show()
+        } else if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
             TransferActionsBtmBarValues.reset()
         } else if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false
@@ -910,6 +912,7 @@ fun FolderIndividualComponent(
     inSelectionMode: Boolean = false,
     inTransferringContentMode: MutableState<Boolean> = mutableStateOf(TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING)
 ) {
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -951,6 +954,14 @@ fun FolderIndividualComponent(
                 Checkbox(
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
+                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                            Toast.makeText(
+                                context,
+                                "wait until this operation completes",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                            return@Checkbox
+                        }
                         checkBoxState(it)
                         isCheckBoxChecked.value = it
                     },

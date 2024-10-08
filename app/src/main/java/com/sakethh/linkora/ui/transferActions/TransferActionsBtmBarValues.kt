@@ -17,6 +17,8 @@ object TransferActionsBtmBarValues {
 
     val sourceLinks = mutableStateListOf<LinksTable>()
 
+    val isAnyActionGoingOn = mutableStateOf(false)
+
     private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     init {
@@ -27,6 +29,8 @@ object TransferActionsBtmBarValues {
 
             val areBothEmpty = folderData.isEmpty() && linkData.isEmpty()
 
+            TransferActionsBtmBarVM.totalSelectedLinksCount.longValue = linkData.size.toLong()
+            TransferActionsBtmBarVM.totalSelectedFoldersCount.longValue = folderData.size.toLong()
             if (areBothEmpty) {
                 reset()
             }
@@ -40,5 +44,6 @@ object TransferActionsBtmBarValues {
         sourceLinks.clear()
         TransferActionsBtmBarVM.currentFolderTransferProgressCount.longValue = 0
         TransferActionsBtmBarVM.currentLinkTransferProgressCount.longValue = 0
+        isAnyActionGoingOn.value = false
     }
 }

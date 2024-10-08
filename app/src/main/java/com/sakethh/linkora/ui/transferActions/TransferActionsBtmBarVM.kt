@@ -11,6 +11,7 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -64,6 +65,7 @@ class TransferActionsBtmBarVM @Inject constructor(
                             ++currentFolderTransferProgressCount.longValue
                         }
                     }
+                    delay(1000)
                 }
             } else {
                 try {
@@ -218,6 +220,7 @@ class TransferActionsBtmBarVM @Inject constructor(
                         ++currentLinkTransferProgressCount.longValue
                     }
                 }
+                delay(1000)
         }
         }
     }
