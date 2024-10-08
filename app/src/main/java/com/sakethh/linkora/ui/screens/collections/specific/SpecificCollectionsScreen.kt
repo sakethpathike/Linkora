@@ -103,7 +103,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
-import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
+import com.sakethh.linkora.ui.transferActions.TransferActions
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
@@ -222,11 +222,11 @@ fun SpecificCollectionScreen(navController: NavController) {
     }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
-            if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+            if (TransferActions.isAnyActionGoingOn.value) {
                 return@Scaffold
             }
             if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN) {
-                Column(modifier = Modifier.animateContentSize()) {
+                Column {
                     FloatingActionBtn(
                         FloatingActionBtnParam(
                             newLinkBottomModalSheetState = btmModalSheetStateForSavingLinks,
@@ -239,7 +239,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             inASpecificScreen = true
                         )
                     )
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
                         Spacer(Modifier.height(70.dp))
                     }
                 }
@@ -558,7 +558,7 @@ fun SpecificCollectionScreen(navController: NavController) {
             fun commonLinkParam(linkData: LinksTable): LinkUIComponentParam {
                 return LinkUIComponentParam(
                     onLongClick = {
-                        if (!areElementsSelectable.value && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                        if (!areElementsSelectable.value && TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                             areElementsSelectable.value = true
                             if (SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SAVED_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN || SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                                 specificCollectionsScreenVM.selectedLinksID.add(
@@ -571,7 +571,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         }
                     },
-                    isSelectionModeEnabled = if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) mutableStateOf(
+                    isSelectionModeEnabled = if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) mutableStateOf(
                         true
                     ) else areElementsSelectable,
                     title = linkData.title,
@@ -607,10 +607,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                         }
                     },
                     onLinkClick = {
-                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                        if (TransferActions.isAnyActionGoingOn.value) {
                             return@LinkUIComponentParam
                         }
-                        if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                        if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
                             val linkElement = LinksTable(
                                 id = linkData.id,
                                 title = linkData.title,
@@ -624,10 +624,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = false
                             )
-                            if (TransferActionsBtmBarValues.sourceLinks.contains(linkElement)) {
-                                TransferActionsBtmBarValues.sourceLinks.remove(linkElement)
+                            if (TransferActions.sourceLinks.contains(linkElement)) {
+                                TransferActions.sourceLinks.remove(linkElement)
                             } else {
-                                TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                                TransferActions.sourceLinks.add(linkElement)
                             }
                             return@LinkUIComponentParam
                         }
@@ -693,9 +693,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                         )
                     },
                     isItemSelected =
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
                         mutableStateOf(
-                            TransferActionsBtmBarValues.sourceLinks.contains(
+                            TransferActions.sourceLinks.contains(
                                 LinksTable(
                                     id = linkData.id,
                                     title = linkData.title,
@@ -731,17 +731,17 @@ fun SpecificCollectionScreen(navController: NavController) {
             fun CommonRegularSubFolders(folderData: FoldersTable) {
                 FolderIndividualComponent(
                     showCheckBoxInsteadOfMoreIcon = areElementsSelectable,
-                    isCheckBoxChecked = if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
+                    isCheckBoxChecked = if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
                         specificCollectionsScreenVM.selectedFoldersData.contains(
                             folderData
                         )
-                    ) else mutableStateOf(TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                    ) else mutableStateOf(TransferActions.sourceFolders.map { it.id }
                         .contains(folderData.id)),
                     checkBoxState = { checkBoxState ->
-                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                        if (TransferActions.isAnyActionGoingOn.value) {
                             return@FolderIndividualComponent
                         }
-                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                        if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                             if (checkBoxState) {
                                 specificCollectionsScreenVM.selectedFoldersData.add(
                                     folderData
@@ -753,9 +753,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                             }
                         } else {
                             if (checkBoxState) {
-                                TransferActionsBtmBarValues.sourceFolders.add(folderData)
+                                TransferActions.sourceFolders.add(folderData)
                             } else {
-                                TransferActionsBtmBarValues.sourceFolders.removeAll {
+                                TransferActions.sourceFolders.removeAll {
                                     it == folderData
                                 }
                             }
@@ -783,13 +783,13 @@ fun SpecificCollectionScreen(navController: NavController) {
                     },
                     showMoreIcon = !areElementsSelectable.value,
                     onFolderClick = { _ ->
-                        if (!areElementsSelectable.value && !TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                        if (!areElementsSelectable.value && !TransferActions.sourceFolders.map { it.id }
                                 .contains(folderData.id)) {
                             CollectionsScreenVM.currentClickedFolderData.value =
                                 folderData
                             navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                         }
-                        if (TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                        if (TransferActions.sourceFolders.map { it.id }
                                 .contains(folderData.id)) {
                             Toast.makeText(
                                 context,
@@ -1239,9 +1239,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
                 },
                 onCopyItemClick = {
-                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                    TransferActions.currentTransferActionType.value =
                         if (SpecificCollectionsScreenVM.selectedBtmSheetType.value != OptionsBtmSheetType.LINK) {
-                            TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                            TransferActions.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
                             TransferActionType.COPYING_OF_FOLDERS
                         } else {
                             val linkElement = LinksTable(
@@ -1257,7 +1257,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = false
                             )
-                            TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                            TransferActions.sourceLinks.add(linkElement)
                             TransferActionType.COPYING_OF_LINKS
                         }
                     coroutineScope.launch {
@@ -1267,9 +1267,9 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
                 },
                 onMoveItemClick = {
-                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                    TransferActions.currentTransferActionType.value =
                         if (SpecificCollectionsScreenVM.selectedBtmSheetType.value != OptionsBtmSheetType.LINK) {
-                            TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                            TransferActions.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
                             TransferActionType.MOVING_OF_FOLDERS
                         } else {
                             val linkElement = LinksTable(
@@ -1285,7 +1285,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 keyOfImpLinkedFolder = "",
                                 isLinkedWithArchivedFolder = false
                             )
-                            TransferActionsBtmBarValues.sourceLinks.add(linkElement)
+                            TransferActions.sourceLinks.add(linkElement)
                             TransferActionType.MOVING_OF_LINKS
                         }
                     coroutineScope.launch {

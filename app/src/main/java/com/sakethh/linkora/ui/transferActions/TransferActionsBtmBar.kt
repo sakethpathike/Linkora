@@ -28,13 +28,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -43,7 +43,6 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 
 @Composable
 fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
-    val transferActionsBtmBarVM: TransferActionsBtmBarVM = hiltViewModel()
     val systemUiController = rememberSystemUiController()
     val bottomAppbarContainerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(
         BottomAppBarDefaults.ContainerElevation
@@ -54,6 +53,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
     val isPasteButtonClicked = rememberSaveable {
         mutableStateOf(false)
     }
+    val context = LocalContext.current
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -72,7 +72,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                 if (!isPasteButtonClicked.value) {
                     Row {
                         IconButton(onClick = {
-                            TransferActionsBtmBarValues.reset()
+                            TransferActions.reset()
                         }) {
                             Icon(Icons.Default.Cancel, null)
                         }
@@ -82,7 +82,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
             Column(Modifier.animateContentSize()) {
                 if (isPasteButtonClicked.value.not()) {
                     Text(
-                        text = TransferActionsBtmBarValues.currentTransferActionType.value.name.substringBefore(
+                        text = TransferActions.currentTransferActionType.value.name.substringBefore(
                             "_"
                         ),
                         style = MaterialTheme.typography.titleLarge,
@@ -92,23 +92,23 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                     Text(
                         text = buildAnnotatedString {
 
-                            if (TransferActionsBtmBarValues.sourceFolders.isNotEmpty()) {
+                            if (TransferActions.sourceFolders.isNotEmpty()) {
                                 append(
                                     "Folders selected : "
                                 )
                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                    append(TransferActionsBtmBarVM.totalSelectedFoldersCount.longValue.toString())
+                                    append(TransferActions.totalSelectedFoldersCount.longValue.toString())
                                 }
                             }
-                            if (TransferActionsBtmBarValues.sourceLinks.isNotEmpty() && TransferActionsBtmBarValues.sourceFolders.isNotEmpty()) {
+                            if (TransferActions.sourceLinks.isNotEmpty() && TransferActions.sourceFolders.isNotEmpty()) {
                                 append("\n")
                             }
-                            if (TransferActionsBtmBarValues.sourceLinks.isNotEmpty()) {
+                            if (TransferActions.sourceLinks.isNotEmpty()) {
                                 append(
                                     "Links selected : "
                                 )
                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                    append(TransferActionsBtmBarVM.totalSelectedLinksCount.longValue.toString())
+                                    append(TransferActions.totalSelectedLinksCount.longValue.toString())
                                 }
                             }
                         },
@@ -123,40 +123,43 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Row(modifier = Modifier.animateContentSize()) {
                     if (!isPasteButtonClicked.value) {
-                        if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActionsBtmBarValues.sourceLinks.isNotEmpty()) return
+                        if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActions.sourceLinks.isNotEmpty()) return
                         IconButton(onClick = {
-                            TransferActionsBtmBarValues.isAnyActionGoingOn.value = true
+                            TransferActions.isAnyActionGoingOn.value = true
                             isPasteButtonClicked.value = !isPasteButtonClicked.value
 
-                            if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
+                            if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActions.sourceLinks.isEmpty()) {
                                 // if in collections screen then we are supposed to mark selected folders as root folders
-                                transferActionsBtmBarVM.transferFolders(
-                                    applyCopyImpl = TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_FOLDERS,
-                                    sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
+                                TransferActions.transferFolders(
+                                    applyCopyImpl = TransferActions.currentTransferActionType.value == TransferActionType.COPYING_OF_FOLDERS,
+                                    sourceFolderIds = TransferActions.sourceFolders.toList()
                                         .map { it.id },
-                                    targetParentId = null
+                                    targetParentId = null,
+                                    context
                                 )
                                 return@IconButton
                             }
 
                             val applyCopyImpl =
-                                when (TransferActionsBtmBarValues.currentTransferActionType.value) {
+                                when (TransferActions.currentTransferActionType.value) {
                                     TransferActionType.MOVING_OF_FOLDERS, TransferActionType.MOVING_OF_LINKS -> false
                                     else -> true
                                 }
 
-                            transferActionsBtmBarVM.transferFolders(
+                            TransferActions.transferFolders(
                                 applyCopyImpl = applyCopyImpl,
-                                sourceFolderIds = TransferActionsBtmBarValues.sourceFolders.toList()
+                                sourceFolderIds = TransferActions.sourceFolders.toList()
                                     .map { it.id },
-                                targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
+                                targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id,
+                                context
                             )
 
 
-                            transferActionsBtmBarVM.transferLinks(
+                            TransferActions.transferLinks(
                                 applyCopyImpl = applyCopyImpl,
-                                TransferActionsBtmBarValues.sourceLinks.toList(),
+                                TransferActions.sourceLinks.toList(),
                                 SpecificCollectionsScreenVM.screenType.value,
+                                context
                             )
 
                         }) {
@@ -176,18 +179,18 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
             Spacer(Modifier.height(5.dp))
             Text(text = buildAnnotatedString {
 
-                if (TransferActionsBtmBarValues.sourceLinks.isNotEmpty()) {
+                if (TransferActions.sourceLinks.isNotEmpty()) {
                     withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(TransferActionsBtmBarVM.currentLinkTransferProgressCount.longValue.toString())
+                        append(TransferActions.currentLinkTransferProgressCount.longValue.toString())
                     }
                     append(" links moved.")
                 }
-                if (TransferActionsBtmBarValues.sourceLinks.isNotEmpty() && TransferActionsBtmBarValues.sourceFolders.isNotEmpty()) {
+                if (TransferActions.sourceLinks.isNotEmpty() && TransferActions.sourceFolders.isNotEmpty()) {
                     append("\n")
                 }
-                if (TransferActionsBtmBarValues.sourceFolders.isNotEmpty()) {
+                if (TransferActions.sourceFolders.isNotEmpty()) {
                     withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(TransferActionsBtmBarVM.currentFolderTransferProgressCount.longValue.toString())
+                        append(TransferActions.currentFolderTransferProgressCount.longValue.toString())
                     }
                     append(" folders moved including all child folders and  respective links.")
                 }
