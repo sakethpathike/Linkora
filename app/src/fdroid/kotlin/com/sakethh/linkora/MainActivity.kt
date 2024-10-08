@@ -124,7 +124,7 @@ class MainActivity : ComponentActivity() {
                         scaffoldState = bottomBarSheetState,
                         sheetContent = {
                             if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
-                                TransferActionsBtmBar()
+                                TransferActionsBtmBar(currentBackStackEntry)
                             } else {
                                 BottomNavigationBar(navController = navController)
                             }

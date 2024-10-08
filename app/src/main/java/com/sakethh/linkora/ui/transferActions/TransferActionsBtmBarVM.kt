@@ -1,5 +1,6 @@
 package com.sakethh.linkora.ui.transferActions
 
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.ImportantLinks
@@ -19,17 +20,20 @@ class TransferActionsBtmBarVM @Inject constructor(
     private val linksRepo: LinksRepo
 ) : ViewModel() {
 
+    companion object {
+        val currentLinkTransferProgressCount = mutableLongStateOf(0)
+        val currentFolderTransferProgressCount = mutableLongStateOf(0)
+
+        val totalSelectedFoldersCount = mutableLongStateOf(0)
+        val totalSelectedLinksCount = mutableLongStateOf(0)
+    }
+
     fun transferFolders(
         applyCopyImpl: Boolean, sourceFolderIds: List<Long>, targetParentId: Long?
     ) {
         viewModelScope.launch {
             if (applyCopyImpl) {
                 sourceFolderIds.forEach { originalFolderId ->
-
-                    foldersRepo.getChildFoldersOfThisParentIDAsList(originalFolderId)
-                        .map { it.folderName }.toString().let {
-                        linkoraLog(it)
-                    }
 
                     foldersRepo.duplicateAFolder(originalFolderId, targetParentId)
 
@@ -47,13 +51,27 @@ class TransferActionsBtmBarVM @Inject constructor(
                                 targetParentId = newlyDuplicatedFolderId
                             )
                         }
+
+                    TransferActionsBtmBarValues.sourceFolders.indexOfFirst {
+                        it.id == originalFolderId
+                    }.let { index ->
+                        linkoraLog("original folder id $originalFolderId, index is $index")
+                        try {
+                            TransferActionsBtmBarValues.sourceFolders.removeAt(index)
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        } finally {
+                            ++currentFolderTransferProgressCount.longValue
+                        }
+                    }
                 }
             } else {
-                foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
-            }
-        }.invokeOnCompletion {
-            if (TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
-                TransferActionsBtmBarValues.reset()
+                try {
+                    foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
+                } finally {
+                    currentFolderTransferProgressCount.longValue =
+                        TransferActionsBtmBarValues.sourceFolders.size.toLong()
+                }
             }
         }
     }
@@ -63,13 +81,9 @@ class TransferActionsBtmBarVM @Inject constructor(
         sourceLinks: List<LinksTable>,
         targetFolder: SpecificScreenType
     ) {
-        linkoraLog("in")
         viewModelScope.launch {
-            linkoraLog("also in")
-            linkoraLog(sourceLinks.size.toString())
-            sourceLinks.forEach { currentLink ->
 
-                linkoraLog(currentLink.title)
+            sourceLinks.forEach { currentLink ->
 
                 when (targetFolder) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
@@ -192,9 +206,19 @@ class TransferActionsBtmBarVM @Inject constructor(
                         }
                 }
             }
+                TransferActionsBtmBarValues.sourceLinks.indexOfFirst {
+                    it.id == currentLink.id
+                }.let { index ->
+                    linkoraLog(currentLink.title + " index is " + index.toString())
+                    try {
+                        TransferActionsBtmBarValues.sourceLinks.removeAt(index)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    } finally {
+                        ++currentLinkTransferProgressCount.longValue
+                    }
+                }
         }
-        }.invokeOnCompletion {
-            TransferActionsBtmBarValues.reset()
         }
     }
 }
