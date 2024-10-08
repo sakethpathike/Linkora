@@ -52,7 +52,9 @@ class TransferActionsBtmBarVM @Inject constructor(
                 foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
             }
         }.invokeOnCompletion {
-            TransferActionsBtmBarValues.reset()
+            if (TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
+                TransferActionsBtmBarValues.reset()
+            }
         }
     }
 
@@ -61,9 +63,15 @@ class TransferActionsBtmBarVM @Inject constructor(
         sourceLinks: List<LinksTable>,
         targetFolder: SpecificScreenType
     ) {
+        linkoraLog("in")
         viewModelScope.launch {
+            linkoraLog("also in")
+            linkoraLog(sourceLinks.size.toString())
             sourceLinks.forEach { currentLink ->
-            when (targetFolder) {
+
+                linkoraLog(currentLink.title)
+
+                when (targetFolder) {
                 SpecificScreenType.IMPORTANT_LINKS_SCREEN -> {
                     if (currentLink.isLinkedWithImpFolder) return@forEach
 
@@ -84,11 +92,24 @@ class TransferActionsBtmBarVM @Inject constructor(
                 }
 
                 SpecificScreenType.SAVED_LINKS_SCREEN -> {
-                    if (currentLink.isLinkedWithSavedLinks) return@forEach
+                    if (currentLink.isLinkedWithSavedLinks && !applyCopyImpl) return@forEach
 
                     if (currentLink.isLinkedWithFolders) {
                         if (applyCopyImpl) {
-                            linksRepo.addALinkInLinksTable(currentLink)
+                            linksRepo.addALinkInLinksTable(
+                                LinksTable(
+                                    title = currentLink.title,
+                                    webURL = currentLink.webURL,
+                                    baseURL = currentLink.baseURL,
+                                    imgURL = currentLink.imgURL,
+                                    infoForSaving = currentLink.imgURL,
+                                    isLinkedWithSavedLinks = true,
+                                    isLinkedWithFolders = false,
+                                    isLinkedWithImpFolder = false,
+                                    keyOfImpLinkedFolder = "",
+                                    isLinkedWithArchivedFolder = false
+                                )
+                            )
                         } else {
                             linksRepo.markThisLinkFromLinksTableAsSavedLink(linkID = currentLink.id)
                         }
@@ -119,11 +140,25 @@ class TransferActionsBtmBarVM @Inject constructor(
                 }
 
                 else /* else = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN */ -> {
-                    if (currentLink.isLinkedWithFolders && currentLink.keyOfLinkedFolderV10 == CollectionsScreenVM.currentClickedFolderData.value.id) return@forEach
+                    if (currentLink.isLinkedWithFolders && !applyCopyImpl && currentLink.keyOfLinkedFolderV10 == CollectionsScreenVM.currentClickedFolderData.value.id) return@forEach
 
                     if (currentLink.isLinkedWithSavedLinks || currentLink.isLinkedWithFolders) {
                         if (applyCopyImpl) {
-                            linksRepo.addALinkInLinksTable(currentLink)
+                            linksRepo.addALinkInLinksTable(
+                                LinksTable(
+                                    title = currentLink.title,
+                                    webURL = currentLink.webURL,
+                                    baseURL = currentLink.baseURL,
+                                    imgURL = currentLink.imgURL,
+                                    infoForSaving = currentLink.imgURL,
+                                    isLinkedWithSavedLinks = false,
+                                    isLinkedWithFolders = true,
+                                    isLinkedWithImpFolder = false,
+                                    keyOfImpLinkedFolder = "",
+                                    isLinkedWithArchivedFolder = false,
+                                    keyOfLinkedFolderV10 = CollectionsScreenVM.currentClickedFolderData.value.id
+                                )
+                            )
                         } else {
                             linksRepo.markThisLinkFromLinksTableAsFolderLink(
                                 linkID = currentLink.id,
@@ -133,7 +168,7 @@ class TransferActionsBtmBarVM @Inject constructor(
 
                     } else {
 
-                            // if link is located in `Important Links`
+                        // if link is originally located in `Important Links`
 
                             linksRepo.addALinkInLinksTable(
                                 LinksTable(
@@ -152,7 +187,8 @@ class TransferActionsBtmBarVM @Inject constructor(
                             )
 
                         if (applyCopyImpl) return@forEach
-                            linksRepo.deleteALinkFromImpLinks(currentLink.id)
+
+                        linksRepo.deleteALinkFromImpLinks(currentLink.id)
                         }
                 }
             }
