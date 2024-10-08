@@ -13,25 +13,39 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.ContentPaste
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavBackStackEntry
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
+import com.sakethh.linkora.utils.linkoraLog
 
 @Composable
 fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
     val transferActionsBtmBarVM: TransferActionsBtmBarVM = hiltViewModel()
+    val systemUiController = rememberSystemUiController()
+    systemUiController.setNavigationBarColor(
+        MaterialTheme.colorScheme.surfaceColorAtElevation(
+            BottomAppBarDefaults.ContainerElevation
+        )
+    )
     BottomAppBar {
         IconButton(onClick = {
             TransferActionsBtmBarValues.reset()
@@ -40,30 +54,38 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
         }
         Column {
             Text(
-                text = TransferActionsBtmBarValues.currentTransferActionType.value.name.replace(
-                    "_",
-                    " "
-                )
-                    .split(" ").map { it[0] + it.substring(1).lowercase() }.joinToString { it }
-                    .replace(",", ""),
-                style = MaterialTheme.typography.titleSmall,
-                fontSize = 12.sp
+                text = TransferActionsBtmBarValues.currentTransferActionType.value.name.substringBefore(
+                    "_"
+                ),
+                style = MaterialTheme.typography.titleLarge,
+                fontSize = 10.sp
             )
             Spacer(Modifier.height(2.dp))
             Text(
-                text = "Folders selcted : ${TransferActionsBtmBarValues.sourceFolders.size}, Links selected",
-                style = MaterialTheme.typography.titleMedium,
-                fontSize = 16.sp,
+                text = buildAnnotatedString {
+                    append(
+                        "Folders selected : "
+                    )
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(TransferActionsBtmBarValues.sourceFolders.size.toString())
+                    }
+                    append(
+                        "\nLinks selected : "
+                    )
+                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                        append(TransferActionsBtmBarValues.sourceLinks.size.toString())
+                    }
+                },
+                style = MaterialTheme.typography.titleSmall,
+                fontSize = 14.sp,
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
                     .horizontalScroll(rememberScrollState()),
-                maxLines = 1
             )
         }
         Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
             Row {
                 IconButton(onClick = {
-
                     if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActionsBtmBarValues.sourceLinks.isEmpty()) {
                         // if in collections screen then we are supposed to mark selected folders as root folders
                         transferActionsBtmBarVM.transferFolders(
@@ -74,7 +96,6 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                         )
                         return@IconButton
                     }
-
                     val applyCopyImpl =
                         when (TransferActionsBtmBarValues.currentTransferActionType.value) {
                             TransferActionType.MOVING_OF_FOLDERS, TransferActionType.MOVING_OF_LINKS -> false
@@ -87,6 +108,8 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                             .map { it.id },
                         targetParentId = CollectionsScreenVM.currentClickedFolderData.value.id
                     )
+
+                    linkoraLog("before transferActionsBtmBarVM.transferLinks : " + TransferActionsBtmBarValues.sourceLinks.size.toString())
 
                     transferActionsBtmBarVM.transferLinks(
                         applyCopyImpl = applyCopyImpl,
