@@ -78,7 +78,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.transferActions.TransferActionType
-import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
+import com.sakethh.linkora.ui.transferActions.TransferActions
 import com.sakethh.linkora.utils.fadedEdges
 import kotlinx.coroutines.launch
 
@@ -239,7 +239,7 @@ fun MenuBtmSheetUI(
                         elementName = LocalizedStrings.viewNote.value,
                         elementImageVector = Icons.AutoMirrored.Outlined.TextSnippet
                     )
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) return@Column
+                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) return@Column
                     IndividualMenuComponent(
                         onOptionClick = {
                             coroutineScope.launch {
@@ -353,7 +353,7 @@ fun MenuBtmSheetUI(
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.VerticalAlignTop else Icons.Outlined.DeleteForever
                         )
                     }
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING && menuBtmSheetParam.shouldTransferringOptionShouldBeVisible) {
+                    if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING && menuBtmSheetParam.shouldTransferringOptionShouldBeVisible) {
                             IndividualMenuComponent(
                                 onOptionClick = {
                                     menuBtmSheetParam.onCopyItemClick()

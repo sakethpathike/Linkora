@@ -106,7 +106,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
-import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
+import com.sakethh.linkora.ui.transferActions.TransferActions
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -283,7 +283,7 @@ fun CollectionsScreen(navController: NavController) {
                 item {
                     Box(modifier = Modifier.animateContentSize()) {
                         Column {
-                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActions.currentTransferActionType.value == TransferActionType.NOTHING
                             ) {
                                 Card(
                                     modifier = Modifier
@@ -337,8 +337,8 @@ fun CollectionsScreen(navController: NavController) {
                                     color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                 )
                             }
-                            if (TransferActionsBtmBarValues.sourceFolders.isEmpty() && !areFoldersSelectable.value && (foldersData.isEmpty() || (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS))) {
-                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
+                            if (TransferActions.sourceFolders.isEmpty() && !areFoldersSelectable.value && (foldersData.isEmpty() || (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING || TransferActions.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActions.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS))) {
+                                if (TransferActions.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActions.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
                                     Spacer(Modifier.height(15.dp))
                                 }
                                 Card(
@@ -417,7 +417,7 @@ fun CollectionsScreen(navController: NavController) {
                                         }
                                     }
                                 }
-                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
+                                if (TransferActions.currentTransferActionType.value == TransferActionType.MOVING_OF_LINKS || TransferActions.currentTransferActionType.value == TransferActionType.COPYING_OF_LINKS) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(
                                             top = 15.dp,
@@ -430,7 +430,7 @@ fun CollectionsScreen(navController: NavController) {
                                     )
                                 }
                             }
-                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                            if ((!areFoldersSelectable.value || foldersData.isEmpty()) && TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                                 Card(
                                     modifier = Modifier
                                         .padding(
@@ -543,14 +543,14 @@ fun CollectionsScreen(navController: NavController) {
                             foldersData.id.toString() + foldersData.folderName
                         }) { folderIndex, folderData ->
                         FolderIndividualComponent(
-                            isCheckBoxChecked = if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
+                            isCheckBoxChecked = if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) mutableStateOf(
                                 collectionsScreenVM.selectedFoldersData.contains(
                                     folderData
                                 )
-                            ) else mutableStateOf(TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                            ) else mutableStateOf(TransferActions.sourceFolders.map { it.id }
                                 .contains(folderData.id)),
                             checkBoxState = { checkBoxState ->
-                                if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                                if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                                     if (checkBoxState) {
                                         collectionsScreenVM.selectedFoldersData.add(
                                             folderData
@@ -562,9 +562,9 @@ fun CollectionsScreen(navController: NavController) {
                                     }
                                 } else {
                                     if (checkBoxState) {
-                                        TransferActionsBtmBarValues.sourceFolders.add(folderData)
+                                        TransferActions.sourceFolders.add(folderData)
                                     } else {
-                                        TransferActionsBtmBarValues.sourceFolders.removeAll {
+                                        TransferActions.sourceFolders.removeAll {
                                             it == folderData
                                         }
                                     }
@@ -585,7 +585,7 @@ fun CollectionsScreen(navController: NavController) {
                                 shouldOptionsBtmModalSheetBeVisible.value = true
                             },
                             onFolderClick = {
-                                if (!areFoldersSelectable.value && !TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                if (!areFoldersSelectable.value && !TransferActions.sourceFolders.map { it.id }
                                         .contains(folderData.id)) {
                                     SpecificCollectionsScreenVM.inARegularFolder.value = true
                                     SpecificCollectionsScreenVM.screenType.value =
@@ -594,7 +594,7 @@ fun CollectionsScreen(navController: NavController) {
                                     CollectionsScreenVM.rootFolderID = folderData.id
                                     navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
                                 }
-                                if (TransferActionsBtmBarValues.sourceFolders.map { it.id }
+                                if (TransferActions.sourceFolders.map { it.id }
                                         .contains(folderData.id)) {
                                     Toast.makeText(
                                         context,
@@ -646,9 +646,9 @@ fun CollectionsScreen(navController: NavController) {
         MenuBtmSheetUI(
             MenuBtmSheetParam(
                 onMoveItemClick = {
-                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                    TransferActions.currentTransferActionType.value =
                         TransferActionType.MOVING_OF_FOLDERS
-                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                    TransferActions.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
                     coroutineScope.launch {
                         btmModalSheetState.hide()
                     }.invokeOnCompletion {
@@ -656,9 +656,9 @@ fun CollectionsScreen(navController: NavController) {
                     }
                 },
                 onCopyItemClick = {
-                    TransferActionsBtmBarValues.currentTransferActionType.value =
+                    TransferActions.currentTransferActionType.value =
                         TransferActionType.COPYING_OF_FOLDERS
-                    TransferActionsBtmBarValues.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
+                    TransferActions.sourceFolders.add(CollectionsScreenVM.selectedFolderData.value)
                     coroutineScope.launch {
                         btmModalSheetState.hide()
                     }.invokeOnCompletion {
@@ -852,10 +852,10 @@ fun CollectionsScreen(navController: NavController) {
         )
     }
     BackHandler {
-        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+        if (TransferActions.isAnyActionGoingOn.value) {
             Toast.makeText(context, "wait until this action completes", Toast.LENGTH_SHORT).show()
-        } else if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
-            TransferActionsBtmBarValues.reset()
+        } else if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
+            TransferActions.reset()
         } else if (isMainFabRotated.value) {
             shouldScreenTransparencyDecreasedBoxVisible.value = false
             coroutineScope.launch {
@@ -910,7 +910,7 @@ fun FolderIndividualComponent(
     },
     onLongClick: () -> Unit = {},
     inSelectionMode: Boolean = false,
-    inTransferringContentMode: MutableState<Boolean> = mutableStateOf(TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING)
+    inTransferringContentMode: MutableState<Boolean> = mutableStateOf(TransferActions.currentTransferActionType.value != TransferActionType.NOTHING)
 ) {
     val context = LocalContext.current
     Column(
@@ -929,13 +929,13 @@ fun FolderIndividualComponent(
                 }, indication = null,
                     onClick = {
                         onFolderClick(isCheckBoxChecked.value)
-                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                        if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                             isCheckBoxChecked.value = !isCheckBoxChecked.value
                             checkBoxState(isCheckBoxChecked.value)
                         }
                     },
                     onLongClick = {
-                        if (TransferActionsBtmBarValues.currentTransferActionType.value == TransferActionType.NOTHING) {
+                        if (TransferActions.currentTransferActionType.value == TransferActionType.NOTHING) {
                             onLongClick()
                         }
                     })
@@ -954,7 +954,7 @@ fun FolderIndividualComponent(
                 Checkbox(
                     checked = isCheckBoxChecked.value,
                     onCheckedChange = {
-                        if (TransferActionsBtmBarValues.isAnyActionGoingOn.value) {
+                        if (TransferActions.isAnyActionGoingOn.value) {
                             Toast.makeText(
                                 context,
                                 "wait until this operation completes",
