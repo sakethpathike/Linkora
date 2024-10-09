@@ -2,7 +2,6 @@ package com.sakethh.linkora.ui.screens.settings.specific
 
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -69,6 +68,7 @@ import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AboutSettingsScreen(
@@ -108,8 +108,7 @@ fun AboutSettingsScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
                 .nestedScroll(topAppBarScrollBehaviour.nestedScrollConnection)
-                .navigationBarsPadding(),
-            verticalArrangement = Arrangement.spacedBy(30.dp)
+                .navigationBarsPadding()
         ) {
             item(key = "settingsCard") {
                 Row {
@@ -131,6 +130,8 @@ fun AboutSettingsScreen(
                         modifier = Modifier.alignByBaseline()
                     )
                 }
+            }
+            item {
                 if (!SettingsPreference.isAutoCheckUpdatesEnabled.value && !SettingsPreference.isOnLatestUpdate.value && isNetworkAvailable(
                         context
                     )
@@ -242,18 +243,23 @@ fun AboutSettingsScreen(
                         }
                     }
                 }
+            }
+            item {
                 HorizontalDivider(
                     modifier = Modifier.padding(20.dp),
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )
-
+            }
+            item {
                 Text(
                     text = LocalizedStrings.socials.value,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(start = 15.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
+            item {
                 SettingsAppInfoComponent(
                     description = "",
                     icon = null,
@@ -275,6 +281,7 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
                 /*HorizontalDivider(
                     modifier = Modifier.padding(
                         start = 20.dp,
@@ -284,6 +291,7 @@ fun AboutSettingsScreen(
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )*/
+            item {
                 SettingsAppInfoComponent(
                     description = "",
                     icon = null,
@@ -305,6 +313,8 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
+            item {
                 HorizontalDivider(
                     modifier = Modifier.padding(
                         start = 20.dp,
@@ -314,13 +324,17 @@ fun AboutSettingsScreen(
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )
+            }
+            item {
                 Text(
                     text = LocalizedStrings.development.value,
                     style = MaterialTheme.typography.titleSmall,
                     modifier = Modifier.padding(start = 15.dp, bottom = 15.dp, top = 20.dp),
                     color = MaterialTheme.colorScheme.primary
                 )
+            }
 
+            item {
                 SettingsAppInfoComponent(
                     description = githubDesc.value,
                     icon = null,
@@ -341,6 +355,9 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
+
+            item {
 
                 HorizontalDivider(
                     modifier = Modifier.padding(20.dp),
@@ -368,6 +385,9 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
+
+            item {
 
                 HorizontalDivider(
                     modifier = Modifier.padding(20.dp),
@@ -395,7 +415,9 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
 
+            item {
                 HorizontalDivider(
                     modifier = Modifier.padding(20.dp),
                     thickness = 0.5.dp,
@@ -403,8 +425,8 @@ fun AboutSettingsScreen(
                 )
 
                 SettingsAppInfoComponent(
-                    description = LocalizedStrings.helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value,
                     icon = Icons.Default.Translate,
+                    description = LocalizedStrings.helpMakeLinkoraAccessibleInMoreLanguagesByContributingTranslations.value,
                     usingLocalIcon = false,
                     title = LocalizedStrings.helpTranslateLinkora.value,
                     localIcon = R.drawable.github_logo,
@@ -422,14 +444,14 @@ fun AboutSettingsScreen(
                             forceOpenInExternalBrowser = false
                         )
                     })
+            }
 
+            item {
                 HorizontalDivider(
                     modifier = Modifier.padding(20.dp),
                     thickness = 0.5.dp,
                     color = MaterialTheme.colorScheme.outline
                 )
-            }
-            item {
                 Spacer(modifier = Modifier.height(100.dp))
             }
         }

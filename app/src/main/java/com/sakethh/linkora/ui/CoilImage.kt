@@ -17,7 +17,7 @@ fun CoilImage(
     AsyncImage(
         model = ImageRequest.Builder(LocalContext.current).data(imgURL).addHeader(
             "User-Agent",
-            SettingsPreference.jsoupUserAgent.value
+            SettingsPreference.primaryJsoupUserAgent.value
         ).crossfade(true).build(),
         contentDescription = null,
         modifier = modifier,

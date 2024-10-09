@@ -145,6 +145,7 @@ fun AllLinksScreen(navController: NavController) {
                 is CommonUiEvent.ShowDeleteDialogBox -> shouldDeleteDialogBoxAppear.value = true
                 is CommonUiEvent.ShowToast -> Toast.makeText(context, it.msg, Toast.LENGTH_SHORT)
                     .show()
+                else -> {}
             }
         }
     }

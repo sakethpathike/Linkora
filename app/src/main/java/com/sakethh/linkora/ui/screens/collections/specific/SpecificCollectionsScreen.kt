@@ -127,6 +127,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 }
 
                 CommonUiEvent.ShowDeleteDialogBox -> shouldDeleteDialogBeVisible.value = true
+                else -> {}
             }
         }
     }

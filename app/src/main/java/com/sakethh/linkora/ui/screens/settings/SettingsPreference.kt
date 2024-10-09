@@ -47,8 +47,10 @@ object SettingsPreference : ViewModel() {
     val didServerTimeOutErrorOccurred = mutableStateOf(false)
     private val savedAppCode = mutableIntStateOf(APP_VERSION_CODE - 1)
     val selectedSortingType = mutableStateOf(SortingPreferences.NEW_TO_OLD.name)
-    val jsoupUserAgent =
+    val primaryJsoupUserAgent =
         mutableStateOf("Twitterbot/1.0")
+    val secondaryJsoupUserAgent =
+        mutableStateOf("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0")
     val localizationServerURL =
         mutableStateOf(Constants.LINKORA_LOCALIZATION_SERVER)
     val isShelfMinimizedInHomeScreen = mutableStateOf(false)
@@ -137,11 +139,18 @@ object SettingsPreference : ViewModel() {
                     ) ?: false
                 },
                 async {
-                    jsoupUserAgent.value = readSettingPreferenceValue(
+                    primaryJsoupUserAgent.value = readSettingPreferenceValue(
                         preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                         dataStore = context.dataStore
                     )
-                        ?: "Twitterbot/1.0"
+                        ?: primaryJsoupUserAgent.value
+                },
+                async {
+                    secondaryJsoupUserAgent.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                        dataStore = context.dataStore
+                    )
+                        ?: secondaryJsoupUserAgent.value
                 },
                 async {
                     showDescriptionForSettingsState.value = readSettingPreferenceValue(
