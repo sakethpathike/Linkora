@@ -16,11 +16,12 @@ import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
-import com.sakethh.linkora.ui.screens.settings.specific.AdvancedSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.ThemeSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.advanced.AdvancedSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.advanced.SiteSpecificUserAgentSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.language.LanguageSettingsScreen
 import com.sakethh.linkora.ui.screens.shelf.ShelfPanelsScreen
 import com.sakethh.linkora.ui.screens.shelf.SpecificPanelScreen
@@ -111,6 +112,9 @@ fun MainNavigation(
         }
         composable(route = NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name) {
             AdvancedSettingsScreen(navController)
+        }
+        composable(route = NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name) {
+            SiteSpecificUserAgentSettingsScreen(navController)
         }
     }
 

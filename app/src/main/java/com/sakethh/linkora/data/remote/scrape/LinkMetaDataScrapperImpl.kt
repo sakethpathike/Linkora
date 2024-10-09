@@ -78,10 +78,9 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         !ogTitle.isNullOrBlank() -> ogTitle
                         else -> pageTitle
                     }
-                    RequestResult.Failure("hell nahh")
-                    /*RequestResult.Success(
+                    RequestResult.Success(
                         LinkMetaData(baseURL = urlHost, imgURL, title)
-                    )*/
+                    )
                 }
 
             } catch (e: Exception) {

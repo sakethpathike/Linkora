@@ -332,6 +332,7 @@ class LinksImpl @Inject constructor(
                 }
 
                 is RequestResult.Success -> {
+                    RequestResult.isThisFirstRequest = true
                     when (linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                             val linkData = LinksTable(
