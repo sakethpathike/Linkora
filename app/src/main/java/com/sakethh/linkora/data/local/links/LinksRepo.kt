@@ -135,6 +135,7 @@ interface LinksRepo {
 
     fun getLinksOfThisFolderV10(folderID: Long): Flow<List<LinksTable>>
 
+    suspend fun getLinksOfThisFolderAsList(folderID: Long): List<LinksTable>
 
     fun getLinksOfThisFolderV9(folderName: String): Flow<List<LinksTable>>
 

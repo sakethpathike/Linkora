@@ -14,7 +14,7 @@ interface FoldersDao {
     suspend fun createANewFolder(foldersTable: FoldersTable)
 
     @Query("INSERT INTO folders_table(folderName, infoForSaving,parentFolderID,isFolderArchived,isMarkedAsImportant) SELECT folderName, infoForSaving, :parentFolderID, isFolderArchived, isMarkedAsImportant FROM folders_table WHERE id= :actualFolderId")
-    suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?)
+    suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?): Long
 
     @Insert
     suspend fun createMultipleNewFolders(foldersTable: List<FoldersTable>)

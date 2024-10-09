@@ -23,8 +23,8 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         localDatabase.foldersDao().createMultipleNewFolders(foldersTable)
     }
 
-    override suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?) {
-        localDatabase.foldersDao().duplicateAFolder(actualFolderId, parentFolderID)
+    override suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?): Long {
+        return localDatabase.foldersDao().duplicateAFolder(actualFolderId, parentFolderID)
     }
     override suspend fun deleteArchiveFolderNote(folderID: Long) {
         localDatabase.foldersDao().deleteArchiveFolderNote(folderID)

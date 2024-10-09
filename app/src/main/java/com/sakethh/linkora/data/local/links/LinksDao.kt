@@ -29,16 +29,15 @@ interface LinksDao {
     suspend fun markThisLinkFromLinksTableAsFolderLink(linkID: Long, targetFolderId: Long)
 
     @Query(
-        "INSERT INTO links_table (title, webURL, baseURL, imgURL, infoForSaving, \n" +
-                "                        isLinkedWithSavedLinks, isLinkedWithFolders, \n" +
-                "                        isLinkedWithImpFolder, keyOfImpLinkedFolder, \n" +
-                "                        isLinkedWithArchivedFolder, keyOfLinkedFolderV10)\n" +
-                "SELECT title, webURL, baseURL, imgURL, infoForSaving, \n" +
-                "       isLinkedWithSavedLinks, isLinkedWithFolders, \n" +
-                "       isLinkedWithImpFolder, keyOfImpLinkedFolder, \n" +
-                "       isLinkedWithArchivedFolder, :newIdOfLinkedFolder\n" +
-                "FROM links_table\n" +
-                "WHERE keyOfLinkedFolderV10 = :currentIdOfLinkedFolder\n"
+        "INSERT INTO links_table (title, webURL, baseURL, imgURL, infoForSaving, " +
+                "                        isLinkedWithSavedLinks, isLinkedWithFolders, " +
+                "                        isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
+                "                        isLinkedWithArchivedFolder, keyOfLinkedFolderV10) " +
+                "SELECT title, webURL, baseURL, imgURL, infoForSaving, " +
+                "       isLinkedWithSavedLinks, isLinkedWithFolders, " +
+                "       isLinkedWithImpFolder, keyOfImpLinkedFolder, " +
+                "       isLinkedWithArchivedFolder, :newIdOfLinkedFolder " +
+                "FROM links_table WHERE keyOfLinkedFolderV10 = :currentIdOfLinkedFolder"
     )
     suspend fun duplicateFolderBasedLinks(currentIdOfLinkedFolder: Long, newIdOfLinkedFolder: Long)
 
@@ -163,6 +162,9 @@ interface LinksDao {
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
     fun getLinksOfThisFolderV10(folderID: Long): Flow<List<LinksTable>>
+
+    @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolderV10=:folderID")
+    suspend fun getLinksOfThisFolderAsList(folderID: Long): List<LinksTable>
 
 
     @Query("SELECT * FROM links_table WHERE isLinkedWithFolders=1 AND keyOfLinkedFolder=:folderName")

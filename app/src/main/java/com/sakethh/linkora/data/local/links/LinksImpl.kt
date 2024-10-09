@@ -766,6 +766,9 @@ class LinksImpl @Inject constructor(
         return localDatabase.linksDao().getLinksOfThisFolderV10(folderID)
     }
 
+    override suspend fun getLinksOfThisFolderAsList(folderID: Long): List<LinksTable> {
+        return localDatabase.linksDao().getLinksOfThisFolderAsList(folderID)
+    }
     override fun getLinksOfThisFolderV9(folderName: String): Flow<List<LinksTable>> {
         return localDatabase.linksDao().getLinksOfThisFolderV9(folderName)
     }

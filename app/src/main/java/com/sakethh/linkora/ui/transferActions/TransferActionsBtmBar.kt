@@ -80,7 +80,6 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                 }
             }
             Column(Modifier.animateContentSize()) {
-                if (isPasteButtonClicked.value.not()) {
                     Text(
                         text = TransferActions.currentTransferActionType.value.name.substringBefore(
                             "_"
@@ -118,7 +117,6 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                             .fillMaxWidth(0.8f)
                             .horizontalScroll(rememberScrollState()),
                     )
-                }
             }
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Row(modifier = Modifier.animateContentSize()) {
