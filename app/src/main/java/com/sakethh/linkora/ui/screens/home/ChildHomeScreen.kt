@@ -122,6 +122,7 @@ fun ChildHomeScreen(
                 is CommonUiEvent.ShowDeleteDialogBox -> {
                     shouldDeleteDialogBoxAppear.value = true
                 }
+                else -> {}
             }
         }
     }

@@ -26,9 +26,12 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.InlineTextContent
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.SubdirectoryArrowRight
@@ -36,6 +39,7 @@ import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.Link
 import androidx.compose.material.icons.outlined.StarOutline
+import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.Button
@@ -71,14 +75,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.Placeholder
+import androidx.compose.ui.text.PlaceholderVerticalAlign
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
@@ -496,6 +507,7 @@ fun AddANewLinkDialogBox(
                                         .fillMaxWidth()
                                         .pulsateEffect(),
                                     onClick = {
+                                        RequestResult.isThisFirstRequest = true
                                         onSaveClick(
                                             isAutoDetectTitleEnabled.value,
                                             linkTextFieldValue.value,
@@ -518,6 +530,94 @@ fun AddANewLinkDialogBox(
                                         .fillMaxWidth()
                                         .padding(start = 20.dp, end = 20.dp)
                                 )
+                                if (RequestResult.isThisFirstRequest.not()) {
+                                    Spacer(modifier = Modifier.height(15.dp))
+                                    Card(
+                                        border = BorderStroke(
+                                            1.dp,
+                                            contentColorFor(MaterialTheme.colorScheme.surface)
+                                        ),
+                                        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 20.dp, end = 20.dp, top = 15.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .padding(
+                                                    top = 10.dp, bottom = 10.dp
+                                                ),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                contentAlignment = Alignment.CenterStart
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.Warning,
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .padding(
+                                                            start = 10.dp, end = 10.dp
+                                                        )
+                                                )
+                                            }
+                                            Text(
+                                                text = "Initial request has been failed",
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 14.sp,
+                                                lineHeight = 18.sp,
+                                                textAlign = TextAlign.Start,
+                                                modifier = Modifier
+                                                    .padding(end = 10.dp)
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(5.dp))
+                                    Card(
+                                        border = BorderStroke(
+                                            1.dp,
+                                            contentColorFor(MaterialTheme.colorScheme.surface)
+                                        ),
+                                        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 20.dp, end = 20.dp)
+                                    ) {
+                                        Text(
+                                            modifier = Modifier
+                                                .padding(
+                                                    end = 10.dp,
+                                                    top = 10.dp,
+                                                    start = 10.dp,
+                                                    bottom = 10.dp
+                                                )
+                                                .fillMaxWidth(),
+                                            text = buildAnnotatedString {
+                                                appendInlineContent(id = "infoIcon")
+                                                append("  Retrying metadata retrieval with secondary user agent:\n")
+                                                withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                                    append(SettingsPreference.secondaryJsoupUserAgent.value)
+                                                }
+                                            },
+                                            style = MaterialTheme.typography.titleSmall,
+                                            inlineContent = mapOf("infoIcon" to InlineTextContent(
+                                                Placeholder(
+                                                    20.sp,
+                                                    20.sp,
+                                                    PlaceholderVerticalAlign.TextCenter
+                                                )
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Info,
+                                                    modifier = Modifier.fillMaxSize(),
+                                                    contentDescription = ""
+                                                )
+                                            })
+                                        )
+                                    }
+                                }
                             }
                         }
                         item {

@@ -11,6 +11,9 @@ import org.jsoup.Jsoup
 class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
     override suspend fun scrapeLinkData(url: String): RequestResult<LinkMetaData> {
         return withContext(Dispatchers.IO) {
+            val currentUserAgent =
+                if (RequestResult.isThisFirstRequest.not()) SettingsPreference.secondaryJsoupUserAgent.value else SettingsPreference.primaryJsoupUserAgent.value
+            RequestResult.currentUserAgent = currentUserAgent
             try {
                 val urlHost: String
                 try {
@@ -23,7 +26,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         Jsoup.connect(
                             "http" + url.substringAfter("http").substringBefore(" ").trim()
                         )
-                            .userAgent(SettingsPreference.jsoupUserAgent.value)
+                            .userAgent(currentUserAgent)
                             .followRedirects(true)
                             .header("Accept", "text/html")
                             .header("Accept-Encoding", "gzip,deflate")
@@ -75,10 +78,10 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         !ogTitle.isNullOrBlank() -> ogTitle
                         else -> pageTitle
                     }
-
-                    RequestResult.Success(
+                    RequestResult.Failure("hell nahh")
+                    /*RequestResult.Success(
                         LinkMetaData(baseURL = urlHost, imgURL, title)
-                    )
+                    )*/
                 }
 
             } catch (e: Exception) {

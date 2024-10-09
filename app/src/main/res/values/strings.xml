@@ -214,7 +214,7 @@
     <string name="refresh_all_links_titles_and_images">Refresh All Links\' Titles and Images</string>
     <string name="refresh_all_links_titles_and_images_desc">Manually entered titles will be replaced with detected titles.</string>
     <string name="user_agent_desc">Helps detect images and titles from web page meta tags; different agent strings can change the detected data.</string>
-    <string name="user_agent">User Agent</string>
+    <string name="user_agent">Primary User Agent</string>
     <string name="refreshing_links">Refreshing links…</string>
     <string name="work_manager_desc">Work Manager is scheduling the link refresh. It will continue shortly.</string>
     <string name="links_refreshed">links refreshed</string>

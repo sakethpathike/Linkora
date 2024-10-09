@@ -9,6 +9,7 @@ import com.sakethh.linkora.LocalizedStrings.invalidUrl
 import com.sakethh.linkora.LocalizedStrings.movedTheLinkToArchive
 import com.sakethh.linkora.LocalizedStrings.removedTheLinkFromArchive
 import com.sakethh.linkora.data.RequestResult
+import com.sakethh.linkora.data.RequestState
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
@@ -43,7 +44,6 @@ class LinksImpl @Inject constructor(
         existingLinkID: Long,
         updateExistingLink: Boolean
     ): CommonUiEvent {
-        linkoraLog("User agent is : ${SettingsPreference.jsoupUserAgent.value}")
         if (
             when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> !isAValidURL(linksTable!!.webURL)
@@ -131,9 +131,16 @@ class LinksImpl @Inject constructor(
                     }
                 }
                 onTaskCompleted()
-                return CommonUiEvent.ShowToast(couldNotRetrieveMetadataNowButLinkoraSavedTheLink.value)
+                return if (RequestResult.isThisFirstRequest.not()) {
+                    CommonUiEvent.Nothing
+                } else {
+                    CommonUiEvent.ShowToast(couldNotRetrieveMetadataNowButLinkoraSavedTheLink.value)
+                }
             }
 
+            if (RequestResult.isThisFirstRequest) {
+                RequestResult.updateState(RequestState.REQUESTING)
+            }
 
             if (
                 when (linkType) {
@@ -172,6 +179,7 @@ class LinksImpl @Inject constructor(
                         }
                     )) {
                     is RequestResult.Failure -> {
+                        RequestResult.updateState(RequestState.FAILED)
                         return saveWithGivenData()
                     }
 
@@ -305,7 +313,22 @@ class LinksImpl @Inject constructor(
                     )
                 )) {
                 is RequestResult.Failure -> {
-                    return saveWithGivenData()
+                    RequestResult.isThisFirstRequest = !RequestResult.isThisFirstRequest
+                    return if (!RequestResult.isThisFirstRequest) {
+                        saveLink(
+                            linksTable,
+                            importantLink,
+                            recentlyVisited,
+                            archivedLinks,
+                            onTaskCompleted,
+                            linkType,
+                            autoDetectTitle,
+                            existingLinkID,
+                            updateExistingLink
+                        )
+                    } else {
+                        saveWithGivenData()
+                    }
                 }
 
                 is RequestResult.Success -> {

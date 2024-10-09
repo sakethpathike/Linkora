@@ -28,7 +28,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
@@ -41,8 +40,8 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
+import com.sakethh.linkora.ui.transferActions.TransferActions
 import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBar
-import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBarValues
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -62,9 +61,6 @@ class MainActivity : ComponentActivity() {
         lifecycleScope.launch {
             SettingsPreference.readAllPreferencesValues(this@MainActivity)
             LocalizedStrings.loadStrings(this@MainActivity)
-        }.invokeOnCompletion {
-            val firebaseCrashlytics = FirebaseCrashlytics.getInstance()
-            firebaseCrashlytics.setCrashlyticsCollectionEnabled(SettingsPreference.isSendCrashReportsEnabled.value)
         }
         setContent {
             LinkoraTheme {
@@ -92,9 +88,9 @@ class MainActivity : ComponentActivity() {
                 LaunchedEffect(
                     key1 = currentRoute,
                     key2 = SearchScreenVM.isSearchEnabled.value,
-                    key3 = TransferActionsBtmBarValues.currentTransferActionType.value
+                    key3 = TransferActions.currentTransferActionType.value
                 ) {
-                    if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING || (rootRoutes.any {
+                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING || (rootRoutes.any {
                             it == currentRoute
                         } && !SearchScreenVM.isSearchEnabled.value)) {
                         coroutineScope.launch {
@@ -127,7 +123,7 @@ class MainActivity : ComponentActivity() {
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState,
                         sheetContent = {
-                            if (TransferActionsBtmBarValues.currentTransferActionType.value != TransferActionType.NOTHING) {
+                            if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
                                 TransferActionsBtmBar(currentBackStackEntry)
                             } else {
                                 BottomNavigationBar(navController = navController)

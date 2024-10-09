@@ -235,6 +235,8 @@ open class CollectionsScreenVM @Inject constructor(
                             linkoraLog(data.msg)
                             pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
                         }
+
+                        else -> {}
                     }
                 }
             }
@@ -257,6 +259,7 @@ open class CollectionsScreenVM @Inject constructor(
                             linkoraLog(data.msg)
                             pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
                         }
+                        else -> {}
                     }
                 }
             }
@@ -289,6 +292,7 @@ open class CollectionsScreenVM @Inject constructor(
                             linkoraLog(data.msg)
                             pushAUIEvent(CommonUiEvent.ShowToast(data.msg))
                         }
+                        else -> {}
                     }
                 }
             }

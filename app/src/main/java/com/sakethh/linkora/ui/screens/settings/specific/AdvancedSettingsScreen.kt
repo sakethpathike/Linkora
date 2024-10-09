@@ -30,14 +30,19 @@ import com.sakethh.linkora.utils.Constants
 @Composable
 fun AdvancedSettingsScreen(navController: NavController) {
     val context = LocalContext.current
-    val jsoupStringAgent = SettingsPreference.jsoupUserAgent
-    val isReadOnlyTextFieldForUserAgent = rememberSaveable {
+    val primaryJsoupStringAgent = SettingsPreference.primaryJsoupUserAgent
+    val secondaryJsoupStringAgent = SettingsPreference.secondaryJsoupUserAgent
+    val isReadOnlyTextFieldForPrimaryUserAgent = rememberSaveable {
+        mutableStateOf(true)
+    }
+    val isReadOnlyTextFieldForSecondaryUserAgent = rememberSaveable {
         mutableStateOf(true)
     }
     val isReadOnlyTextFieldForLocalizationServer = rememberSaveable {
         mutableStateOf(true)
     }
-    val jsoupUserAgentFocusRequester = remember { FocusRequester() }
+    val primaryJsoupUserAgentFocusRequester = remember { FocusRequester() }
+    val secondaryJsoupUserAgentFocusRequester = remember { FocusRequester() }
     val localizationServerTextFieldFocusRequester = remember { FocusRequester() }
     SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.advanced.value,
@@ -54,43 +59,82 @@ fun AdvancedSettingsScreen(navController: NavController) {
             item {
                 Spacer(Modifier)
             }
-            item(key = "JsoupUserAgent") {
+            item(key = "PrimaryJsoupUserAgent") {
                 TextFieldForPreferenceComposable(
                     textFieldDescText = LocalizedStrings.userAgentDesc.value,
                     textFieldLabel = LocalizedStrings.userAgent.value,
-                    textFieldValue = jsoupStringAgent.value,
+                    textFieldValue = primaryJsoupStringAgent.value,
                     onResetButtonClick = {
                         SettingsPreference.changeSettingPreferenceValue(
                             stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                             context.dataStore,
                             "Twitterbot/1.0"
                         )
-                        SettingsPreference.jsoupUserAgent.value =
+                        SettingsPreference.primaryJsoupUserAgent.value =
                             "Twitterbot/1.0"
                     },
                     onTextFieldValueChange = {
-                        jsoupStringAgent.value = it
+                        primaryJsoupStringAgent.value = it
                     },
                     onConfirmButtonClick = {
-                        isReadOnlyTextFieldForUserAgent.value =
-                            !isReadOnlyTextFieldForUserAgent.value
-                        if (!isReadOnlyTextFieldForUserAgent.value) {
-                            jsoupUserAgentFocusRequester.requestFocus()
+                        isReadOnlyTextFieldForPrimaryUserAgent.value =
+                            !isReadOnlyTextFieldForPrimaryUserAgent.value
+                        if (!isReadOnlyTextFieldForPrimaryUserAgent.value) {
+                            primaryJsoupUserAgentFocusRequester.requestFocus()
                         } else {
-                            jsoupUserAgentFocusRequester.freeFocus()
+                            primaryJsoupUserAgentFocusRequester.freeFocus()
                         }
-                        if (isReadOnlyTextFieldForUserAgent.value) {
+                        if (isReadOnlyTextFieldForPrimaryUserAgent.value) {
                             SettingsPreference.changeSettingPreferenceValue(
                                 stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
                                 context.dataStore,
-                                jsoupStringAgent.value
+                                primaryJsoupStringAgent.value
                             )
-                            SettingsPreference.jsoupUserAgent.value =
-                                jsoupStringAgent.value
+                            SettingsPreference.primaryJsoupUserAgent.value =
+                                primaryJsoupStringAgent.value
                         }
                     },
-                    focusRequester = jsoupUserAgentFocusRequester,
-                    readonly = isReadOnlyTextFieldForUserAgent.value
+                    focusRequester = primaryJsoupUserAgentFocusRequester,
+                    readonly = isReadOnlyTextFieldForPrimaryUserAgent.value
+                )
+            }
+            item(key = "SecondaryJsoupUserAgent") {
+                TextFieldForPreferenceComposable(
+                    textFieldDescText = "Linkora uses this user agent if the request fails with the primary user agent",
+                    textFieldLabel = "Secondary User Agent",
+                    textFieldValue = secondaryJsoupStringAgent.value,
+                    onResetButtonClick = {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                            context.dataStore,
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+                        )
+                        SettingsPreference.secondaryJsoupUserAgent.value =
+                            "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
+                    },
+                    onTextFieldValueChange = {
+                        secondaryJsoupStringAgent.value = it
+                    },
+                    onConfirmButtonClick = {
+                        isReadOnlyTextFieldForSecondaryUserAgent.value =
+                            !isReadOnlyTextFieldForSecondaryUserAgent.value
+                        if (!isReadOnlyTextFieldForSecondaryUserAgent.value) {
+                            secondaryJsoupUserAgentFocusRequester.requestFocus()
+                        } else {
+                            secondaryJsoupUserAgentFocusRequester.freeFocus()
+                        }
+                        if (isReadOnlyTextFieldForSecondaryUserAgent.value) {
+                            SettingsPreference.changeSettingPreferenceValue(
+                                stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                                context.dataStore,
+                                secondaryJsoupStringAgent.value
+                            )
+                            SettingsPreference.secondaryJsoupUserAgent.value =
+                                secondaryJsoupStringAgent.value
+                        }
+                    },
+                    focusRequester = secondaryJsoupUserAgentFocusRequester,
+                    readonly = isReadOnlyTextFieldForSecondaryUserAgent.value
                 )
             }
 
