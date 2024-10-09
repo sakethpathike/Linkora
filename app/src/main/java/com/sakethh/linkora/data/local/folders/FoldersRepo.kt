@@ -10,7 +10,7 @@ interface FoldersRepo {
     suspend fun deleteAnArchiveFolderV9(folderID: Long)
     suspend fun createANewFolder(foldersTable: FoldersTable)
     suspend fun createMultipleNewFolders(foldersTable: List<FoldersTable>)
-    suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?)
+    suspend fun duplicateAFolder(actualFolderId: Long, parentFolderID: Long?): Long
 
     suspend fun deleteArchiveFolderNote(
         folderID: Long,

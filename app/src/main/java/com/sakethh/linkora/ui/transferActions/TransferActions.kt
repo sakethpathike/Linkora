@@ -19,8 +19,6 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -51,6 +49,7 @@ object TransferActions : ViewModel() {
     val totalSelectedLinksCount = mutableLongStateOf(0)
 
 
+
     fun transferFolders(
         applyCopyImpl: Boolean, sourceFolderIds: List<Long>, targetParentId: Long?, context: Context
     ) {
@@ -64,34 +63,49 @@ object TransferActions : ViewModel() {
             if (applyCopyImpl) {
                 sourceFolderIds.forEach { originalFolderId ->
 
-                    foldersRepo.duplicateAFolder(originalFolderId, targetParentId)
+                    foldersRepo.getThisFolderData(originalFolderId).folderName.let {
+                        linkoraLog("originally : $it")
+                    }
 
-                    val newlyDuplicatedFolderId = foldersRepo.getLastIDOfFoldersTable()
+
+                    val newlyDuplicatedFolderId =
+                        foldersRepo.duplicateAFolder(originalFolderId, targetParentId)
+
                     linksRepo.duplicateFolderBasedLinks(
                         currentIdOfLinkedFolder = originalFolderId,
                         newIdOfLinkedFolder = newlyDuplicatedFolderId
                     )
 
-                    foldersRepo.getChildFoldersOfThisParentIDAsList(originalFolderId).map { it.id }
-                        .forEach {
-                            transferFolders(
-                                applyCopyImpl = true,
-                                sourceFolderIds = listOf(it),
-                                targetParentId = newlyDuplicatedFolderId,
-                                context
-                            )
-                        }
+                    foldersRepo.getThisFolderData(newlyDuplicatedFolderId).folderName.let {
+                        linkoraLog(
+                            "duplicated : $it, links:\n${
+                                linksRepo.getLinksOfThisFolderAsList(
+                                    newlyDuplicatedFolderId
+                                ).map { it.title }
+                            }"
+                        )
+                    }
+                    transferFolders(
+                        applyCopyImpl = true,
+                        sourceFolderIds = foldersRepo.getChildFoldersOfThisParentIDAsList(
+                            originalFolderId
+                        ).map { it.id },
+                        targetParentId = newlyDuplicatedFolderId,
+                        context
+                    )
 
-                    sourceFolders.indexOfFirst {
-                        it.id == originalFolderId
-                    }.let { index ->
-                        linkoraLog("original folder id $originalFolderId, index is $index")
-                        try {
-                            sourceFolders.removeAt(index)
-                        } catch (e: Exception) {
-                            e.printStackTrace()
-                        } finally {
-                            ++currentFolderTransferProgressCount.longValue
+                    if (sourceFolders.map { it.id }.contains(originalFolderId)) {
+                        sourceFolders.indexOfFirst {
+                            it.id == originalFolderId
+                        }.let { index ->
+                            linkoraLog("original folder id $originalFolderId, index is $index")
+                            try {
+                                sourceFolders.removeAt(index)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            } finally {
+                                ++currentFolderTransferProgressCount.longValue
+                            }
                         }
                     }
                 }
@@ -115,7 +129,7 @@ object TransferActions : ViewModel() {
         val linksRepo =
             EntryPoints.get(context.applicationContext, TransferActionsEntryPoint::class.java)
                 .linksRepo()
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
 
             sourceLinks.forEach { currentLink ->
 
@@ -264,8 +278,10 @@ object TransferActions : ViewModel() {
 
             val areBothEmpty = folderData.isEmpty() && linkData.isEmpty()
 
-            totalSelectedLinksCount.longValue = linkData.size.toLong()
-            totalSelectedFoldersCount.longValue = folderData.size.toLong()
+            if (isAnyActionGoingOn.value.not()) {
+                totalSelectedLinksCount.longValue = linkData.size.toLong()
+                totalSelectedFoldersCount.longValue = folderData.size.toLong()
+            }
             if (areBothEmpty) {
                 reset()
             }
