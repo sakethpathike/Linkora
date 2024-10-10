@@ -62,7 +62,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
-                onLongClick = { -> }),
+                onLongClick = { -> },
+                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
             LinkUIComponentParam(
                 title = "A Plague Tale: Requiem | Download and Buy Today - Epic Games Store",
                 webBaseURL = "store.epicgames.com",
@@ -73,7 +74,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
-                onLongClick = { -> }),
+                onLongClick = { -> },
+                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
             LinkUIComponentParam(
                 title = "Nas | Spotify",
                 webBaseURL = "open.spotify.com",
@@ -84,7 +86,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
-                onLongClick = { -> }),
+                onLongClick = { -> },
+                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
             LinkUIComponentParam(
                 title = "Hacker (small type)",
                 webBaseURL = "twitter.com",
@@ -95,7 +98,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
-                onLongClick = { -> }),
+                onLongClick = { -> },
+                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
             LinkUIComponentParam(title = "Philipp Lackner - YouTube",
                 webBaseURL = "youtube.com",
                 imgURL = "https://yt3.googleusercontent.com/mhup7lzHh_c9b55z0edX65ReN9iJmTF2JU7vMGER9LTOora-NnXtvZdtn_vJmTvW6-y97z0Y=s900-c-k-c0x00ffffff-no-rj",
@@ -105,7 +109,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 onForceOpenInExternalBrowserClicked = { -> },
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
-                onLongClick = { -> }),
+                onLongClick = { -> },
+                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
         )
     }
 

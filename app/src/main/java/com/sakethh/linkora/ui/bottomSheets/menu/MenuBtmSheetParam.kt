@@ -23,6 +23,7 @@ data class MenuBtmSheetParam @OptIn(ExperimentalMaterial3Api::class) constructor
     val folderName: String,
     val linkTitle: String,
     val imgLink: String,
+    val imgUserAgent:String,
     val forAChildFolder: MutableState<Boolean> = mutableStateOf(false),
     val webUrl: String = "",
     val onForceOpenInExternalBrowserClicked: () -> Unit = {},

@@ -203,6 +203,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
     val impLinksStringRes = importantLinks.value
     val savedLinksStringRes = savedLinks.value
     val foldersStringRes = folders.value
+    val selectedLinkUserAgent = rememberSaveable {
+        mutableStateOf("")
+    }
 
     fun commonLinkParam(it: RecentlyVisited): LinkUIComponentParam {
         return LinkUIComponentParam(
@@ -217,6 +220,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
             webBaseURL = it.baseURL,
             imgURL = it.imgURL,
             onMoreIconClick = {
+                selectedLinkUserAgent.value = it.userAgent
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
                 SearchScreenVM.selectedLinkID = it.id
                 selectedLinkTitle.value = it.title
@@ -279,7 +283,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 searchScreenVM.selectedHistoryLinksData.contains(
                     it
                 )
-            )
+            ),
+            userAgent = it.userAgent
         )
     }
 
@@ -636,6 +641,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     webBaseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
+                                                        selectedLinkUserAgent.value = it.userAgent
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -712,7 +718,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             onTaskCompleted = {},
                                                             forceOpenInExternalBrowser = true
                                                         )
-                                                    })
+                                                    },
+                                                    userAgent = it.userAgent)
                                             )
                                         }
                                     }
@@ -755,6 +762,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     webBaseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
+                                                        selectedLinkUserAgent.value = it.userAgent
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -832,7 +840,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             onTaskCompleted = {},
                                                             forceOpenInExternalBrowser = true
                                                         )
-                                                    })
+                                                    },
+                                                    userAgent = it.userAgent)
                                             )
                                         }
                                     }
@@ -875,6 +884,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     webBaseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
+                                                        selectedLinkUserAgent.value = it.userAgent
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -951,7 +961,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             onTaskCompleted = {},
                                                             forceOpenInExternalBrowser = true
                                                         )
-                                                    })
+                                                    },
+                                                    userAgent = it.userAgent)
                                             )
                                         }
                                     }
@@ -994,6 +1005,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     webBaseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
+                                                        selectedLinkUserAgent.value = it.userAgent
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1070,7 +1082,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             onTaskCompleted = {},
                                                             forceOpenInExternalBrowser = true
                                                         )
-                                                    })
+                                                    },
+                                                    userAgent = it.userAgent)
                                             )
                                         }
                                     }
@@ -1113,6 +1126,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     webBaseURL = it.baseURL,
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
+                                                        selectedLinkUserAgent.value = it.userAgent
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1189,7 +1203,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             onTaskCompleted = {},
                                                             forceOpenInExternalBrowser = true
                                                         )
-                                                    })
+                                                    },
+                                                    userAgent = it.userAgent)
                                             )
                                         }
                                     }
@@ -1542,7 +1557,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                             )
                         )
                     )
-                }
+                },
+                imgUserAgent = selectedLinkUserAgent.value
             )
         )
         RenameDialogBox(

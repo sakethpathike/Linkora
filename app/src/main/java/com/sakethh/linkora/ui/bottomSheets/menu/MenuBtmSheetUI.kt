@@ -138,7 +138,8 @@ fun MenuBtmSheetUI(
                                     )
                                 )
                                 .fadedEdges(MaterialTheme.colorScheme),
-                            imgURL = menuBtmSheetParam.imgLink
+                            imgURL = menuBtmSheetParam.imgLink,
+                            userAgent = menuBtmSheetParam.imgUserAgent
                         )
                         Row(
                             modifier = Modifier

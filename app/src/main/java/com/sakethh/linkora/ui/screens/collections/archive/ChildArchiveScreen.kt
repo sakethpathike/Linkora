@@ -115,6 +115,9 @@ fun ChildArchiveScreen(
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
 
+    val selectedLinkUserAgent = rememberSaveable  {
+        mutableStateOf("")
+    }
     fun commonLinkParam(it: ArchivedLinks): LinkUIComponentParam {
         return LinkUIComponentParam(
             onLongClick = {
@@ -129,6 +132,7 @@ fun ChildArchiveScreen(
             webBaseURL = it.baseURL,
             imgURL = it.imgURL,
             onMoreIconClick = {
+                selectedLinkUserAgent.value = it.userAgent
                 archiveScreenVM.selectedArchivedLinkData.value = it
                 shouldOptionsBtmModalSheetBeVisible.value = true
                 selectedURLOrFolderName.value = it.webURL
@@ -183,7 +187,8 @@ fun ChildArchiveScreen(
                 archiveScreenVM.selectedLinksData.contains(
                     it
                 )
-            )
+            ),
+            userAgent = it.userAgent
         )
     }
 
@@ -440,6 +445,7 @@ fun ChildArchiveScreen(
                         forceOpenInExternalBrowser = false
                     )
                 },
+                imgUserAgent = selectedLinkUserAgent.value
             )
         )
 

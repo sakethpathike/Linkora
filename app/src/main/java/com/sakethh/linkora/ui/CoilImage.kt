@@ -6,18 +6,18 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.utils.linkoraLog
 
 @Composable
 fun CoilImage(
-    modifier: Modifier,
-    imgURL: String,
+    modifier: Modifier, imgURL: String, userAgent: String,
     contentScale: ContentScale = ContentScale.Crop
 ) {
+    val context = LocalContext.current
+    linkoraLog("Url is $imgURL, user agent is :$userAgent")
     AsyncImage(
-        model = ImageRequest.Builder(LocalContext.current).data(imgURL).addHeader(
-            "User-Agent",
-            SettingsPreference.primaryJsoupUserAgent.value
+        model = ImageRequest.Builder(context).data(imgURL).addHeader(
+            "User-Agent", userAgent
         ).crossfade(true).build(),
         contentDescription = null,
         modifier = modifier,

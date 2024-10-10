@@ -139,6 +139,9 @@ fun AllLinksScreen(navController: NavController) {
     val isAllTablesEmpty = savedLinks.value.isEmpty() && impLinks.value.isEmpty() &&
             historyLinks.value.isEmpty() && archivedLinks.value.isEmpty() &&
             regularFoldersLinks.value.isEmpty()
+    val selectedLinkUserAgent = rememberSaveable {
+        mutableStateOf("")
+    }
     LaunchedEffect(Unit) {
         allLinksScreenVM.uiChannel.collectLatest {
             when (it) {
@@ -164,6 +167,7 @@ fun AllLinksScreen(navController: NavController) {
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
+                selectedLinkUserAgent.value = linksTable.userAgent
                 SpecificCollectionsScreenVM.screenType.value = selectedBtmSheetType
                 selectedLinkType.value = linkType.name
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -214,9 +218,9 @@ fun AllLinksScreen(navController: NavController) {
                         imgURL = linksTable.imgURL,
                         infoForSaving = linksTable.infoForSaving
                     ), context = context, uriHandler = uriHandler,
-                    forceOpenInExternalBrowser = true
+                    forceOpenInExternalBrowser = true,
                 )
-            })
+            }, userAgent = linksTable.userAgent)
     }
     SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.allLinks.value,
@@ -324,7 +328,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "Graduation",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             ListViewLinkUIComponent(
@@ -350,7 +355,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "Illmatic",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             ListViewLinkUIComponent(
@@ -376,7 +382,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "It Was Written",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             ListViewLinkUIComponent(
@@ -433,7 +440,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -459,7 +467,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -485,7 +494,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -544,7 +554,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -570,7 +581,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -596,7 +608,8 @@ fun AllLinksScreen(navController: NavController) {
                                 isLinkedWithFolders = false,
                                 isLinkedWithImpFolder = false,
                                 keyOfImpLinkedFolder = "",
-                                isLinkedWithArchivedFolder = false
+                                isLinkedWithArchivedFolder = false,
+                                userAgent = it.userAgent
                             )
                         }) {
                             GridViewLinkUIComponent(
@@ -712,7 +725,7 @@ fun AllLinksScreen(navController: NavController) {
                             )
                         )
                     )
-                }
+                }, imgUserAgent = selectedLinkUserAgent.value
             )
         )
     }
