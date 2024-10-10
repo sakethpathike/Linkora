@@ -1,6 +1,7 @@
 package com.sakethh.linkora.data.local
 
 import androidx.room.Entity
+import androidx.room.Index
 import androidx.room.PrimaryKey
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -122,4 +123,15 @@ data class Shelf(
     val shelfName: String,
     val shelfIconName: String,
     val folderIds: List<Long>
+)
+
+@Entity(
+    tableName = "site_specific_user_agent",
+    indices = [Index(value = ["domain"], unique = true)]
+)
+data class SiteSpecificUserAgent(
+    val domain: String,
+    val userAgent: String,
+    @PrimaryKey(autoGenerate = true)
+    val id: Long = 0
 )

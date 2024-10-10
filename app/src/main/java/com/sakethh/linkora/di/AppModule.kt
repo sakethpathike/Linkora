@@ -25,6 +25,8 @@ import com.sakethh.linkora.data.local.shelf.ShelfImpl
 import com.sakethh.linkora.data.local.shelf.ShelfRepo
 import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsImpl
 import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
+import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentImpl
+import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingImpl
@@ -149,13 +151,30 @@ object AppModule {
             db.execSQL("CREATE TABLE IF NOT EXISTS `translation` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `languageCode` TEXT NOT NULL, `stringName` TEXT NOT NULL, `stringValue` TEXT NOT NULL)")
         }
     }
+    private val MIGRATION_6_7 = object : Migration(6, 7) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+            db.execSQL(
+                "CREATE TABLE IF NOT EXISTS site_specific_user_agent (\n" +
+                        "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
+                        "    domain TEXT NOT NULL,\n" +
+                        "    userAgent TEXT NOT NULL\n" +
+                        ");\n" +
+                        "\n" +
+                        "CREATE UNIQUE INDEX IF NOT EXISTS index_site_specific_user_agent_domain\n" +
+                        "ON site_specific_user_agent (domain);\n"
+            )
+        }
+    }
 
     @Provides
     @Singleton
     fun provideLocalDatabase(app: Application): LocalDatabase {
         return Room.databaseBuilder(
             app, LocalDatabase::class.java, "linkora_db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6)
+        ).addMigrations(
+            MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
+            MIGRATION_6_7
+        )
             .build()
     }
 
@@ -295,6 +314,12 @@ object AppModule {
     @Singleton
     fun provideShelfRepo(localDatabase: LocalDatabase): ShelfRepo {
         return ShelfImpl(localDatabase)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSiteSpecificUserAgentRepo(localDatabase: LocalDatabase): SiteSpecificUserAgentRepo {
+        return SiteSpecificUserAgentImpl(localDatabase)
     }
 
     @Provides

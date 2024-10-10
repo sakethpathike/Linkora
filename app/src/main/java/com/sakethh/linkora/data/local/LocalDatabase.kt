@@ -13,6 +13,7 @@ import com.sakethh.linkora.data.local.restore.ImportDao
 import com.sakethh.linkora.data.local.search.SearchDao
 import com.sakethh.linkora.data.local.shelf.ShelfDao
 import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsDao
+import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentDao
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingDao
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingDao
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingDao
@@ -24,11 +25,11 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingDao
 
 @Database(
-    version = 6,
+    version = 7,
     exportSchema = true,
     entities = [Shelf::class, HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
         ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class,
-        Language::class, Translation::class
+        Language::class, Translation::class, SiteSpecificUserAgent::class
     ]
 )
 @TypeConverters(LongToStringConverter::class)
@@ -50,4 +51,5 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun importDao(): ImportDao
     abstract fun languageDao(): LanguageDao
     abstract fun translationDao(): TranslationsDao
+    abstract fun siteSpecificUserAgentDao(): SiteSpecificUserAgentDao
 }
