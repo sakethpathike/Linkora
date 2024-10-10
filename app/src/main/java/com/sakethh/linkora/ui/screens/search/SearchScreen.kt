@@ -220,7 +220,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
             webBaseURL = it.baseURL,
             imgURL = it.imgURL,
             onMoreIconClick = {
-                selectedLinkUserAgent.value = it.userAgent
+                selectedLinkUserAgent.value =
+                    it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
                 SearchScreenVM.selectedLinkID = it.id
                 selectedLinkTitle.value = it.title
@@ -284,7 +285,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                     it
                 )
             ),
-            userAgent = it.userAgent
+            userAgent = it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
         )
     }
 
@@ -642,6 +643,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
+                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -719,7 +721,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             forceOpenInExternalBrowser = true
                                                         )
                                                     },
-                                                    userAgent = it.userAgent)
+                                                    userAgent = it.userAgent
+                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                )
                                             )
                                         }
                                     }
@@ -763,6 +767,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
+                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -841,7 +846,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             forceOpenInExternalBrowser = true
                                                         )
                                                     },
-                                                    userAgent = it.userAgent)
+                                                    userAgent = it.userAgent
+                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                )
                                             )
                                         }
                                     }
@@ -885,6 +892,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
+                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -962,7 +970,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             forceOpenInExternalBrowser = true
                                                         )
                                                     },
-                                                    userAgent = it.userAgent)
+                                                    userAgent = it.userAgent
+                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                )
                                             )
                                         }
                                     }
@@ -1006,6 +1016,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
+                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1083,7 +1094,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             forceOpenInExternalBrowser = true
                                                         )
                                                     },
-                                                    userAgent = it.userAgent)
+                                                    userAgent = it.userAgent
+                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                )
                                             )
                                         }
                                     }
@@ -1127,6 +1140,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
+                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1204,7 +1218,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             forceOpenInExternalBrowser = true
                                                         )
                                                     },
-                                                    userAgent = it.userAgent)
+                                                    userAgent = it.userAgent
+                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                )
                                             )
                                         }
                                     }

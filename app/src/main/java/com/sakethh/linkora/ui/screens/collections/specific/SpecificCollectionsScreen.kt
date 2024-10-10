@@ -582,7 +582,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                     webBaseURL = linkData.baseURL,
                     imgURL = linkData.imgURL,
                     onMoreIconClick = {
-                        selectedLinkUserAgent.value = linkData.userAgent
+                        selectedLinkUserAgent.value =
+                            linkData.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                         selectedItemTitle.value = linkData.title
                         selectedItemNote.value = linkData.infoForSaving
                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -727,7 +728,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 linkData.webURL
                             )
                         )
-                    }, userAgent =linkData.userAgent
+                    },
+                    userAgent = linkData.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                 )
             }
 

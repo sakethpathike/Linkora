@@ -167,7 +167,8 @@ fun AllLinksScreen(navController: NavController) {
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
-                selectedLinkUserAgent.value = linksTable.userAgent
+                selectedLinkUserAgent.value =
+                    linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.screenType.value = selectedBtmSheetType
                 selectedLinkType.value = linkType.name
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -220,7 +221,8 @@ fun AllLinksScreen(navController: NavController) {
                     ), context = context, uriHandler = uriHandler,
                     forceOpenInExternalBrowser = true,
                 )
-            }, userAgent = linksTable.userAgent)
+            }, userAgent = linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+        )
     }
     SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.allLinks.value,
