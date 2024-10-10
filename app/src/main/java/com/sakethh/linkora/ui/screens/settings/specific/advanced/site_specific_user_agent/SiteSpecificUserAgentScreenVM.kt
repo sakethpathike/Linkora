@@ -46,6 +46,7 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
             siteSpecificUserAgentRepo.deleteASiteSpecificUserAgent(
                 domain
             )
+            updateUserAgentInLinkBasedTables(domain = domain, newUserAgent = null)
         }
     }
 
@@ -56,7 +57,7 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
         }
     }
 
-    private suspend fun updateUserAgentInLinkBasedTables(domain: String, newUserAgent: String) {
+    private suspend fun updateUserAgentInLinkBasedTables(domain: String, newUserAgent: String?) {
         linksRepo.changeUserAgentInLinksTable(newUserAgent, domain)
         linksRepo.changeUserAgentInArchiveLinksTable(newUserAgent, domain)
         linksRepo.changeUserAgentInImportantLinksTable(newUserAgent, domain)

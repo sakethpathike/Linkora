@@ -176,18 +176,27 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCustomWebTab(localDatabase: LocalDatabase, ktorClient: HttpClient): CustomWebTab {
-        return CustomWebTab(provideLinksRepo(localDatabase, ktorClient))
+    fun provideCustomWebTab(
+        localDatabase: LocalDatabase,
+        ktorClient: HttpClient,
+        siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo
+    ): CustomWebTab {
+        return CustomWebTab(provideLinksRepo(localDatabase, ktorClient, siteSpecificUserAgentRepo))
     }
 
     @Provides
     @Singleton
-    fun provideLinksRepo(localDatabase: LocalDatabase, ktorClient: HttpClient): LinksRepo {
+    fun provideLinksRepo(
+        localDatabase: LocalDatabase,
+        ktorClient: HttpClient,
+        siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo
+    ): LinksRepo {
         return LinksImpl(
             localDatabase,
             provideFoldersRepo(localDatabase),
             provideLinkMetaDataScrapperService(),
-            provideTwitterMetaDataRepo(ktorClient)
+            provideTwitterMetaDataRepo(ktorClient),
+            siteSpecificUserAgentRepo
         )
     }
 
@@ -242,9 +251,13 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideExportRepo(localDatabase: LocalDatabase, ktorClient: HttpClient): ExportRepo {
+    fun provideExportRepo(
+        localDatabase: LocalDatabase,
+        ktorClient: HttpClient,
+        siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo
+    ): ExportRepo {
         return ExportImpl(
-            provideLinksRepo(localDatabase, ktorClient),
+            provideLinksRepo(localDatabase, ktorClient, siteSpecificUserAgentRepo),
             provideFoldersRepo(localDatabase)
         )
     }

@@ -29,4 +29,11 @@ class SiteSpecificUserAgentImpl @Inject constructor(private val localDatabase: L
     override suspend fun updateASpecificUserAgent(domain: String, newUserAgent: String) {
         localDatabase.siteSpecificUserAgentDao().updateASpecificUserAgent(domain, newUserAgent)
     }
+    override suspend fun doesDomainExistPartially(domain: String): Boolean {
+        return localDatabase.siteSpecificUserAgentDao().doesDomainExistPartially(domain)
+    }
+
+    override suspend fun getUserAgentByPartialDomain(domain: String): String {
+        return localDatabase.siteSpecificUserAgentDao().getUserAgentByPartialDomain(domain)
+    }
 }

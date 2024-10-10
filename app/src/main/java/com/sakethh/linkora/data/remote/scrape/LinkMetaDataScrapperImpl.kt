@@ -2,22 +2,22 @@ package com.sakethh.linkora.data.remote.scrape
 
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.remote.scrape.model.LinkMetaData
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 
 class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
-    override suspend fun scrapeLinkData(url: String): RequestResult<LinkMetaData> {
+    override suspend fun scrapeLinkData(
+        url: String,
+        userAgent: String
+    ): RequestResult<LinkMetaData> {
         return withContext(Dispatchers.IO) {
-            val currentUserAgent =
-                if (RequestResult.isThisFirstRequest.not()) SettingsPreference.secondaryJsoupUserAgent.value else SettingsPreference.primaryJsoupUserAgent.value
-            RequestResult.currentUserAgent = currentUserAgent
+            RequestResult.currentUserAgent = userAgent
             try {
-                val urlHost: String
+                val baseUrl: String
                 try {
-                    urlHost = url.split("/")[2]
+                    baseUrl = url.split("/")[2]
                 } catch (e: Exception) {
                     return@withContext RequestResult.Failure("invalid link : " + e.message.toString())
                 }
@@ -26,7 +26,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         Jsoup.connect(
                             "http" + url.substringAfter("http").substringBefore(" ").trim()
                         )
-                            .userAgent(currentUserAgent)
+                            .userAgent(userAgent)
                             .followRedirects(true)
                             .header("Accept", "text/html")
                             .header("Accept-Encoding", "gzip,deflate")
@@ -47,8 +47,8 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                     val imgURL = when {
                         !ogImage.isNullOrBlank() -> {
                             if (ogImage.startsWith("/")) {
-                                linkoraLog("https://$urlHost$ogImage")
-                                "https://$urlHost$ogImage"
+                                linkoraLog("https://$baseUrl$ogImage")
+                                "https://$baseUrl$ogImage"
                             } else {
                                 ogImage
                             }
@@ -58,15 +58,15 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                                 "/"
                             )
                         ) {
-                            linkoraLog("https://$urlHost$twitterImage")
-                            "https://$urlHost$twitterImage"
+                            linkoraLog("https://$baseUrl$twitterImage")
+                            "https://$baseUrl$twitterImage"
                         } else {
                             twitterImage
                         }
                         ogImage.isNullOrBlank() && twitterImage.isNullOrBlank() && !favicon.isNullOrBlank() -> {
                             if (favicon.startsWith("/")) {
-                                linkoraLog("https://$urlHost$favicon")
-                                "https://$urlHost$favicon"
+                                linkoraLog("https://$baseUrl$favicon")
+                                "https://$baseUrl$favicon"
                             } else {
                                 favicon
                             }
@@ -79,7 +79,7 @@ class LinkMetaDataScrapperImpl : LinkMetaDataScrapperService {
                         else -> pageTitle
                     }
                     RequestResult.Success(
-                        LinkMetaData(baseURL = urlHost, imgURL, title)
+                        LinkMetaData(baseURL = baseUrl, imgURL, title)
                     )
                 }
 

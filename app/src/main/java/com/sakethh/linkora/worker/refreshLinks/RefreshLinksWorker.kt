@@ -129,13 +129,19 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
-                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url
+                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                            userAgent = modifiedLink.userAgent
+                                                ?: SettingsPreference.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
                         } else {
                             when (val scrappedData =
-                                linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                                linkMetaDataScrapperService.scrapeLinkData(
+                                    modifiedLink.webURL,
+                                    modifiedLink.userAgent
+                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                )) {
                                 is RequestResult.Failure -> {
 
                                 }
@@ -143,7 +149,9 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
-                                        imgURL = scrappedData.data.imgURL
+                                        imgURL = scrappedData.data.imgURL,
+                                        userAgent = modifiedLink.userAgent
+                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -183,13 +191,19 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
-                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url
+                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                            userAgent = modifiedLink.userAgent
+                                                ?: SettingsPreference.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
                         } else {
                             when (val scrappedData =
-                                linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                                linkMetaDataScrapperService.scrapeLinkData(
+                                    modifiedLink.webURL,
+                                    modifiedLink.userAgent
+                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                )) {
                                 is RequestResult.Failure -> {
 
                                 }
@@ -197,7 +211,9 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
-                                        imgURL = scrappedData.data.imgURL
+                                        imgURL = scrappedData.data.imgURL,
+                                        userAgent = modifiedLink.userAgent
+                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -237,13 +253,19 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
-                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url
+                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                            userAgent = modifiedLink.userAgent
+                                                ?: SettingsPreference.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
                         } else {
                             when (val scrappedData =
-                                linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                                linkMetaDataScrapperService.scrapeLinkData(
+                                    modifiedLink.webURL,
+                                    modifiedLink.userAgent
+                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                )) {
                                 is RequestResult.Failure -> {
 
                                 }
@@ -251,7 +273,9 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 is RequestResult.Success -> {
                                     modifiedLink = modifiedLink.copy(
                                         title = scrappedData.data.title,
-                                        imgURL = scrappedData.data.imgURL
+                                        imgURL = scrappedData.data.imgURL,
+                                        userAgent = modifiedLink.userAgent
+                                            ?: SettingsPreference.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -293,13 +317,19 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                 )
                                             ) tweetMetaData.data.text else modifiedLink.title,
                                                 imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
-                                                    ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url
+                                                    ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                                userAgent = modifiedLink.userAgent
+                                                    ?: SettingsPreference.primaryJsoupUserAgent.value
                                             )
                                     }
                                 }
                             } else {
                                 when (val scrappedData =
-                                    linkMetaDataScrapperService.scrapeLinkData(modifiedLink.webURL)) {
+                                    linkMetaDataScrapperService.scrapeLinkData(
+                                        modifiedLink.webURL,
+                                        modifiedLink.userAgent
+                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                    )) {
                                     is RequestResult.Failure -> {
 
                                     }
@@ -307,7 +337,9 @@ class RefreshLinksWorker @AssistedInject constructor(
                                     is RequestResult.Success -> {
                                         modifiedLink = modifiedLink.copy(
                                             title = scrappedData.data.title,
-                                            imgURL = scrappedData.data.imgURL
+                                            imgURL = scrappedData.data.imgURL,
+                                            userAgent = modifiedLink.userAgent
+                                                ?: SettingsPreference.primaryJsoupUserAgent.value
                                         )
                                     }
                                 }
