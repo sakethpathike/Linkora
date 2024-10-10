@@ -75,6 +75,7 @@ class LinksImpl @Inject constructor(
         } else {
 
             suspend fun saveWithGivenData(): CommonUiEvent {
+                RequestResult.isThisFirstRequest = true
                 when (linkType) {
                     LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                         if (updateExistingLink) {
@@ -357,10 +358,10 @@ class LinksImpl @Inject constructor(
                     )
                 )) {
                 is RequestResult.Failure -> {
+                    RequestResult.isThisFirstRequest = !RequestResult.isThisFirstRequest
                     if (siteSpecificUserAgentRepo.doesDomainExistPartially(baseUrl)) {
                         return saveWithGivenData()
                     }
-                    RequestResult.isThisFirstRequest = !RequestResult.isThisFirstRequest
                     return if (!RequestResult.isThisFirstRequest) {
                         saveLink(
                             linksTable,
