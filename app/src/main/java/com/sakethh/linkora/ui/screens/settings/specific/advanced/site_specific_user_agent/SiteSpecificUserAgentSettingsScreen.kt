@@ -1,6 +1,7 @@
 package com.sakethh.linkora.ui.screens.settings.specific.advanced.site_specific_user_agent
 
 import android.widget.Toast
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
@@ -40,10 +41,13 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
@@ -279,6 +283,11 @@ private fun AddANewRuleBottomSheet(
                                 domain = domainValue.value,
                                 userAgent = userAgentValue.value
                             )
+                            coroutineScope.launch {
+                                sheetState.hide()
+                            }.invokeOnCompletion {
+                                shouldBeVisible.value = false
+                            }
                         } else {
                             Toast.makeText(context, "invalid domain", Toast.LENGTH_SHORT).show()
 
@@ -308,6 +317,9 @@ fun SiteSpecificUserAgentItem(
     }
     val userAgentValue = rememberSaveable(userAgent) {
         mutableStateOf(userAgent)
+    }
+    val userAgentFocusRequester = remember {
+        FocusRequester()
     }
     Card(
         border = BorderStroke(
@@ -350,46 +362,45 @@ fun SiteSpecificUserAgentItem(
             modifier = Modifier
                 .padding(start = 15.dp, end = 15.dp)
                 .fillMaxWidth()
+                .focusRequester(userAgentFocusRequester),
         )
         Spacer(Modifier.height(15.dp))
-        if (isUserAgentTextFieldReadOnly.value) {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 15.dp, end = 15.dp),
-                onClick = {
-                    onSaveClick(userAgentValue.value)
-                    isUserAgentTextFieldReadOnly.value = true
-                },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    disabledContentColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent
-                )
-            ) {
-                Text("Save", style = MaterialTheme.typography.titleSmall)
-            }
-        } else {
-            Button(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 15.dp, end = 15.dp),
-                onClick = {
-                    onDeleteClick()
-                },
-                colors = ButtonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer,
-                    contentColor = MaterialTheme.colorScheme.onErrorContainer,
-                    disabledContentColor = Color.Transparent,
-                    disabledContainerColor = Color.Transparent
-                )
-            ) {
-                Text("Delete", style = MaterialTheme.typography.titleSmall)
+        Column(modifier = Modifier.animateContentSize()) {
+            if (!isUserAgentTextFieldReadOnly.value) {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 15.dp, end = 15.dp),
+                    onClick = {
+                        onSaveClick(userAgentValue.value)
+                        isUserAgentTextFieldReadOnly.value = true
+                    }
+                ) {
+                    Text("Save", style = MaterialTheme.typography.titleSmall)
+                    userAgentFocusRequester.freeFocus()
+                }
+            } else {
+                Button(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 15.dp, end = 15.dp),
+                    onClick = {
+                        onDeleteClick()
+                    },
+                    colors = ButtonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer,
+                        contentColor = MaterialTheme.colorScheme.onErrorContainer,
+                        disabledContentColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent
+                    )
+                ) {
+                    Text("Delete", style = MaterialTheme.typography.titleSmall)
+                }
                 Spacer(Modifier.height(5.dp))
                 Button(
                     onClick = {
                         isUserAgentTextFieldReadOnly.value = false
+                        userAgentFocusRequester.requestFocus()
                     }, modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 15.dp, end = 15.dp)

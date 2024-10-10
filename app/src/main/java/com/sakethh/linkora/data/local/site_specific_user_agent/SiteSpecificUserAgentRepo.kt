@@ -10,6 +10,7 @@ interface SiteSpecificUserAgentRepo {
 
     fun getAllSiteSpecificUserAgent(): Flow<List<SiteSpecificUserAgent>>
 
+    suspend fun doesThisDomainExists(domain: String): Boolean
     suspend fun getUserAgentForASpecificDomain(domain: String): String
 
     suspend fun updateASpecificUserAgent(domain: String, newUserAgent: String)
