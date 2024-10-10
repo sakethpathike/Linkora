@@ -39,6 +39,7 @@ import androidx.compose.material3.contentColorFor
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -64,8 +65,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -76,17 +79,35 @@ fun SiteSpecificUserAgentSettingsScreen(navController: NavController) {
         BottomAppBarDefaults.ContainerElevation
     )
     val siteSpecificUserAgentScreenVM: SiteSpecificUserAgentScreenVM = hiltViewModel()
-    val allSiteSpecificUserAgents =
-        siteSpecificUserAgentScreenVM.allSiteSpecificUserAgents.collectAsStateWithLifecycle().value
-    val sheetStateForAddingANewSiteSpecificUserAgent =
-        rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    systemUiController.setNavigationBarColor(
-        bottomAppbarContainerColor
-    )
+    val context = LocalContext.current
     val shouldBtmSheetForAddingANewRuleBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
+
+    val sheetStateForAddingANewSiteSpecificUserAgent =
+        rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
+    LaunchedEffect(Unit) {
+        siteSpecificUserAgentScreenVM.uiEvent.collectLatest {
+            when (val event = it) {
+                is CommonUiEvent.ShowToast -> {
+                    coroutineScope.launch {
+                        sheetStateForAddingANewSiteSpecificUserAgent.hide()
+                    }.invokeOnCompletion {
+                        shouldBtmSheetForAddingANewRuleBeVisible.value = false
+                        Toast.makeText(context, event.msg, Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                else -> Unit
+            }
+        }
+    }
+    val allSiteSpecificUserAgents =
+        siteSpecificUserAgentScreenVM.allSiteSpecificUserAgents.collectAsStateWithLifecycle().value
+    systemUiController.setNavigationBarColor(
+        bottomAppbarContainerColor
+    )
     SpecificScreenScaffold(topAppBarText = "Site-Specific User Agent Settings",
         navController = navController,
         bottomBar = {

@@ -5,10 +5,13 @@ import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.SiteSpecificUserAgent
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
+import com.sakethh.linkora.ui.CommonUiEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -21,6 +24,9 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
     private val _allSiteSpecificUserAgents = MutableStateFlow(emptyList<SiteSpecificUserAgent>())
     val allSiteSpecificUserAgents = _allSiteSpecificUserAgents.asStateFlow()
 
+    private val _uiEvent = Channel<CommonUiEvent>()
+    val uiEvent = _uiEvent.receiveAsFlow()
+
     init {
         viewModelScope.launch {
             siteSpecificUserAgentRepo.getAllSiteSpecificUserAgent().collectLatest {
@@ -31,13 +37,18 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
 
     fun addANewSiteSpecificUserAgent(domain: String, userAgent: String) {
         viewModelScope.launch {
-            siteSpecificUserAgentRepo.addANewSiteSpecificUserAgent(
-                siteSpecificUserAgent = SiteSpecificUserAgent(
-                    domain,
-                    userAgent
+            if (siteSpecificUserAgentRepo.doesThisDomainExists(domain)) {
+                _uiEvent.send(CommonUiEvent.ShowToast("given domain already exists"))
+            } else {
+                siteSpecificUserAgentRepo.addANewSiteSpecificUserAgent(
+                    siteSpecificUserAgent = SiteSpecificUserAgent(
+                        domain,
+                        userAgent
+                    )
                 )
-            )
-            updateUserAgentInLinkBasedTables(domain, userAgent)
+                updateUserAgentInLinkBasedTables(domain, userAgent)
+                _uiEvent.send(CommonUiEvent.ShowToast("added the given domain successfully"))
+            }
         }
     }
 
