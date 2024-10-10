@@ -21,9 +21,15 @@ interface SiteSpecificUserAgentDao {
     @Query("SELECT userAgent FROM site_specific_user_agent WHERE domain=:domain")
     suspend fun getUserAgentForASpecificDomain(domain: String): String
 
+    @Query("SELECT userAgent FROM site_specific_user_agent WHERE domain LIKE '%' || :domain || '%'")
+    suspend fun getUserAgentByPartialDomain(domain: String): String
+
     @Query("UPDATE site_specific_user_agent SET userAgent = :newUserAgent WHERE domain = :domain")
     suspend fun updateASpecificUserAgent(domain: String, newUserAgent: String)
 
     @Query("SELECT EXISTS (SELECT 1 FROM site_specific_user_agent WHERE domain = :domain)")
     suspend fun doesThisDomainExists(domain: String): Boolean
+
+    @Query("SELECT EXISTS (SELECT 1 FROM site_specific_user_agent WHERE domain LIKE '%' || :domain || '%')")
+    suspend fun doesDomainExistPartially(domain: String): Boolean
 }

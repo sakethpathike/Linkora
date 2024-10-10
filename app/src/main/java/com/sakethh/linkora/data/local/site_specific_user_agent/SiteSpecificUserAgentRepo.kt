@@ -13,5 +13,9 @@ interface SiteSpecificUserAgentRepo {
     suspend fun doesThisDomainExists(domain: String): Boolean
     suspend fun getUserAgentForASpecificDomain(domain: String): String
 
+    suspend fun getUserAgentByPartialDomain(domain: String): String
+
+    suspend fun doesDomainExistPartially(domain: String): Boolean
+
     suspend fun updateASpecificUserAgent(domain: String, newUserAgent: String)
 }

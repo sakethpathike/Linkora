@@ -16,6 +16,7 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
+import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvent
@@ -30,7 +31,8 @@ import javax.inject.Inject
 class LinksImpl @Inject constructor(
     private val localDatabase: LocalDatabase, private val foldersRepo: FoldersRepo,
     private val linkMetaDataScrapperService: LinkMetaDataScrapperService,
-    private val twitterMetaDataRepo: TwitterMetaDataRepo
+    private val twitterMetaDataRepo: TwitterMetaDataRepo,
+    private val siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo
 ) : LinksRepo {
 
     private suspend fun saveLink(
@@ -292,9 +294,51 @@ class LinksImpl @Inject constructor(
                 }
             }
 
+            val baseUrl = when (linkType) {
+                LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
+                    linksTable!!.webURL.substringAfter("http")
+                        .substringBefore(" ").trim()
+                }
+
+                LinkType.IMP_LINK -> importantLink!!.webURL.substringAfter("http")
+                    .substringBefore(" ").trim()
+
+                LinkType.HISTORY_LINK -> recentlyVisited!!.webURL.substringAfter("http")
+                    .substringBefore(" ").trim()
+
+                LinkType.ARCHIVE_LINK -> archivedLinks!!.webURL.substringAfter("http")
+                    .substringBefore(" ").trim()
+            }.split("/")[2].replace("www.", "").replace("http://", "")
+                .replace("https://", "")
+
+            linkoraLog("baseurl is $baseUrl")
+
+            val currentUserAgent =
+                when (linkType) {
+                    LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
+                        linksTable!!.userAgent
+                    }
+
+                    LinkType.IMP_LINK -> importantLink!!.userAgent
+
+                    LinkType.HISTORY_LINK -> recentlyVisited!!.userAgent
+
+                    LinkType.ARCHIVE_LINK -> archivedLinks!!.userAgent
+                } ?: if (siteSpecificUserAgentRepo.doesDomainExistPartially(baseUrl)) {
+                    val userAgentByPartialDomain =
+                        siteSpecificUserAgentRepo.getUserAgentByPartialDomain(baseUrl)
+                    linkoraLog("didn't find existing user agent, so retrieved baseurl is $userAgentByPartialDomain")
+                    userAgentByPartialDomain
+                } else if (RequestResult.isThisFirstRequest.not()) {
+                    SettingsPreference.secondaryJsoupUserAgent.value
+                } else {
+                    SettingsPreference.primaryJsoupUserAgent.value
+                }
+
             when (val linkDataExtractor =
                 linkMetaDataScrapperService.scrapeLinkData(
-                    sanitizeLink(
+                    userAgent = currentUserAgent,
+                    url = sanitizeLink(
                         "http" + when (linkType) {
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                                 linksTable!!.webURL.substringAfter("http")
@@ -313,6 +357,9 @@ class LinksImpl @Inject constructor(
                     )
                 )) {
                 is RequestResult.Failure -> {
+                    if (siteSpecificUserAgentRepo.doesDomainExistPartially(baseUrl)) {
+                        return saveWithGivenData()
+                    }
                     RequestResult.isThisFirstRequest = !RequestResult.isThisFirstRequest
                     return if (!RequestResult.isThisFirstRequest) {
                         saveLink(
@@ -352,7 +399,8 @@ class LinksImpl @Inject constructor(
                                 isLinkedWithImpFolder = false,
                                 isLinkedWithArchivedFolder = false,
                                 keyOfArchiveLinkedFolderV10 = 0,
-                                keyOfImpLinkedFolder = ""
+                                keyOfImpLinkedFolder = "",
+                                userAgent = currentUserAgent
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
@@ -374,7 +422,8 @@ class LinksImpl @Inject constructor(
                                 webURL = sanitizeLink(importantLink!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
-                                infoForSaving = importantLink.infoForSaving
+                                infoForSaving = importantLink.infoForSaving,
+                                userAgent = currentUserAgent
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
@@ -397,7 +446,8 @@ class LinksImpl @Inject constructor(
                                 webURL = sanitizeLink(recentlyVisited!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
-                                infoForSaving = recentlyVisited.infoForSaving
+                                infoForSaving = recentlyVisited.infoForSaving,
+                                userAgent = currentUserAgent
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
@@ -421,7 +471,8 @@ class LinksImpl @Inject constructor(
                                 webURL = sanitizeLink(archivedLinks!!.webURL),
                                 baseURL = linkDataExtractor.data.baseURL,
                                 imgURL = linkDataExtractor.data.imgURL,
-                                infoForSaving = archivedLinks.infoForSaving
+                                infoForSaving = archivedLinks.infoForSaving,
+                                userAgent = currentUserAgent
                             )
                             if (updateExistingLink) {
                                 linkoraLog("Update ${linkType.name}")
@@ -1033,22 +1084,22 @@ class LinksImpl @Inject constructor(
     }
 
 
-    override suspend fun changeUserAgentInLinksTable(newUserAgent: String, domain: String) {
+    override suspend fun changeUserAgentInLinksTable(newUserAgent: String?, domain: String) {
         localDatabase.linksDao().changeUserAgentInLinksTable(newUserAgent, domain)
     }
 
-    override suspend fun changeUserAgentInArchiveLinksTable(newUserAgent: String, domain: String) {
+    override suspend fun changeUserAgentInArchiveLinksTable(newUserAgent: String?, domain: String) {
         localDatabase.linksDao().changeUserAgentInArchiveLinksTable(newUserAgent, domain)
     }
 
     override suspend fun changeUserAgentInImportantLinksTable(
-        newUserAgent: String,
+        newUserAgent: String?,
         domain: String
     ) {
         localDatabase.linksDao().changeUserAgentInImportantLinksTable(newUserAgent, domain)
     }
 
-    override suspend fun changeUserAgentInHistoryTable(newUserAgent: String, domain: String) {
+    override suspend fun changeUserAgentInHistoryTable(newUserAgent: String?, domain: String) {
         localDatabase.linksDao().changeUserAgentInHistoryTable(newUserAgent, domain)
     }
 }
