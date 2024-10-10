@@ -23,4 +23,7 @@ interface SiteSpecificUserAgentDao {
 
     @Query("UPDATE site_specific_user_agent SET userAgent = :newUserAgent WHERE domain = :domain")
     suspend fun updateASpecificUserAgent(domain: String, newUserAgent: String)
+
+    @Query("SELECT EXISTS (SELECT 1 FROM site_specific_user_agent WHERE domain = :domain)")
+    suspend fun doesThisDomainExists(domain: String): Boolean
 }
