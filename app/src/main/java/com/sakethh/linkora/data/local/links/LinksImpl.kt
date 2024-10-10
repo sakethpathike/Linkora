@@ -1032,4 +1032,23 @@ class LinksImpl @Inject constructor(
         localDatabase.linksDao().addANewLinkInRecentlyVisited(recentlyVisited)
     }
 
+
+    override suspend fun changeUserAgentInLinksTable(newUserAgent: String, domain: String) {
+        localDatabase.linksDao().changeUserAgentInLinksTable(newUserAgent, domain)
+    }
+
+    override suspend fun changeUserAgentInArchiveLinksTable(newUserAgent: String, domain: String) {
+        localDatabase.linksDao().changeUserAgentInArchiveLinksTable(newUserAgent, domain)
+    }
+
+    override suspend fun changeUserAgentInImportantLinksTable(
+        newUserAgent: String,
+        domain: String
+    ) {
+        localDatabase.linksDao().changeUserAgentInImportantLinksTable(newUserAgent, domain)
+    }
+
+    override suspend fun changeUserAgentInHistoryTable(newUserAgent: String, domain: String) {
+        localDatabase.linksDao().changeUserAgentInHistoryTable(newUserAgent, domain)
+    }
 }

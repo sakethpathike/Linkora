@@ -31,7 +31,7 @@ data class LinksTable(
     var isLinkedWithArchivedFolder: Boolean,
     var keyOfArchiveLinkedFolderV10: Long? = null,
     var keyOfArchiveLinkedFolder: String? = null,
-    val userAgent: String = "Twitterbot/1.0"
+    val userAgent: String? = null
 )
 
 @Serializable
@@ -57,7 +57,7 @@ data class ArchivedLinks(
     val baseURL: String,
     val imgURL: String,
     val infoForSaving: String,
-    val userAgent: String = "Twitterbot/1.0",
+    val userAgent: String? = null,
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
@@ -81,7 +81,7 @@ data class ImportantLinks(
     var baseURL: String,
     var imgURL: String,
     var infoForSaving: String,
-    var userAgent: String = "Twitterbot/1.0",
+    var userAgent: String? = null,
 
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
@@ -107,7 +107,7 @@ data class RecentlyVisited(
     var baseURL: String,
     var imgURL: String,
     var infoForSaving: String,
-    val userAgent: String = "Twitterbot/1.0",
+    val userAgent: String? = null,
 )
 
 @Serializable

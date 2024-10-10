@@ -137,6 +137,15 @@ interface LinksRepo {
 
     suspend fun getLinksOfThisFolderAsList(folderID: Long): List<LinksTable>
 
+
+    suspend fun changeUserAgentInLinksTable(newUserAgent: String, domain: String)
+
+    suspend fun changeUserAgentInArchiveLinksTable(newUserAgent: String, domain: String)
+
+    suspend fun changeUserAgentInImportantLinksTable(newUserAgent: String, domain: String)
+
+    suspend fun changeUserAgentInHistoryTable(newUserAgent: String, domain: String)
+
     fun getLinksOfThisFolderV9(folderName: String): Flow<List<LinksTable>>
 
 

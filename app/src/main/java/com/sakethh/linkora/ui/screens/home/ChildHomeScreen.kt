@@ -173,7 +173,8 @@ fun ChildHomeScreen(
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
-                selectedLinkUserAgent.value = linksTable.userAgent
+                selectedLinkUserAgent.value =
+                    linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.screenType.value = when (homeScreenType) {
                     HomeScreenVM.HomeScreenType.SAVED_LINKS -> SpecificScreenType.SAVED_LINKS_SCREEN
                     HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -242,7 +243,8 @@ fun ChildHomeScreen(
                     onTaskCompleted = {},
                     forceOpenInExternalBrowser = true
                 )
-            }, userAgent = linksTable.userAgent)
+            }, userAgent = linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+        )
     }
 
 

@@ -132,7 +132,8 @@ fun ChildArchiveScreen(
             webBaseURL = it.baseURL,
             imgURL = it.imgURL,
             onMoreIconClick = {
-                selectedLinkUserAgent.value = it.userAgent
+                selectedLinkUserAgent.value =
+                    it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
                 archiveScreenVM.selectedArchivedLinkData.value = it
                 shouldOptionsBtmModalSheetBeVisible.value = true
                 selectedURLOrFolderName.value = it.webURL
@@ -188,7 +189,7 @@ fun ChildArchiveScreen(
                     it
                 )
             ),
-            userAgent = it.userAgent
+            userAgent = it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
         )
     }
 

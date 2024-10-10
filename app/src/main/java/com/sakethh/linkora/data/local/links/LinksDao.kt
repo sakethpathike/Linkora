@@ -380,4 +380,16 @@ interface LinksDao {
 
     @Insert
     suspend fun addANewLinkInRecentlyVisited(recentlyVisited: RecentlyVisited)
+
+    @Query("UPDATE links_table SET userAgent = :newUserAgent WHERE baseURL LIKE '%' || :domain || '%'")
+    suspend fun changeUserAgentInLinksTable(newUserAgent: String, domain: String)
+
+    @Query("UPDATE archived_links_table SET userAgent = :newUserAgent WHERE baseURL LIKE '%' || :domain || '%'")
+    suspend fun changeUserAgentInArchiveLinksTable(newUserAgent: String, domain: String)
+
+    @Query("UPDATE important_links_table SET userAgent = :newUserAgent WHERE baseURL LIKE '%' || :domain || '%'")
+    suspend fun changeUserAgentInImportantLinksTable(newUserAgent: String, domain: String)
+
+    @Query("UPDATE recently_visited_table SET userAgent = :newUserAgent WHERE baseURL LIKE '%' || :domain || '%'")
+    suspend fun changeUserAgentInHistoryTable(newUserAgent: String, domain: String)
 }

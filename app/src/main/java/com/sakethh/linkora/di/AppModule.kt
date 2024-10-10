@@ -155,10 +155,10 @@ object AppModule {
         override fun migrate(db: SupportSQLiteDatabase) {
             db.execSQL("CREATE TABLE IF NOT EXISTS `site_specific_user_agent` (`domain` TEXT NOT NULL, `userAgent` TEXT NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL)")
             db.execSQL("CREATE UNIQUE INDEX IF NOT EXISTS `index_site_specific_user_agent_domain` ON `site_specific_user_agent` (`domain`)")
-            db.execSQL("ALTER TABLE links_table ADD COLUMN userAgent TEXT NOT NULL DEFAULT 'Twitterbot/1.0'")
-            db.execSQL("ALTER TABLE archived_links_table ADD COLUMN userAgent TEXT NOT NULL DEFAULT 'Twitterbot/1.0'")
-            db.execSQL("ALTER TABLE important_links_table ADD COLUMN userAgent TEXT NOT NULL DEFAULT 'Twitterbot/1.0'")
-            db.execSQL("ALTER TABLE recently_visited_table ADD COLUMN userAgent TEXT NOT NULL DEFAULT 'Twitterbot/1.0'")
+            db.execSQL("ALTER TABLE links_table ADD COLUMN userAgent TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE archived_links_table ADD COLUMN userAgent TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE important_links_table ADD COLUMN userAgent TEXT DEFAULT NULL")
+            db.execSQL("ALTER TABLE recently_visited_table ADD COLUMN userAgent TEXT DEFAULT NULL")
         }
     }
 
