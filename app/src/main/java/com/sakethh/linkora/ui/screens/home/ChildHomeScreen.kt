@@ -151,7 +151,9 @@ fun ChildHomeScreen(
         mutableStateOf("")
     }
     val optionsBtmSheetVM: OptionsBtmSheetVM = hiltViewModel()
-
+    val selectedLinkUserAgent = rememberSaveable {
+        mutableStateOf("")
+    }
     fun modifiedLinkUIComponentParam(linksTable: LinksTable): LinkUIComponentParam {
         return LinkUIComponentParam(
             onLongClick = {
@@ -171,6 +173,7 @@ fun ChildHomeScreen(
             webBaseURL = linksTable.baseURL,
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
+                selectedLinkUserAgent.value = linksTable.userAgent
                 SpecificCollectionsScreenVM.screenType.value = when (homeScreenType) {
                     HomeScreenVM.HomeScreenType.SAVED_LINKS -> SpecificScreenType.SAVED_LINKS_SCREEN
                     HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -239,7 +242,7 @@ fun ChildHomeScreen(
                     onTaskCompleted = {},
                     forceOpenInExternalBrowser = true
                 )
-            })
+            }, userAgent = linksTable.userAgent)
     }
 
 
@@ -694,7 +697,8 @@ fun ChildHomeScreen(
                             )
                         )
                     )
-                }
+                },
+                imgUserAgent = selectedLinkUserAgent.value
             )
         )
     }

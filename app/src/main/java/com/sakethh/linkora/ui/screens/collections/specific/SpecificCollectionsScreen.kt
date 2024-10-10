@@ -221,6 +221,9 @@ fun SpecificCollectionScreen(navController: NavController) {
     val areElementsSelectable = rememberSaveable {
         mutableStateOf(false)
     }
+    val selectedLinkUserAgent = rememberSaveable {
+        mutableStateOf("")
+    }
     LinkoraTheme {
         Scaffold(floatingActionButtonPosition = FabPosition.End, floatingActionButton = {
             if (TransferActions.isAnyActionGoingOn.value) {
@@ -579,6 +582,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     webBaseURL = linkData.baseURL,
                     imgURL = linkData.imgURL,
                     onMoreIconClick = {
+                        selectedLinkUserAgent.value = linkData.userAgent
                         selectedItemTitle.value = linkData.title
                         selectedItemNote.value = linkData.infoForSaving
                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -723,7 +727,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 linkData.webURL
                             )
                         )
-                    }
+                    }, userAgent =linkData.userAgent
                 )
             }
 
@@ -1380,7 +1384,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                         CollectionsScreenVM.selectedFolderData.value.id,
                         HomeScreenVM.HomeScreenType.CUSTOM_LIST
                     )
-                }
+                },
+                imgUserAgent = selectedLinkUserAgent.value
             )
         )
         DeleteDialogBox(

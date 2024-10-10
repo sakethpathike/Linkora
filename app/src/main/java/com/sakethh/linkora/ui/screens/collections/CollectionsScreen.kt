@@ -694,7 +694,8 @@ fun CollectionsScreen(navController: NavController) {
                 webUrl = "",
                 onForceOpenInExternalBrowserClicked = { },
                 showQuickActions = rememberSaveable { mutableStateOf(false) },
-                shouldTransferringOptionShouldBeVisible = true
+                shouldTransferringOptionShouldBeVisible = true,
+                imgUserAgent = ""
             )
         )
         RenameDialogBox(

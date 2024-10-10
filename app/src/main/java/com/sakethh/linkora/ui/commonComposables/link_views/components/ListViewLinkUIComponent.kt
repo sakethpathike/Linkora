@@ -105,7 +105,7 @@ fun ListViewLinkUIComponent(
                         modifier = Modifier
                             .width(95.dp)
                             .height(60.dp)
-                            .clip(RoundedCornerShape(15.dp)), imgURL = linkUIComponentParam.imgURL
+                            .clip(RoundedCornerShape(15.dp)), imgURL = linkUIComponentParam.imgURL, userAgent = linkUIComponentParam.userAgent
                     )
                 } else {
                     Box(

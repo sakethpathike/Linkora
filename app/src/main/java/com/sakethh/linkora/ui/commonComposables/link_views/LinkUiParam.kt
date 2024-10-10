@@ -6,6 +6,7 @@ data class LinkUIComponentParam(
     val title: String,
     val webBaseURL: String,
     val imgURL: String,
+    val userAgent: String,
     val onMoreIconClick: () -> Unit,
     val onLinkClick: () -> Unit,
     val webURL: String,

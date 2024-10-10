@@ -93,7 +93,8 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                             ) else Modifier
                         ),
                     imgURL = linkUIComponentParam.imgURL,
-                    contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit
+                    contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit,
+                    userAgent = linkUIComponentParam.userAgent
                 )
                 if (!SettingsPreference.enableBaseURLForNonListViews.value && !SettingsPreference.enableTitleForNonListViews.value) {
                     Icon(
