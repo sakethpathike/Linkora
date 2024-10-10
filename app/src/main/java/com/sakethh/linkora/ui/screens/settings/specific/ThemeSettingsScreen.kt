@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.settings.specific
 
 import android.os.Build
 import android.widget.Toast
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -35,6 +36,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: SettingsScreenVM) {
     val context = LocalContext.current
+    val isSystemInDarkTheme = isSystemInDarkTheme()
     LaunchedEffect(key1 = Unit) {
         settingsScreenVM.eventChannel.collectLatest {
             when (it) {
@@ -108,6 +110,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                     )
                 }
             }
+            if (SettingsPreference.shouldDarkThemeBeEnabled.value || (isSystemInDarkTheme && SettingsPreference.shouldFollowSystemTheme.value)) {
             item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
@@ -130,6 +133,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                             mutableStateOf(false)
                         })
                 )
+            }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
                 item(key = "Use dynamic theming") {
