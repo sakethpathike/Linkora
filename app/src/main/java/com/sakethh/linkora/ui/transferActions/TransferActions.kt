@@ -19,6 +19,9 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.launch
@@ -41,25 +44,24 @@ object TransferActions : ViewModel() {
 
     val isAnyActionGoingOn = mutableStateOf(false)
 
-
-    val currentLinkTransferProgressCount = mutableLongStateOf(0)
-    val currentFolderTransferProgressCount = mutableLongStateOf(0)
-
     val totalSelectedFoldersCount = mutableLongStateOf(0)
     val totalSelectedLinksCount = mutableLongStateOf(0)
 
+    val coroutineScope = CoroutineScope(Dispatchers.IO)
 
+    var transferFoldersJob: Job? = null
+    var transferLinksJob: Job? = null
 
     fun transferFolders(
         applyCopyImpl: Boolean, sourceFolderIds: List<Long>, targetParentId: Long?, context: Context
-    ) {
+    ): Job {
         val linksRepo =
             EntryPoints.get(context.applicationContext, TransferActionsEntryPoint::class.java)
                 .linksRepo()
         val foldersRepo =
             EntryPoints.get(context.applicationContext, TransferActionsEntryPoint::class.java)
                 .foldersRepo()
-        viewModelScope.launch {
+        return coroutineScope.launch {
             if (applyCopyImpl) {
                 sourceFolderIds.forEach { originalFolderId ->
 
@@ -85,6 +87,7 @@ object TransferActions : ViewModel() {
                             }"
                         )
                     }
+
                     transferFolders(
                         applyCopyImpl = true,
                         sourceFolderIds = foldersRepo.getChildFoldersOfThisParentIDAsList(
@@ -92,30 +95,11 @@ object TransferActions : ViewModel() {
                         ).map { it.id },
                         targetParentId = newlyDuplicatedFolderId,
                         context
-                    )
+                    ).join()
 
-                    if (sourceFolders.map { it.id }.contains(originalFolderId)) {
-                        sourceFolders.indexOfFirst {
-                            it.id == originalFolderId
-                        }.let { index ->
-                            linkoraLog("original folder id $originalFolderId, index is $index")
-                            try {
-                                sourceFolders.removeAt(index)
-                            } catch (e: Exception) {
-                                e.printStackTrace()
-                            } finally {
-                                ++currentFolderTransferProgressCount.longValue
-                            }
-                        }
-                    }
                 }
             } else {
-                try {
                     foldersRepo.changeTheParentIdOfASpecificFolder(sourceFolderIds, targetParentId)
-                } finally {
-                    currentFolderTransferProgressCount.longValue =
-                        sourceFolders.size.toLong()
-                }
             }
         }
     }
@@ -125,11 +109,11 @@ object TransferActions : ViewModel() {
         sourceLinks: List<LinksTable>,
         targetFolder: SpecificScreenType,
         context: Context
-    ) {
+    ): Job {
         val linksRepo =
             EntryPoints.get(context.applicationContext, TransferActionsEntryPoint::class.java)
                 .linksRepo()
-        viewModelScope.launch {
+        return coroutineScope.launch {
 
             sourceLinks.forEach { currentLink ->
 
@@ -254,18 +238,6 @@ object TransferActions : ViewModel() {
                         }
                     }
                 }
-                TransferActions.sourceLinks.indexOfFirst {
-                    it.id == currentLink.id
-                }.let { index ->
-                    linkoraLog(currentLink.title + " index is " + index.toString())
-                    try {
-                        TransferActions.sourceLinks.removeAt(index)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                    } finally {
-                        ++currentLinkTransferProgressCount.longValue
-                    }
-                }
             }
         }
     }
@@ -289,12 +261,25 @@ object TransferActions : ViewModel() {
         }.launchIn(viewModelScope)
     }
 
+    fun completeTransferAndReset(targetTransferFoldersOnly: Boolean = false) {
+        coroutineScope.launch {
+            if (targetTransferFoldersOnly) {
+                transferFoldersJob?.join()
+                reset()
+                return@launch
+            }
+            transferFoldersJob?.join()
+            transferLinksJob?.join()
+            reset()
+        }
+    }
+
     fun reset() {
         currentTransferActionType.value = TransferActionType.NOTHING
         sourceFolders.clear()
         sourceLinks.clear()
-        currentFolderTransferProgressCount.longValue = 0
-        currentLinkTransferProgressCount.longValue = 0
+        totalSelectedLinksCount.longValue = 0
+        totalSelectedFoldersCount.longValue = 0
         isAnyActionGoingOn.value = false
     }
 }

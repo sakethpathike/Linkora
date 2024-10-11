@@ -128,13 +128,15 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
 
                             if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActions.sourceLinks.isEmpty()) {
                                 // if in collections screen then we are supposed to mark selected folders as root folders
-                                TransferActions.transferFolders(
+                                TransferActions.transferFoldersJob =
+                                    TransferActions.transferFolders(
                                     applyCopyImpl = TransferActions.currentTransferActionType.value == TransferActionType.COPYING_OF_FOLDERS,
                                     sourceFolderIds = TransferActions.sourceFolders.toList()
                                         .map { it.id },
                                     targetParentId = null,
                                     context
                                 )
+                                TransferActions.completeTransferAndReset(targetTransferFoldersOnly = true)
                                 return@IconButton
                             }
 
@@ -144,7 +146,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                                     else -> true
                                 }
 
-                            TransferActions.transferFolders(
+                            TransferActions.transferFoldersJob = TransferActions.transferFolders(
                                 applyCopyImpl = applyCopyImpl,
                                 sourceFolderIds = TransferActions.sourceFolders.toList()
                                     .map { it.id },
@@ -153,12 +155,14 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                             )
 
 
-                            TransferActions.transferLinks(
+                            TransferActions.transferLinksJob = TransferActions.transferLinks(
                                 applyCopyImpl = applyCopyImpl,
                                 TransferActions.sourceLinks.toList(),
                                 SpecificCollectionsScreenVM.screenType.value,
                                 context
                             )
+
+                            TransferActions.completeTransferAndReset()
 
                         }) {
                             Icon(Icons.Default.ContentPaste, null)
@@ -174,26 +178,6 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                     .fillMaxWidth()
                     .padding(end = 15.dp)
             )
-            Spacer(Modifier.height(5.dp))
-            Text(text = buildAnnotatedString {
-
-                if (TransferActions.sourceLinks.isNotEmpty()) {
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(TransferActions.currentLinkTransferProgressCount.longValue.toString())
-                    }
-                    append(" links moved.")
-                }
-                if (TransferActions.sourceLinks.isNotEmpty() && TransferActions.sourceFolders.isNotEmpty()) {
-                    append("\n")
-                }
-                if (TransferActions.sourceFolders.isNotEmpty()) {
-                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                        append(TransferActions.currentFolderTransferProgressCount.longValue.toString())
-                    }
-                    append(" folders moved including all child folders and  respective links.")
-                }
-
-            }, style = MaterialTheme.typography.titleSmall)
         }
     }
 }
