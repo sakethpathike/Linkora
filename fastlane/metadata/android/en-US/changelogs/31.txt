@@ -1,0 +1,10 @@
+## What's New
+
+- Copy or move folders and links (visible in collections).
+- Secondary user agent for retries if the primary fails.
+- Set a specific user agent per domain in Settings.
+- AMOLED theme (disabled by default).
+- Retry with the secondary user agent for metadata.
+- Improved vxTwitter API; fetching GIFs and video snapshots.
+
+For detailed release notes, visit: https://github.com/sakethpathike/Linkora

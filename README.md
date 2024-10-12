@@ -26,10 +26,10 @@ height="80">](https://github.com/sakethpathike/Linkora/releases) [<img src="http
 
 ## Screenshots
 
-|                                         |  |  |  |
-|-----------------------------------------|-----------------------|-----------------------|-----------------------|
-| ![Linkora UI Screenshot](assets/1.jpeg) | ![Linkora UI Screenshot](assets/2.jpeg) | ![Linkora UI Screenshot](assets/3.jpeg) | ![Linkora UI Screenshot](assets/4.jpeg) |
-| ![Linkora UI Screenshot](assets/5.jpeg) | ![Linkora UI Screenshot](assets/6.jpeg) | ![Linkora UI Screenshot](assets/7.jpeg) | ![Linkora UI Screenshot](assets/8.jpeg) |
+|                                                                                          |  |                                                                                          |  |
+|------------------------------------------------------------------------------------------|-----------------------|------------------------------------------------------------------------------------------|-----------------------|
+| ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/1.jpeg) | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/2.jpeg) | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/3.png)  | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/4.jpeg) |
+| ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/5.png)  | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/6.jpeg) | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/7.jpeg) | ![Linkora UI Screenshot](fastlane/metadata/android/en-US/images/phoneScreenshots/8.jpeg) |
 
 |                            Sharing links from other apps                            |
 |:-----------------------------------------------------------------------------------:|
