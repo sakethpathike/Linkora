@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.commonComposables
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
@@ -75,6 +76,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.Placeholder
 import androidx.compose.ui.text.PlaceholderVerticalAlign
 import androidx.compose.ui.text.SpanStyle
@@ -87,17 +89,28 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.RequestResult
+import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.isAValidURL
+import com.sakethh.linkora.utils.linkoraLog
+import dagger.hilt.EntryPoint
+import dagger.hilt.EntryPoints
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnrememberedMutableState")
@@ -138,6 +151,7 @@ fun AddANewLinkDialogBox(
     val isChildFoldersBottomSheetExpanded = mutableStateOf(false)
     val btmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LaunchedEffect(key1 = Unit) {
+        AddANewLinkDialogBox.currentUserAgent.value = SettingsPreference.primaryJsoupUserAgent.value
         awaitAll(async {
             if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
                 this.launch {
@@ -146,6 +160,7 @@ fun AddANewLinkDialogBox(
             }
         })
     }
+    val lifecycleOwner = LocalLifecycleOwner.current
     if (shouldDialogBoxAppear.value) {
         val linkTextFieldValue = if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
             rememberSaveable(
@@ -160,6 +175,26 @@ fun AddANewLinkDialogBox(
         } else {
             rememberSaveable {
                 mutableStateOf("")
+            }
+        }
+        LaunchedEffect(Unit) {
+            lifecycleOwner.lifecycle.currentStateFlow.collectLatest {
+                when (it) {
+                    Lifecycle.State.DESTROYED -> {}
+                    Lifecycle.State.INITIALIZED -> {
+
+                    }
+
+                    Lifecycle.State.CREATED -> {}
+                    Lifecycle.State.STARTED -> {}
+                    Lifecycle.State.RESUMED -> {
+                        linkoraLog(it.name)
+                        AddANewLinkDialogBox.updateUserAgent(
+                            linkTextFieldValue.value,
+                            context
+                        )
+                    }
+                }
             }
         }
         val titleTextFieldValue = rememberSaveable {
@@ -239,6 +274,10 @@ fun AddANewLinkDialogBox(
                                 value = linkTextFieldValue.value,
                                 onValueChange = {
                                     linkTextFieldValue.value = it
+                                    AddANewLinkDialogBox.updateUserAgent(
+                                        linkTextFieldValue.value,
+                                        context
+                                    )
                                 })
                         }
                         item {
@@ -522,6 +561,61 @@ fun AddANewLinkDialogBox(
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
                                     )
+                                }
+                                if (isAValidURL(linkTextFieldValue.value)) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(20.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
+                                    )
+                                    Card(
+                                        border = BorderStroke(
+                                            1.dp,
+                                            contentColorFor(MaterialTheme.colorScheme.surface)
+                                        ),
+                                        colors = CardDefaults.cardColors(containerColor = AlertDialogDefaults.containerColor),
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(start = 20.dp, end = 20.dp)
+                                    ) {
+                                        Row(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .wrapContentHeight()
+                                                .padding(
+                                                    top = 10.dp, bottom = 10.dp
+                                                ),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Box(
+                                                contentAlignment = Alignment.CenterStart
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Outlined.Info,
+                                                    contentDescription = null,
+                                                    modifier = Modifier
+                                                        .padding(
+                                                            start = 10.dp, end = 10.dp
+                                                        )
+                                                )
+                                            }
+                                            Text(
+                                                text = buildAnnotatedString {
+                                                    append("User agent ")
+                                                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                                        append(AddANewLinkDialogBox.currentUserAgent.value)
+                                                    }
+                                                    append(" will be used to retrieve metadata.")
+                                                },
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 14.sp,
+                                                lineHeight = 18.sp,
+                                                textAlign = TextAlign.Start,
+                                                modifier = Modifier
+                                                    .padding(end = 10.dp)
+                                            )
+                                        }
+                                    }
                                 }
                             } else {
                                 Spacer(modifier = Modifier.height(30.dp))
@@ -859,5 +953,37 @@ private fun FolderSelectorComponent(
             thickness = 1.dp,
             color = MaterialTheme.colorScheme.outline.copy(0.1f)
         )
+    }
+}
+
+// not updating both AddANewLinkDialogBoxVM, loll; this will either be removed or just hang out here as an object
+
+object AddANewLinkDialogBox : ViewModel() {
+
+    val currentUserAgent = mutableStateOf(SettingsPreference.primaryJsoupUserAgent.value)
+
+    @EntryPoint
+    @InstallIn(SingletonComponent::class)
+    interface SiteSpecificUserAgentEntryPoint {
+        fun siteSpecificUserAgentRepo(): SiteSpecificUserAgentRepo
+    }
+
+
+    fun updateUserAgent(linkAddress: String, context: Context) {
+        val siteSpecificUserAgentRepo =
+            EntryPoints.get(context.applicationContext, SiteSpecificUserAgentEntryPoint::class.java)
+                .siteSpecificUserAgentRepo()
+        viewModelScope.launch {
+            if (isAValidURL(linkAddress)) {
+                val domain = linkAddress.split("/")[2].replace("www.", "").replace("http://", "")
+                    .replace("https://", "")
+                currentUserAgent.value =
+                    if (siteSpecificUserAgentRepo.doesDomainExistPartially(domain)) {
+                        siteSpecificUserAgentRepo.getUserAgentByPartialDomain(domain)
+                    } else {
+                        SettingsPreference.primaryJsoupUserAgent.value
+                    }
+            }
+        }
     }
 }

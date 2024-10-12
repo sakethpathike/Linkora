@@ -67,6 +67,7 @@ import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -138,22 +139,28 @@ fun SiteSpecificUserAgentSettingsScreen(navController: NavController) {
                 Spacer(Modifier)
             }
 
-            items(items = allSiteSpecificUserAgents, key = {
-                it.id
-            }) {
-                SiteSpecificUserAgentItem(
-                    domain = it.domain,
-                    userAgent = it.userAgent,
-                    onDeleteClick = {
-                        siteSpecificUserAgentScreenVM.deleteASiteSpecificUserAgent(it.domain)
-                    },
-                    onSaveClick = { newUserAgent ->
-                        siteSpecificUserAgentScreenVM.updateASpecificUserAgent(
-                            newUserAgent = newUserAgent,
-                            domain = it.domain
-                        )
-                    }
-                )
+            if (allSiteSpecificUserAgents.isNotEmpty()) {
+                items(items = allSiteSpecificUserAgents, key = {
+                    it.id
+                }) {
+                    SiteSpecificUserAgentItem(
+                        domain = it.domain,
+                        userAgent = it.userAgent,
+                        onDeleteClick = {
+                            siteSpecificUserAgentScreenVM.deleteASiteSpecificUserAgent(it.domain)
+                        },
+                        onSaveClick = { newUserAgent ->
+                            siteSpecificUserAgentScreenVM.updateASpecificUserAgent(
+                                newUserAgent = newUserAgent,
+                                domain = it.domain
+                            )
+                        }
+                    )
+                }
+            } else {
+                item {
+                    DataEmptyScreen(text = "No site-specific user agent found.\nAdd one to always retrieve metadata from it.")
+                }
             }
             item {
                 Spacer(Modifier.height(100.dp))
@@ -374,6 +381,14 @@ fun SiteSpecificUserAgentItem(
             }
         }
         TextField(
+            label = {
+                Text(
+                    text = "User Agent",
+                    style = MaterialTheme.typography.titleSmall,
+                    textAlign = TextAlign.Start,
+                    fontSize = 12.sp
+                )
+            },
             readOnly = isUserAgentTextFieldReadOnly.value,
             value = userAgentValue.value,
             onValueChange = {

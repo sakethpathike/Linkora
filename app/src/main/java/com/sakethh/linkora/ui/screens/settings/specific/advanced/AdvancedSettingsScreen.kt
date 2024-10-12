@@ -16,8 +16,10 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Rule
 import androidx.compose.material.icons.filled.ChevronRight
+import androidx.compose.material3.DividerDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +66,7 @@ fun AdvancedSettingsScreen(navController: NavController) {
     val primaryJsoupUserAgentFocusRequester = remember { FocusRequester() }
     val secondaryJsoupUserAgentFocusRequester = remember { FocusRequester() }
     val localizationServerTextFieldFocusRequester = remember { FocusRequester() }
+    val colorScheme = MaterialTheme.colorScheme
     SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.advanced.value,
         navController = navController
@@ -105,20 +108,36 @@ fun AdvancedSettingsScreen(navController: NavController) {
                         text = "Site-Specific User Agent Settings",
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 16.sp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 20.dp)
                     )
-                    Box(
-                        modifier = Modifier.fillMaxWidth(),
-                        contentAlignment = Alignment.CenterEnd
-                    ) {
-                        Row {
-                            IconButton(onClick = { navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name) }) {
-                                Icon(
-                                    imageVector = Icons.Default.ChevronRight,
-                                    contentDescription = null
-                                )
-                            }
-                            Spacer(modifier = Modifier.width(10.dp))
+                }
+                Box(
+                    contentAlignment = Alignment.CenterEnd,
+                    modifier = Modifier
+                        .clickable(onClick = {
+                            navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name)
+                        }, interactionSource = remember {
+                            MutableInteractionSource()
+                        }, indication = null)
+                        .pulsateEffect()
+                ) {
+                    HorizontalDivider(
+                        thickness = 2.dp,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 32.dp)
+                    )
+                    Row {
+                        IconButton(onClick = { navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name) }) {
+                            Icon(
+                                imageVector = Icons.Default.ChevronRight,
+                                contentDescription = null,
+                                tint = DividerDefaults.color
+                            )
                         }
+                        Spacer(modifier = Modifier.width(10.dp))
                     }
                 }
             }

@@ -295,7 +295,7 @@ class LinksImpl @Inject constructor(
                 }
             }
 
-            val baseUrl = when (linkType) {
+            val domain = when (linkType) {
                 LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                     linksTable!!.webURL.substringAfter("http")
                         .substringBefore(" ").trim()
@@ -312,7 +312,7 @@ class LinksImpl @Inject constructor(
             }.split("/")[2].replace("www.", "").replace("http://", "")
                 .replace("https://", "")
 
-            linkoraLog("baseurl is $baseUrl")
+            linkoraLog("baseurl is $domain")
 
             val currentUserAgent =
                 when (linkType) {
@@ -325,9 +325,9 @@ class LinksImpl @Inject constructor(
                     LinkType.HISTORY_LINK -> recentlyVisited!!.userAgent
 
                     LinkType.ARCHIVE_LINK -> archivedLinks!!.userAgent
-                } ?: if (siteSpecificUserAgentRepo.doesDomainExistPartially(baseUrl)) {
+                } ?: if (siteSpecificUserAgentRepo.doesDomainExistPartially(domain)) {
                     val userAgentByPartialDomain =
-                        siteSpecificUserAgentRepo.getUserAgentByPartialDomain(baseUrl)
+                        siteSpecificUserAgentRepo.getUserAgentByPartialDomain(domain)
                     linkoraLog("didn't find existing user agent, so retrieved baseurl is $userAgentByPartialDomain")
                     userAgentByPartialDomain
                 } else if (RequestResult.isThisFirstRequest.not()) {
@@ -359,7 +359,7 @@ class LinksImpl @Inject constructor(
                 )) {
                 is RequestResult.Failure -> {
                     RequestResult.isThisFirstRequest = !RequestResult.isThisFirstRequest
-                    if (siteSpecificUserAgentRepo.doesDomainExistPartially(baseUrl)) {
+                    if (siteSpecificUserAgentRepo.doesDomainExistPartially(domain)) {
                         return saveWithGivenData()
                     }
                     return if (!RequestResult.isThisFirstRequest) {
