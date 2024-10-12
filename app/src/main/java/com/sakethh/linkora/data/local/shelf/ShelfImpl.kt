@@ -42,6 +42,6 @@ class ShelfImpl @Inject constructor(private val localDatabase: LocalDatabase) : 
     }
 
     override suspend fun updateFoldersOfThisShelf(folderIds: List<Long>, shelfID: Long) {
-        return localDatabase.shelfDao().updateFoldersOfThisShelf(folderIds, shelfID)
+        return localDatabase.shelfDao().updateFoldersOfThisPanel(folderIds, shelfID)
     }
 }

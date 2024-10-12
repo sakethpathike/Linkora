@@ -28,5 +28,5 @@ interface ShelfDao {
     suspend fun getPanelsThatIncludeThisFolder(folderID: Long): List<Shelf>
 
     @Query("UPDATE SHELF SET folderIds = :folderIds WHERE id=:shelfID")
-    suspend fun updateFoldersOfThisShelf(folderIds: List<Long>, shelfID: Long)
+    suspend fun updateFoldersOfThisPanel(folderIds: List<Long>, shelfID: Long)
 }

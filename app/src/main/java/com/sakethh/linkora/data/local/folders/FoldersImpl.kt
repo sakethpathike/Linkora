@@ -154,7 +154,7 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
     }
 
     override suspend fun deleteAFolder(folderID: Long) {
-        // TODO: folder id which exists in a panel should also be deleted
+        localDatabase.shelfListDao().deleteAShelfFolder(folderID)
 
         localDatabase.foldersDao().getChildFoldersOfThisParentIDAsAList(folderID).forEach {
             localDatabase.linksDao().deleteThisFolderLinks(it.id)
