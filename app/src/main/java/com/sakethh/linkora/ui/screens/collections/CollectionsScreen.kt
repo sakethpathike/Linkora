@@ -598,7 +598,7 @@ fun CollectionsScreen(navController: NavController) {
                                         .contains(folderData.id)) {
                                     Toast.makeText(
                                         context,
-                                        "You cannot move a folder in itself",
+                                        LocalizedStrings.aFolderCannotBeMovedIntoItself.value,
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -854,7 +854,10 @@ fun CollectionsScreen(navController: NavController) {
     }
     BackHandler {
         if (TransferActions.isAnyActionGoingOn.value) {
-            Toast.makeText(context, "wait until this action completes", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                LocalizedStrings.waitForTheOperationToFinish.value, Toast.LENGTH_SHORT
+            ).show()
         } else if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING) {
             TransferActions.reset()
         } else if (isMainFabRotated.value) {
@@ -958,7 +961,7 @@ fun FolderIndividualComponent(
                         if (TransferActions.isAnyActionGoingOn.value) {
                             Toast.makeText(
                                 context,
-                                "wait until this operation completes",
+                                LocalizedStrings.waitForTheOperationToFinish.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                             return@Checkbox

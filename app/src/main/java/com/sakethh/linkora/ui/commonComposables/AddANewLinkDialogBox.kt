@@ -610,15 +610,15 @@ fun AddANewLinkDialogBox(
                                                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                                             append("vxTwitter API")
                                                         }
-                                                        append(" will be used to retrieve metadata.")
+                                                        append(" " + LocalizedStrings.willBeUsedToRetrieveMetadata.value)
                                                     }
                                                 } else {
                                                     buildAnnotatedString {
-                                                        append("User agent ")
+                                                        append(LocalizedStrings.userAgent.value + " ")
                                                         withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                                             append(AddANewLinkDialogBox.currentUserAgent.value)
                                                         }
-                                                        append(" will be used to retrieve metadata.")
+                                                        append(" " + LocalizedStrings.willBeUsedToRetrieveMetadata.value)
                                                     }
                                                 },
                                                 style = MaterialTheme.typography.titleSmall,
@@ -672,7 +672,7 @@ fun AddANewLinkDialogBox(
                                                 )
                                             }
                                             Text(
-                                                text = "Initial request has been failed",
+                                                text = LocalizedStrings.initialRequestFailed.value,
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 14.sp,
                                                 lineHeight = 18.sp,
@@ -704,7 +704,7 @@ fun AddANewLinkDialogBox(
                                                 .fillMaxWidth(),
                                             text = buildAnnotatedString {
                                                 appendInlineContent(id = "infoIcon")
-                                                append("  Retrying metadata retrieval with secondary user agent:\n")
+                                                append(LocalizedStrings.retryingMetadataRetrievalWithASecondaryUserAgent.value)
                                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                                     append(SettingsPreference.secondaryJsoupUserAgent.value)
                                                 }

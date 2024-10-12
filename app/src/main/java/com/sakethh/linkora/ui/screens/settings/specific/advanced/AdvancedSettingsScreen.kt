@@ -105,7 +105,7 @@ fun AdvancedSettingsScreen(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
-                        text = "Site-Specific User Agent Settings",
+                        text = LocalizedStrings.siteSpecificUserAgentSettings.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 16.sp,
                         modifier = Modifier
@@ -144,7 +144,7 @@ fun AdvancedSettingsScreen(navController: NavController) {
             item(key = "PrimaryJsoupUserAgent") {
                 TextFieldForPreferenceComposable(
                     textFieldDescText = LocalizedStrings.userAgentDesc.value,
-                    textFieldLabel = LocalizedStrings.userAgent.value,
+                    textFieldLabel = LocalizedStrings.primaryUserAgent.value,
                     textFieldValue = primaryJsoupStringAgent.value,
                     onResetButtonClick = {
                         SettingsPreference.changeSettingPreferenceValue(
@@ -182,8 +182,8 @@ fun AdvancedSettingsScreen(navController: NavController) {
             }
             item(key = "SecondaryJsoupUserAgent") {
                 TextFieldForPreferenceComposable(
-                    textFieldDescText = "Linkora uses this user agent if the request fails with the primary user agent",
-                    textFieldLabel = "Secondary User Agent",
+                    textFieldDescText = LocalizedStrings.secondaryUserAgentDesc.value,
+                    textFieldLabel = LocalizedStrings.secondaryUserAgent.value,
                     textFieldValue = secondaryJsoupStringAgent.value,
                     onResetButtonClick = {
                         SettingsPreference.changeSettingPreferenceValue(

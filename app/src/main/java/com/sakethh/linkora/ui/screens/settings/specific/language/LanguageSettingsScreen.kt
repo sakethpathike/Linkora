@@ -323,7 +323,7 @@ fun LanguageSettingsScreen(
                     },
                     text = it.languageName,
                     isRemoteLanguage = true,
-                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalLocalAppStrings.intValue + " strings localized",
+                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalLocalAppStrings.intValue + " ${LocalizedStrings.stringsLocalized.value}",
                     localizationStatusFraction = it.localizedStringsCount.toFloat() / SettingsPreference.totalLocalAppStrings.intValue.toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))

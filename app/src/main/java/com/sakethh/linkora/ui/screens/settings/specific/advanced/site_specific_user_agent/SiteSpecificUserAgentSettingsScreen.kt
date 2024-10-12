@@ -109,7 +109,8 @@ fun SiteSpecificUserAgentSettingsScreen(navController: NavController) {
     systemUiController.setNavigationBarColor(
         bottomAppbarContainerColor
     )
-    SpecificScreenScaffold(topAppBarText = "Site-Specific User Agent Settings",
+    SpecificScreenScaffold(
+        topAppBarText = LocalizedStrings.siteSpecificUserAgentSettings.value,
         navController = navController,
         bottomBar = {
             BottomAppBar {
@@ -122,7 +123,7 @@ fun SiteSpecificUserAgentSettingsScreen(navController: NavController) {
                     }
                 }) {
                     Text(
-                        "Add a new Site-Specific User Agent",
+                        LocalizedStrings.addANewSiteSpecificUserAgent.value,
                         style = MaterialTheme.typography.titleMedium
                     )
                 }
@@ -159,7 +160,7 @@ fun SiteSpecificUserAgentSettingsScreen(navController: NavController) {
                 }
             } else {
                 item {
-                    DataEmptyScreen(text = "No site-specific user agent found.\nAdd one to always retrieve metadata from it.")
+                    DataEmptyScreen(text = LocalizedStrings.noSiteSpecificUserAgentFoundAddOneToAlwaysRetrieveMetadataFromIt.value)
                 }
             }
             item {
@@ -199,7 +200,7 @@ private fun AddANewRuleBottomSheet(
         }, sheetState = sheetState) {
             Column(modifier = Modifier.verticalScroll(rememberScrollState())) {
                 Text(
-                    text = "Add a new Site-Specific User Agent",
+                    text = LocalizedStrings.addANewSiteSpecificUserAgent.value,
                     color = AlertDialogDefaults.titleContentColor,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
@@ -215,7 +216,7 @@ private fun AddANewRuleBottomSheet(
                     .fillMaxWidth(),
                     label = {
                         Text(
-                            text = "Domain",
+                            text = LocalizedStrings.domain.value,
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
@@ -230,11 +231,11 @@ private fun AddANewRuleBottomSheet(
                     supportingText = {
                         Text(
                             text = buildAnnotatedString {
-                                append("Only the domain should be saved.\nFor example, save ")
+                                append(LocalizedStrings.onlyTheDomainShouldBeSavedForExampleSave.value + " ")
                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                     append("https://www.github.com/sakethpathike/Linkora")
                                 }
-                                append(" as ")
+                                append(" ${LocalizedStrings.`as`.value} ")
                                 withStyle(
                                     SpanStyle(
                                         fontWeight = FontWeight.Bold,
@@ -259,7 +260,7 @@ private fun AddANewRuleBottomSheet(
                     .fillMaxWidth(),
                     label = {
                         Text(
-                            text = "User Agent",
+                            text = LocalizedStrings.userAgent.value,
                             color = AlertDialogDefaults.textContentColor,
                             style = MaterialTheme.typography.titleSmall,
                             fontSize = 12.sp
@@ -317,7 +318,10 @@ private fun AddANewRuleBottomSheet(
                                 shouldBeVisible.value = false
                             }
                         } else {
-                            Toast.makeText(context, "invalid domain", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(
+                                context,
+                                LocalizedStrings.invalidDomain.value, Toast.LENGTH_SHORT
+                            ).show()
 
                         }
                     }) {
@@ -383,7 +387,7 @@ fun SiteSpecificUserAgentItem(
         TextField(
             label = {
                 Text(
-                    text = "User Agent",
+                    text = LocalizedStrings.userAgent.value,
                     style = MaterialTheme.typography.titleSmall,
                     textAlign = TextAlign.Start,
                     fontSize = 12.sp
@@ -412,7 +416,7 @@ fun SiteSpecificUserAgentItem(
                         isUserAgentTextFieldReadOnly.value = true
                     }
                 ) {
-                    Text("Save", style = MaterialTheme.typography.titleSmall)
+                    Text(LocalizedStrings.save.value, style = MaterialTheme.typography.titleSmall)
                     userAgentFocusRequester.freeFocus()
                 }
             } else {
@@ -430,7 +434,7 @@ fun SiteSpecificUserAgentItem(
                         disabledContainerColor = Color.Transparent
                     )
                 ) {
-                    Text("Delete", style = MaterialTheme.typography.titleSmall)
+                    Text(LocalizedStrings.delete.value, style = MaterialTheme.typography.titleSmall)
                 }
                 Spacer(Modifier.height(5.dp))
                 Button(
@@ -441,7 +445,7 @@ fun SiteSpecificUserAgentItem(
                         .fillMaxWidth()
                         .padding(start = 15.dp, end = 15.dp)
                 ) {
-                    Text("Edit", style = MaterialTheme.typography.titleSmall)
+                    Text(LocalizedStrings.edit.value, style = MaterialTheme.typography.titleSmall)
                 }
             }
         }

@@ -34,6 +34,9 @@ object LocalizedStrings : ViewModel() {
     private val _localizationServerDesc = mutableStateOf("")
     val localizationServerDesc = _localizationServerDesc
 
+    private val _primaryUserAgent = mutableStateOf("")
+    val primaryUserAgent = _primaryUserAgent
+
     private val _userAgent = mutableStateOf("")
     val userAgent = _userAgent
 
@@ -368,6 +371,9 @@ object LocalizedStrings : ViewModel() {
 
     private val _itemsSelected = mutableStateOf("")
     val itemsSelected = _itemsSelected
+
+    private val _itemSelected = mutableStateOf("")
+    val itemSelected = _itemSelected
 
     private val _archive = mutableStateOf("")
     val archive = _archive
@@ -967,6 +973,99 @@ object LocalizedStrings : ViewModel() {
     val clearImageCacheDesc =
         _clearImageCacheDesc
 
+    private val _willBeUsedToRetrieveMetadata = mutableStateOf("")
+    val willBeUsedToRetrieveMetadata =
+        _willBeUsedToRetrieveMetadata
+
+    private val _initialRequestFailed = mutableStateOf("")
+    val initialRequestFailed =
+        _initialRequestFailed
+
+    private val _retryingMetadataRetrievalWithASecondaryUserAgent = mutableStateOf("")
+    val retryingMetadataRetrievalWithASecondaryUserAgent =
+        _retryingMetadataRetrievalWithASecondaryUserAgent
+
+    private val _siteSpecificUserAgentSettings = mutableStateOf("")
+    val siteSpecificUserAgentSettings =
+        _siteSpecificUserAgentSettings
+
+    private val _secondaryUserAgentDesc = mutableStateOf("")
+    val secondaryUserAgentDesc =
+        _secondaryUserAgentDesc
+
+    private val _secondaryUserAgent = mutableStateOf("")
+    val secondaryUserAgent =
+        _secondaryUserAgent
+
+    private val _aFolderCannotBeMovedIntoItself = mutableStateOf("")
+    val aFolderCannotBeMovedIntoItself =
+        _aFolderCannotBeMovedIntoItself
+
+    private val _waitForTheOperationToFinish = mutableStateOf("")
+    val waitForTheOperationToFinish =
+        _waitForTheOperationToFinish
+
+    private val _moveToRootFolders = mutableStateOf("")
+    val moveToRootFolders =
+        _moveToRootFolders
+
+    private val _copyFolder = mutableStateOf("")
+    val copyFolder =
+        _copyFolder
+
+    private val _copyLink = mutableStateOf("")
+    val copyLink =
+        _copyLink
+
+    private val _moveToOtherFolder = mutableStateOf("")
+    val moveToOtherFolder =
+        _moveToOtherFolder
+
+    private val _moveLink = mutableStateOf("")
+    val moveLink =
+        _moveLink
+
+    private val _addANewSiteSpecificUserAgent = mutableStateOf("")
+    val addANewSiteSpecificUserAgent =
+        _addANewSiteSpecificUserAgent
+
+    private val _noSiteSpecificUserAgentFoundAddOneToAlwaysRetrieveMetadataFromIt =
+        mutableStateOf("")
+    val noSiteSpecificUserAgentFoundAddOneToAlwaysRetrieveMetadataFromIt =
+        _noSiteSpecificUserAgentFoundAddOneToAlwaysRetrieveMetadataFromIt
+
+    private val _domain = mutableStateOf("")
+    val domain =
+        _domain
+
+    private val _onlyTheDomainShouldBeSavedForExampleSave = mutableStateOf("")
+    val onlyTheDomainShouldBeSavedForExampleSave =
+        _onlyTheDomainShouldBeSavedForExampleSave
+
+    private val _as = mutableStateOf("")
+    val `as` =
+        _as
+
+    private val _delete = mutableStateOf("")
+    val delete =
+        _delete
+
+    private val _invalidDomain = mutableStateOf("")
+    val invalidDomain =
+        _invalidDomain
+
+    private val _useAmoledTheme = mutableStateOf("")
+    val useAmoledTheme =
+        _useAmoledTheme
+
+    private val __foldersSelected = mutableStateOf("")
+    val foldersSelected_ =
+        __foldersSelected
+
+    private val _linksSelected = mutableStateOf("")
+    val linksSelected =
+        _linksSelected
+
     private var count = 0
 
     private suspend fun loadStringsHelper(
@@ -1006,6 +1105,231 @@ object LocalizedStrings : ViewModel() {
                         remoteStringID = "invalid_url",
                         localId = R.string.invalid_url,
                         mutableString = _invalidUrl,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "will_be_used_to_retrieve_metadata",
+                        localId = R.string.will_be_used_to_retrieve_metadata,
+                        mutableString = _willBeUsedToRetrieveMetadata,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "user_agent",
+                        localId = R.string.user_agent,
+                        mutableString = _userAgent,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "_folders_selected",
+                        localId = R.string._folders_selected,
+                        mutableString = __foldersSelected,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "links_selected",
+                        localId = R.string.links_selected,
+                        mutableString = _linksSelected,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "initial_request_failed",
+                        localId = R.string.initial_request_failed,
+                        mutableString = _initialRequestFailed,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "retrying_metadata_retrieval_with_a_secondary_user_agent",
+                        localId = R.string.retrying_metadata_retrieval_with_a_secondary_user_agent,
+                        mutableString = _retryingMetadataRetrievalWithASecondaryUserAgent,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "invalid_domain",
+                        localId = R.string.invalid_domain,
+                        mutableString = _invalidDomain,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "use_amoled_theme",
+                        localId = R.string.use_amoled_theme,
+                        mutableString = _useAmoledTheme,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "site_specific_user_agent_settings",
+                        localId = R.string.site_specific_user_agent_settings,
+                        mutableString = _siteSpecificUserAgentSettings,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "secondary_user_agent_desc",
+                        localId = R.string.secondary_user_agent_desc,
+                        mutableString = _secondaryUserAgentDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "secondary_user_agent",
+                        localId = R.string.secondary_user_agent,
+                        mutableString = _secondaryUserAgent,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "a_folder_cannot_be_moved_into_itself",
+                        localId = R.string.a_folder_cannot_be_moved_into_itself,
+                        mutableString = _aFolderCannotBeMovedIntoItself,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "wait_for_the_operation_to_finish",
+                        localId = R.string.wait_for_the_operation_to_finish,
+                        mutableString = _waitForTheOperationToFinish,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "move_to_root_folders",
+                        localId = R.string.move_to_root_folders,
+                        mutableString = _moveToRootFolders,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "copy_folder",
+                        localId = R.string.copy_folder,
+                        mutableString = _copyFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "copy_link",
+                        localId = R.string.copy_link,
+                        mutableString = _copyLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "move_to_other_folder",
+                        localId = R.string.move_to_other_folder,
+                        mutableString = _moveToOtherFolder,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "move_link",
+                        localId = R.string.move_link,
+                        mutableString = _moveLink,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "item_selected",
+                        localId = R.string.item_selected,
+                        mutableString = _itemSelected,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "add_a_new_site_specific_user_agent",
+                        localId = R.string.add_a_new_site_specific_user_agent,
+                        mutableString = _addANewSiteSpecificUserAgent,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_site_specific_user_agent_found_add_one_to_always_retrieve_metadata_from_it",
+                        localId = R.string.no_site_specific_user_agent_found_add_one_to_always_retrieve_metadata_from_it,
+                        mutableString = _noSiteSpecificUserAgentFoundAddOneToAlwaysRetrieveMetadataFromIt,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "domain",
+                        localId = R.string.domain,
+                        mutableString = _domain,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "only_the_domain_should_be_saved_for_example_save",
+                        localId = R.string.only_the_domain_should_be_saved_for_example_save,
+                        mutableString = _onlyTheDomainShouldBeSavedForExampleSave,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "as",
+                        localId = R.string.`as`,
+                        mutableString = _as,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "delete",
+                        localId = R.string.delete,
+                        mutableString = _delete,
                         context = context
                     )
                 },
@@ -3567,8 +3891,8 @@ object LocalizedStrings : ViewModel() {
                     loadStringsHelper(
                         translationsRepo = translationsRepo,
                         remoteStringID = "user_agent",
-                        localId = R.string.user_agent,
-                        mutableString = _userAgent,
+                        localId = R.string.primary_user_agent,
+                        mutableString = _primaryUserAgent,
                         context = context
                     )
                 },

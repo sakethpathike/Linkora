@@ -114,7 +114,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
             item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
-                        title = "Use Amoled Theme",
+                        title = LocalizedStrings.useAmoledTheme.value,
                         doesDescriptionExists = false,
                         description = "",
                         isSwitchNeeded = true,

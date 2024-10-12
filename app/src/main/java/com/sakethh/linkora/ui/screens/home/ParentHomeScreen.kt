@@ -250,7 +250,7 @@ fun ParentHomeScreen(
                                 )
                             }
                             Text(
-                                text = if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size == 1) " item" else " items selected",
+                                text = if (homeScreenVM.selectedLinksID.size + homeScreenVM.selectedFoldersData.size + homeScreenVM.selectedSavedLinkIds.size + homeScreenVM.selectedImpLinkIds.size == 1) " " + LocalizedStrings.itemSelected.value else " " + LocalizedStrings.itemsSelected.value,
                                 color = MaterialTheme.colorScheme.onSurface,
                                 style = MaterialTheme.typography.titleLarge,
                                 fontSize = 18.sp

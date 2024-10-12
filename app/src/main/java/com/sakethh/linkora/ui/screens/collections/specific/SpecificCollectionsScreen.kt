@@ -334,7 +334,8 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         fontSize = 18.sp
                                     )
                                 }
-                                Text(text = " items selected",
+                                Text(
+                                    text = " ${LocalizedStrings.itemsSelected.value}",
                                     color = MaterialTheme.colorScheme.onSurface,
                                     style = MaterialTheme.typography.titleLarge,
                                     fontSize = 18.sp,
@@ -800,7 +801,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 .contains(folderData.id)) {
                             Toast.makeText(
                                 context,
-                                "You cannot move a folder in itself",
+                                LocalizedStrings.aFolderCannotBeMovedIntoItself.value,
                                 Toast.LENGTH_SHORT
                             ).show()
                         }

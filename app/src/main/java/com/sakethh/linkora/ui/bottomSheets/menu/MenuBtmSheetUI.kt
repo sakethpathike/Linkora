@@ -350,7 +350,7 @@ fun MenuBtmSheetUI(
                             onOptionClick = {
                                 menuBtmSheetParam.onMoveToRootFoldersClick()
                             },
-                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move to Root Folders" else LocalizedStrings.deleteLink.value,
+                            elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) LocalizedStrings.moveToRootFolders.value else LocalizedStrings.deleteLink.value,
                             elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.VerticalAlignTop else Icons.Outlined.DeleteForever
                         )
                     }
@@ -359,7 +359,7 @@ fun MenuBtmSheetUI(
                                 onOptionClick = {
                                     menuBtmSheetParam.onCopyItemClick()
                                 },
-                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Copy Folder" else "Copy Link",
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) LocalizedStrings.copyFolder.value else LocalizedStrings.copyLink.value,
                                 elementImageVector = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) Icons.Outlined.FolderCopy else Icons.Outlined.CopyAll
                             )
 
@@ -367,7 +367,7 @@ fun MenuBtmSheetUI(
                                 onOptionClick = {
                                     menuBtmSheetParam.onMoveItemClick()
                                 },
-                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) "Move To Other Folder" else "Move Link",
+                                elementName = if (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.FOLDER) LocalizedStrings.moveToOtherFolder.value else LocalizedStrings.moveLink.value,
                                 elementImageVector = Icons.AutoMirrored.Outlined.DriveFileMove
                             )
                     }

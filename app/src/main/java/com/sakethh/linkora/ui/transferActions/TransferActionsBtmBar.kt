@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
@@ -93,7 +94,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
 
                             if (TransferActions.sourceFolders.isNotEmpty()) {
                                 append(
-                                    "Folders selected : "
+                                    LocalizedStrings.foldersSelected_.value + " "
                                 )
                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                     append(TransferActions.totalSelectedFoldersCount.longValue.toString())
@@ -104,7 +105,7 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
                             }
                             if (TransferActions.sourceLinks.isNotEmpty()) {
                                 append(
-                                    "Links selected : "
+                                    LocalizedStrings.linksSelected.value.trim() + " "
                                 )
                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
                                     append(TransferActions.totalSelectedLinksCount.longValue.toString())
