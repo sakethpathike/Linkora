@@ -36,7 +36,7 @@ object TransferActions : ViewModel() {
         fun linksRepo(): LinksRepo
     }
 
-    val currentTransferActionType = mutableStateOf(TransferActionType.NOTHING)
+    val  currentTransferActionType = mutableStateOf(TransferActionType.NOTHING)
 
     val sourceFolders = mutableStateListOf<FoldersTable>()
 

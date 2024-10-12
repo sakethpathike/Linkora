@@ -104,19 +104,6 @@ class MainActivity : ComponentActivity() {
                 }
                 val customWebTab: CustomWebTab = hiltViewModel()
                 val mainActivityVM: MainActivityVM = hiltViewModel()
-                LaunchedEffect(key1 = Unit) {
-                    mainActivityVM.channelEvent.collectLatest {
-                        when (it) {
-                            is CommonUiEvent.ShowToast -> {
-                                Toast.makeText(
-                                    context, it.msg,
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                            else -> {}
-                        }
-                    }
-                }
                 val settingsScreenVM: SettingsScreenVM = hiltViewModel()
                 Scaffold(modifier = Modifier.fillMaxSize()) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
