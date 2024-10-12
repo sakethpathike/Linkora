@@ -129,7 +129,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             )
                                         ) tweetMetaData.data.text else modifiedLink.title,
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
-                                                ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
+                                                ?: tweetMetaData.data.user_profile_image_url  else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "video" }) tweetMetaData.data.media_extended.find { it.type == "video" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "gif" }) tweetMetaData.data.media_extended.find { it.type == "gif" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                             userAgent = modifiedLink.userAgent
                                                 ?: SettingsPreference.primaryJsoupUserAgent.value
                                         )

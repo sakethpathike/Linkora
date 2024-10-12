@@ -600,12 +600,26 @@ fun AddANewLinkDialogBox(
                                                 )
                                             }
                                             Text(
-                                                text = buildAnnotatedString {
-                                                    append("User agent ")
-                                                    withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                                        append(AddANewLinkDialogBox.currentUserAgent.value)
+                                                text = if (linkTextFieldValue.value.trim()
+                                                        .startsWith("https://x.com/") || linkTextFieldValue.value.trim()
+                                                        .startsWith("http://x.com/") || linkTextFieldValue.value.trim()
+                                                        .startsWith("https://twitter.com/") || linkTextFieldValue.value.trim()
+                                                        .startsWith("http://twitter.com/")
+                                                ) {
+                                                    buildAnnotatedString {
+                                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                                            append("vxTwitter API")
+                                                        }
+                                                        append(" will be used to retrieve metadata.")
                                                     }
-                                                    append(" will be used to retrieve metadata.")
+                                                } else {
+                                                    buildAnnotatedString {
+                                                        append("User agent ")
+                                                        withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
+                                                            append(AddANewLinkDialogBox.currentUserAgent.value)
+                                                        }
+                                                        append(" will be used to retrieve metadata.")
+                                                    }
                                                 },
                                                 style = MaterialTheme.typography.titleSmall,
                                                 fontSize = 14.sp,
