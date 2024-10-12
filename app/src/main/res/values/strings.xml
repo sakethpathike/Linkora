@@ -144,7 +144,7 @@
     <string name="from_archived_folders">From Archived Folders</string>
     <string name="no_links_were_found_in_history">No Links were found in History.</string>
     <string name="heads_up">Heads Up!</string>
-    <string name="you_already_have_links_saved">You already have links saved, so importing data might cause conflicts in some cases. To prevent any unwanted surprises, export your data before selecting any import options.\\n\\nRemember, the actions triggered by your choice will happen simultaneously.</string>
+    <string name="you_already_have_links_saved">You already have links saved, so importing data might cause conflicts in some cases. To prevent any unwanted surprises, export your data before selecting any import options.\n\nRemember, the actions triggered by your choice will happen simultaneously.</string>
     <string name="export_data">Export data</string>
     <string name="import_data_and_keep_the_existing_data">Import data, and keep the existing data.</string>
     <string name="import_data_export_and_delete_the_existing_data">Import data, export and delete the existing data.</string>
@@ -303,9 +303,9 @@
     <string name="clear_image_cache">Clear Image Cache</string>
     <string name="clear_image_cache_desc">Images are cached by default. Changing the user agent might affect what you see. Clear the cache to resolve it.</string>
     <string name="will_be_used_to_retrieve_metadata">will be used to retrieve metadata</string>
-    <string name="user_agent">User agent</string>
+    <string name="user_agent">User Agent</string>
     <string name="initial_request_failed">Initial request failed</string>
-    <string name="retrying_metadata_retrieval_with_a_secondary_user_agent">" Retrying metadata retrieval with a secondary user agent:\\n"</string>
+    <string name="retrying_metadata_retrieval_with_a_secondary_user_agent">" Retrying metadata retrieval with a secondary user agent:\n"</string>
     <string name="site_specific_user_agent_settings">Site-Specific User Agent Settings</string>
     <string name="secondary_user_agent_desc">Linkora uses this user agent if the request fails with the primary one.</string>
     <string name="secondary_user_agent">Secondary User Agent</string>
