@@ -46,6 +46,10 @@ fun AddNewFolderDialogBox(
     val isFolderCreationInProgress = rememberSaveable {
         mutableStateOf(false)
     }
+    val folderName =
+        rememberSaveable(CollectionsScreenVM.currentClickedFolderData.value.folderName) {
+            mutableStateOf(CollectionsScreenVM.currentClickedFolderData.value.folderName)
+        }
     if (addNewFolderDialogBoxParam.shouldDialogBoxAppear.value) {
         val folderNameTextFieldValue = rememberSaveable {
             mutableStateOf("")
@@ -151,10 +155,11 @@ fun AddNewFolderDialogBox(
                 },
                 title = {
                     Text(
-                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen) LocalizedStrings.createANewInternalFolderIn.value.replace(
-                            "\$\$\$\$",
-                            CollectionsScreenVM.currentClickedFolderData.value.folderName
-                        ) else
+                        text = if (addNewFolderDialogBoxParam.inAChildFolderScreen)
+                            LocalizedStrings.createANewInternalFolderIn.value.replace(
+                                "\$\$\$\$", folderName.value
+                            )
+                        else
                             LocalizedStrings.createANewFolder.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,

@@ -813,10 +813,13 @@ fun CollectionsScreen(navController: NavController) {
                 }
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value,
-            onFolderCreateClick = { folderName, folderNote ->
+            onFolderCreateClick = { folderName, folderNote, folderId ->
                 collectionsScreenVM.onUiEvent(
                     SpecificCollectionsScreenUIEvent.CreateANewFolder(
-                        FoldersTable(folderName, folderNote)
+                        FoldersTable(
+                            folderName, folderNote,
+                            parentFolderID = folderId
+                        )
                     )
                 )
             }

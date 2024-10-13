@@ -798,10 +798,10 @@ fun ParentHomeScreen(
                 }
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value,
-            onFolderCreateClick = { folderName, folderNote ->
+            onFolderCreateClick = { folderName, folderNote,folderId ->
                 homeScreenVM.onUiEvent(
                     SpecificCollectionsScreenUIEvent.CreateANewFolder(
-                        FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                        FoldersTable(folderName = folderName, infoForSaving = folderNote, parentFolderID = folderId)
                     )
                 )
             }

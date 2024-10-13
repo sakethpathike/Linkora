@@ -102,12 +102,13 @@ class IntentActivity : ComponentActivity() {
                         }
                     },
                     isDataExtractingForTheLink = isDataExtractingForTheLink.value,
-                    onFolderCreateClick = { folderName, folderNote ->
+                    onFolderCreateClick = { givenFolderName, folderNote, folderId ->
                         specificCollectionsScreenVM.onUiEvent(
                             SpecificCollectionsScreenUIEvent.CreateANewFolder(
                                 FoldersTable(
-                                    folderName,
-                                    folderNote
+                                    parentFolderID = folderId,
+                                    folderName = givenFolderName,
+                                    infoForSaving = folderNote
                                 )
                             )
                         )

@@ -26,12 +26,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowRight
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CreateNewFolder
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -43,6 +45,7 @@ import androidx.compose.material.icons.outlined.StarOutline
 import androidx.compose.material.icons.outlined.Warning
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
+import androidx.compose.material3.BottomSheetDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -67,11 +70,11 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -88,13 +91,16 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.RequestResult
+import com.sakethh.linkora.data.local.FoldersTable
+import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
@@ -108,8 +114,13 @@ import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.cancellable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -123,11 +134,14 @@ fun AddANewLinkDialogBox(
     screenType: SpecificScreenType,
     onSaveClick: (isAutoDetectSelected: Boolean, webURL: String, title: String, note: String, selectedDefaultFolder: String?, selectedNonDefaultFolderID: Long?) -> Unit,
     isDataExtractingForTheLink: Boolean,
-    onFolderCreateClick: (folderName: String, folderNote: String) -> Unit,
+    onFolderCreateClick: (folderName: String, folderNote: String, folderId: Long?) -> Unit,
 ) {
-    val addANewLinkDialogBoxVM: AddANewLinkDialogBoxVM = hiltViewModel()
-    val parentFoldersData = addANewLinkDialogBoxVM.foldersRepo.getAllRootFolders().collectAsState(
-        initial = emptyList()
+    viewModel<AddANewLinkDialogBoxVM>()
+    rememberSystemUiController().setNavigationBarColor(BottomSheetDefaults.ContainerColor)
+    val context = LocalContext.current
+    val parentFoldersData =
+        AddANewLinkDialogBox.getAllRootFolders(context).collectAsStateWithLifecycle(
+            emptyList()
     )
     val isDropDownMenuIconClicked = rememberSaveable {
         mutableStateOf(false)
@@ -138,11 +152,13 @@ fun AddANewLinkDialogBox(
     val isCreateANewFolderIconClicked = rememberSaveable {
         mutableStateOf(false)
     }
+    val addTheFolderInRoot = rememberSaveable {
+        mutableStateOf(false)
+    }
     if (isDataExtractingForTheLink) {
         isDropDownMenuIconClicked.value = false
     }
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     val activity = context as Activity
     val intent = activity.intent
     val intentData = rememberSaveable(inputs = arrayOf(intent)) {
@@ -210,7 +226,10 @@ fun AddANewLinkDialogBox(
             mutableLongStateOf(-1)
         }
         val childFolders =
-            addANewLinkDialogBoxVM.childFolders.collectAsStateWithLifecycle()
+            AddANewLinkDialogBox.childFolders.collectAsStateWithLifecycle()
+
+        val lazyRowState = rememberLazyListState()
+
         LinkoraTheme {
             BasicAlertDialog(
                 onDismissRequest = {
@@ -392,14 +411,15 @@ fun AddANewLinkDialogBox(
                                         .fillMaxWidth()
                                         .padding(start = 20.dp, end = 20.dp, top = 10.dp)
                                 ) {
-                                    FilledTonalButton(modifier = Modifier
-                                        .pulsateEffect()
-                                        .fillMaxWidth(0.8f),
+                                    FilledTonalButton(
+                                        modifier = Modifier
+                                            .pulsateEffect()
+                                            .fillMaxWidth(0.8f),
                                         onClick = {
                                             if (!isDataExtractingForTheLink) {
                                                 isDropDownMenuIconClicked.value =
                                                     !isDropDownMenuIconClicked.value
-                                                addANewLinkDialogBoxVM.subFoldersList.clear()
+                                                AddANewLinkDialogBox.subFoldersList.clear()
                                             }
                                         }) {
                                         Text(
@@ -408,7 +428,7 @@ fun AddANewLinkDialogBox(
                                             fontSize = 18.sp,
                                             maxLines = 1, overflow = TextOverflow.Ellipsis,
                                             modifier = Modifier.fillMaxWidth(),
-                                            textAlign = TextAlign.Center
+                                            textAlign = TextAlign.Center,
                                         )
                                     }
                                     Spacer(modifier = Modifier.width(5.dp))
@@ -419,7 +439,7 @@ fun AddANewLinkDialogBox(
                                             if (!isDataExtractingForTheLink) {
                                                 isDropDownMenuIconClicked.value =
                                                     !isDropDownMenuIconClicked.value
-                                                addANewLinkDialogBoxVM.subFoldersList.clear()
+                                                AddANewLinkDialogBox.subFoldersList.clear()
                                             }
                                         }) {
                                         Icon(
@@ -466,11 +486,16 @@ fun AddANewLinkDialogBox(
                                     isCurrentFolderSelected = mutableStateOf(it.id == selectedFolderID.longValue),
                                     folderName = it.folderName,
                                     onSubDirectoryIconClick = {
-                                        addANewLinkDialogBoxVM.changeParentFolderId(it.id)
-                                        addANewLinkDialogBoxVM.subFoldersList.add(it)
+                                        AddANewLinkDialogBox.changeParentFolderId(it.id, context)
+                                        AddANewLinkDialogBox.subFoldersList.add(it)
                                         isChildFoldersBottomSheetExpanded.value = true
                                         coroutineScope.launch {
                                             btmSheetState.expand()
+                                            try {
+                                                lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                            }
                                         }
                                         selectedFolderName.value = it.folderName
                                         selectedFolderID.longValue = it.id
@@ -484,10 +509,39 @@ fun AddANewLinkDialogBox(
                             }
                         }
                         item {
+                            Button(
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.secondary,
+                                    contentColor = MaterialTheme.colorScheme.onSecondary
+                                ),
+                                modifier = Modifier
+                                    .padding(
+                                        end = 20.dp,
+                                        top = if (isDropDownMenuIconClicked.value) 20.dp else 5.dp,
+                                        start = 20.dp
+                                    )
+                                    .fillMaxWidth()
+                                    .pulsateEffect(),
+                                onClick = {
+                                    addTheFolderInRoot.value = true
+                                    isCreateANewFolderIconClicked.value = true
+                                }) {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.CreateNewFolder, null)
+                                    Spacer(Modifier.width(5.dp))
+                                    Text(
+                                        text = LocalizedStrings.createANewFolder.value,
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                        }
+                        item {
                             if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
                                 Row(
                                     modifier = Modifier
-                                        .padding(top = 20.dp)
+                                        .padding(top = 10.dp)
                                         .fillMaxWidth()
                                         .clickable {
                                             if (!isDataExtractingForTheLink) {
@@ -506,7 +560,6 @@ fun AddANewLinkDialogBox(
                                         })
                                     Text(
                                         text = LocalizedStrings.forceAutoDetectTitle.value,
-                                        color = contentColorFor(backgroundColor = AlertDialogDefaults.containerColor),
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
                                     )
@@ -530,7 +583,6 @@ fun AddANewLinkDialogBox(
                                     }) {
                                     Text(
                                         text = LocalizedStrings.cancel.value,
-                                        color = MaterialTheme.colorScheme.secondary,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
                                     )
@@ -739,7 +791,7 @@ fun AddANewLinkDialogBox(
                 }
                 if (isChildFoldersBottomSheetExpanded.value) {
                     ModalBottomSheet(sheetState = btmSheetState, onDismissRequest = {
-                        addANewLinkDialogBoxVM.subFoldersList.clear()
+                        AddANewLinkDialogBox.subFoldersList.clear()
                         isChildFoldersBottomSheetExpanded.value = false
                     }) {
                         LazyColumn(
@@ -751,12 +803,13 @@ fun AddANewLinkDialogBox(
                                 Column {
                                     TopAppBar(title = {
                                         Text(
-                                            text = addANewLinkDialogBoxVM.subFoldersList.last().folderName,
+                                            text = AddANewLinkDialogBox.subFoldersList.last().folderName,
                                             style = MaterialTheme.typography.titleMedium,
                                             fontSize = 24.sp
                                         )
                                     })
                                     LazyRow(
+                                        state = lazyRowState,
                                         modifier = Modifier.padding(
                                             start = 15.dp,
                                             end = 15.dp,
@@ -777,27 +830,41 @@ fun AddANewLinkDialogBox(
                                                 contentDescription = ""
                                             )
                                         }
-                                        itemsIndexed(addANewLinkDialogBoxVM.subFoldersList) { index, subFolder ->
+                                        itemsIndexed(AddANewLinkDialogBox.subFoldersList.toMutableStateList()) { index, subFolder ->
                                             Text(
                                                 text = subFolder.folderName,
                                                 style = MaterialTheme.typography.titleMedium,
                                                 fontSize = 16.sp,
                                                 modifier = Modifier.clickable {
-                                                    if (addANewLinkDialogBoxVM.subFoldersList.indexOf(
+                                                    AddANewLinkDialogBox.changeParentFolderId(
+                                                        subFolder.id, context
+                                                    )
+                                                    CollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                                        subFolder.folderName
+                                                    selectedFolderID.longValue = subFolder.id
+                                                    selectedFolderName.value = subFolder.folderName
+                                                    linkoraLog(selectedFolderID.longValue.toString())
+                                                    if (AddANewLinkDialogBox.subFoldersList.indexOf(
                                                             subFolder
-                                                        ) != addANewLinkDialogBoxVM.subFoldersList.lastIndex
+                                                        ) != AddANewLinkDialogBox.subFoldersList.indexOf(
+                                                            AddANewLinkDialogBox.subFoldersList.last()
+                                                        )
                                                     ) {
-                                                        addANewLinkDialogBoxVM.subFoldersList.subList(
-                                                            index + 1,
-                                                            addANewLinkDialogBoxVM.subFoldersList.lastIndex + 1
-                                                        ).clear()
-                                                        addANewLinkDialogBoxVM.changeParentFolderId(
-                                                            subFolder.id
+                                                        AddANewLinkDialogBox.subFoldersList.removeAll(
+                                                            AddANewLinkDialogBox.subFoldersList.toList()
+                                                                .subList(
+                                                                    fromIndex = AddANewLinkDialogBox.subFoldersList.indexOf(
+                                                                        AddANewLinkDialogBox.subFoldersList.find {
+                                                                            it.id == selectedFolderID.longValue
+                                                                        }
+                                                                    ) + 1,
+                                                                    toIndex = AddANewLinkDialogBox.subFoldersList.size
+                                                                ).toSet()
                                                         )
                                                     }
                                                 }
                                             )
-                                            if (subFolder.id != addANewLinkDialogBoxVM.subFoldersList.last().id) {
+                                            if (subFolder.id != AddANewLinkDialogBox.subFoldersList.last().id) {
                                                 Icon(
                                                     imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                                                     contentDescription = ""
@@ -821,7 +888,7 @@ fun AddANewLinkDialogBox(
                                             selectedFolderName.value = it.folderName
                                             selectedFolderID.longValue = it.id
                                             isDropDownMenuIconClicked.value = false
-                                            addANewLinkDialogBoxVM.subFoldersList.clear()
+                                            AddANewLinkDialogBox.subFoldersList.clear()
                                             coroutineScope.launch {
                                                 btmSheetState.hide()
                                             }
@@ -830,10 +897,22 @@ fun AddANewLinkDialogBox(
                                         isCurrentFolderSelected = mutableStateOf(it.id == selectedFolderID.longValue),
                                         folderName = it.folderName,
                                         onSubDirectoryIconClick = {
+                                            CollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                                selectedFolderName.value
                                             selectedFolderName.value = it.folderName
-                                            addANewLinkDialogBoxVM.subFoldersList.add(it)
-                                            addANewLinkDialogBoxVM.changeParentFolderId(it.id)
+                                            AddANewLinkDialogBox.subFoldersList.add(it)
                                             selectedFolderID.longValue = it.id
+                                            AddANewLinkDialogBox.changeParentFolderId(
+                                                it.id,
+                                                context
+                                            )
+                                            coroutineScope.launch {
+                                                try {
+                                                    lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
+                                                } catch (e: Exception) {
+                                                    e.printStackTrace()
+                                                }
+                                            }
                                         }
                                     )
                                 }
@@ -852,13 +931,38 @@ fun AddANewLinkDialogBox(
                                     )
                                 }
                                 item {
+                                    FilledTonalButton(
+                                        modifier = Modifier
+                                            .padding(
+                                                top = 5.dp,
+                                                end = 15.dp,
+                                                start = 15.dp
+                                            )
+                                            .fillMaxWidth()
+                                            .pulsateEffect(),
+                                        onClick = {
+                                            CollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                                selectedFolderName.value
+                                            addTheFolderInRoot.value = false
+                                            isCreateANewFolderIconClicked.value = true
+                                        }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.CreateNewFolder, null)
+                                            Spacer(Modifier.width(5.dp))
+                                            Text(
+                                                text = LocalizedStrings.createANewFolder.value,
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
+                                    }
                                     Button(
                                         modifier = Modifier
                                             .fillMaxWidth()
-                                            .padding(15.dp),
+                                            .padding(start = 15.dp, end = 15.dp),
                                         onClick = {
                                             isDropDownMenuIconClicked.value = false
-                                            addANewLinkDialogBoxVM.subFoldersList.clear()
+                                            AddANewLinkDialogBox.subFoldersList.clear()
                                             coroutineScope.launch {
                                                 btmSheetState.hide()
                                             }
@@ -868,6 +972,40 @@ fun AddANewLinkDialogBox(
                                             text = LocalizedStrings.saveInThisFolder.value,
                                             style = MaterialTheme.typography.titleSmall
                                         )
+                                    }
+                                }
+                                item {
+                                    Spacer(Modifier.height(5.dp))
+                                }
+                            }
+                            if (childFolders.value.isNotEmpty()) {
+                                item {
+                                    FilledTonalButton(
+                                        modifier = Modifier
+                                            .padding(
+                                                end = 20.dp,
+                                                top = 15.dp,
+                                                start = 20.dp,
+                                                bottom = 15.dp
+                                            )
+                                            .fillMaxWidth()
+                                            .pulsateEffect(),
+                                        onClick = {
+                                            CollectionsScreenVM.currentClickedFolderData.value.folderName =
+                                                selectedFolderName.value
+                                            addTheFolderInRoot.value = false
+                                            isCreateANewFolderIconClicked.value = true
+                                            linkoraLog(CollectionsScreenVM.currentClickedFolderData.value.folderName)
+                                        }) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Default.CreateNewFolder, null)
+                                            Spacer(Modifier.width(5.dp))
+                                            Text(
+                                                text = LocalizedStrings.createANewFolder.value,
+                                                style = MaterialTheme.typography.titleSmall,
+                                                fontSize = 16.sp
+                                            )
+                                        }
                                     }
                                 }
                             }
@@ -883,11 +1021,26 @@ fun AddANewLinkDialogBox(
                         selectedFolderID.longValue = folderID
                     },
                     onCreated = {
+                        AddANewLinkDialogBox.changeParentFolderId(
+                            selectedFolderID.longValue,
+                            context
+                        )
                         isDropDownMenuIconClicked.value = false
                     },
-                    inAChildFolderScreen = screenType == SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN,
+                    inAChildFolderScreen = !addTheFolderInRoot.value,
                     onFolderCreateClick = { folderName, folderNote ->
-                        onFolderCreateClick(folderName, folderNote)
+                        onFolderCreateClick(
+                            folderName,
+                            folderNote,
+                            if (addTheFolderInRoot.value) null else selectedFolderID.longValue
+                        )
+                        coroutineScope.launch {
+                            try {
+                                lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
+                            } catch (e: Exception) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 )
             )
@@ -970,7 +1123,7 @@ private fun FolderSelectorComponent(
     }
 }
 
-// not updating both AddANewLinkDialogBoxVM, loll; this will either be removed or just hang out here as an object
+// not updating both AddANewLinkDialogBox, loll; this will either be removed or just hang out here as an object
 
 object AddANewLinkDialogBox : ViewModel() {
 
@@ -978,14 +1131,15 @@ object AddANewLinkDialogBox : ViewModel() {
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
-    interface SiteSpecificUserAgentEntryPoint {
+    interface AddANewLinkDialogBoxEntryPoint {
         fun siteSpecificUserAgentRepo(): SiteSpecificUserAgentRepo
+        fun foldersRepo(): FoldersRepo
     }
 
 
     fun updateUserAgent(linkAddress: String, context: Context) {
         val siteSpecificUserAgentRepo =
-            EntryPoints.get(context.applicationContext, SiteSpecificUserAgentEntryPoint::class.java)
+            EntryPoints.get(context.applicationContext, AddANewLinkDialogBoxEntryPoint::class.java)
                 .siteSpecificUserAgentRepo()
         viewModelScope.launch {
             if (isAValidURL(linkAddress)) {
@@ -999,5 +1153,38 @@ object AddANewLinkDialogBox : ViewModel() {
                     }
             }
         }
+    }
+
+    val subFoldersList = mutableSetOf<FoldersTable>()
+
+    private val _childFolders = MutableStateFlow(emptyList<FoldersTable>())
+    val childFolders = _childFolders.asStateFlow()
+
+    private var changeParentFolderIdJob: Job? = null
+
+    val foldersRepo: (context: Context) -> FoldersRepo = { context ->
+        EntryPoints.get(context.applicationContext, AddANewLinkDialogBoxEntryPoint::class.java)
+            .foldersRepo()
+    }
+
+
+    fun changeParentFolderId(parentFolderId: Long, context: Context) {
+        changeParentFolderIdJob?.cancel()
+
+
+        changeParentFolderIdJob = viewModelScope.launch {
+            foldersRepo(context).getChildFoldersOfThisParentID(parentFolderId).cancellable()
+                .collectLatest {
+                    _childFolders.emit(it)
+                }
+        }
+    }
+
+    fun getAllRootFolders(context: Context): Flow<List<FoldersTable>> {
+        val foldersRepo =
+            EntryPoints.get(context.applicationContext, AddANewLinkDialogBoxEntryPoint::class.java)
+                .foldersRepo()
+
+        return foldersRepo.getAllRootFolders()
     }
 }

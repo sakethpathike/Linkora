@@ -1591,10 +1591,10 @@ fun SpecificCollectionScreen(navController: NavController) {
                 }
             },
             isDataExtractingForTheLink = isDataExtractingForTheLink.value,
-            onFolderCreateClick = { folderName, folderNote ->
+            onFolderCreateClick = { folderName, folderNote, folderId ->
                 specificCollectionsScreenVM.onUiEvent(
                     SpecificCollectionsScreenUIEvent.CreateANewFolder(
-                        FoldersTable(folderName = folderName, infoForSaving = folderNote)
+                        FoldersTable(folderName = folderName, infoForSaving = folderNote, parentFolderID = folderId)
                     )
                 )
             })
