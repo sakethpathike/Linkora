@@ -12,6 +12,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.models.ExportSchema
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -102,6 +103,24 @@ class ImportImpl @Inject constructor(
 
             val jsonDeserialized = json.decodeFromString<ExportSchema>(file!!.readText())
 
+            ImportRequestResult.totalLinksFromLinksTable.intValue = jsonDeserialized.linksTable.size
+            ImportRequestResult.totalLinksFromArchivedLinksTable.intValue =
+                jsonDeserialized.archivedLinksTable.size
+            ImportRequestResult.totalLinksFromImpLinksTable.intValue =
+                jsonDeserialized.importantLinksTable.size
+            ImportRequestResult.totalLinksFromHistoryLinksTable.intValue =
+                jsonDeserialized.historyLinksTable.size
+            ImportRequestResult.totalRegularFolders.intValue = jsonDeserialized.foldersTable.size
+            ImportRequestResult.totalArchivedFolders.intValue =
+                jsonDeserialized.archivedFoldersTable.size
+
+            linkoraLog("Total in LinksTable : " + ImportRequestResult.totalLinksFromLinksTable.intValue.toString())
+            linkoraLog("Total in ArchivedLinks : " +ImportRequestResult.totalLinksFromArchivedLinksTable.intValue.toString())
+            linkoraLog("Total in ImpLinksTable : " +ImportRequestResult.totalLinksFromImpLinksTable.intValue.toString())
+            linkoraLog("Total in HistoryLinks : " +ImportRequestResult.totalLinksFromHistoryLinksTable.intValue.toString())
+            linkoraLog("Total in RegularFolders : " +ImportRequestResult.totalRegularFolders.intValue.toString())
+            linkoraLog("Total in ArchivedFolders : " +ImportRequestResult.totalArchivedFolders.intValue.toString())
+
             var getLatestLinksTableID = getLatestLinksTableID()
             var getLatestFoldersTableID = getLatestFoldersTableID()
             var getLatestArchivedLinksTableID =
@@ -119,6 +138,8 @@ class ImportImpl @Inject constructor(
                     async {
                         jsonDeserialized.linksTable.forEach {
                             it.id = ++getLatestLinksTableID
+                            ++ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue
+                            linkoraLog("Links Table : " + ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue)
                         }
                     }, async {
                         jsonDeserialized.foldersTable.forEach { foldersTable ->
@@ -137,22 +158,32 @@ class ImportImpl @Inject constructor(
                             }
 
                             foldersTable.id = getLatestFoldersTableID
+                            ++ImportRequestResult.currentIterationOfRegularFolders.intValue
+                            linkoraLog("Regular Folders : " + ImportRequestResult.currentIterationOfRegularFolders.intValue)
                         }
                     }, async {
                         jsonDeserialized.importantLinksTable.forEach {
                             it.id = ++getLatestImpLinksTableID
+                            ++ImportRequestResult.currentIterationOfLinksFromImpLinksTable.intValue
+                            linkoraLog("Imp Links : " + ImportRequestResult.currentIterationOfLinksFromImpLinksTable.intValue)
                         }
                     }, async {
                         jsonDeserialized.archivedFoldersTable.forEach {
                             it.id = ++getLatestArchivedFoldersTableID
+                            ++ImportRequestResult.currentIterationOfArchivedFolders.intValue
+                            linkoraLog("Archived Folders : " + ImportRequestResult.currentIterationOfArchivedFolders.intValue)
                         }
                     }, async {
                         jsonDeserialized.archivedLinksTable.forEach {
                             it.id = ++getLatestArchivedLinksTableID
+                            ++ImportRequestResult.currentIterationOfLinksFromArchivedLinksTable.intValue
+                            linkoraLog("Archived Links : " + ImportRequestResult.currentIterationOfLinksFromArchivedLinksTable.intValue)
                         }
                     }, async {
                         jsonDeserialized.historyLinksTable.forEach {
                             it.id = ++getLatestRecentlyVisitedTableID
+                            ++ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue
+                            linkoraLog("History Links : " + ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue)
                         }
                     }
                 )
@@ -200,6 +231,8 @@ class ImportImpl @Inject constructor(
             e.printStackTrace()
             ImportRequestResult.Failure(ImportFailedException.NotBasedOnLinkoraSchema)
         } finally {
+            linkoraLog("done")
+            ImportRequestResult.resetImportInfo()
             file?.deleteIfExists()
             ImportRequestResult.updateState(ImportRequestState.IDLE)
         }
