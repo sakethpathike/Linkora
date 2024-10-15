@@ -7,8 +7,8 @@ import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import androidx.work.WorkManager
 import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.data.local.backup.ExportImpl
-import com.sakethh.linkora.data.local.backup.ExportRepo
+import com.sakethh.linkora.data.local.export.ExportImpl
+import com.sakethh.linkora.data.local.export.ExportRepo
 import com.sakethh.linkora.data.local.folders.FoldersImpl
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksImpl
@@ -162,6 +162,36 @@ object AppModule {
         }
     }
 
+    private val MIGRATION_7_8 = object : Migration(7, 8) {
+        override fun migrate(db: SupportSQLiteDatabase) {
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS `new_shelf` (`panelId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `panelName` TEXT NOT NULL)")
+
+
+            db.execSQL(
+                """
+            INSERT INTO new_shelf (panelId, panelName)
+            SELECT id, shelfName FROM shelf
+        """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE shelf")
+            db.execSQL("ALTER TABLE new_shelf RENAME TO shelf")
+
+            db.execSQL("CREATE TABLE IF NOT EXISTS `panel` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folderId` INTEGER NOT NULL, `panelPosition` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `connectedPanelId` INTEGER NOT NULL)")
+
+
+            db.execSQL(
+                """
+            INSERT INTO panel (folderId, panelPosition, folderName, connectedPanelId)
+            SELECT id, position, folderName, parentShelfID FROM home_screen_list_table
+            """.trimIndent()
+            )
+
+            db.execSQL("DROP TABLE home_screen_list_table")
+        }
+    }
+
     @Provides
     @Singleton
     fun provideLocalDatabase(app: Application): LocalDatabase {
@@ -169,7 +199,7 @@ object AppModule {
             app, LocalDatabase::class.java, "linkora_db"
         ).addMigrations(
             MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5, MIGRATION_5_6,
-            MIGRATION_6_7
+            MIGRATION_6_7, MIGRATION_7_8
         )
             .build()
     }

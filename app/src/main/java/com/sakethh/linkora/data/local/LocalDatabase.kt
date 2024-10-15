@@ -25,9 +25,9 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingDao
 
 @Database(
-    version = 7,
+    version = 8,
     exportSchema = true,
-    entities = [Shelf::class, HomeScreenListTable::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
+    entities = [Shelf::class, Panel::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
         ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class,
         Language::class, Translation::class, SiteSpecificUserAgent::class
     ]

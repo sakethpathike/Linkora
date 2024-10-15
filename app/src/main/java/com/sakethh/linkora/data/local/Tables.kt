@@ -111,22 +111,21 @@ data class RecentlyVisited(
 )
 
 @Serializable
-@Entity(tableName = "home_screen_list_table")
-data class HomeScreenListTable(
-    @PrimaryKey(autoGenerate = true) var primaryKey: Long = 0,
-    val id: Long,
-    var position: Long,
+@Entity(tableName = "panel")
+data class Panel(
+    @PrimaryKey(autoGenerate = true)
+    val id:Long = 0,
+    val folderId: Long,
+    var panelPosition: Long,
     val folderName: String,
-    val parentShelfID: Long
+    val connectedPanelId: Long
 )
 
 @Serializable
 @Entity("shelf")
 data class Shelf(
-    @PrimaryKey(autoGenerate = true) var id: Long = 0,
-    val shelfName: String,
-    val shelfIconName: String,
-    val folderIds: List<Long>
+    @PrimaryKey(autoGenerate = true) var panelId: Long = 0,
+    val panelName: String
 )
 
 @Entity(
