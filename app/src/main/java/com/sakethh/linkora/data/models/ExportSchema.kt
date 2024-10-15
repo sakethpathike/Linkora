@@ -10,9 +10,11 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class Export(
+@SerialName("Export")
+data class ExportSchema(
     @SerialName("appVersion")
-    val schemaVersion: Int,
+    val schemaVersion: Int = 11,
+    /* 11 adds panels */
     @SerialName("savedLinks")
     val linksTable: List<LinksTable>,
     @SerialName("importantLinks")

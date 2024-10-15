@@ -110,18 +110,11 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
     }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
-            val file = createTempFile()
-            uri?.let { context.contentResolver.openInputStream(it) }.use { input ->
-                file.outputStream().use { output ->
-                    input?.copyTo(output)
-                }
+            if (uri != null) {
+                settingsScreenVM.importData(
+                    uri, context
+                )
             }
-            settingsScreenVM.importData(
-                settingsScreenVM.exceptionType,
-                file.readText(),
-                isImportExceptionBoxVisible
-            )
-            file.delete()
         }
 
 

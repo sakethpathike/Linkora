@@ -4,7 +4,7 @@ import android.os.Build
 import android.os.Environment
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.models.Export
+import com.sakethh.linkora.data.models.ExportSchema
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
@@ -63,7 +63,7 @@ class ExportImpl @Inject constructor(
         val exportHistoryLinks = historyLinksData.await()
         file.writeText(
             Json.encodeToString(
-                Export(
+                ExportSchema(
                     schemaVersion = 10,
                     linksTable = exportAllLinks,
                     importantLinksTable = exportImpLinks,

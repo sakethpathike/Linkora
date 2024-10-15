@@ -1,6 +1,7 @@
 package com.sakethh.linkora.data.local.restore
 
-import androidx.compose.runtime.MutableState
+import android.content.Context
+import android.net.Uri
 import com.sakethh.linkora.data.local.ArchivedFolders
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
@@ -10,13 +11,19 @@ import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.models.Export
+import com.sakethh.linkora.data.models.ExportSchema
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import java.nio.file.Path
 import javax.inject.Inject
+import kotlin.io.path.deleteIfExists
+import kotlin.io.path.outputStream
+import kotlin.io.path.readText
 
 class ImportImpl @Inject constructor(
     private val localDatabase: LocalDatabase,
@@ -71,21 +78,32 @@ class ImportImpl @Inject constructor(
         return localDatabase.importDao().getLatestRecentlyVisitedTableID()
     }
 
+    private var file: Path? = null
+
     override suspend fun importToLocalDB(
-        exceptionType: MutableState<String?>,
-        jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>
-    ): String {
+        uri: Uri,
+        context: Context
+    ): ImportRequestResult {
         return try {
+
+            ImportRequestResult.updateState(ImportRequestState.PARSING)
+
+            file = kotlin.io.path.createTempFile()
+
+            context.contentResolver.openInputStream(uri).use { input ->
+                file!!.outputStream().use { output ->
+                    input?.copyTo(output)
+                }
+            }
+
             val json = Json {
                 ignoreUnknownKeys = true
             }
-            val jsonDeserialized = json.decodeFromString<Export>(jsonString)
+
+            val jsonDeserialized = json.decodeFromString<ExportSchema>(file!!.readText())
 
             var getLatestLinksTableID = getLatestLinksTableID()
             var getLatestFoldersTableID = getLatestFoldersTableID()
-            val minFolderID = getLatestFoldersTableID
-            var maxFolderID: Long = 0
             var getLatestArchivedLinksTableID =
                 getLatestArchivedLinksTableID()
             var getLatestArchivedFoldersTableID =
@@ -94,78 +112,71 @@ class ImportImpl @Inject constructor(
             var getLatestRecentlyVisitedTableID =
                 getLatestRecentlyVisitedTableID()
 
-            // Manipulating IDs for "Links Table":
-            jsonDeserialized.linksTable.forEach {
-                it.id = ++getLatestLinksTableID
-            }
 
-            // Manipulating IDs for "Important Links":
-            jsonDeserialized.importantLinksTable.forEach {
-                it.id = ++getLatestImpLinksTableID
-            }
+            withContext(Dispatchers.Default) {
+                ImportRequestResult.updateState(ImportRequestState.MODIFYING)
+                awaitAll(
+                    async {
+                        jsonDeserialized.linksTable.forEach {
+                            it.id = ++getLatestLinksTableID
+                        }
+                    }, async {
+                        jsonDeserialized.foldersTable.forEach { foldersTable ->
+                            ++getLatestFoldersTableID
 
-            jsonDeserialized.foldersTable.forEach { foldersTable ->
-                ++getLatestFoldersTableID
+                            jsonDeserialized.linksTable.filter {
+                                it.keyOfLinkedFolderV10 == foldersTable.id
+                            }.forEach {
+                                it.keyOfLinkedFolderV10 = getLatestFoldersTableID
+                            }
 
-                jsonDeserialized.linksTable.filter {
-                    it.keyOfLinkedFolderV10 == foldersTable.id
-                }.forEach {
-                    it.keyOfLinkedFolderV10 = getLatestFoldersTableID
-                }
+                            jsonDeserialized.foldersTable.filter { childFolder ->
+                                childFolder.parentFolderID == foldersTable.id
+                            }.forEach {
+                                it.parentFolderID = getLatestFoldersTableID
+                            }
 
-                jsonDeserialized.foldersTable.filter { childFolder ->
-                    childFolder.parentFolderID == foldersTable.id
-                }.forEach {
-                    it.parentFolderID = getLatestFoldersTableID
-                }
-
-                jsonDeserialized.foldersTable.filter {
-                    it.childFolderIDs?.contains(foldersTable.id) == true
-                }.forEach {
-                    val manipulatedIDs = it.childFolderIDs?.toMutableList() ?: mutableListOf()
-                    manipulatedIDs.add(getLatestFoldersTableID)
-                    it.childFolderIDs = manipulatedIDs
-                }
-                foldersTable.id = getLatestFoldersTableID
-                maxFolderID = getLatestFoldersTableID
-            }
-
-            jsonDeserialized.foldersTable.forEach { foldersTable ->
-                val manipulatedChildFolderIDs = foldersTable.childFolderIDs?.toMutableList()
-                foldersTable.childFolderIDs?.forEach {
-                    if (it > maxFolderID || it <= minFolderID) {
-                        manipulatedChildFolderIDs?.remove(it)
+                            foldersTable.id = getLatestFoldersTableID
+                        }
+                    }, async {
+                        jsonDeserialized.importantLinksTable.forEach {
+                            it.id = ++getLatestImpLinksTableID
+                        }
+                    }, async {
+                        jsonDeserialized.archivedFoldersTable.forEach {
+                            it.id = ++getLatestArchivedFoldersTableID
+                        }
+                    }, async {
+                        jsonDeserialized.archivedLinksTable.forEach {
+                            it.id = ++getLatestArchivedLinksTableID
+                        }
+                    }, async {
+                        jsonDeserialized.historyLinksTable.forEach {
+                            it.id = ++getLatestRecentlyVisitedTableID
+                        }
                     }
-                }
-                foldersTable.childFolderIDs = manipulatedChildFolderIDs?.distinct()
+                )
             }
 
-            jsonDeserialized.archivedFoldersTable.forEach {
-                it.id = ++getLatestArchivedFoldersTableID
+            withContext(Dispatchers.IO) {
+                ImportRequestResult.updateState(ImportRequestState.ADDING_TO_DATABASE)
+                awaitAll(
+                    async {
+                        addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
+                    }, async {
+                        addAllRegularFolders(jsonDeserialized.foldersTable)
+                    }, async {
+                        addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
+                    }, async {
+                        addAllHistoryLinks(jsonDeserialized.historyLinksTable)
+                    }, async {
+                        addAllImportantLinks(jsonDeserialized.importantLinksTable)
+                    }, async {
+                        addAllLinks(jsonDeserialized.linksTable)
+                    }
+                )
             }
 
-            jsonDeserialized.archivedLinksTable.forEach {
-                it.id = ++getLatestArchivedLinksTableID
-            }
-
-            jsonDeserialized.historyLinksTable.forEach {
-                it.id = ++getLatestRecentlyVisitedTableID
-            }
-
-            addAllArchivedFolders(jsonDeserialized.archivedFoldersTable)
-
-            addAllRegularFolders(jsonDeserialized.foldersTable)
-
-            addAllArchivedLinks(jsonDeserialized.archivedLinksTable)
-
-            addAllHistoryLinks(jsonDeserialized.historyLinksTable)
-
-            addAllImportantLinks(jsonDeserialized.importantLinksTable)
-
-            addAllLinks(jsonDeserialized.linksTable)
-
-            exceptionType.value = null
-            shouldErrorDialogBeVisible.value = false
             if (jsonDeserialized.schemaVersion <= 9) {
                 coroutineScope {
                     awaitAll(async {
@@ -181,16 +192,16 @@ class ImportImpl @Inject constructor(
             }
 
             if (jsonDeserialized.schemaVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}"
-
+            ImportRequestResult.Success
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()
-            exceptionType.value = IllegalArgumentException().toString()
-            shouldErrorDialogBeVisible.value = true
-            IllegalArgumentException().toString()
+            ImportRequestResult.Failure(ImportFailedException.InvalidFile)
         } catch (e: SerializationException) {
-            exceptionType.value = SerializationException().toString()
-            shouldErrorDialogBeVisible.value = true
-            SerializationException().toString()
+            e.printStackTrace()
+            ImportRequestResult.Failure(ImportFailedException.NotBasedOnLinkoraSchema)
+        } finally {
+            file?.deleteIfExists()
+            ImportRequestResult.updateState(ImportRequestState.IDLE)
         }
     }
 

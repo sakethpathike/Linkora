@@ -531,17 +531,11 @@ open class SettingsScreenVM @Inject constructor(
     }
 
     fun importData(
-        exceptionType: MutableState<String?>,
-        json: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>
+        uri: Uri,
+        context: Context
     ) {
-        viewModelScope.launch {
-            val importLocalDB = importRepo.importToLocalDB(
-                exceptionType = exceptionType,
-                jsonString = json,
-                shouldErrorDialogBeVisible = shouldErrorDialogBeVisible
-            )
-            pushUiEvent(CommonUiEvent.ShowToast(importLocalDB))
+        viewModelScope.launch(Dispatchers.Default) {
+            importRepo.importToLocalDB(uri, context)
         }
     }
 

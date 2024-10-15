@@ -1,13 +1,11 @@
 package com.sakethh.linkora.data.local.restore
 
-import androidx.compose.runtime.MutableState
+import android.content.Context
+import android.net.Uri
+
 
 interface ImportRepo {
-    suspend fun importToLocalDB(
-        exceptionType: MutableState<String?>,
-        jsonString: String,
-        shouldErrorDialogBeVisible: MutableState<Boolean>
-    ): String
+    suspend fun importToLocalDB(uri: Uri, context: Context): ImportRequestResult
 
     suspend fun migrateArchiveFoldersV9toV10()
 
