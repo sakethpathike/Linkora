@@ -16,7 +16,7 @@ import com.sakethh.linkora.MainActivity
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.RequestState
 import com.sakethh.linkora.data.local.LocalDatabase
-import com.sakethh.linkora.data.local.backup.ExportRepo
+import com.sakethh.linkora.data.local.export.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.localization.language.LanguageRepo
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo

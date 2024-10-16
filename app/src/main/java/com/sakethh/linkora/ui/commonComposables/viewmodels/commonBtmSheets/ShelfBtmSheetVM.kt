@@ -1,27 +1,18 @@
 package com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets
 
-import androidx.lifecycle.viewModelScope
-import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.data.local.HomeScreenListTable
-import com.sakethh.linkora.data.local.Shelf
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
-import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolderLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
-import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.shelf.ShelfUIEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,8 +26,7 @@ class ShelfBtmSheetVM @Inject constructor(
     subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    shelfListsRepo: ShelfListsRepo,
-    shelfRepo: ShelfRepo,
+    panelsRepo: PanelsRepo,
     customWebTab: CustomWebTab
 ) : HomeScreenVM(
     linksRepo,
@@ -48,17 +38,14 @@ class ShelfBtmSheetVM @Inject constructor(
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
     parentRegularFoldersSortingRepo,
-    shelfListsRepo,
-    shelfRepo,
+    panelsRepo,
     customWebTab
 ) {
     companion object {
-        var selectedShelfData =
-            Shelf(id = 0L, shelfName = "", shelfIconName = "", folderIds = listOf())
     }
 
     fun onShelfUiEvent(shelfUIEvent: ShelfUIEvent) {
-        when (shelfUIEvent) {
+        /*when (shelfUIEvent) {
             is ShelfUIEvent.DeleteAShelfFolder -> {
                 viewModelScope.launch {
                     shelfListsRepo.deleteAShelfFolder(shelfUIEvent.folderId)
@@ -105,6 +92,6 @@ class ShelfBtmSheetVM @Inject constructor(
                     shelfRepo.updateAShelfName(shelfUIEvent.newName, shelfUIEvent.selectedShelfID)
                 }
             }
-        }
+        }*/
     }
 }

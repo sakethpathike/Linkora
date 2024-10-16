@@ -15,7 +15,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.search.SearchRepo
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -52,7 +52,7 @@ class SearchScreenVM @Inject constructor(
     private val historyLinksSortingRepo: HistoryLinksSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     customWebTab: CustomWebTab,
-    shelfRepo: ShelfRepo
+    panelsRepo: PanelsRepo
 ) : SpecificCollectionsScreenVM(
     linksRepo,
     foldersRepo,
@@ -63,7 +63,7 @@ class SearchScreenVM @Inject constructor(
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
     parentRegularFoldersSortingRepo,
-    shelfRepo,
+    panelsRepo,
     customWebTab
 ) {
     enum class SelectedLinkType {

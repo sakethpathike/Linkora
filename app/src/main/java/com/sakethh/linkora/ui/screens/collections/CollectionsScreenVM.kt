@@ -12,7 +12,7 @@ import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
@@ -37,7 +37,7 @@ open class CollectionsScreenVM @Inject constructor(
     private val foldersRepo: FoldersRepo,
     private val linksRepo: LinksRepo,
     private val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    private val shelfRepo: ShelfRepo
+    private val panelsRepo: PanelsRepo
 ) : ViewModel() {
     private val _foldersData = MutableStateFlow(
         emptyList<FoldersTable>()
@@ -71,7 +71,7 @@ open class CollectionsScreenVM @Inject constructor(
         viewModelScope.launch {
             awaitAll(async {
                 selectedFoldersData.toList().forEach {
-                    shelfRepo.deleteAFolderFromShelf(it.id)
+                    //shelfRepo.deleteAFolderFromShelf(it.id)
                 }
             }, async {
                 selectedFoldersData.toList().forEach { folder ->
@@ -85,7 +85,7 @@ open class CollectionsScreenVM @Inject constructor(
                         }
                     linksRepo.deleteThisFolderLinksV10(folder.id)
                     foldersRepo.deleteAFolder(folder.id)
-                    shelfRepo.deleteAFolderFromShelf(folder.id)
+                   // shelfRepo.deleteAFolderFromShelf(folder.id)
                 }
             }, async {
                 SearchScreenVM.selectedArchiveFoldersData.toList().forEach { folder ->
@@ -97,7 +97,7 @@ open class CollectionsScreenVM @Inject constructor(
                         }
                     linksRepo.deleteThisFolderLinksV10(folder.id)
                     foldersRepo.deleteAFolder(folder.id)
-                    shelfRepo.deleteAFolderFromShelf(folder.id)
+                   // shelfRepo.deleteAFolderFromShelf(folder.id)
                 }
             })
             pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.selectedFoldersDeletedSuccessfully.value))

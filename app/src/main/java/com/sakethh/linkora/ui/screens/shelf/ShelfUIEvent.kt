@@ -1,6 +1,6 @@
 package com.sakethh.linkora.ui.screens.shelf
 
-import com.sakethh.linkora.data.local.Shelf
+import com.sakethh.linkora.data.local.Panel
 
 sealed class ShelfUIEvent {
     data class DeleteAShelfFolder(val folderId: Long) : ShelfUIEvent()
@@ -11,11 +11,11 @@ sealed class ShelfUIEvent {
     ) : ShelfUIEvent()
 
     data class AddANewShelf(
-        val shelf: Shelf
+        val panel: Panel
     ) : ShelfUIEvent()
 
     data class DeleteAPanel(
-        val shelf: Shelf
+        val panel: Panel
     ) : ShelfUIEvent()
 
     data class UpdateAShelfName(

@@ -56,10 +56,10 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                     }
                 }, title = {
                     Text(
-                        text = LocalizedStrings.areYouSureWantToDeleteThePanel.value.replace(
+                        text = ""/*LocalizedStrings.areYouSureWantToDeleteThePanel.value.replace(
                             "\$\$\$\$",
                             ShelfBtmSheetVM.selectedShelfData.shelfName
-                        ), style = MaterialTheme.typography.titleMedium,
+                        )*/, style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp,
                         textAlign = TextAlign.Start

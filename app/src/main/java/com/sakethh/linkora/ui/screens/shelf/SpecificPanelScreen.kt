@@ -60,7 +60,7 @@ import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun SpecificPanelScreen(navController: NavController) {
+fun SpecificPanelScreen(navController: NavController) {/*
     val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
     val panelData =
         shelfBtmSheetVM.shelfListsRepo.getAllFoldersOfThisShelf(ShelfBtmSheetVM.selectedShelfData.id)
@@ -202,7 +202,7 @@ fun SpecificPanelScreen(navController: NavController) {
                 Spacer(modifier = Modifier.height(150.dp))
             }
         }
-    }
+    }*/
 }
 
 @Composable

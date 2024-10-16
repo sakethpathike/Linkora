@@ -5,18 +5,15 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
-import com.sakethh.linkora.data.local.HomeScreenListTable
 import com.sakethh.linkora.data.local.ImportantLinks
-import com.sakethh.linkora.data.local.Shelf
+import com.sakethh.linkora.data.local.Panel
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
-import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -30,8 +27,6 @@ import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -39,7 +34,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -56,8 +50,7 @@ open class HomeScreenVM @Inject constructor(
     val subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    val shelfListsRepo: ShelfListsRepo,
-    val shelfRepo: ShelfRepo,
+    val panelsRepo: PanelsRepo,
     val customWebTab: CustomWebTab,
 ) : SpecificCollectionsScreenVM(
     linksRepo,
@@ -69,20 +62,20 @@ open class HomeScreenVM @Inject constructor(
     subFoldersSortingRepo,
     regularFoldersSortingRepo,
     parentRegularFoldersSortingRepo,
-    shelfRepo = shelfRepo,
+    panelsRepo = panelsRepo,
     customWebTab = customWebTab
 ) {
     val currentPhaseOfTheDay = mutableStateOf("")
 
     val isSelectionModeEnabled = mutableStateOf(false)
 
-    private val _shelfData = MutableStateFlow(emptyList<Shelf>())
-    val shelfData = _shelfData.asStateFlow()
+    private val _panelData = MutableStateFlow(emptyList<Panel>())
+    val shelfData = _panelData.asStateFlow()
 
-    private val _selectedShelfFoldersForSelectedShelf =
-        MutableStateFlow(emptyList<HomeScreenListTable>())
+   /* private val _selectedShelfFoldersForSelectedShelf =
+        MutableStateFlow(emptyList<HomeScreenListTable>())*/
 
-    val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
+ /*   val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
 
     fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long, context: Context) {
         viewModelScope.launch {
@@ -96,7 +89,7 @@ open class HomeScreenVM @Inject constructor(
             context.dataStore,
             newValue = shelfID.toInt()
         )
-    }
+    }*/
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST
@@ -194,9 +187,9 @@ open class HomeScreenVM @Inject constructor(
 
 
         viewModelScope.launch {
-            shelfRepo.getAllShelfItems().collectLatest {
+          /*  shelfRepo.getAllShelfItems().collectLatest {
                 _shelfData.emit(it)
-            }
+            }*/
         }
     }
 

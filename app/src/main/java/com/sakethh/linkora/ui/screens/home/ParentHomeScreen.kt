@@ -152,8 +152,8 @@ fun ParentHomeScreen(
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val homeScreenList =
-        homeScreenVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value
+  /*  val homeScreenList =
+        homeScreenVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value*/
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
         mutableStateOf(false)
@@ -164,7 +164,7 @@ fun ParentHomeScreen(
     val context = LocalContext.current
     val shelfLazyColumnState = rememberLazyListState()
     LinkoraTheme {
-        Scaffold(
+        /*Scaffold(
             floatingActionButton = {
                 if (!homeScreenVM.isSelectionModeEnabled.value) {
                     Column(
@@ -714,8 +714,8 @@ fun ParentHomeScreen(
                                     }
                                 }
                         })
-            }
-        }
+           }
+        }*/
         SortingBottomSheetUI(
             SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
@@ -843,7 +843,7 @@ fun ParentHomeScreen(
         key1 = SettingsPreference.lastSelectedPanelID.longValue,
         key2 = shelfData.value.size
     ) {
-        if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && shelfData.value.isNotEmpty()) {
+        /*if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && shelfData.value.isNotEmpty()) {
             shelfData.value.find {
                 it.id == SettingsPreference.lastSelectedPanelID.longValue
             }?.let {
@@ -858,7 +858,7 @@ fun ParentHomeScreen(
                 ) ?: -1).toLong(), context
             )
             HomeScreenVM.initialStart = false
-        }
+        }*/
     }
     BackHandler {
         if (isMainFabRotated.value) {

@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.backup
+package com.sakethh.linkora.data.local.export
 
 import android.os.Build
 import android.os.Environment
@@ -19,6 +19,7 @@ class ExportImpl @Inject constructor(
     private val foldersRepo: FoldersRepo
 ) : ExportRepo {
     override suspend fun exportToAFile() = coroutineScope {
+        ExportRequestInfo.updateState(ExportRequestState.GATHERING_DATA)
         val linksTableData = async {
             linksRepo.getAllFromLinksTable()
         }
@@ -61,10 +62,13 @@ class ExportImpl @Inject constructor(
         val exportAllFolders = foldersData.await()
         val exportArchiveLinks = archiveLinksData.await()
         val exportHistoryLinks = historyLinksData.await()
+
+        ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
+
         file.writeText(
             Json.encodeToString(
                 ExportSchema(
-                    schemaVersion = 10,
+                    schemaVersion = 11,
                     linksTable = exportAllLinks,
                     importantLinksTable = exportImpLinks,
                     foldersTable = exportAllFolders,
@@ -75,5 +79,6 @@ class ExportImpl @Inject constructor(
             )
         )
 
+        ExportRequestInfo.updateState(ExportRequestState.IDLE)
     }
 }

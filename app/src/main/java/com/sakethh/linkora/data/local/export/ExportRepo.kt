@@ -1,4 +1,4 @@
-package com.sakethh.linkora.data.local.backup
+package com.sakethh.linkora.data.local.export
 
 interface ExportRepo {
     suspend fun exportToAFile()

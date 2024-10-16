@@ -11,8 +11,7 @@ import com.sakethh.linkora.data.local.localization.language.translations.Transla
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsDao
 import com.sakethh.linkora.data.local.restore.ImportDao
 import com.sakethh.linkora.data.local.search.SearchDao
-import com.sakethh.linkora.data.local.shelf.ShelfDao
-import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsDao
+import com.sakethh.linkora.data.local.panels.PanelsDao
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentDao
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingDao
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingDao
@@ -27,7 +26,7 @@ import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingDao
 @Database(
     version = 8,
     exportSchema = true,
-    entities = [Shelf::class, Panel::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
+    entities = [Panel::class, PanelFolder::class, FoldersTable::class, LinksTable::class, ArchivedFolders::class,
         ArchivedLinks::class, ImportantFolders::class, ImportantLinks::class, RecentlyVisited::class,
         Language::class, Translation::class, SiteSpecificUserAgent::class
     ]
@@ -37,12 +36,11 @@ abstract class LocalDatabase : RoomDatabase() {
     abstract fun foldersDao(): FoldersDao
     abstract fun linksDao(): LinksDao
     abstract fun regularFolderLinksSorting(): RegularFolderLinksSortingDao
-    abstract fun shelfDao(): ShelfDao
+    abstract fun panelsDao(): PanelsDao
     abstract fun savedLinksSorting(): SavedLinksSortingDao
     abstract fun archivedFolderLinksSorting(): ArchivedFolderLinksSortingDao
     abstract fun historyLinksSorting(): HistoryLinksSortingDao
     abstract fun importantLinksSorting(): ImportantLinksSortingDao
-    abstract fun shelfListDao(): ShelfListsDao
     abstract fun archivedLinksSorting(): ArchivedLinksSortingDao
     abstract fun archivedFolderSorting(): ParentArchivedFoldersSortingDao
     abstract fun regularFolderSorting(): ParentRegularFoldersSortingDao

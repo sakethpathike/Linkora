@@ -53,7 +53,7 @@ import com.sakethh.linkora.LocalizedStrings.useInAppBrowserDesc
 import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.local.RecentlyVisited
-import com.sakethh.linkora.data.local.backup.ExportRepo
+import com.sakethh.linkora.data.local.export.ExportRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo

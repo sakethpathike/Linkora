@@ -14,7 +14,7 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -57,9 +57,9 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     private val subFoldersSortingRepo: SubFoldersSortingRepo,
     private val regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    shelfRepo: ShelfRepo,
+    panelsRepo: PanelsRepo,
     private val customWebTab: CustomWebTab
-) : CollectionsScreenVM(foldersRepo, linksRepo, parentRegularFoldersSortingRepo, shelfRepo) {
+) : CollectionsScreenVM(foldersRepo, linksRepo, parentRegularFoldersSortingRepo, panelsRepo) {
 
 
     private val _folderLinksData = MutableStateFlow(

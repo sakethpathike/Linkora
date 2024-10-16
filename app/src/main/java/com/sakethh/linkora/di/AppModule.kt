@@ -21,8 +21,8 @@ import com.sakethh.linkora.data.local.restore.ImportImpl
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
-import com.sakethh.linkora.data.local.shelf.ShelfImpl
-import com.sakethh.linkora.data.local.shelf.ShelfRepo
+import com.sakethh.linkora.data.local.panels.PanelsImpl
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentImpl
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
@@ -363,8 +363,8 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideShelfRepo(localDatabase: LocalDatabase): ShelfRepo {
-        return ShelfImpl(localDatabase)
+    fun providePanelsRepo(localDatabase: LocalDatabase): PanelsRepo {
+        return PanelsImpl(localDatabase)
     }
 
     @Provides

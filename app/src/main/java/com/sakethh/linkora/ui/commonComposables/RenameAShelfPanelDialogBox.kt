@@ -46,10 +46,10 @@ fun RenameAShelfPanelDialogBox(
             },
             title = {
                 Text(
-                    text = LocalizedStrings.editPanelName.value.replace(
+                    text = ""/* LocalizedStrings.editPanelName.value.replace(
                         "\$\$\$\$",
                         ShelfBtmSheetVM.selectedShelfData.shelfName
-                    ),
+                    )*/,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,
