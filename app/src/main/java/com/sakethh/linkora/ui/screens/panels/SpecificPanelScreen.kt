@@ -1,4 +1,4 @@
-package com.sakethh.linkora.ui.screens.shelf
+package com.sakethh.linkora.ui.screens.panels
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -53,23 +53,20 @@ import com.sakethh.linkora.LocalizedStrings.noFoldersFoundInThisPanel
 import com.sakethh.linkora.LocalizedStrings.shelf
 import com.sakethh.linkora.LocalizedStrings.youCanAddTheFollowingFoldersToThisPanel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-fun SpecificPanelScreen(navController: NavController) {/*
-    val shelfBtmSheetVM: ShelfBtmSheetVM = hiltViewModel()
-    val panelData =
-        shelfBtmSheetVM.shelfListsRepo.getAllFoldersOfThisShelf(ShelfBtmSheetVM.selectedShelfData.id)
-            .collectAsStateWithLifecycle(
-                initialValue = emptyList()
-            )
-    val rootFolders = shelfBtmSheetVM.foldersRepo.getAllRootFolders().collectAsStateWithLifecycle(
-        initialValue = emptyList()
-    )
+fun SpecificPanelScreen(navController: NavController) {
+
+    val panelsScreenVM: PanelsScreenVM = hiltViewModel()
+
+    val foldersOfTheSelectedPanel =
+        panelsScreenVM.foldersOfTheSelectedPanel.collectAsStateWithLifecycle()
+
+    val rootFolders = panelsScreenVM.rootFolders.collectAsStateWithLifecycle()
     val topAppBarState = TopAppBarDefaults.exitUntilCollapsedScrollBehavior()
     Scaffold(modifier = Modifier.fillMaxSize(), topBar = {
         MediumTopAppBar(navigationIcon = {
@@ -80,7 +77,7 @@ fun SpecificPanelScreen(navController: NavController) {/*
             }
         }, scrollBehavior = topAppBarState, title = {
             Text(
-                text = ShelfBtmSheetVM.selectedShelfData.shelfName,
+                text = PanelsScreenVM.selectedPanelData.panelName,
                 fontSize = 18.sp,
                 style = MaterialTheme.typography.titleMedium,
             )
@@ -119,13 +116,13 @@ fun SpecificPanelScreen(navController: NavController) {/*
                         contentDescription = ""
                     )
                     Text(
-                        text = ShelfBtmSheetVM.selectedShelfData.shelfName,
+                        text = PanelsScreenVM.selectedPanelData.panelName,
                         style = MaterialTheme.typography.titleMedium, fontSize = 16.sp
                     )
                 }
                 HorizontalDivider(color = LocalContentColor.current.copy(0.25f))
             }
-            if (panelData.value.distinct().isNotEmpty()) {
+            if (foldersOfTheSelectedPanel.value.distinct().isNotEmpty()) {
                 item {
                     Spacer(modifier = Modifier.height(15.dp))
                     Text(
@@ -136,14 +133,17 @@ fun SpecificPanelScreen(navController: NavController) {/*
                         modifier = Modifier.padding(start = 10.dp, end = 15.dp)
                     )
                 }
-                items(panelData.value.distinct()) { panelItem ->
-                    PanelFolderComponent(
-                        folderName = panelItem.folderName,
+                items(foldersOfTheSelectedPanel.value.distinct()) { folderItem ->
+                    FolderComponentInSpecificPanelScreen(
+                        folderName = folderItem.folderName,
                         {},
                         {},
                         onRemoveClick = {
-                            shelfBtmSheetVM.onShelfUiEvent(
-                                ShelfUIEvent.DeleteAShelfFolder(panelItem.id)
+                            panelsScreenVM.onUiEvent(
+                                PanelScreenUIEvent.DeleteAPanelFolder(
+                                    folderId = folderItem.id,
+                                    panelId = PanelsScreenVM.selectedPanelData.panelId
+                                )
                             )
                         },
                         onAddClick = {},
@@ -158,7 +158,7 @@ fun SpecificPanelScreen(navController: NavController) {/*
                     Spacer(modifier = Modifier.height(15.dp))
                 }
             }
-            if (rootFolders.value.size != panelData.value.distinct().size) {
+            if (rootFolders.value.size != foldersOfTheSelectedPanel.value.distinct().size) {
                 item {
                     HorizontalDivider(
                         color = LocalContentColor.current.copy(0.1f)
@@ -176,18 +176,20 @@ fun SpecificPanelScreen(navController: NavController) {/*
                 }
             }
             items(rootFolders.value) { rootFolderElement ->
-                if (!panelData.value.distinct().any { it.id == rootFolderElement.id }) {
-                    PanelFolderComponent(
+                if (!foldersOfTheSelectedPanel.value.distinct()
+                        .any { it.id == rootFolderElement.id }
+                ) {
+                    FolderComponentInSpecificPanelScreen(
                         folderName = rootFolderElement.folderName,
                         {},
                         {},
                         {},
                         onAddClick = {
-                            shelfBtmSheetVM.onShelfUiEvent(
-                                ShelfUIEvent.InsertANewElementInHomeScreenList(
+                            panelsScreenVM.onUiEvent(
+                                PanelScreenUIEvent.AddANewPanelFolder(
                                     folderName = rootFolderElement.folderName,
                                     folderID = rootFolderElement.id,
-                                    parentShelfID = ShelfBtmSheetVM.selectedShelfData.id
+                                    connectedPanelId = PanelsScreenVM.selectedPanelData.panelId
                                 )
                             )
                         },
@@ -202,11 +204,11 @@ fun SpecificPanelScreen(navController: NavController) {/*
                 Spacer(modifier = Modifier.height(150.dp))
             }
         }
-    }*/
+    }
 }
 
 @Composable
-private fun PanelFolderComponent(
+private fun FolderComponentInSpecificPanelScreen(
     folderName: String,
     onMoveUpClick: () -> Unit,
     onMoveDownClick: () -> Unit,

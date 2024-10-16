@@ -7,7 +7,7 @@ import kotlinx.coroutines.flow.Flow
 interface PanelsRepo {
     suspend fun addaNewPanel(panel: Panel)
     suspend fun deleteAPanel(id: Long)
-    suspend fun deleteConnectedFoldersOfPanel(panelId: Long)
+    suspend fun updateAPanelName(newName: String, panelId: Long)
     suspend fun addANewFolderInAPanel(panelFolder: PanelFolder)
     suspend fun deleteAFolderFromAPanel(panelId: Long, folderID: Long)
     fun getAllThePanels(): Flow<List<Panel>>

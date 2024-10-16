@@ -72,10 +72,10 @@ open class HomeScreenVM @Inject constructor(
     private val _panelData = MutableStateFlow(emptyList<Panel>())
     val shelfData = _panelData.asStateFlow()
 
-   /* private val _selectedShelfFoldersForSelectedShelf =
-        MutableStateFlow(emptyList<HomeScreenListTable>())*/
+    private val _selectedShelfFoldersForSelectedShelf =
+        MutableStateFlow(emptyList<HomeScreenListTable>())
 
- /*   val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
+    val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
 
     fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long, context: Context) {
         viewModelScope.launch {
@@ -89,7 +89,7 @@ open class HomeScreenVM @Inject constructor(
             context.dataStore,
             newValue = shelfID.toInt()
         )
-    }*/
+    }
 
     enum class HomeScreenType {
         SAVED_LINKS, IMP_LINKS, CUSTOM_LIST

@@ -15,8 +15,8 @@ class PanelsImpl @Inject constructor(private val localDatabase: LocalDatabase) :
         localDatabase.panelsDao().deleteAPanel(id)
     }
 
-    override suspend fun deleteConnectedFoldersOfPanel(panelId: Long) {
-        localDatabase.panelsDao().deleteConnectedFoldersOfPanel(panelId)
+    override suspend fun updateAPanelName(newName: String, panelId: Long) {
+        localDatabase.panelsDao().updateAPanelName(newName, panelId)
     }
 
     override suspend fun addANewFolderInAPanel(panelFolder: PanelFolder) {

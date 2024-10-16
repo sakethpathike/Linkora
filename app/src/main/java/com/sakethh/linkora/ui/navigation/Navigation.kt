@@ -11,20 +11,20 @@ import com.sakethh.linkora.ui.screens.collections.archive.ParentArchiveScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionScreen
 import com.sakethh.linkora.ui.screens.home.ParentHomeScreen
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayoutSettings
+import com.sakethh.linkora.ui.screens.panels.ShelfPanelsScreen
+import com.sakethh.linkora.ui.screens.panels.SpecificPanelScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.AcknowledgmentsSettingsScreen
-import com.sakethh.linkora.ui.screens.settings.specific.data.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.GeneralSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.PrivacySettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.ThemeSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.advanced.AdvancedSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.advanced.site_specific_user_agent.SiteSpecificUserAgentSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.data.DataSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.language.LanguageSettingsScreen
-import com.sakethh.linkora.ui.screens.shelf.ShelfPanelsScreen
-import com.sakethh.linkora.ui.screens.shelf.SpecificPanelScreen
 
 @Composable
 fun MainNavigation(

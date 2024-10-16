@@ -103,7 +103,6 @@ import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
-import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.ShelfBtmSheetVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
@@ -864,7 +863,7 @@ fun AddANewLinkDialogBox(
                                                     }
                                                 }
                                             )
-                                            if (subFolder.id != AddANewLinkDialogBox.subFoldersList.last().id) {
+                                            /*if (subFolder.id != AddANewLinkDialogBox.subFoldersList.last().id) {
                                                 Icon(
                                                     imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                                                     contentDescription = ""
@@ -874,7 +873,7 @@ fun AddANewLinkDialogBox(
                                                     style = MaterialTheme.typography.titleMedium,
                                                     fontSize = 16.sp
                                                 )
-                                            }
+                                            }*/
                                         }
                                     }
                                     HorizontalDivider(color = LocalContentColor.current.copy(0.25f))

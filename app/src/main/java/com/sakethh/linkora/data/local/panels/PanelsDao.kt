@@ -3,8 +3,8 @@ package com.sakethh.linkora.data.local.panels
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.Query
-import com.sakethh.linkora.data.local.PanelFolder
 import com.sakethh.linkora.data.local.Panel
+import com.sakethh.linkora.data.local.PanelFolder
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -16,6 +16,9 @@ interface PanelsDao {
     suspend fun deleteAPanel(id: Long) {
         deleteConnectedFoldersOfPanel(id)
     }
+
+    @Query("UPDATE panel SET panelName = :newName WHERE panelId = :panelId")
+    suspend fun updateAPanelName(newName: String, panelId: Long)
 
     @Query("DELETE FROM panel_folder WHERE connectedPanelId = :panelId")
     suspend fun deleteConnectedFoldersOfPanel(panelId: Long)
