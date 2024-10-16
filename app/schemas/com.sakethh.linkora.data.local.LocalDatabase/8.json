@@ -2,10 +2,10 @@
   "formatVersion": 1,
   "database": {
     "version": 8,
-    "identityHash": "e1083c3bbc5867522c569030334b20d6",
+    "identityHash": "3482c025d04ef6d154c67cde38da8168",
     "entities": [
       {
-        "tableName": "shelf",
+        "tableName": "panel",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`panelId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `panelName` TEXT NOT NULL)",
         "fields": [
           {
@@ -31,7 +31,7 @@
         "foreignKeys": []
       },
       {
-        "tableName": "panel",
+        "tableName": "panel_folder",
         "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folderId` INTEGER NOT NULL, `panelPosition` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `connectedPanelId` INTEGER NOT NULL)",
         "fields": [
           {
@@ -600,7 +600,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'e1083c3bbc5867522c569030334b20d6')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3482c025d04ef6d154c67cde38da8168')"
     ]
   }
 }

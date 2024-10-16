@@ -23,8 +23,6 @@ import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.shelf.ShelfImpl
 import com.sakethh.linkora.data.local.shelf.ShelfRepo
-import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsImpl
-import com.sakethh.linkora.data.local.shelf.shelfLists.ShelfListsRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentImpl
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
@@ -165,25 +163,39 @@ object AppModule {
     private val MIGRATION_7_8 = object : Migration(7, 8) {
         override fun migrate(db: SupportSQLiteDatabase) {
 
-            db.execSQL("CREATE TABLE IF NOT EXISTS `new_shelf` (`panelId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `panelName` TEXT NOT NULL)")
-
+            db.execSQL(
+                """
+            CREATE TABLE panel (
+                panelId INTEGER PRIMARY KEY AUTOINCREMENT,
+                panelName TEXT
+            )
+        """.trimIndent()
+            )
 
             db.execSQL(
                 """
-            INSERT INTO new_shelf (panelId, panelName)
+            INSERT INTO panel (panelId, panelName)
             SELECT id, shelfName FROM shelf
         """.trimIndent()
             )
 
             db.execSQL("DROP TABLE shelf")
-            db.execSQL("ALTER TABLE new_shelf RENAME TO shelf")
-
-            db.execSQL("CREATE TABLE IF NOT EXISTS `panel` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folderId` INTEGER NOT NULL, `panelPosition` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `connectedPanelId` INTEGER NOT NULL)")
-
 
             db.execSQL(
                 """
-            INSERT INTO panel (folderId, panelPosition, folderName, connectedPanelId)
+            CREATE TABLE panel_folder (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                folderId INTEGER NOT NULL,
+                panelPosition INTEGER,
+                folderName TEXT,
+                connectedPanelId INTEGER
+            )
+            """.trimIndent()
+            )
+
+            db.execSQL(
+                """
+            INSERT INTO panel_folder (folderId, panelPosition, folderName, connectedPanelId)
             SELECT id, position, folderName, parentShelfID FROM home_screen_list_table
             """.trimIndent()
             )
@@ -367,11 +379,6 @@ object AppModule {
         return SearchImpl(localDatabase)
     }
 
-    @Provides
-    @Singleton
-    fun provideShelfListsRepo(localDatabase: LocalDatabase): ShelfListsRepo {
-        return ShelfListsImpl(localDatabase)
-    }
 
     @Provides
     @Singleton

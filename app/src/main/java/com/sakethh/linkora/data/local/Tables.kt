@@ -111,8 +111,8 @@ data class RecentlyVisited(
 )
 
 @Serializable
-@Entity(tableName = "panel")
-data class Panel(
+@Entity(tableName = "panel_folder")
+data class PanelFolder(
     @PrimaryKey(autoGenerate = true)
     val id:Long = 0,
     val folderId: Long,
@@ -122,8 +122,8 @@ data class Panel(
 )
 
 @Serializable
-@Entity("shelf")
-data class Shelf(
+@Entity("panel")
+data class Panel(
     @PrimaryKey(autoGenerate = true) var panelId: Long = 0,
     val panelName: String
 )
