@@ -13,9 +13,7 @@ interface PanelsDao {
     suspend fun addaNewPanel(panel: Panel)
 
     @Query("DELETE FROM panel WHERE panelId = :id")
-    suspend fun deleteAPanel(id: Long) {
-        deleteConnectedFoldersOfPanel(id)
-    }
+    suspend fun deleteAPanel(id: Long)
 
     @Query("UPDATE panel SET panelName = :newName WHERE panelId = :panelId")
     suspend fun updateAPanelName(newName: String, panelId: Long)
@@ -29,6 +27,8 @@ interface PanelsDao {
     @Query("DELETE FROM panel_folder WHERE connectedPanelId = :panelId AND folderId = :folderID ")
     suspend fun deleteAFolderFromAPanel(panelId: Long, folderID: Long)
 
+    @Query("DELETE FROM panel_folder WHERE folderId = :folderID")
+    suspend fun deleteAFolderFromAllPanels(folderID: Long)
 
     @Query("SELECT * FROM panel")
     fun getAllThePanels(): Flow<List<Panel>>

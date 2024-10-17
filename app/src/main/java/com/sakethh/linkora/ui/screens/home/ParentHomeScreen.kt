@@ -2,11 +2,64 @@ package com.sakethh.linkora.ui.screens.home
 
 import android.app.Activity
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.ContentTransform
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.Sort
+import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.Layers
+import androidx.compose.material.icons.filled.Maximize
+import androidx.compose.material.icons.filled.Minimize
+import androidx.compose.material.icons.filled.ViewArray
+import androidx.compose.material.icons.outlined.Archive
+import androidx.compose.material.icons.outlined.DeleteForever
+import androidx.compose.material.icons.outlined.Layers
+import androidx.compose.material.icons.outlined.Tune
+import androidx.compose.material.icons.outlined.ViewArray
+import androidx.compose.material3.AlertDialogDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FabPosition
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.ScrollableTabRow
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults.primaryContentColor
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,13 +67,25 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.google.accompanist.pager.ExperimentalPagerApi
+import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.bottomSheets.sorting.SortingBottomSheetParam
@@ -32,6 +97,10 @@ import com.sakethh.linkora.ui.commonComposables.AddNewFolderDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
+import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
+import com.sakethh.linkora.ui.commonComposables.pulsateEffect
+import com.sakethh.linkora.ui.navigation.NavigationRoutes
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -45,6 +114,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlin.math.roundToInt
 
 @OptIn(
     ExperimentalPagerApi::class, ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class
@@ -82,19 +152,19 @@ fun ParentHomeScreen(
     val shouldScreenTransparencyDecreasedBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-  /*  val homeScreenList =
-        homeScreenVM.selectedShelfFoldersForSelectedShelf.collectAsStateWithLifecycle().value*/
+    val selectedPanelFolders =
+        homeScreenVM.selectedPanelFoldersForSelectedPanel.collectAsStateWithLifecycle().value
     val shouldDeleteDialogBoxAppear = rememberSaveable {
         mutableStateOf(false)
         mutableStateOf(false)
     }
     val cardOffSetX = remember { mutableStateOf(0f) }
     val cardOffSetY = remember { mutableStateOf(0f) }
-    val shelfData = homeScreenVM.shelfData.collectAsStateWithLifecycle()
+    val panelData = homeScreenVM.panelData.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val shelfLazyColumnState = rememberLazyListState()
     LinkoraTheme {
-        /*Scaffold(
+        Scaffold(
             floatingActionButton = {
                 if (!homeScreenVM.isSelectionModeEnabled.value) {
                     Column(
@@ -238,19 +308,19 @@ fun ParentHomeScreen(
                     item {
                         Spacer(modifier = Modifier.height(200.dp))
                     }
-                    items(shelfData.value) {
+                    items(panelData.value) {
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = it.id == SettingsPreference.lastSelectedPanelID.longValue,
+                            selected = it.panelId == SettingsPreference.lastSelectedPanelID.longValue,
                             onClick = {
                                 coroutineScope.launch {
                                     async {
                                         pagerState.animateScrollToPage(0)
                                     }.await()
                                     SettingsPreference.lastSelectedPanelID.longValue =
-                                        it.id
-                                    homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
-                                        it.id, context
+                                        it.panelId
+                                    homeScreenVM.changeSelectedPanelFolders(
+                                        it.panelId, context
                                     )
                                 }
                             },
@@ -258,7 +328,7 @@ fun ParentHomeScreen(
                                 Column {
                                     Icon(
                                         modifier = Modifier.rotate(180f),
-                                        imageVector = if (it.id == SettingsPreference.lastSelectedPanelID.longValue) {
+                                        imageVector = if (it.panelId == SettingsPreference.lastSelectedPanelID.longValue) {
                                             Icons.Filled.ViewArray
                                         } else {
                                             Icons.Outlined.ViewArray
@@ -272,7 +342,7 @@ fun ParentHomeScreen(
                                         .rotate(180f)
                                         .width(56.dp)
                                         .padding(bottom = 2.dp),
-                                    text = it.shelfName,
+                                    text = it.panelName,
                                     style = MaterialTheme.typography.titleSmall,
                                     maxLines = 1,
                                     textAlign = TextAlign.Center
@@ -286,7 +356,7 @@ fun ParentHomeScreen(
                             selected = SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong(),
                             onClick = {
                                 coroutineScope.launch {
-                                    if (shelfData.value.isEmpty() || homeScreenList.isEmpty()) {
+                                    if (panelData.value.isEmpty() || selectedPanelFolders.isEmpty()) {
                                         SettingsPreference.lastSelectedPanelID.longValue = -1
                                         SettingsPreference.changeSettingPreferenceValue(
                                             intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
@@ -372,14 +442,14 @@ fun ParentHomeScreen(
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
                             Column(modifier = Modifier.animateContentSize()) {
-                                if (homeScreenList.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
+                                if (selectedPanelFolders.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
                                     ScrollableTabRow(
                                         divider = {},
                                         modifier = Modifier
                                             .fillMaxWidth(),
                                         selectedTabIndex = pagerState.currentPage
                                     ) {
-                                        homeScreenList.forEachIndexed { index, homeScreenListsElement ->
+                                        selectedPanelFolders.forEachIndexed { index, homeScreenListsElement ->
                                             Tab(
                                                 selected = pagerState.currentPage == index,
                                                 onClick = {
@@ -432,13 +502,13 @@ fun ParentHomeScreen(
                             }
                         }
                     }
-                    if (homeScreenList.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
+                    if (selectedPanelFolders.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
                             },
                             modifier = Modifier.fillMaxWidth(),
-                            count = homeScreenList.size,
+                            count = selectedPanelFolders.size,
                             state = pagerState
                         ) {
                             ChildHomeScreen(
@@ -447,7 +517,7 @@ fun ParentHomeScreen(
                                 folderLinksData = when (SettingsPreference.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByAToZV10(homeScreenList[it].id)
+                                            .sortByAToZV10(selectedPanelFolders[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -455,7 +525,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.Z_TO_A.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByZToAV10(homeScreenList[it].id)
+                                            .sortByZToAV10(selectedPanelFolders[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -463,7 +533,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.NEW_TO_OLD.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByLatestToOldestV10(homeScreenList[it].id)
+                                            .sortByLatestToOldestV10(selectedPanelFolders[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -471,7 +541,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.OLD_TO_NEW.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByOldestToLatestV10(homeScreenList[it].id)
+                                            .sortByOldestToLatestV10(selectedPanelFolders[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -479,7 +549,7 @@ fun ParentHomeScreen(
 
                                     else -> {
                                         homeScreenVM.linksRepo
-                                            .getLinksOfThisFolderV10(homeScreenList[it].id)
+                                            .getLinksOfThisFolderV10(selectedPanelFolders[it].id)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -488,7 +558,7 @@ fun ParentHomeScreen(
                                 childFoldersData = when (SettingsPreference.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByAToZ(
-                                            homeScreenList[it].id
+                                            selectedPanelFolders[it].id
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -497,7 +567,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.Z_TO_A.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByZToA(
-                                            homeScreenList[it].id
+                                            selectedPanelFolders[it].id
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -506,7 +576,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.NEW_TO_OLD.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByLatestToOldest(
-                                            homeScreenList[it].id
+                                            selectedPanelFolders[it].id
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -515,7 +585,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.OLD_TO_NEW.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByOldestToLatest(
-                                            homeScreenList[it].id
+                                            selectedPanelFolders[it].id
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -524,7 +594,7 @@ fun ParentHomeScreen(
 
                                     else -> {
                                         homeScreenVM.foldersRepo.getChildFoldersOfThisParentID(
-                                            homeScreenList[it].id
+                                            selectedPanelFolders[it].id
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -645,7 +715,7 @@ fun ParentHomeScreen(
                                 }
                         })
            }
-        }*/
+        }
         SortingBottomSheetUI(
             SortingBottomSheetParam(
                 shouldBottomSheetVisible = shouldSortingBottomSheetAppear,
@@ -771,16 +841,16 @@ fun ParentHomeScreen(
     }
     LaunchedEffect(
         key1 = SettingsPreference.lastSelectedPanelID.longValue,
-        key2 = shelfData.value.size
+        key2 = panelData.value.size
     ) {
-        if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && shelfData.value.isNotEmpty()) {
-            shelfData.value.find {
-                it.id == SettingsPreference.lastSelectedPanelID.longValue
+        if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && panelData.value.isNotEmpty()) {
+            panelData.value.find {
+                it.panelId == SettingsPreference.lastSelectedPanelID.longValue
             }?.let {
-                shelfLazyColumnState.animateScrollToItem(shelfData.value.indexOf(it))
+                shelfLazyColumnState.animateScrollToItem(panelData.value.indexOf(it))
             }
 
-            homeScreenVM.changeSelectedShelfFoldersDataForSelectedShelf(
+            homeScreenVM.changeSelectedPanelFolders(
                 (SettingsPreference.readSettingPreferenceValue(
                     intPreferencesKey(
                         SettingsPreferences.LAST_SELECTED_PANEL_ID.name

@@ -5,12 +5,13 @@ import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.ImportantLinks
-import com.sakethh.linkora.data.local.Panel
+import com.sakethh.linkora.data.local.PanelFolder
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.panels.PanelsRepo
@@ -27,13 +28,18 @@ import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Calendar
@@ -45,11 +51,11 @@ open class HomeScreenVM @Inject constructor(
     val foldersRepo: FoldersRepo,
     savedLinksSortingRepo: SavedLinksSortingRepo,
     importantLinksSortingRepo: ImportantLinksSortingRepo,
-    val folderLinksSortingRepo: RegularFolderLinksSortingRepo,
+    folderLinksSortingRepo: RegularFolderLinksSortingRepo,
     archiveFolderLinksSortingRepo: ArchivedFolderLinksSortingRepo,
-    val subFoldersSortingRepo: SubFoldersSortingRepo,
+    subFoldersSortingRepo: SubFoldersSortingRepo,
     regularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
-    val parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
+    parentRegularFoldersSortingRepo: ParentRegularFoldersSortingRepo,
     val panelsRepo: PanelsRepo,
     val customWebTab: CustomWebTab,
 ) : SpecificCollectionsScreenVM(
@@ -69,25 +75,27 @@ open class HomeScreenVM @Inject constructor(
 
     val isSelectionModeEnabled = mutableStateOf(false)
 
-    private val _panelData = MutableStateFlow(emptyList<Panel>())
-    val shelfData = _panelData.asStateFlow()
+    val panelData = panelsRepo.getAllThePanels().stateIn(
+        viewModelScope, SharingStarted.WhileSubscribed(5000),
+        emptyList()
+    )
 
-    private val _selectedShelfFoldersForSelectedShelf =
-        MutableStateFlow(emptyList<HomeScreenListTable>())
+    private val _selectedPanelFoldersForSelectedPanel =
+        MutableStateFlow(emptyList<PanelFolder>())
 
-    val selectedShelfFoldersForSelectedShelf = _selectedShelfFoldersForSelectedShelf.asStateFlow()
+    val selectedPanelFoldersForSelectedPanel = _selectedPanelFoldersForSelectedPanel.asStateFlow()
 
-    fun changeSelectedShelfFoldersDataForSelectedShelf(shelfID: Long, context: Context) {
+    fun changeSelectedPanelFolders(panelId: Long, context: Context) {
         viewModelScope.launch {
-            shelfListsRepo.getAllFoldersOfThisShelf(shelfID)
+            panelsRepo.getAllTheFoldersFromAPanel(panelId)
                 .collectLatest {
-                    _selectedShelfFoldersForSelectedShelf.emit(it)
+                    _selectedPanelFoldersForSelectedPanel.emit(it)
                 }
         }
         SettingsPreference.changeSettingPreferenceValue(
             intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
             context.dataStore,
-            newValue = shelfID.toInt()
+            newValue = panelId.toInt()
         )
     }
 

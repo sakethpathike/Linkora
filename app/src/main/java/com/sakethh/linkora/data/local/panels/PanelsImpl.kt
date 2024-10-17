@@ -13,6 +13,7 @@ class PanelsImpl @Inject constructor(private val localDatabase: LocalDatabase) :
 
     override suspend fun deleteAPanel(id: Long) {
         localDatabase.panelsDao().deleteAPanel(id)
+        localDatabase.panelsDao().deleteConnectedFoldersOfPanel(id)
     }
 
     override suspend fun updateAPanelName(newName: String, panelId: Long) {
@@ -21,6 +22,10 @@ class PanelsImpl @Inject constructor(private val localDatabase: LocalDatabase) :
 
     override suspend fun addANewFolderInAPanel(panelFolder: PanelFolder) {
         localDatabase.panelsDao().addANewFolderInAPanel(panelFolder)
+    }
+
+    override suspend fun deleteAFolderFromAllPanels(folderID: Long) {
+        localDatabase.panelsDao().deleteAFolderFromAllPanels(folderID)
     }
 
     override suspend fun deleteAFolderFromAPanel(panelId: Long, folderID: Long) {

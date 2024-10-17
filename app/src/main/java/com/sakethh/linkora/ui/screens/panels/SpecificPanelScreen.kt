@@ -50,7 +50,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings.foldersListedInThisPanel
 import com.sakethh.linkora.LocalizedStrings.noFoldersFoundInThisPanel
-import com.sakethh.linkora.LocalizedStrings.shelf
 import com.sakethh.linkora.LocalizedStrings.youCanAddTheFollowingFoldersToThisPanel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.NavigationRoutes
@@ -105,7 +104,7 @@ fun SpecificPanelScreen(navController: NavController) {
                         .padding(15.dp)
                 ) {
                     Text(
-                        text = shelf.value,
+                        text = "Panels",
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 16.sp,
                         modifier = Modifier.clickable {
