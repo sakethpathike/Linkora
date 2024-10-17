@@ -174,10 +174,9 @@ fun SpecificPanelScreen(navController: NavController) {
                     )
                 }
             }
-            items(rootFolders.value) { rootFolderElement ->
-                if (!foldersOfTheSelectedPanel.value.distinct()
-                        .any { it.id == rootFolderElement.id }
-                ) {
+            items(rootFolders.value.filterNot {
+                foldersOfTheSelectedPanel.value.map { it.folderId }.contains(it.id)
+            }) { rootFolderElement ->
                     FolderComponentInSpecificPanelScreen(
                         folderName = rootFolderElement.folderName,
                         {},
@@ -196,7 +195,6 @@ fun SpecificPanelScreen(navController: NavController) {
                         shouldMoveUpIconVisible = false,
                         shouldMoveDownIconVisible = false
                     )
-                }
             }
 
             item {

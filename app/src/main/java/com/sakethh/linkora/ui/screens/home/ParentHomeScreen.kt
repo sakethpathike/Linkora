@@ -162,7 +162,7 @@ fun ParentHomeScreen(
     val cardOffSetY = remember { mutableStateOf(0f) }
     val panelData = homeScreenVM.panelData.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val shelfLazyColumnState = rememberLazyListState()
+    val panelsLazyColumnState = rememberLazyListState()
     LinkoraTheme {
         Scaffold(
             floatingActionButton = {
@@ -299,7 +299,7 @@ fun ParentHomeScreen(
             }) {
             Row(modifier = Modifier.fillMaxSize()) {
                 LazyColumn(
-                    state = shelfLazyColumnState,
+                    state = panelsLazyColumnState,
                     modifier = Modifier
                         .fillMaxHeight()
                         .animateContentSize()
@@ -517,7 +517,7 @@ fun ParentHomeScreen(
                                 folderLinksData = when (SettingsPreference.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByAToZV10(selectedPanelFolders[it].id)
+                                            .sortByAToZV10(selectedPanelFolders[it].folderId)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -525,7 +525,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.Z_TO_A.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByZToAV10(selectedPanelFolders[it].id)
+                                            .sortByZToAV10(selectedPanelFolders[it].folderId)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -533,7 +533,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.NEW_TO_OLD.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByLatestToOldestV10(selectedPanelFolders[it].id)
+                                            .sortByLatestToOldestV10(selectedPanelFolders[it].folderId)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -541,7 +541,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.OLD_TO_NEW.name -> {
                                         homeScreenVM.folderLinksSortingRepo
-                                            .sortByOldestToLatestV10(selectedPanelFolders[it].id)
+                                            .sortByOldestToLatestV10(selectedPanelFolders[it].folderId)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -549,7 +549,7 @@ fun ParentHomeScreen(
 
                                     else -> {
                                         homeScreenVM.linksRepo
-                                            .getLinksOfThisFolderV10(selectedPanelFolders[it].id)
+                                            .getLinksOfThisFolderV10(selectedPanelFolders[it].folderId)
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
                                             ).value
@@ -558,7 +558,7 @@ fun ParentHomeScreen(
                                 childFoldersData = when (SettingsPreference.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByAToZ(
-                                            selectedPanelFolders[it].id
+                                            selectedPanelFolders[it].folderId
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -567,7 +567,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.Z_TO_A.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByZToA(
-                                            selectedPanelFolders[it].id
+                                            selectedPanelFolders[it].folderId
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -576,7 +576,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.NEW_TO_OLD.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByLatestToOldest(
-                                            selectedPanelFolders[it].id
+                                            selectedPanelFolders[it].folderId
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -585,7 +585,7 @@ fun ParentHomeScreen(
 
                                     SortingPreferences.OLD_TO_NEW.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByOldestToLatest(
-                                            selectedPanelFolders[it].id
+                                            selectedPanelFolders[it].folderId
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -594,7 +594,7 @@ fun ParentHomeScreen(
 
                                     else -> {
                                         homeScreenVM.foldersRepo.getChildFoldersOfThisParentID(
-                                            selectedPanelFolders[it].id
+                                            selectedPanelFolders[it].folderId
                                         )
                                             .collectAsStateWithLifecycle(
                                                 initialValue = emptyList()
@@ -847,7 +847,7 @@ fun ParentHomeScreen(
             panelData.value.find {
                 it.panelId == SettingsPreference.lastSelectedPanelID.longValue
             }?.let {
-                shelfLazyColumnState.animateScrollToItem(panelData.value.indexOf(it))
+                panelsLazyColumnState.animateScrollToItem(panelData.value.indexOf(it))
             }
 
             homeScreenVM.changeSelectedPanelFolders(
