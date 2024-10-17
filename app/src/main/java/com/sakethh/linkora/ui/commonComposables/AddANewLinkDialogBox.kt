@@ -507,40 +507,51 @@ fun AddANewLinkDialogBox(
                                 }
                             }
                         }
-                        item {
-                            Button(
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.secondary,
-                                    contentColor = MaterialTheme.colorScheme.onSecondary
-                                ),
-                                modifier = Modifier
-                                    .padding(
-                                        end = 20.dp,
-                                        top = if (isDropDownMenuIconClicked.value) 20.dp else 5.dp,
-                                        start = 20.dp
-                                    )
-                                    .fillMaxWidth()
-                                    .pulsateEffect(),
-                                onClick = {
-                                    addTheFolderInRoot.value = true
-                                    isCreateANewFolderIconClicked.value = true
-                                }) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.CreateNewFolder, null)
-                                    Spacer(Modifier.width(5.dp))
-                                    Text(
-                                        text = LocalizedStrings.createANewFolder.value,
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontSize = 16.sp
+                        if (isDataExtractingForTheLink.not()) {
+                            item {
+                                Button(
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = MaterialTheme.colorScheme.secondary,
+                                        contentColor = MaterialTheme.colorScheme.onSecondary
+                                    ),
+                                    modifier = Modifier
+                                        .padding(
+                                            end = 20.dp,
+                                            top = if (isDropDownMenuIconClicked.value) 20.dp else 5.dp,
+                                            start = 20.dp
+                                        )
+                                        .fillMaxWidth()
+                                        .pulsateEffect(),
+                                    onClick = {
+                                        addTheFolderInRoot.value = true
+                                        isCreateANewFolderIconClicked.value = true
+                                    }) {
+                                    Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Icon(Icons.Default.CreateNewFolder, null)
+                                        Spacer(Modifier.width(5.dp))
+                                        Text(
+                                            text = LocalizedStrings.createANewFolder.value,
+                                            style = MaterialTheme.typography.titleSmall,
+                                            fontSize = 16.sp
+                                        )
+                                    }
+                                }
+
+                                if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.padding(20.dp),
+                                        thickness = 1.dp,
+                                        color = MaterialTheme.colorScheme.outline.copy(0.25f)
                                     )
                                 }
                             }
+
                         }
                         item {
                             if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
                                 Row(
                                     modifier = Modifier
-                                        .padding(top = 10.dp)
+                                        .padding(top = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp)
                                         .fillMaxWidth()
                                         .clickable {
                                             if (!isDataExtractingForTheLink) {
@@ -573,7 +584,9 @@ fun AddANewLinkDialogBox(
                                     ),
                                     modifier = Modifier
                                         .padding(
-                                            end = 20.dp, top = 10.dp, start = 20.dp
+                                            end = 20.dp,
+                                            top = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp,
+                                            start = 20.dp
                                         )
                                         .fillMaxWidth()
                                         .pulsateEffect(),
