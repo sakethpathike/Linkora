@@ -8,6 +8,8 @@ import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.LocalDatabase
+import com.sakethh.linkora.data.local.Panel
+import com.sakethh.linkora.data.local.PanelFolder
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
@@ -53,6 +55,14 @@ class ImportImpl @Inject constructor(
 
     private suspend fun addAllArchivedFolders(foldersData: List<ArchivedFolders>) {
         return localDatabase.importDao().addAllArchivedFolders(foldersData)
+    }
+
+    private suspend fun addAllPanels(panelsData: List<Panel>) {
+        return localDatabase.importDao().addAllPanels(panelsData)
+    }
+
+    private suspend fun addAllPanelFolders(panelFoldersData: List<PanelFolder>) {
+        return localDatabase.importDao().addAllPanelFolders(panelFoldersData)
     }
 
     private suspend fun getLatestLinksTableID(): Long {
@@ -177,6 +187,11 @@ class ImportImpl @Inject constructor(
                                 it.parentFolderID = getLatestFoldersTableID
                             }
 
+                            jsonDeserialized.panelFolders.filter { it.folderId == foldersTable.id }
+                                .forEach {
+                                    it.folderId = getLatestFoldersTableID
+                                }
+
                             foldersTable.id = getLatestFoldersTableID
                             ++ImportRequestResult.currentIterationOfRegularFolders.intValue
                             linkoraLog("Regular Folders : " + ImportRequestResult.currentIterationOfRegularFolders.intValue)
@@ -208,9 +223,6 @@ class ImportImpl @Inject constructor(
                     }, async {
                         jsonDeserialized.panels.forEach { originalPanel ->
                             ++getLatestPanelsTableID
-                            originalPanel.panelId = getLatestPanelsTableID
-                            ++ImportRequestResult.currentIterationOfPanels.intValue
-                            linkoraLog("Panels : " + ImportRequestResult.currentIterationOfPanels.intValue)
 
                             jsonDeserialized.panelFolders.filter { it.connectedPanelId == originalPanel.panelId }
                                 .forEach {
@@ -219,6 +231,14 @@ class ImportImpl @Inject constructor(
                                     ++ImportRequestResult.currentIterationOfPanelFolders.intValue
                                     linkoraLog("Panel Folders : " + ImportRequestResult.currentIterationOfPanelFolders.intValue)
                                 }
+
+                            originalPanel.panelId = getLatestPanelsTableID
+
+                            linkoraLog("getLatestPanelsTableID  $getLatestPanelsTableID")
+
+                            ++ImportRequestResult.currentIterationOfPanels.intValue
+                            linkoraLog("Panels : " + ImportRequestResult.currentIterationOfPanels.intValue)
+
                         }
                     }
                 )
@@ -239,6 +259,10 @@ class ImportImpl @Inject constructor(
                         addAllImportantLinks(jsonDeserialized.importantLinksTable)
                     }, async {
                         addAllLinks(jsonDeserialized.linksTable)
+                    }, async {
+                        addAllPanels(jsonDeserialized.panels)
+                    }, async {
+                        addAllPanelFolders(jsonDeserialized.panelFolders)
                     }
                 )
             }
@@ -257,7 +281,6 @@ class ImportImpl @Inject constructor(
                 }
             }
 
-            if (jsonDeserialized.schemaVersion <= 9) "Imported and Migrated Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}" else "Imported Data Successfully; Schema is based on v${jsonDeserialized.schemaVersion}"
             ImportRequestResult.Success
         } catch (e: IllegalArgumentException) {
             e.printStackTrace()

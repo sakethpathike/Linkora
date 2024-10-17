@@ -36,11 +36,11 @@ class PanelsImpl @Inject constructor(private val localDatabase: LocalDatabase) :
         return localDatabase.panelsDao().getAllThePanels()
     }
 
-    override fun getAllThePanelsAsAList(): List<Panel> {
+    override suspend fun getAllThePanelsAsAList(): List<Panel> {
         return localDatabase.panelsDao().getAllThePanelsAsAList()
     }
 
-    override fun getAllThePanelFoldersAsAList(): List<PanelFolder> {
+    override suspend fun getAllThePanelFoldersAsAList(): List<PanelFolder> {
         return localDatabase.panelsDao().getAllThePanelFoldersAsAList()
     }
 

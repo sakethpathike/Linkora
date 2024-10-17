@@ -605,7 +605,7 @@ open class SettingsScreenVM @Inject constructor(
                                 .isFoldersTableEmpty() && linksRepo
                                 .isArchivedLinksTableEmpty()
                         ) {
-                            activityResultLauncher.launch("text/*")
+                            activityResultLauncher.launch("application/json")
                         } else {
                             importModalBtmSheetState.value = true
                         }

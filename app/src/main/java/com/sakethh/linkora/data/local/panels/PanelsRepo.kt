@@ -12,7 +12,7 @@ interface PanelsRepo {
     suspend fun deleteAFolderFromAllPanels(folderID: Long)
     suspend fun deleteAFolderFromAPanel(panelId: Long, folderID: Long)
     fun getAllThePanels(): Flow<List<Panel>>
-    fun getAllThePanelsAsAList(): List<Panel>
-    fun getAllThePanelFoldersAsAList(): List<PanelFolder>
+    suspend fun getAllThePanelsAsAList(): List<Panel>
+    suspend fun getAllThePanelFoldersAsAList(): List<PanelFolder>
     fun getAllTheFoldersFromAPanel(panelId: Long): Flow<List<PanelFolder>>
 }

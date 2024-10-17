@@ -115,7 +115,7 @@ data class RecentlyVisited(
 data class PanelFolder(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0,
-    val folderId: Long,
+    var folderId: Long,
     var panelPosition: Long,
     val folderName: String,
     var connectedPanelId: Long

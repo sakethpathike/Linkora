@@ -280,11 +280,13 @@ object AppModule {
     fun provideExportRepo(
         localDatabase: LocalDatabase,
         ktorClient: HttpClient,
-        siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo
+        siteSpecificUserAgentRepo: SiteSpecificUserAgentRepo,
+        panelsRepo: PanelsRepo
     ): ExportRepo {
         return ExportImpl(
             provideLinksRepo(localDatabase, ktorClient, siteSpecificUserAgentRepo),
-            provideFoldersRepo(localDatabase)
+            provideFoldersRepo(localDatabase),
+            panelsRepo
         )
     }
 
