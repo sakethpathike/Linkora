@@ -19,11 +19,15 @@ sealed class ImportRequestResult {
         val totalLinksFromHistoryLinksTable = mutableIntStateOf(0)
         val totalRegularFolders = mutableIntStateOf(0)
         val totalArchivedFolders = mutableIntStateOf(0)
+        val totalPanels = mutableIntStateOf(0)
+        val totalPanelFolders = mutableIntStateOf(0)
 
         val currentIterationOfLinksFromLinksTable = mutableIntStateOf(0)
         val currentIterationOfLinksFromArchivedLinksTable = mutableIntStateOf(0)
         val currentIterationOfLinksFromImpLinksTable = mutableIntStateOf(0)
         val currentIterationOfLinksFromHistoryLinksTable = mutableIntStateOf(0)
+        val currentIterationOfPanels = mutableIntStateOf(0)
+        val currentIterationOfPanelFolders = mutableIntStateOf(0)
         val currentIterationOfRegularFolders = mutableIntStateOf(0)
         val currentIterationOfArchivedFolders = mutableIntStateOf(0)
 

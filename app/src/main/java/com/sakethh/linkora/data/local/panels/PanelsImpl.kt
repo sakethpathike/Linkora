@@ -36,6 +36,14 @@ class PanelsImpl @Inject constructor(private val localDatabase: LocalDatabase) :
         return localDatabase.panelsDao().getAllThePanels()
     }
 
+    override fun getAllThePanelsAsAList(): List<Panel> {
+        return localDatabase.panelsDao().getAllThePanelsAsAList()
+    }
+
+    override fun getAllThePanelFoldersAsAList(): List<PanelFolder> {
+        return localDatabase.panelsDao().getAllThePanelFoldersAsAList()
+    }
+
     override fun getAllTheFoldersFromAPanel(panelId: Long): Flow<List<PanelFolder>> {
         return localDatabase.panelsDao().getAllTheFoldersFromAPanel(panelId)
     }

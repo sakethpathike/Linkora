@@ -114,11 +114,11 @@ data class RecentlyVisited(
 @Entity(tableName = "panel_folder")
 data class PanelFolder(
     @PrimaryKey(autoGenerate = true)
-    val id:Long = 0,
+    var id: Long = 0,
     val folderId: Long,
     var panelPosition: Long,
     val folderName: String,
-    val connectedPanelId: Long
+    var connectedPanelId: Long
 )
 
 @Serializable

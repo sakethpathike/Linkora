@@ -4,6 +4,7 @@ import android.os.Build
 import android.os.Environment
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.models.ExportSchema
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class ExportImpl @Inject constructor(
     private val linksRepo: LinksRepo,
-    private val foldersRepo: FoldersRepo
+    private val foldersRepo: FoldersRepo,
+    private val panelsRepo: PanelsRepo
 ) : ExportRepo {
     override suspend fun exportToAFile() = coroutineScope {
         ExportRequestInfo.updateState(ExportRequestState.GATHERING_DATA)
@@ -34,6 +36,14 @@ class ExportImpl @Inject constructor(
         }
         val historyLinksData = async {
             linksRepo.getAllRecentlyVisitedLinks()
+        }
+
+        val panelsData = async {
+            panelsRepo.getAllThePanelsAsAList()
+        }
+
+        val panelFoldersData = async {
+            panelsRepo.getAllThePanelFoldersAsAList()
         }
 
         val defaultFolder = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) {
@@ -55,13 +65,15 @@ class ExportImpl @Inject constructor(
         val file = File(
             defaultFolder, "LinkoraExport-${
                 DateFormat.getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
-            }.txt"
+            }.json"
         )
-        val exportAllLinks = linksTableData.await()
-        val exportImpLinks = impLinksTableData.await()
-        val exportAllFolders = foldersData.await()
-        val exportArchiveLinks = archiveLinksData.await()
-        val exportHistoryLinks = historyLinksData.await()
+        val linksTable = linksTableData.await()
+        val importantLinksTable = impLinksTableData.await()
+        val foldersTable = foldersData.await()
+        val archivedLinksTable = archiveLinksData.await()
+        val historyLinksTable = historyLinksData.await()
+        val exportPanels = panelsData.await()
+        val exportPanelFolders = panelFoldersData.await()
 
         ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
 
@@ -69,12 +81,14 @@ class ExportImpl @Inject constructor(
             Json.encodeToString(
                 ExportSchema(
                     schemaVersion = 11,
-                    linksTable = exportAllLinks,
-                    importantLinksTable = exportImpLinks,
-                    foldersTable = exportAllFolders,
-                    archivedLinksTable = exportArchiveLinks,
+                    linksTable = linksTable,
+                    importantLinksTable = importantLinksTable,
+                    foldersTable = foldersTable,
+                    archivedLinksTable = archivedLinksTable,
                     archivedFoldersTable = emptyList(),
-                    historyLinksTable = exportHistoryLinks,
+                    historyLinksTable = historyLinksTable,
+                    panels = exportPanels,
+                    panelFolders = exportPanelFolders,
                 )
             )
         )

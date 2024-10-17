@@ -79,6 +79,14 @@ class ImportImpl @Inject constructor(
         return localDatabase.importDao().getLatestRecentlyVisitedTableID()
     }
 
+    private suspend fun getLatestPanelTableID(): Long {
+        return localDatabase.importDao().getLatestPanelTableID()
+    }
+
+    private suspend fun getLatestPanelFoldersTableID(): Long {
+        return localDatabase.importDao().getLatestPanelFoldersTableID()
+    }
+
     private var file: Path? = null
 
     override suspend fun importToLocalDB(
@@ -113,6 +121,10 @@ class ImportImpl @Inject constructor(
             ImportRequestResult.totalRegularFolders.intValue = jsonDeserialized.foldersTable.size
             ImportRequestResult.totalArchivedFolders.intValue =
                 jsonDeserialized.archivedFoldersTable.size
+            ImportRequestResult.totalPanels.intValue =
+                jsonDeserialized.panels.size
+            ImportRequestResult.totalPanelFolders.intValue =
+                jsonDeserialized.panelFolders.size
 
             linkoraLog("Total in LinksTable : " + ImportRequestResult.totalLinksFromLinksTable.intValue.toString())
             linkoraLog("Total in ArchivedLinks : " +ImportRequestResult.totalLinksFromArchivedLinksTable.intValue.toString())
@@ -120,6 +132,8 @@ class ImportImpl @Inject constructor(
             linkoraLog("Total in HistoryLinks : " +ImportRequestResult.totalLinksFromHistoryLinksTable.intValue.toString())
             linkoraLog("Total in RegularFolders : " +ImportRequestResult.totalRegularFolders.intValue.toString())
             linkoraLog("Total in ArchivedFolders : " +ImportRequestResult.totalArchivedFolders.intValue.toString())
+            linkoraLog("Total in ArchivedFolders : " + ImportRequestResult.totalPanels.intValue.toString())
+            linkoraLog("Total in ArchivedFolders : " + ImportRequestResult.totalPanelFolders.intValue.toString())
 
             var getLatestLinksTableID = getLatestLinksTableID()
             var getLatestFoldersTableID = getLatestFoldersTableID()
@@ -130,6 +144,12 @@ class ImportImpl @Inject constructor(
             var getLatestImpLinksTableID = getLatestImpLinksTableID()
             var getLatestRecentlyVisitedTableID =
                 getLatestRecentlyVisitedTableID()
+
+            var getLatestPanelsTableID =
+                getLatestPanelTableID()
+
+            var getLatestPanelFoldersTableID =
+                getLatestPanelFoldersTableID()
 
 
             withContext(Dispatchers.Default) {
@@ -184,6 +204,21 @@ class ImportImpl @Inject constructor(
                             it.id = ++getLatestRecentlyVisitedTableID
                             ++ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue
                             linkoraLog("History Links : " + ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue)
+                        }
+                    }, async {
+                        jsonDeserialized.panels.forEach { originalPanel ->
+                            ++getLatestPanelsTableID
+                            originalPanel.panelId = getLatestPanelsTableID
+                            ++ImportRequestResult.currentIterationOfPanels.intValue
+                            linkoraLog("Panels : " + ImportRequestResult.currentIterationOfPanels.intValue)
+
+                            jsonDeserialized.panelFolders.filter { it.connectedPanelId == originalPanel.panelId }
+                                .forEach {
+                                    it.connectedPanelId = getLatestPanelsTableID
+                                    it.id = ++getLatestPanelFoldersTableID
+                                    ++ImportRequestResult.currentIterationOfPanelFolders.intValue
+                                    linkoraLog("Panel Folders : " + ImportRequestResult.currentIterationOfPanelFolders.intValue)
+                                }
                         }
                     }
                 )

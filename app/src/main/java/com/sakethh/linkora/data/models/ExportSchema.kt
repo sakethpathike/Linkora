@@ -5,6 +5,8 @@ import com.sakethh.linkora.data.local.ArchivedLinks
 import com.sakethh.linkora.data.local.FoldersTable
 import com.sakethh.linkora.data.local.ImportantLinks
 import com.sakethh.linkora.data.local.LinksTable
+import com.sakethh.linkora.data.local.Panel
+import com.sakethh.linkora.data.local.PanelFolder
 import com.sakethh.linkora.data.local.RecentlyVisited
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
@@ -27,4 +29,6 @@ data class ExportSchema(
     val archivedFoldersTable: List<ArchivedFolders>,
     @SerialName("historyLinks")
     val historyLinksTable: List<RecentlyVisited>,
+    val panels: List<Panel>,
+    val panelFolders: List<PanelFolder>,
 )
