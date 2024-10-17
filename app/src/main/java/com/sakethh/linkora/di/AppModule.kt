@@ -17,12 +17,12 @@ import com.sakethh.linkora.data.local.localization.language.LanguageImpl
 import com.sakethh.linkora.data.local.localization.language.LanguageRepo
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsImpl
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
+import com.sakethh.linkora.data.local.panels.PanelsImpl
+import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.restore.ImportImpl
 import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.local.search.SearchImpl
 import com.sakethh.linkora.data.local.search.SearchRepo
-import com.sakethh.linkora.data.local.panels.PanelsImpl
-import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentImpl
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
 import com.sakethh.linkora.data.local.sorting.folders.archive.ParentArchivedFoldersSortingImpl
@@ -163,14 +163,7 @@ object AppModule {
     private val MIGRATION_7_8 = object : Migration(7, 8) {
         override fun migrate(db: SupportSQLiteDatabase) {
 
-            db.execSQL(
-                """
-            CREATE TABLE panel (
-                panelId INTEGER PRIMARY KEY AUTOINCREMENT,
-                panelName TEXT
-            )
-        """.trimIndent()
-            )
+            db.execSQL("CREATE TABLE IF NOT EXISTS `panel` (`panelId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `panelName` TEXT NOT NULL)")
 
             db.execSQL(
                 """
@@ -181,17 +174,8 @@ object AppModule {
 
             db.execSQL("DROP TABLE shelf")
 
-            db.execSQL(
-                """
-            CREATE TABLE panel_folder (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                folderId INTEGER NOT NULL,
-                panelPosition INTEGER,
-                folderName TEXT,
-                connectedPanelId INTEGER
-            )
-            """.trimIndent()
-            )
+            db.execSQL("CREATE TABLE IF NOT EXISTS `panel_folder` (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `folderId` INTEGER NOT NULL, `panelPosition` INTEGER NOT NULL, `folderName` TEXT NOT NULL, `connectedPanelId` INTEGER NOT NULL)")
+
 
             db.execSQL(
                 """

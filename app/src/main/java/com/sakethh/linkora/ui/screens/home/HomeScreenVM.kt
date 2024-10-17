@@ -192,13 +192,6 @@ open class HomeScreenVM @Inject constructor(
                 }
             }
         }
-
-
-        viewModelScope.launch {
-          /*  shelfRepo.getAllShelfItems().collectLatest {
-                _shelfData.emit(it)
-            }*/
-        }
     }
 
     fun onDeleteClick(
