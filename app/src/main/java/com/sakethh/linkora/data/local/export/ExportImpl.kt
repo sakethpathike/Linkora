@@ -6,6 +6,7 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.models.ExportSchema
+import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.encodeToString
@@ -20,7 +21,7 @@ class ExportImpl @Inject constructor(
     private val foldersRepo: FoldersRepo,
     private val panelsRepo: PanelsRepo
 ) : ExportRepo {
-    override suspend fun exportToAFile() = coroutineScope {
+    override suspend fun exportToAFile(exportInHTMLFormat: Boolean) = coroutineScope {
         ExportRequestInfo.updateState(ExportRequestState.GATHERING_DATA)
         val linksTableData = async {
             linksRepo.getAllFromLinksTable()
@@ -65,7 +66,7 @@ class ExportImpl @Inject constructor(
         val file = File(
             defaultFolder, "LinkoraExport-${
                 DateFormat.getDateTimeInstance().format(Date()).replace(":", "").replace(" ", "")
-            }.json"
+            }.${if (exportInHTMLFormat) "html" else "json"}"
         )
         val linksTable = linksTableData.await()
         val importantLinksTable = impLinksTableData.await()
@@ -77,22 +78,113 @@ class ExportImpl @Inject constructor(
 
         ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
 
-        file.writeText(
-            Json.encodeToString(
-                ExportSchema(
-                    schemaVersion = 11,
-                    linksTable = linksTable,
-                    importantLinksTable = importantLinksTable,
-                    foldersTable = foldersTable,
-                    archivedLinksTable = archivedLinksTable,
-                    archivedFoldersTable = emptyList(),
-                    historyLinksTable = historyLinksTable,
-                    panels = exportPanels,
-                    panelFolders = exportPanelFolders,
+        if (!exportInHTMLFormat) {
+            file.writeText(
+                Json.encodeToString(
+                    ExportSchema(
+                        schemaVersion = 11,
+                        linksTable = linksTable,
+                        importantLinksTable = importantLinksTable,
+                        foldersTable = foldersTable,
+                        archivedLinksTable = archivedLinksTable,
+                        archivedFoldersTable = emptyList(),
+                        historyLinksTable = historyLinksTable,
+                        panels = exportPanels,
+                        panelFolders = exportPanelFolders,
+                    )
                 )
             )
-        )
+        } else {
+            var htmlFileRawText = ""
+
+            // Saved Links :
+            var savedLinksSection = dtH3("Saved Links")
+
+            var savedLinks = ""
+            linksTable.filter { it.isLinkedWithSavedLinks }.forEach { savedLink ->
+                savedLinks += dtA(linkTitle = savedLink.title, link = savedLink.webURL)
+            }
+
+            savedLinksSection += dlP(savedLinks)
+            htmlFileRawText += savedLinksSection
+
+
+            // Important Links :
+            var impLinksSection = dtH3("Important Links")
+
+            var impLinks = ""
+            importantLinksTable.forEach { impLink ->
+                impLinks += dtA(linkTitle = impLink.title, link = impLink.webURL)
+            }
+
+            impLinksSection += dlP(impLinks)
+            htmlFileRawText += impLinksSection
+
+
+            // All Folders :
+            foldersSectionInHtml(parentFolderId = null)
+            htmlFileRawText += foldersSection
+
+
+            // History Links :
+            var historyLinksSection = dtH3("History Links")
+
+            var historyLinks = ""
+            historyLinksTable.forEach { historyLink ->
+                historyLinks += dtA(linkTitle = historyLink.title, link = historyLink.webURL)
+            }
+
+            historyLinksSection += dlP(historyLinks)
+            htmlFileRawText += historyLinksSection
+
+
+            // Archived Links :
+            var archivedLinksSection = dtH3("Archived Links")
+
+            var archivedLinks = ""
+            archivedLinksTable.forEach { archivedLink ->
+                archivedLinks += dtA(linkTitle = archivedLink.title, link = archivedLink.webURL)
+            }
+
+            archivedLinksSection += dlP(archivedLinks)
+            htmlFileRawText += archivedLinksSection
+
+            // Result :
+            linkoraLog(dlP(htmlFileRawText))
+
+            //file.writeText(htmlFileRawText)
+        }
 
         ExportRequestInfo.updateState(ExportRequestState.IDLE)
+    }
+
+    private fun dlP(children: String): String {
+        return "<DL><p>\n$children</DL><p>\n"
+    }
+
+    private fun dtH3(folderName: String): String {
+        return "<DT><H3>$folderName</H3>\n"
+    }
+
+    private fun dtA(linkTitle: String, link: String): String {
+        return "<DT><A HREF=\"$link\">$linkTitle</A>\n"
+    }
+
+    private var foldersSection = dtH3("Folders")
+
+    private suspend fun foldersSectionInHtml(
+        parentFolderId: Long?
+    ) {
+        foldersRepo.getChildFoldersOfThisParentIDAsList(parentFolderId).forEach { childFolder ->
+            foldersSection += dtH3(childFolder.folderName)
+            var folderLinks = ""
+            linksRepo.getLinksOfThisFolderAsList(childFolder.id).forEach { filteredLink ->
+                folderLinks += dtA(linkTitle = filteredLink.title, link = filteredLink.webURL)
+            }
+            foldersSection += dlP(folderLinks)
+
+            foldersSectionInHtml(childFolder.id)
+        }
+
     }
 }

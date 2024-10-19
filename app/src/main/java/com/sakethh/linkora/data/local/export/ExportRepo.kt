@@ -1,5 +1,5 @@
 package com.sakethh.linkora.data.local.export
 
 interface ExportRepo {
-    suspend fun exportToAFile()
+    suspend fun exportToAFile(exportInHTMLFormat: Boolean = true)
 }

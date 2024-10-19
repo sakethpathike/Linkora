@@ -29,6 +29,6 @@ data class ExportSchema(
     val archivedFoldersTable: List<ArchivedFolders>,
     @SerialName("historyLinks")
     val historyLinksTable: List<RecentlyVisited>,
-    val panels: List<Panel>,
-    val panelFolders: List<PanelFolder>,
+    val panels: List<Panel> = emptyList(),
+    val panelFolders: List<PanelFolder> = emptyList(),
 )

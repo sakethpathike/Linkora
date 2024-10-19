@@ -110,7 +110,6 @@ class ImportImpl @Inject constructor(
         return try {
 
             ImportRequestResult.updateState(ImportRequestState.PARSING)
-
             file = kotlin.io.path.createTempFile()
 
             context.contentResolver.openInputStream(uri).use { input ->
@@ -378,7 +377,7 @@ class ImportImpl @Inject constructor(
                         folderStackForRetrievingDataFromHTML.pop()
                     }
 
-                    else -> Unit
+                    else -> linkoraLog(filteredDtChildElement.tagName() + " is excluded")
                 }
             }
         }
