@@ -5,7 +5,12 @@ import android.net.Uri
 
 
 interface ImportRepo {
-    suspend fun importToLocalDB(uri: Uri, context: Context): ImportRequestResult
+    suspend fun importToLocalDBBasedOnLinkoraJSONSchema(
+        uri: Uri,
+        context: Context
+    ): ImportRequestResult
+
+    suspend fun importToLocalDBBasedOnHTML(uri: Uri, context: Context): ImportRequestResult
 
     suspend fun migrateArchiveFoldersV9toV10()
 

@@ -6,9 +6,9 @@ plugins {
     id("kotlin-kapt")
     id 'com.google.devtools.ksp'
 
-   //id 'com.google.gms.google-services'
-   //id 'com.google.firebase.crashlytics'
-   //id("com.google.android.gms.oss-licenses-plugin")
+    id 'com.google.gms.google-services'
+    id 'com.google.firebase.crashlytics'
+    id("com.google.android.gms.oss-licenses-plugin")
 }
 android {
     namespace 'com.sakethh.linkora'
@@ -128,7 +128,7 @@ dependencies {
 
     implementation("io.coil-kt:coil-compose:2.5.0")
 
-    implementation 'org.jsoup:jsoup:1.16.1'
+    implementation 'org.jsoup:jsoup:1.18.1'
 
 
     implementation 'androidx.browser:browser:1.7.0'

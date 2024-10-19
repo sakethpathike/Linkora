@@ -535,7 +535,8 @@ open class SettingsScreenVM @Inject constructor(
         context: Context
     ) {
         viewModelScope.launch(Dispatchers.Default) {
-            importRepo.importToLocalDB(uri, context)
+            //importRepo.importToLocalDBBasedOnLinkoraJSONSchema(uri, context)
+            importRepo.importToLocalDBBasedOnHTML(uri, context)
         }
     }
 
@@ -605,7 +606,7 @@ open class SettingsScreenVM @Inject constructor(
                                 .isFoldersTableEmpty() && linksRepo
                                 .isArchivedLinksTableEmpty()
                         ) {
-                            activityResultLauncher.launch("application/json")
+                            activityResultLauncher.launch("text/html")
                         } else {
                             importModalBtmSheetState.value = true
                         }

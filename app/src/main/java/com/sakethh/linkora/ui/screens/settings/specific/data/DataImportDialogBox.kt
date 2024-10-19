@@ -8,7 +8,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialogDefaults
 import androidx.compose.material3.BasicAlertDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -17,15 +19,18 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.sakethh.linkora.data.local.restore.ImportRequestResult
 import com.sakethh.linkora.data.local.restore.ImportRequestState
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -35,63 +40,132 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun DataImportDialogBox() {
     val importRequestState = ImportRequestResult.state.collectAsStateWithLifecycle()
-    val currentState = rememberSaveable {
-        mutableStateOf("dfgdfgdfg")
-    }
     val isDialogBoxVisible = rememberSaveable {
-        mutableStateOf(true)
+        mutableStateOf(false)
     }
+
     LaunchedEffect(Unit) {
         ImportRequestResult.state.collectLatest {
-            currentState.value = it.name
-            //isDialogBoxVisible.value = it != ImportRequestState.IDLE
+            isDialogBoxVisible.value = it != ImportRequestState.IDLE
         }
     }
     if (isDialogBoxVisible.value) {
-        LaunchedEffect(Unit) {
-            ImportRequestResult.state.collectLatest {
-                currentState.value = it.name
-            }
-        }
         LinkoraTheme {
             BasicAlertDialog(
-                modifier = Modifier.animateContentSize(),
+                modifier = Modifier
+                    .animateContentSize()
+                    .then(if (importRequestState.value == ImportRequestState.PARSING || importRequestState.value == ImportRequestState.ADDING_TO_DATABASE) Modifier else Modifier.fillMaxSize()),
                 onDismissRequest = {
 
                 },
                 properties = DialogProperties(
                     dismissOnBackPress = false,
-                    usePlatformDefaultWidth = false
+                    usePlatformDefaultWidth = importRequestState.value == ImportRequestState.PARSING || importRequestState.value == ImportRequestState.ADDING_TO_DATABASE
                 )
             ) {
                 Column(
                     modifier = Modifier
-                        .then(if (importRequestState.value != ImportRequestState.PARSING && ImportRequestResult.totalLinksFromLinksTable.intValue != 0 && ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue != 0) Modifier.fillMaxSize() else Modifier.clip(
-                            RoundedCornerShape(15.dp)
-                        ))
+                        .then(
+                            if (importRequestState.value != ImportRequestState.PARSING && ImportRequestResult.totalLinksFromLinksTable.intValue != 0 && ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue != 0) Modifier.fillMaxSize() else Modifier.clip(
+                                RoundedCornerShape(15.dp)
+                            )
+                        )
+                        .fillMaxWidth()
                         .background(AlertDialogDefaults.containerColor)
                         .padding(20.dp)
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    /*Text(
-                        text = "Parsing the file...",
+                    Text(
+                        text = if (importRequestState.value == ImportRequestState.PARSING) "Parsing the file..." else if (importRequestState.value == ImportRequestState.ADDING_TO_DATABASE) "Adding Data to the Database..." else "Modifying keys to avoid conflicts with existing local data...",
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp
                     )
-                    if (importRequestState.value == ImportRequestState.PARSING || ImportRequestResult.totalLinksFromLinksTable.intValue == 0 || ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue == 0) {
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                    if (importRequestState.value == ImportRequestState.PARSING || importRequestState.value == ImportRequestState.ADDING_TO_DATABASE) {
+                        LinearProgressIndicator(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = 15.dp)
+                        )
                         return@Column
                     }
-                    Spacer(Modifier.height(20.dp))
-                    Text(
-                        "Saved Links and Links from folders (including archived folders)",
-                        style = MaterialTheme.typography.titleMedium
-                    )
                     Spacer(Modifier.height(10.dp))
-                    LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = {
-                        ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue.toFloat() / ImportRequestResult.totalLinksFromLinksTable.intValue
-                    })*/
+                    val dataImportDialogBoxVM: DataImportDialogBoxVM = viewModel()
+                    dataImportDialogBoxVM.dataImportSection().forEach {
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            it.itemType,
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth(), progress = {
+                            if (it.currentIterationCount.value.toInt() != 0 && it.totalDetectedSize.toInt() != 0
+                            ) {
+                                it.currentIterationCount.value.toFloat() / it.totalDetectedSize
+                            } else {
+                                0f
+                            }
+                        })
+                        Spacer(Modifier.height(10.dp))
+                        Text(
+                            "${it.currentIterationCount.value}/${it.totalDetectedSize}",
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                        Spacer(Modifier.height(10.dp))
+                        Spacer(Modifier.height(10.dp))
+                    }
                 }
             }
         }
     }
 }
+
+class DataImportDialogBoxVM : ViewModel() {
+    fun dataImportSection() = listOf(
+        DataImportDialogBox(
+            itemType = "Saved Links and Links from folders (including archived folders)",
+            totalDetectedSize = ImportRequestResult.totalLinksFromLinksTable.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Archived Links",
+            totalDetectedSize = ImportRequestResult.totalLinksFromArchivedLinksTable.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromArchivedLinksTable.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Important Links",
+            totalDetectedSize = ImportRequestResult.totalLinksFromImpLinksTable.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromImpLinksTable.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "History Links",
+            totalDetectedSize = ImportRequestResult.totalLinksFromHistoryLinksTable.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Regular Folders",
+            totalDetectedSize = ImportRequestResult.totalRegularFolders.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfRegularFolders.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Archived Folders",
+            totalDetectedSize = ImportRequestResult.totalArchivedFolders.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfArchivedFolders.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Panels",
+            totalDetectedSize = ImportRequestResult.totalPanels.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfPanels.intValue.toLong())
+        ),
+        DataImportDialogBox(
+            itemType = "Panel Folders",
+            totalDetectedSize = ImportRequestResult.totalPanelFolders.intValue.toLong(),
+            currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfPanelFolders.intValue.toLong())
+        ),
+    )
+}
+
+data class DataImportDialogBox(
+    val itemType: String,
+    val totalDetectedSize: Long,
+    val currentIterationCount: MutableState<Long>
+)

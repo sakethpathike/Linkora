@@ -353,18 +353,18 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             })
         ImportExceptionDialogBox(
             isVisible = isImportExceptionBoxVisible,
-            onClick = { activityResultLauncher.launch("application/json") },
+            onClick = { activityResultLauncher.launch("text/html") },
             exceptionType = settingsScreenVM.exceptionType
         )
 
         ImportConflictBtmSheet(isUIVisible = isImportConflictBoxVisible,
             modalBottomSheetState = importModalBottomSheetState,
             onMergeClick = {
-                activityResultLauncher.launch("application/json")
+                activityResultLauncher.launch("text/html")
             },
             onDeleteExistingDataClick = {
                 settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                    activityResultLauncher.launch("application/json")
+                    activityResultLauncher.launch("text/html")
                 }, context)
             },
             onDataExportClick = {
@@ -415,7 +415,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         Toast.LENGTH_SHORT
                     ).show()
                     settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                        activityResultLauncher.launch("application/json")
+                        activityResultLauncher.launch("text/html")
                     }, context)
                 }
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

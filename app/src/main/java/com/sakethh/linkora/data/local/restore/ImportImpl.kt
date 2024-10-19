@@ -14,6 +14,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.models.ExportSchema
+import com.sakethh.linkora.utils.baseUrl
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -22,7 +23,10 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.SerializationException
 import kotlinx.serialization.json.Json
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
 import java.nio.file.Path
+import java.util.Stack
 import javax.inject.Inject
 import kotlin.io.path.deleteIfExists
 import kotlin.io.path.outputStream
@@ -99,7 +103,7 @@ class ImportImpl @Inject constructor(
 
     private var file: Path? = null
 
-    override suspend fun importToLocalDB(
+    override suspend fun importToLocalDBBasedOnLinkoraJSONSchema(
         uri: Uri,
         context: Context
     ): ImportRequestResult {
@@ -234,7 +238,7 @@ class ImportImpl @Inject constructor(
 
                             originalPanel.panelId = getLatestPanelsTableID
 
-                            linkoraLog("getLatestPanelsTableID  $getLatestPanelsTableID")
+                            linkoraLog("getLatestPanelsTableID : $getLatestPanelsTableID")
 
                             ++ImportRequestResult.currentIterationOfPanels.intValue
                             linkoraLog("Panels : " + ImportRequestResult.currentIterationOfPanels.intValue)
@@ -296,6 +300,89 @@ class ImportImpl @Inject constructor(
         }
     }
 
+    override suspend fun importToLocalDBBasedOnHTML(
+        uri: Uri,
+        context: Context
+    ): ImportRequestResult {
+        file = kotlin.io.path.createTempFile()
+
+        context.contentResolver.openInputStream(uri).use { input ->
+            file!!.outputStream().use { output ->
+                input?.copyTo(output)
+            }
+        }
+        file?.readText()?.let { rawHTML ->
+            retrieveDataFromHTML(Jsoup.parse(rawHTML).body().select("dl").first())
+        }
+        return ImportRequestResult.Success
+    }
+
+    private val folderStackForRetrievingDataFromHTML = Stack<Long>()
+
+    private suspend fun retrieveDataFromHTML(element: Element?) {
+        element?.children()?.filter { child ->
+            child.`is`("dt")
+        }?.forEach { filteredDtElement ->
+            filteredDtElement.children().forEach { filteredDtChildElement ->
+                when {
+                    filteredDtChildElement.`is`("a") -> {
+                        val linkAddress = filteredDtChildElement.attribute("href").value
+                        val linkTitle = filteredDtChildElement.text()
+
+                        val parentFolder =
+                            if (folderStackForRetrievingDataFromHTML.isNotEmpty()) folderStackForRetrievingDataFromHTML.peek() else -1
+
+                        linksRepo.addALinkInLinksTable(
+                            LinksTable(
+                                title = linkTitle,
+                                webURL = linkAddress,
+                                baseURL = try {
+                                    linkAddress.baseUrl()
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                    linkAddress
+                                },
+                                imgURL = "",
+                                infoForSaving = "",
+                                isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
+                                isLinkedWithFolders = parentFolder != (-1).toLong(),
+                                keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                keyOfLinkedFolder = null,
+                                isLinkedWithImpFolder = false,
+                                keyOfImpLinkedFolder = "",
+                                keyOfImpLinkedFolderV10 = null,
+                                isLinkedWithArchivedFolder = false,
+                                keyOfArchiveLinkedFolderV10 = null,
+                                keyOfArchiveLinkedFolder = null,
+                                userAgent = null
+                            )
+                        )
+
+                    }
+
+                    filteredDtChildElement.`is`("dl") -> {
+                        val folderName = filteredDtChildElement.siblingElements().first()?.text()
+                        val parentFolder =
+                            if (folderStackForRetrievingDataFromHTML.isNotEmpty()) folderStackForRetrievingDataFromHTML.peek() else -1
+
+                        foldersRepo.createANewFolder(
+                            FoldersTable(
+                                folderName = folderName.toString(),
+                                infoForSaving = "",
+                                parentFolderID = if (parentFolder == (-1).toLong()) null else parentFolder
+                            )
+                        )
+                        folderStackForRetrievingDataFromHTML.push(getLatestFoldersTableID())
+
+                        retrieveDataFromHTML(filteredDtChildElement)
+                        folderStackForRetrievingDataFromHTML.pop()
+                    }
+
+                    else -> Unit
+                }
+            }
+        }
+    }
 
     override suspend fun migrateRegularFoldersLinksDataFromV9toV10() = coroutineScope {
         foldersRepo.getAllRootFolders().collect { rootFolders ->
