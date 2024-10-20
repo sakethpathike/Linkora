@@ -122,8 +122,7 @@ class ExportImpl @Inject constructor(
 
 
             // All Folders :
-            foldersSectionInHtml(parentFolderId = null)
-            htmlFileRawText += foldersSection
+            htmlFileRawText += dtH3("Folders") + dlP(foldersSectionInHtml(null))
 
 
             // History Links :
@@ -152,7 +151,7 @@ class ExportImpl @Inject constructor(
             // Result :
             linkoraLog(dlP(htmlFileRawText))
 
-            //file.writeText(htmlFileRawText)
+            file.writeText(dlP(htmlFileRawText))
         }
 
         ExportRequestInfo.updateState(ExportRequestState.IDLE)
@@ -170,21 +169,24 @@ class ExportImpl @Inject constructor(
         return "<DT><A HREF=\"$link\">$linkTitle</A>\n"
     }
 
-    private var foldersSection = dtH3("Folders")
 
     private suspend fun foldersSectionInHtml(
         parentFolderId: Long?
-    ) {
-        foldersRepo.getChildFoldersOfThisParentIDAsList(parentFolderId).forEach { childFolder ->
-            foldersSection += dtH3(childFolder.folderName)
-            var folderLinks = ""
+    ): String {
+        var foldersSection = ""
+        if (parentFolderId == null) {
+            foldersRepo.getAllRootFoldersList()
+        } else {
+            foldersRepo.getChildFoldersOfThisParentIDAsList(parentFolderId)
+        }.forEach { childFolder ->
+            val currentFolderDTH3 = dtH3(childFolder.folderName)
+            var folderLinksDTA = ""
             linksRepo.getLinksOfThisFolderAsList(childFolder.id).forEach { filteredLink ->
-                folderLinks += dtA(linkTitle = filteredLink.title, link = filteredLink.webURL)
+                folderLinksDTA += dtA(linkTitle = filteredLink.title, link = filteredLink.webURL)
             }
-            foldersSection += dlP(folderLinks)
-
-            foldersSectionInHtml(childFolder.id)
+            val nestedFolderHTML = foldersSectionInHtml(childFolder.id)
+            foldersSection += currentFolderDTH3 + dlP(folderLinksDTA + nestedFolderHTML)
         }
-
+        return foldersSection
     }
 }
