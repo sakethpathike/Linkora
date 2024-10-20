@@ -143,6 +143,9 @@ interface LinksDao {
     @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")
     fun getAllSavedLinks(): Flow<List<LinksTable>>
 
+    @Query("SELECT * FROM links_table WHERE isLinkedWithSavedLinks = 1")
+    suspend fun getAllSavedLinksAsList(): List<LinksTable>
+
     @Query("SELECT * FROM links_table")
     suspend fun getAllFromLinksTable(): List<LinksTable>
 

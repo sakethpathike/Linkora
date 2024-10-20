@@ -121,6 +121,8 @@ interface LinksRepo {
 
     fun getAllSavedLinks(): Flow<List<LinksTable>>
 
+    suspend fun getAllSavedLinksAsList(): List<LinksTable>
+
     suspend fun getAllFromLinksTable(): List<LinksTable>
 
     suspend fun getAllRecentlyVisitedLinks(): List<RecentlyVisited>

@@ -77,9 +77,9 @@ class ExportImpl @Inject constructor(
         val exportPanels = panelsData.await()
         val exportPanelFolders = panelFoldersData.await()
 
-        ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
 
         if (!exportInHTMLFormat) {
+            ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
             file.writeText(
                 Json.encodeToString(
                     ExportSchema(
@@ -99,11 +99,13 @@ class ExportImpl @Inject constructor(
             var htmlFileRawText = ""
 
             // Saved Links :
+            ExportRequestInfo.updateState(ExportRequestState.READING_SAVED_LINKS)
             var savedLinksSection = dtH3(LinkoraExports.SAVED_LINKS__LINKORA_EXPORT.name)
 
             var savedLinks = ""
-            linksTable.filter { it.isLinkedWithSavedLinks }.forEach { savedLink ->
+            linksRepo.getAllSavedLinksAsList().forEach { savedLink ->
                 savedLinks += dtA(linkTitle = savedLink.title, link = savedLink.webURL)
+                linkoraLog("saved link in ${savedLink.id}")
             }
 
             savedLinksSection += dlP(savedLinks)
@@ -111,11 +113,13 @@ class ExportImpl @Inject constructor(
 
 
             // Important Links :
+            ExportRequestInfo.updateState(ExportRequestState.READING_IMPORTANT_LINKS)
             var impLinksSection = dtH3(LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORT.name)
 
             var impLinks = ""
             importantLinksTable.forEach { impLink ->
                 impLinks += dtA(linkTitle = impLink.title, link = impLink.webURL)
+                linkoraLog("imp link in ${impLink.id}")
             }
 
             impLinksSection += dlP(impLinks)
@@ -123,6 +127,7 @@ class ExportImpl @Inject constructor(
 
 
             // Regular Folders :
+            ExportRequestInfo.updateState(ExportRequestState.READING_REGULAR_FOLDERS)
             htmlFileRawText += dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORT.name) + dlP(
                 foldersSectionInHtml(
                     parentFolderId = null,
@@ -131,6 +136,7 @@ class ExportImpl @Inject constructor(
             )
 
             // Archived Folders :
+            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_FOLDERS)
             htmlFileRawText += dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name) + dlP(
                 foldersSectionInHtml(
                     parentFolderId = null,
@@ -140,6 +146,7 @@ class ExportImpl @Inject constructor(
 
 
             // History Links :
+            ExportRequestInfo.updateState(ExportRequestState.READING_HISTORY_LINKS)
             var historyLinksSection = dtH3(LinkoraExports.HISTORY_LINKS__LINKORA_EXPORT.name)
 
             var historyLinks = ""
@@ -152,6 +159,7 @@ class ExportImpl @Inject constructor(
 
 
             // Archived Links :
+            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_LINKS)
             var archivedLinksSection = dtH3(LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORT.name)
 
             var archivedLinks = ""
@@ -164,6 +172,8 @@ class ExportImpl @Inject constructor(
 
             // Result :
             linkoraLog(dlP(htmlFileRawText))
+
+            ExportRequestInfo.updateState(ExportRequestState.WRITING_TO_THE_FILE)
 
             file.writeText(dlP(htmlFileRawText))
         }
@@ -202,6 +212,7 @@ class ExportImpl @Inject constructor(
             linksRepo.getLinksOfThisFolderAsList(childFolder.id).forEach { filteredLink ->
                 folderLinksDTA += dtA(linkTitle = filteredLink.title, link = filteredLink.webURL)
             }
+            linkoraLog("folder in ${childFolder.id}")
             val nestedFolderHTML = foldersSectionInHtml(childFolder.id, forArchiveFolders)
             foldersSection += currentFolderDTH3 + dlP(folderLinksDTA + nestedFolderHTML)
         }

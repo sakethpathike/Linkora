@@ -1,6 +1,7 @@
 package com.sakethh.linkora.data.local.restore
 
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,6 +13,8 @@ sealed class ImportRequestResult {
     companion object {
         private val _state = MutableStateFlow(ImportRequestState.IDLE)
         val state = _state.asStateFlow()
+
+        val isHTMLBasedRequest = mutableStateOf(false)
 
         val totalLinksFromLinksTable = mutableIntStateOf(0)
         val totalLinksFromArchivedLinksTable = mutableIntStateOf(0)

@@ -109,6 +109,7 @@ class ImportImpl @Inject constructor(
         context: Context
     ): ImportRequestResult {
         return try {
+            ImportRequestResult.isHTMLBasedRequest.value = false
 
             ImportRequestResult.updateState(ImportRequestState.PARSING)
             file = kotlin.io.path.createTempFile()
@@ -304,6 +305,8 @@ class ImportImpl @Inject constructor(
         uri: Uri,
         context: Context
     ): ImportRequestResult {
+        ImportRequestResult.isHTMLBasedRequest.value = true
+        ImportRequestResult.updateState(ImportRequestState.PARSING)
         file = kotlin.io.path.createTempFile()
 
         context.contentResolver.openInputStream(uri).use { input ->
@@ -312,8 +315,10 @@ class ImportImpl @Inject constructor(
             }
         }
         file?.readText()?.let { rawHTML ->
+            ImportRequestResult.updateState(ImportRequestState.ADDING_TO_DATABASE)
             retrieveDataFromHTML(Jsoup.parse(rawHTML).body().select("dl").first())
         }
+        ImportRequestResult.updateState(ImportRequestState.IDLE)
         return ImportRequestResult.Success
     }
 

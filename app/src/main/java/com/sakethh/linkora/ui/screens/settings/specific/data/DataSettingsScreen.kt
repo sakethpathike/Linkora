@@ -477,6 +477,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                     ).show()
                 })
         )
-        //DataImportDialogBox()
+        DataImportDialogBox()
+        DataExportDialogBox()
     }
 }

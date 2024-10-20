@@ -818,6 +818,9 @@ class LinksImpl @Inject constructor(
         return localDatabase.linksDao().getAllSavedLinks()
     }
 
+    override suspend fun getAllSavedLinksAsList(): List<LinksTable> {
+        return localDatabase.linksDao().getAllSavedLinksAsList()
+    }
     override suspend fun getAllFromLinksTable(): List<LinksTable> {
         return localDatabase.linksDao().getAllFromLinksTable()
     }

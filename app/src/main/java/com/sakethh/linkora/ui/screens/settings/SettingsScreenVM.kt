@@ -548,7 +548,7 @@ open class SettingsScreenVM @Inject constructor(
         exportInHTMLFormat: Boolean
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 exportRepo.exportToAFile(exportInHTMLFormat)
                 pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
             }
@@ -557,7 +557,7 @@ open class SettingsScreenVM @Inject constructor(
                 context, android.Manifest.permission.WRITE_EXTERNAL_STORAGE
             )) {
                 PackageManager.PERMISSION_GRANTED -> {
-                    viewModelScope.launch {
+                    viewModelScope.launch(Dispatchers.IO) {
                         exportRepo.exportToAFile(exportInHTMLFormat)
                         pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
                     }
