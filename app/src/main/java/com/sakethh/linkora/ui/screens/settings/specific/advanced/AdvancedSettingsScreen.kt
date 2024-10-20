@@ -46,7 +46,7 @@ import com.sakethh.linkora.ui.screens.settings.SettingsPreference.localizationSe
 import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.ui.screens.settings.specific.TextFieldForPreferenceComposable
-import com.sakethh.linkora.utils.Constants
+import com.sakethh.linkora.utils.LinkoraValues
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -229,10 +229,10 @@ fun AdvancedSettingsScreen(navController: NavController) {
                         SettingsPreference.changeSettingPreferenceValue(
                             stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
                             context.dataStore,
-                            Constants.LINKORA_LOCALIZATION_SERVER
+                            LinkoraValues.LINKORA_LOCALIZATION_SERVER
                         )
                         localizationServerURL.value =
-                            Constants.LINKORA_LOCALIZATION_SERVER
+                            LinkoraValues.LINKORA_LOCALIZATION_SERVER
                     },
                     onTextFieldValueChange = {
                         localizationServerURL.value = it

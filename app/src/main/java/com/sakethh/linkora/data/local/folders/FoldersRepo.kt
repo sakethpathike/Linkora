@@ -26,6 +26,7 @@ interface FoldersRepo {
     suspend fun getAllArchiveFoldersV9List(): List<ArchivedFolders>
 
     fun getAllArchiveFoldersV10(): Flow<List<FoldersTable>>
+    suspend fun getAllArchiveFoldersV10AsList(): List<FoldersTable>
 
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 

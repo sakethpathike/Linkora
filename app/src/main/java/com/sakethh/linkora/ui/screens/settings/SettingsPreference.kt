@@ -15,7 +15,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.utils.Constants
+import com.sakethh.linkora.utils.LinkoraValues
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -52,7 +52,7 @@ object SettingsPreference : ViewModel() {
     val secondaryJsoupUserAgent =
         mutableStateOf("Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0")
     val localizationServerURL =
-        mutableStateOf(Constants.LINKORA_LOCALIZATION_SERVER)
+        mutableStateOf(LinkoraValues.LINKORA_LOCALIZATION_SERVER)
     val isShelfMinimizedInHomeScreen = mutableStateOf(false)
     val lastSelectedPanelID = mutableLongStateOf(-1)
     val preferredAppLanguageName = mutableStateOf("English")
@@ -276,7 +276,7 @@ object SettingsPreference : ViewModel() {
                         readSettingPreferenceValue(
                             preferenceKey = stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
                             dataStore = context.dataStore
-                        ) ?: Constants.LINKORA_LOCALIZATION_SERVER
+                        ) ?: LinkoraValues.LINKORA_LOCALIZATION_SERVER
                 },
                 async {
                     remoteStringsLastUpdatedOn.value =

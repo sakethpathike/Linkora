@@ -33,6 +33,9 @@ interface FoldersDao {
     @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=1")
     fun getAllArchiveFoldersV10(): Flow<List<FoldersTable>>
 
+    @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=1")
+    suspend fun getAllArchiveFoldersV10AsList(): List<FoldersTable>
+
     @Query("SELECT * FROM folders_table WHERE parentFolderID IS NULL AND isFolderArchived=0")
     fun getAllRootFolders(): Flow<List<FoldersTable>>
 

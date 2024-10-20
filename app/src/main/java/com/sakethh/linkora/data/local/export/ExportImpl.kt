@@ -121,8 +121,11 @@ class ExportImpl @Inject constructor(
             htmlFileRawText += impLinksSection
 
 
-            // All Folders :
-            htmlFileRawText += dtH3("Folders") + dlP(foldersSectionInHtml(null))
+            // Regular Folders :
+            htmlFileRawText += dtH3("Regular Folders") + dlP(foldersSectionInHtml(null, false))
+
+            // Archived Folders :
+            htmlFileRawText += dtH3("Archived Folders") + dlP(foldersSectionInHtml(null, true))
 
 
             // History Links :
@@ -171,11 +174,15 @@ class ExportImpl @Inject constructor(
 
 
     private suspend fun foldersSectionInHtml(
-        parentFolderId: Long?
+        parentFolderId: Long?, forArchiveFolders: Boolean
     ): String {
         var foldersSection = ""
         if (parentFolderId == null) {
-            foldersRepo.getAllRootFoldersList()
+            if (forArchiveFolders) {
+                foldersRepo.getAllArchiveFoldersV10AsList()
+            } else {
+                foldersRepo.getAllRootFoldersList()
+            }
         } else {
             foldersRepo.getChildFoldersOfThisParentIDAsList(parentFolderId)
         }.forEach { childFolder ->
@@ -184,7 +191,7 @@ class ExportImpl @Inject constructor(
             linksRepo.getLinksOfThisFolderAsList(childFolder.id).forEach { filteredLink ->
                 folderLinksDTA += dtA(linkTitle = filteredLink.title, link = filteredLink.webURL)
             }
-            val nestedFolderHTML = foldersSectionInHtml(childFolder.id)
+            val nestedFolderHTML = foldersSectionInHtml(childFolder.id, forArchiveFolders)
             foldersSection += currentFolderDTH3 + dlP(folderLinksDTA + nestedFolderHTML)
         }
         return foldersSection

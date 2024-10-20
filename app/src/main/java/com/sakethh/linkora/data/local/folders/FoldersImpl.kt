@@ -50,6 +50,10 @@ class FoldersImpl @Inject constructor(private val localDatabase: LocalDatabase) 
         return localDatabase.foldersDao().getAllArchiveFoldersV10()
     }
 
+    override suspend fun getAllArchiveFoldersV10AsList(): List<FoldersTable> {
+        return localDatabase.foldersDao().getAllArchiveFoldersV10AsList()
+    }
+
     override fun getAllRootFolders(): Flow<List<FoldersTable>> {
         return localDatabase.foldersDao().getAllRootFolders()
     }

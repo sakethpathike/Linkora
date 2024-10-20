@@ -14,6 +14,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.models.ExportSchema
+import com.sakethh.linkora.utils.LinkoraValues
 import com.sakethh.linkora.utils.baseUrl
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
@@ -316,7 +317,8 @@ class ImportImpl @Inject constructor(
         return ImportRequestResult.Success
     }
 
-    private val folderStackForRetrievingDataFromHTML = Stack<Long>()
+    private val foldersIdStackForRetrievingDataFromHTML = Stack<Long>()
+    private val foldersNameStackForRetrievingDataFromHTML = Stack<String>()
 
     private suspend fun retrieveDataFromHTML(element: Element?) {
         element?.children()?.filter { child ->
@@ -329,55 +331,135 @@ class ImportImpl @Inject constructor(
                         val linkTitle = filteredDtChildElement.text()
 
                         val parentFolder =
-                            if (folderStackForRetrievingDataFromHTML.isNotEmpty()) folderStackForRetrievingDataFromHTML.peek() else -1
+                            if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) foldersIdStackForRetrievingDataFromHTML.peek() else -1
 
-                        linksRepo.addALinkInLinksTable(
-                            LinksTable(
-                                title = linkTitle,
-                                webURL = linkAddress,
-                                baseURL = try {
-                                    linkAddress.baseUrl()
-                                } catch (e: Exception) {
-                                    e.printStackTrace()
-                                    linkAddress
-                                },
-                                imgURL = "",
-                                infoForSaving = "",
-                                isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
-                                isLinkedWithFolders = parentFolder != (-1).toLong(),
-                                keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
-                                keyOfLinkedFolder = null,
-                                isLinkedWithImpFolder = false,
-                                keyOfImpLinkedFolder = "",
-                                keyOfImpLinkedFolderV10 = null,
-                                isLinkedWithArchivedFolder = false,
-                                keyOfArchiveLinkedFolderV10 = null,
-                                keyOfArchiveLinkedFolder = null,
-                                userAgent = null
+                        if (foldersNameStackForRetrievingDataFromHTML.isNotEmpty()) {
+                            when (foldersNameStackForRetrievingDataFromHTML.peek()) {
+
+                                "Important Links" -> {
+                                    linksRepo.addANewLinkToImpLinks(
+                                        ImportantLinks(
+                                            title = linkTitle,
+                                            webURL = linkAddress,
+                                            baseURL = linkAddress.baseUrl(),
+                                            imgURL = "",
+                                            infoForSaving = ""
+                                        )
+                                    )
+                                }
+
+                                "History Links" -> {
+                                    linksRepo.addANewLinkInRecentlyVisited(
+                                        RecentlyVisited(
+                                            title = linkTitle,
+                                            webURL = linkAddress,
+                                            baseURL = linkAddress.baseUrl(),
+                                            imgURL = "",
+                                            infoForSaving = ""
+                                        )
+                                    )
+                                }
+
+                                "Archived Links" -> {
+                                    linksRepo.addANewLinkToArchiveLink(
+                                        ArchivedLinks(
+                                            title = linkTitle,
+                                            webURL = linkAddress,
+                                            baseURL = linkAddress.baseUrl(),
+                                            imgURL = "",
+                                            infoForSaving = ""
+                                        )
+                                    )
+                                }
+
+                                else -> {
+                                    linksRepo.addALinkInLinksTable(
+                                        LinksTable(
+                                            title = linkTitle,
+                                            webURL = linkAddress,
+                                            baseURL = try {
+                                                linkAddress.baseUrl()
+                                            } catch (e: Exception) {
+                                                e.printStackTrace()
+                                                linkAddress
+                                            },
+                                            imgURL = "",
+                                            infoForSaving = "",
+                                            isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
+                                            isLinkedWithFolders = parentFolder != (-1).toLong(),
+                                            keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                            keyOfLinkedFolder = null,
+                                            isLinkedWithImpFolder = false,
+                                            keyOfImpLinkedFolder = "",
+                                            keyOfImpLinkedFolderV10 = null,
+                                            isLinkedWithArchivedFolder = false,
+                                            keyOfArchiveLinkedFolderV10 = null,
+                                            keyOfArchiveLinkedFolder = null,
+                                            userAgent = null
+                                        )
+                                    )
+                                }
+                            }
+                        } else {
+                            linksRepo.addALinkInLinksTable(
+                                LinksTable(
+                                    title = linkTitle,
+                                    webURL = linkAddress,
+                                    baseURL = try {
+                                        linkAddress.baseUrl()
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                        linkAddress
+                                    },
+                                    imgURL = "",
+                                    infoForSaving = "",
+                                    isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
+                                    isLinkedWithFolders = parentFolder != (-1).toLong(),
+                                    keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                    keyOfLinkedFolder = null,
+                                    isLinkedWithImpFolder = false,
+                                    keyOfImpLinkedFolder = "",
+                                    keyOfImpLinkedFolderV10 = null,
+                                    isLinkedWithArchivedFolder = false,
+                                    keyOfArchiveLinkedFolderV10 = null,
+                                    keyOfArchiveLinkedFolder = null,
+                                    userAgent = null
+                                )
                             )
-                        )
+                        }
 
                     }
 
                     filteredDtChildElement.`is`("dl") -> {
                         val folderName = filteredDtChildElement.siblingElements().first()?.text()
                         val parentFolder =
-                            if (folderStackForRetrievingDataFromHTML.isNotEmpty()) folderStackForRetrievingDataFromHTML.peek() else -1
+                            if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) foldersIdStackForRetrievingDataFromHTML.peek() else -1
 
-                        foldersRepo.createANewFolder(
-                            FoldersTable(
-                                folderName = folderName.toString(),
-                                infoForSaving = "",
-                                parentFolderID = if (parentFolder == (-1).toLong()) null else parentFolder
+                        linkoraLog(folderName.toString())
+                        if (!LinkoraValues.RESTRICTED_FOLDER_NAMES.contains(folderName)) {
+                            foldersRepo.createANewFolder(
+                                FoldersTable(
+                                    folderName = folderName.toString(),
+                                    infoForSaving = "",
+                                    parentFolderID = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                    isFolderArchived = foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == "Archived Folders"
+                                )
                             )
-                        )
-                        folderStackForRetrievingDataFromHTML.push(getLatestFoldersTableID())
+                            foldersIdStackForRetrievingDataFromHTML.push(getLatestFoldersTableID())
+                        }
+
+                        foldersNameStackForRetrievingDataFromHTML.push(folderName)
 
                         retrieveDataFromHTML(filteredDtChildElement)
-                        folderStackForRetrievingDataFromHTML.pop()
+                        if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) {
+                            foldersIdStackForRetrievingDataFromHTML.pop()
+                        }
+                        if (foldersNameStackForRetrievingDataFromHTML.isNotEmpty()) {
+                            foldersNameStackForRetrievingDataFromHTML.pop()
+                        }
                     }
 
-                    else -> linkoraLog(filteredDtChildElement.tagName() + " is excluded")
+                    else -> Unit
                 }
             }
         }

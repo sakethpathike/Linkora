@@ -535,8 +535,8 @@ open class SettingsScreenVM @Inject constructor(
         context: Context
     ) {
         viewModelScope.launch(Dispatchers.Default) {
-            importRepo.importToLocalDBBasedOnLinkoraJSONSchema(uri, context)
-            //importRepo.importToLocalDBBasedOnHTML(uri, context)
+            //importRepo.importToLocalDBBasedOnLinkoraJSONSchema(uri, context)
+            importRepo.importToLocalDBBasedOnHTML(uri, context)
         }
     }
 
