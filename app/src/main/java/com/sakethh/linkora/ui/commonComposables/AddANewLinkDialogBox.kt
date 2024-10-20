@@ -491,6 +491,7 @@ fun AddANewLinkDialogBox(
                                         coroutineScope.launch {
                                             btmSheetState.expand()
                                             try {
+                                                if (lazyRowState.layoutInfo.totalItemsCount - 1 < 0) return@launch
                                                 lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
                                             } catch (e: Exception) {
                                                 e.printStackTrace()
@@ -507,7 +508,7 @@ fun AddANewLinkDialogBox(
                                 }
                             }
                         }
-                        if (isDataExtractingForTheLink.not()) {
+                        if (isDataExtractingForTheLink.not() && screenType == SpecificScreenType.INTENT_ACTIVITY) {
                             item {
                                 Button(
                                     colors = ButtonDefaults.buttonColors(
@@ -836,13 +837,11 @@ fun AddANewLinkDialogBox(
                                                 fontSize = 16.sp
                                             )
                                         }
-                                        item {
+                                        itemsIndexed(AddANewLinkDialogBox.subFoldersList.toMutableStateList()) { index, subFolder ->
                                             Icon(
                                                 imageVector = Icons.AutoMirrored.Filled.ArrowRight,
                                                 contentDescription = ""
                                             )
-                                        }
-                                        itemsIndexed(AddANewLinkDialogBox.subFoldersList.toMutableStateList()) { index, subFolder ->
                                             Text(
                                                 text = subFolder.folderName,
                                                 style = MaterialTheme.typography.titleMedium,
@@ -876,17 +875,6 @@ fun AddANewLinkDialogBox(
                                                     }
                                                 }
                                             )
-                                            /*if (subFolder.id != AddANewLinkDialogBox.subFoldersList.last().id) {
-                                                Icon(
-                                                    imageVector = Icons.AutoMirrored.Filled.ArrowRight,
-                                                    contentDescription = ""
-                                                )
-                                                Text(
-                                                    text = ShelfBtmSheetVM.selectedShelfData.shelfName,
-                                                    style = MaterialTheme.typography.titleMedium,
-                                                    fontSize = 16.sp
-                                                )
-                                            }*/
                                         }
                                     }
                                     HorizontalDivider(color = LocalContentColor.current.copy(0.25f))
@@ -920,6 +908,7 @@ fun AddANewLinkDialogBox(
                                             )
                                             coroutineScope.launch {
                                                 try {
+                                                    if (lazyRowState.layoutInfo.totalItemsCount - 1 < 0) return@launch
                                                     lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
                                                 } catch (e: Exception) {
                                                     e.printStackTrace()
@@ -1048,6 +1037,7 @@ fun AddANewLinkDialogBox(
                         )
                         coroutineScope.launch {
                             try {
+                                if (lazyRowState.layoutInfo.totalItemsCount - 1 < 0) return@launch
                                 lazyRowState.animateScrollToItem(lazyRowState.layoutInfo.totalItemsCount - 1)
                             } catch (e: Exception) {
                                 e.printStackTrace()
