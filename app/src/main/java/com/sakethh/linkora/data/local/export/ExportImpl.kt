@@ -99,7 +99,7 @@ class ExportImpl @Inject constructor(
             var htmlFileRawText = ""
 
             // Saved Links :
-            var savedLinksSection = dtH3(LinkoraExports.SAVED_LINKS__LINKORA_EXPORTS.name)
+            var savedLinksSection = dtH3(LinkoraExports.SAVED_LINKS__LINKORA_EXPORT.name)
 
             var savedLinks = ""
             linksTable.filter { it.isLinkedWithSavedLinks }.forEach { savedLink ->
@@ -111,7 +111,7 @@ class ExportImpl @Inject constructor(
 
 
             // Important Links :
-            var impLinksSection = dtH3(LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORTS.name)
+            var impLinksSection = dtH3(LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORT.name)
 
             var impLinks = ""
             importantLinksTable.forEach { impLink ->
@@ -123,7 +123,7 @@ class ExportImpl @Inject constructor(
 
 
             // Regular Folders :
-            htmlFileRawText += dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORTS.name) + dlP(
+            htmlFileRawText += dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORT.name) + dlP(
                 foldersSectionInHtml(
                     parentFolderId = null,
                     forArchiveFolders = false
@@ -131,7 +131,7 @@ class ExportImpl @Inject constructor(
             )
 
             // Archived Folders :
-            htmlFileRawText += dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name) + dlP(
+            htmlFileRawText += dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name) + dlP(
                 foldersSectionInHtml(
                     parentFolderId = null,
                     forArchiveFolders = true
@@ -140,7 +140,7 @@ class ExportImpl @Inject constructor(
 
 
             // History Links :
-            var historyLinksSection = dtH3(LinkoraExports.HISTORY_LINKS__LINKORA_EXPORTS.name)
+            var historyLinksSection = dtH3(LinkoraExports.HISTORY_LINKS__LINKORA_EXPORT.name)
 
             var historyLinks = ""
             historyLinksTable.forEach { historyLink ->
@@ -152,7 +152,7 @@ class ExportImpl @Inject constructor(
 
 
             // Archived Links :
-            var archivedLinksSection = dtH3(LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORTS.name)
+            var archivedLinksSection = dtH3(LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORT.name)
 
             var archivedLinks = ""
             archivedLinksTable.forEach { archivedLink ->

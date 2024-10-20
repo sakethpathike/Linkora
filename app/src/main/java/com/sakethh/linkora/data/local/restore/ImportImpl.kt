@@ -336,7 +336,7 @@ class ImportImpl @Inject constructor(
                         if (foldersNameStackForRetrievingDataFromHTML.isNotEmpty()) {
                             when (foldersNameStackForRetrievingDataFromHTML.peek()) {
 
-                                LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORTS.name -> {
+                                LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORT.name -> {
                                     linksRepo.addANewLinkToImpLinks(
                                         ImportantLinks(
                                             title = linkTitle,
@@ -348,7 +348,7 @@ class ImportImpl @Inject constructor(
                                     )
                                 }
 
-                                LinkoraExports.HISTORY_LINKS__LINKORA_EXPORTS.name -> {
+                                LinkoraExports.HISTORY_LINKS__LINKORA_EXPORT.name -> {
                                     linksRepo.addANewLinkInRecentlyVisited(
                                         RecentlyVisited(
                                             title = linkTitle,
@@ -360,7 +360,7 @@ class ImportImpl @Inject constructor(
                                     )
                                 }
 
-                                LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORTS.name -> {
+                                LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORT.name -> {
                                     linksRepo.addANewLinkToArchiveLink(
                                         ArchivedLinks(
                                             title = linkTitle,
@@ -435,14 +435,14 @@ class ImportImpl @Inject constructor(
                         val parentFolder =
                             if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) foldersIdStackForRetrievingDataFromHTML.peek() else -1
 
-                        linkoraLog("is folder archived : ${foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name}")
+                        linkoraLog("is folder archived : ${foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name}")
                         if (!LinkoraExports.entries.map { it.name }.contains(folderName)) {
                             foldersRepo.createANewFolder(
                                 FoldersTable(
                                     folderName = folderName.toString(),
                                     infoForSaving = "",
                                     parentFolderID = if (parentFolder == (-1).toLong()) null else parentFolder,
-                                    isFolderArchived = foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name
+                                    isFolderArchived = foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name
                                 )
                             )
                             foldersIdStackForRetrievingDataFromHTML.push(getLatestFoldersTableID())

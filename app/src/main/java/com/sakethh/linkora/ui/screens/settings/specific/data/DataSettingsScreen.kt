@@ -4,7 +4,6 @@ import android.Manifest
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -22,10 +21,12 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.DataObject
+import androidx.compose.material.icons.filled.DeleteForever
+import androidx.compose.material.icons.filled.Html
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
@@ -59,17 +60,16 @@ import coil.annotation.ExperimentalCoilApi
 import coil.imageLoader
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.data
+import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanently
+import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanentlyDesc
 import com.sakethh.linkora.LocalizedStrings.deletedEntireDataFromTheLocalDatabase
-import com.sakethh.linkora.LocalizedStrings.importFeatureIsPolishedNotPerfectDesc
-import com.sakethh.linkora.LocalizedStrings.permissionRequiredToWriteTheData
-import com.sakethh.linkora.LocalizedStrings.successfullyExported
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
-import com.sakethh.linkora.ui.screens.settings.composables.ImportConflictBtmSheet
 import com.sakethh.linkora.ui.screens.settings.composables.ImportExceptionDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.PermissionDialog
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
@@ -105,14 +105,16 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
     val isImportExceptionBoxVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val isImportConflictBoxVisible = rememberSaveable {
-        mutableStateOf(false)
+
+    val shouldDeleteEntireDialogBoxAppear = rememberSaveable { mutableStateOf(false) }
+    var importBasedOnJsonFormat = rememberSaveable {
+        false
     }
     val activityResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
             if (uri != null) {
                 settingsScreenVM.importData(
-                    uri, context
+                    uri, context, importBasedOnJsonFormat
                 )
             }
         }
@@ -138,26 +140,129 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             }
             item {
                 Text(
-                    text = importFeatureIsPolishedNotPerfectDesc.value,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontSize = 15.sp,
+                    text = "Import",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
                     lineHeight = 20.sp,
                     textAlign = TextAlign.Start,
-                    modifier = Modifier.padding(start = 15.dp, end = 15.dp)
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp),
                 )
             }
 
-            items(
-                settingsScreenVM.dataSection(
-                    runtimePermission,
-                    context,
-                    isDialogBoxVisible = isPermissionDialogBoxVisible,
-                    activityResultLauncher = activityResultLauncher,
-                    importModalBtmSheetState = isImportConflictBoxVisible
-                )
-            ) {
+            item {
                 RegularSettingComponent(
-                    settingsUIElement = it
+                    SettingsUIElement(
+                        isIconNeeded = rememberSaveable { mutableStateOf(true) },
+                        title = "Import data from JSON file",
+                        doesDescriptionExists = true,
+                        description = "Import data from external JSON file which is based on Linkora Schema",
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            importBasedOnJsonFormat = true
+                            activityResultLauncher.launch("application/json")
+                        },
+                        icon = Icons.Default.DataObject,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) }
+                    )
+                )
+            }
+            item {
+                RegularSettingComponent(
+                    SettingsUIElement(
+                        isIconNeeded = rememberSaveable { mutableStateOf(true) },
+                        title = "Import from HTML file",
+                        doesDescriptionExists = true,
+                        description = "Import data from an external HTML file which follows standard bookmarks import/export",
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            importBasedOnJsonFormat = false
+                            activityResultLauncher.launch("text/html")
+                        },
+                        icon = Icons.Default.Html,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) }
+                    )
+                )
+            }
+            item {
+                Text(
+                    text = "Export",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                )
+            }
+            item {
+                RegularSettingComponent(
+                    SettingsUIElement(
+                        isIconNeeded = rememberSaveable { mutableStateOf(true) },
+                        title = "Export data in JSON format",
+                        doesDescriptionExists = true,
+                        description = "Export all of your data data in JSON format",
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            settingsScreenVM.exportDataToAFile(
+                                context = context,
+                                isDialogBoxVisible = isPermissionDialogBoxVisible,
+                                runtimePermission = runtimePermission,
+                                exportInHTMLFormat = false
+                            )
+                        },
+                        icon = Icons.Default.DataObject,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) }
+                    )
+                )
+            }
+            item {
+                RegularSettingComponent(
+                    SettingsUIElement(
+                        isIconNeeded = rememberSaveable { mutableStateOf(true) },
+                        title = "Export data in HTML format",
+                        doesDescriptionExists = true,
+                        description = "Export all of your data (excluding Panels) data in HTML format",
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            settingsScreenVM.exportDataToAFile(
+                                context = context,
+                                isDialogBoxVisible = isPermissionDialogBoxVisible,
+                                runtimePermission = runtimePermission,
+                                exportInHTMLFormat = true
+                            )
+                        },
+                        icon = Icons.Default.Html,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) }
+                    )
+                )
+            }
+
+            item {
+                HorizontalDivider(
+                    Modifier.padding(
+                        start = 15.dp,
+                        end = 15.dp,
+                        bottom = 30.dp,
+                    ),
+                    color = DividerDefaults.color.copy(0.5f)
+                )
+                RegularSettingComponent(
+                    SettingsUIElement(
+                        isIconNeeded = rememberSaveable { mutableStateOf(true) },
+                        title = deleteEntireDataPermanently.value,
+                        doesDescriptionExists = true,
+                        description = deleteEntireDataPermanentlyDesc.value,
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            shouldDeleteEntireDialogBoxAppear.value = true
+                        },
+                        icon = Icons.Default.DeleteForever,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) }
+                    )
                 )
             }
             item {
@@ -351,96 +456,17 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 context as Activity
                 context.openApplicationSettings()
             })
+
+        // TODO
         ImportExceptionDialogBox(
             isVisible = isImportExceptionBoxVisible,
             onClick = { activityResultLauncher.launch("text/html") },
             exceptionType = settingsScreenVM.exceptionType
         )
 
-        ImportConflictBtmSheet(isUIVisible = isImportConflictBoxVisible,
-            modalBottomSheetState = importModalBottomSheetState,
-            onMergeClick = {
-                activityResultLauncher.launch("text/html")
-            },
-            onDeleteExistingDataClick = {
-                settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                    activityResultLauncher.launch("text/html")
-                }, context)
-            },
-            onDataExportClick = {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    settingsScreenVM.exportDataToAFile(
-                        context = context,
-                        isDialogBoxVisible = isPermissionDialogBoxVisible,
-                        runtimePermission = runtimePermission
-                    )
-                } else {
-                    when (ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )) {
-                        PackageManager.PERMISSION_GRANTED -> {
-                            settingsScreenVM.exportDataToAFile(
-                                context = context,
-                                isDialogBoxVisible = isPermissionDialogBoxVisible,
-                                runtimePermission = runtimePermission
-                            )
-                            Toast.makeText(
-                                context,
-                                successfullyExported.value,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-
-                        else -> {
-                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            Toast.makeText(
-                                context,
-                                successfullyExported.value,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            },
-            onExportAndThenImportClick = {
-                fun exportDataToAFile() {
-                    settingsScreenVM.exportDataToAFile(
-                        context = context,
-                        isDialogBoxVisible = isPermissionDialogBoxVisible,
-                        runtimePermission = runtimePermission
-                    )
-                    Toast.makeText(
-                        context,
-                        successfullyExported.value,
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    settingsScreenVM.deleteEntireLinksAndFoldersData(onTaskCompleted = {
-                        activityResultLauncher.launch("text/html")
-                    }, context)
-                }
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    exportDataToAFile()
-                } else {
-                    when (ContextCompat.checkSelfPermission(
-                        context, Manifest.permission.WRITE_EXTERNAL_STORAGE
-                    )) {
-                        PackageManager.PERMISSION_GRANTED -> {
-                            exportDataToAFile()
-                        }
-
-                        else -> {
-                            runtimePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                            Toast.makeText(
-                                context,
-                                permissionRequiredToWriteTheData.value,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                    }
-                }
-            })
         DeleteDialogBox(
-            DeleteDialogBoxParam(shouldDialogBoxAppear = settingsScreenVM.shouldDeleteDialogBoxAppear,
+            DeleteDialogBoxParam(
+                shouldDialogBoxAppear = shouldDeleteEntireDialogBoxAppear,
                 deleteDialogBoxType = DataDialogBoxType.REMOVE_ENTIRE_DATA,
                 onDeleteClick = {
                     settingsScreenVM.deleteEntireLinksAndFoldersData(context = context)

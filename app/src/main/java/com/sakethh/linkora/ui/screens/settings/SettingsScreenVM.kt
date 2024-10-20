@@ -7,9 +7,6 @@ import android.os.Build
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ShortText
-import androidx.compose.material.icons.filled.DeleteForever
-import androidx.compose.material.icons.filled.FileDownload
-import androidx.compose.material.icons.filled.FileUpload
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.OpenInBrowser
@@ -33,14 +30,8 @@ import com.sakethh.linkora.LocalizedStrings.autoCheckForUpdatesDesc
 import com.sakethh.linkora.LocalizedStrings.autoDetectTitle
 import com.sakethh.linkora.LocalizedStrings.autoDetectTitleDesc
 import com.sakethh.linkora.LocalizedStrings.coil
-import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanently
-import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanentlyDesc
 import com.sakethh.linkora.LocalizedStrings.enableHomeScreen
 import com.sakethh.linkora.LocalizedStrings.enableHomeScreenDesc
-import com.sakethh.linkora.LocalizedStrings.exportData
-import com.sakethh.linkora.LocalizedStrings.exportDataDesc
-import com.sakethh.linkora.LocalizedStrings.importData
-import com.sakethh.linkora.LocalizedStrings.importDataFromExternalJsonFile
 import com.sakethh.linkora.LocalizedStrings.kotlin
 import com.sakethh.linkora.LocalizedStrings.materialDesign3
 import com.sakethh.linkora.LocalizedStrings.materialIcons
@@ -99,7 +90,6 @@ open class SettingsScreenVM @Inject constructor(
     private val workManager: WorkManager
 ) : CustomWebTab(linksRepo) {
 
-    val shouldDeleteDialogBoxAppear = mutableStateOf(false)
     val exceptionType: MutableState<String?> = mutableStateOf(null)
 
     init {
@@ -532,11 +522,15 @@ open class SettingsScreenVM @Inject constructor(
 
     fun importData(
         uri: Uri,
-        context: Context
+        context: Context,
+        importJsonBasedFile: Boolean
     ) {
         viewModelScope.launch(Dispatchers.Default) {
-            //importRepo.importToLocalDBBasedOnLinkoraJSONSchema(uri, context)
-            importRepo.importToLocalDBBasedOnHTML(uri, context)
+            if (importJsonBasedFile) {
+                importRepo.importToLocalDBBasedOnLinkoraJSONSchema(uri, context)
+            } else {
+                importRepo.importToLocalDBBasedOnHTML(uri, context)
+            }
         }
     }
 
@@ -550,11 +544,12 @@ open class SettingsScreenVM @Inject constructor(
     fun exportDataToAFile(
         context: Context,
         isDialogBoxVisible: MutableState<Boolean>,
-        runtimePermission: ManagedActivityResultLauncher<String, Boolean>
+        runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
+        exportInHTMLFormat: Boolean
     ) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             viewModelScope.launch {
-                exportRepo.exportToAFile()
+                exportRepo.exportToAFile(exportInHTMLFormat)
                 pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
             }
         } else {
@@ -563,7 +558,7 @@ open class SettingsScreenVM @Inject constructor(
             )) {
                 PackageManager.PERMISSION_GRANTED -> {
                     viewModelScope.launch {
-                        exportRepo.exportToAFile()
+                        exportRepo.exportToAFile(exportInHTMLFormat)
                         pushUiEvent(CommonUiEvent.ShowToast(successfullyExported.value))
                     }
                     isDialogBoxVisible.value = false
@@ -579,69 +574,6 @@ open class SettingsScreenVM @Inject constructor(
                 }
             }
         }
-    }
-
-    fun dataSection(
-        runtimePermission: ManagedActivityResultLauncher<String, Boolean>,
-        context: Context,
-        isDialogBoxVisible: MutableState<Boolean>,
-        activityResultLauncher: ManagedActivityResultLauncher<String, Uri?>,
-        importModalBtmSheetState: MutableState<Boolean>
-    ): List<SettingsUIElement> {
-        return listOf(
-            SettingsUIElement(
-                isIconNeeded = mutableStateOf(true),
-                title = importData.value,
-                doesDescriptionExists = true,
-                description = importDataFromExternalJsonFile.value,
-                isSwitchNeeded = false,
-                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
-                onSwitchStateChange = {
-                    viewModelScope.launch {
-                        if (linksRepo
-                                .isHistoryLinksTableEmpty() && linksRepo
-                                .isImpLinksTableEmpty() && linksRepo
-                                .isLinksTableEmpty() && linksRepo
-                                .isArchivedFoldersTableEmpty() && linksRepo
-                                .isFoldersTableEmpty() && linksRepo
-                                .isArchivedLinksTableEmpty()
-                        ) {
-                            activityResultLauncher.launch("text/*")
-                        } else {
-                            importModalBtmSheetState.value = true
-                        }
-                    }
-                },
-                icon = Icons.Default.FileDownload,
-                shouldFilledIconBeUsed = mutableStateOf(true)
-            ),
-            SettingsUIElement(
-                isIconNeeded = mutableStateOf(true),
-                title = exportData.value,
-                doesDescriptionExists = true,
-                description = exportDataDesc.value,
-                isSwitchNeeded = false,
-                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
-                onSwitchStateChange = {
-                    exportDataToAFile(context, isDialogBoxVisible, runtimePermission)
-                },
-                icon = Icons.Default.FileUpload,
-                shouldFilledIconBeUsed = mutableStateOf(true)
-            ),
-            SettingsUIElement(
-                isIconNeeded = mutableStateOf(true),
-                title = deleteEntireDataPermanently.value,
-                doesDescriptionExists = true,
-                description = deleteEntireDataPermanentlyDesc.value,
-                isSwitchNeeded = false,
-                isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
-                onSwitchStateChange = {
-                    shouldDeleteDialogBoxAppear.value = true
-                },
-                icon = Icons.Default.DeleteForever,
-                shouldFilledIconBeUsed = mutableStateOf(true)
-            ),
-        )
     }
 
     fun latestAppVersionRetriever(onTaskCompleted: () -> Unit) {
