@@ -21,6 +21,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
+import com.sakethh.linkora.utils.LinkoraExports
 import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -306,11 +307,16 @@ open class CollectionsScreenVM @Inject constructor(
 
             is SpecificCollectionsScreenUIEvent.UpdateFolderName -> {
                 viewModelScope.launch {
-                    foldersRepo.updateAFolderName(
-                        specificCollectionsScreenUIEvent.folderId,
-                        specificCollectionsScreenUIEvent.folderName
-                    )
-                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderInfoUpdatedSuccessfully.value))
+                    if (LinkoraExports.entries.map { it.name }
+                            .contains(specificCollectionsScreenUIEvent.folderName)) {
+                        pushAUIEvent(CommonUiEvent.ShowToast("cannot update name as it is restricted and reserved for linkora import/exports"))
+                    } else {
+                        foldersRepo.updateAFolderName(
+                            specificCollectionsScreenUIEvent.folderId,
+                            specificCollectionsScreenUIEvent.folderName
+                        )
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderInfoUpdatedSuccessfully.value))
+                    }
                 }
             }
 
@@ -366,8 +372,13 @@ open class CollectionsScreenVM @Inject constructor(
 
             is SpecificCollectionsScreenUIEvent.CreateANewFolder -> {
                 viewModelScope.launch {
-                    foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
-                    pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderCreatedSuccessfully.value))
+                    if (LinkoraExports.entries.map { it.name }
+                            .contains(specificCollectionsScreenUIEvent.foldersTable.folderName)) {
+                        pushAUIEvent(CommonUiEvent.ShowToast("Folder name is restricted and reserved for linkora exports/imports"))
+                    } else {
+                        foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderCreatedSuccessfully.value))
+                    }
                 }
             }
 

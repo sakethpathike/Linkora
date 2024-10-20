@@ -14,7 +14,7 @@ import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.models.ExportSchema
-import com.sakethh.linkora.utils.LinkoraValues
+import com.sakethh.linkora.utils.LinkoraExports
 import com.sakethh.linkora.utils.baseUrl
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.Dispatchers
@@ -330,13 +330,13 @@ class ImportImpl @Inject constructor(
                         val linkAddress = filteredDtChildElement.attribute("href").value
                         val linkTitle = filteredDtChildElement.text()
 
-                        val parentFolder =
+                        val parentFolderId =
                             if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) foldersIdStackForRetrievingDataFromHTML.peek() else -1
 
                         if (foldersNameStackForRetrievingDataFromHTML.isNotEmpty()) {
                             when (foldersNameStackForRetrievingDataFromHTML.peek()) {
 
-                                "Important Links" -> {
+                                LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORTS.name -> {
                                     linksRepo.addANewLinkToImpLinks(
                                         ImportantLinks(
                                             title = linkTitle,
@@ -348,7 +348,7 @@ class ImportImpl @Inject constructor(
                                     )
                                 }
 
-                                "History Links" -> {
+                                LinkoraExports.HISTORY_LINKS__LINKORA_EXPORTS.name -> {
                                     linksRepo.addANewLinkInRecentlyVisited(
                                         RecentlyVisited(
                                             title = linkTitle,
@@ -360,7 +360,7 @@ class ImportImpl @Inject constructor(
                                     )
                                 }
 
-                                "Archived Links" -> {
+                                LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORTS.name -> {
                                     linksRepo.addANewLinkToArchiveLink(
                                         ArchivedLinks(
                                             title = linkTitle,
@@ -385,9 +385,9 @@ class ImportImpl @Inject constructor(
                                             },
                                             imgURL = "",
                                             infoForSaving = "",
-                                            isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
-                                            isLinkedWithFolders = parentFolder != (-1).toLong(),
-                                            keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                            isLinkedWithSavedLinks = parentFolderId == (-1).toLong(),
+                                            isLinkedWithFolders = parentFolderId != (-1).toLong(),
+                                            keyOfLinkedFolderV10 = if (parentFolderId == (-1).toLong()) null else parentFolderId,
                                             keyOfLinkedFolder = null,
                                             isLinkedWithImpFolder = false,
                                             keyOfImpLinkedFolder = "",
@@ -413,9 +413,9 @@ class ImportImpl @Inject constructor(
                                     },
                                     imgURL = "",
                                     infoForSaving = "",
-                                    isLinkedWithSavedLinks = parentFolder == (-1).toLong(),
-                                    isLinkedWithFolders = parentFolder != (-1).toLong(),
-                                    keyOfLinkedFolderV10 = if (parentFolder == (-1).toLong()) null else parentFolder,
+                                    isLinkedWithSavedLinks = parentFolderId == (-1).toLong(),
+                                    isLinkedWithFolders = parentFolderId != (-1).toLong(),
+                                    keyOfLinkedFolderV10 = if (parentFolderId == (-1).toLong()) null else parentFolderId,
                                     keyOfLinkedFolder = null,
                                     isLinkedWithImpFolder = false,
                                     keyOfImpLinkedFolder = "",
@@ -435,14 +435,14 @@ class ImportImpl @Inject constructor(
                         val parentFolder =
                             if (foldersIdStackForRetrievingDataFromHTML.isNotEmpty()) foldersIdStackForRetrievingDataFromHTML.peek() else -1
 
-                        linkoraLog(folderName.toString())
-                        if (!LinkoraValues.RESTRICTED_FOLDER_NAMES.contains(folderName)) {
+                        linkoraLog("is folder archived : ${foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name}")
+                        if (!LinkoraExports.entries.map { it.name }.contains(folderName)) {
                             foldersRepo.createANewFolder(
                                 FoldersTable(
                                     folderName = folderName.toString(),
                                     infoForSaving = "",
                                     parentFolderID = if (parentFolder == (-1).toLong()) null else parentFolder,
-                                    isFolderArchived = foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == "Archived Folders"
+                                    isFolderArchived = foldersNameStackForRetrievingDataFromHTML.isNotEmpty() && foldersNameStackForRetrievingDataFromHTML.peek() == LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name
                                 )
                             )
                             foldersIdStackForRetrievingDataFromHTML.push(getLatestFoldersTableID())
@@ -491,7 +491,10 @@ class ImportImpl @Inject constructor(
             archiveFolders.forEach { currentFolder ->
                 async {
                     val foldersTable = FoldersTable(
-                        folderName = currentFolder.archiveFolderName,
+                        folderName = if (LinkoraExports.entries.map { it.name }.contains(
+                                currentFolder.archiveFolderName
+                            )
+                        ) "_" + currentFolder.archiveFolderName else currentFolder.archiveFolderName,
                         infoForSaving = currentFolder.infoForSaving,
                         parentFolderID = null,
                         isFolderArchived = true,

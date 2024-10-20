@@ -21,6 +21,7 @@ import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
+import com.sakethh.linkora.utils.LinkoraExports
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -233,8 +234,12 @@ class ArchiveScreenVM @Inject constructor(
             }
         } else {
             viewModelScope.launch {
-                foldersRepo.updateAFolderName(folderID, newTitle)
-                pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderInfoUpdatedSuccessfully.value))
+                if (!LinkoraExports.entries.map { it.name }.contains(newTitle)) {
+                    foldersRepo.updateAFolderName(folderID, newTitle)
+                    pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderInfoUpdatedSuccessfully.value))
+                } else {
+                    pushUiEvent(CommonUiEvent.ShowToast("cannot update folders data as it is restricted and reserved by linkora imports/exports"))
+                }
             }.invokeOnCompletion {
                 onTaskCompleted()
             }

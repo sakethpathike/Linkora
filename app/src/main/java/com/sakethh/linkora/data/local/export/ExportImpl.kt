@@ -6,6 +6,7 @@ import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.panels.PanelsRepo
 import com.sakethh.linkora.data.models.ExportSchema
+import com.sakethh.linkora.utils.LinkoraExports
 import com.sakethh.linkora.utils.linkoraLog
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -98,7 +99,7 @@ class ExportImpl @Inject constructor(
             var htmlFileRawText = ""
 
             // Saved Links :
-            var savedLinksSection = dtH3("Saved Links")
+            var savedLinksSection = dtH3(LinkoraExports.SAVED_LINKS__LINKORA_EXPORTS.name)
 
             var savedLinks = ""
             linksTable.filter { it.isLinkedWithSavedLinks }.forEach { savedLink ->
@@ -110,7 +111,7 @@ class ExportImpl @Inject constructor(
 
 
             // Important Links :
-            var impLinksSection = dtH3("Important Links")
+            var impLinksSection = dtH3(LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORTS.name)
 
             var impLinks = ""
             importantLinksTable.forEach { impLink ->
@@ -122,14 +123,24 @@ class ExportImpl @Inject constructor(
 
 
             // Regular Folders :
-            htmlFileRawText += dtH3("Regular Folders") + dlP(foldersSectionInHtml(null, false))
+            htmlFileRawText += dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORTS.name) + dlP(
+                foldersSectionInHtml(
+                    parentFolderId = null,
+                    forArchiveFolders = false
+                )
+            )
 
             // Archived Folders :
-            htmlFileRawText += dtH3("Archived Folders") + dlP(foldersSectionInHtml(null, true))
+            htmlFileRawText += dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORTS.name) + dlP(
+                foldersSectionInHtml(
+                    parentFolderId = null,
+                    forArchiveFolders = true
+                )
+            )
 
 
             // History Links :
-            var historyLinksSection = dtH3("History Links")
+            var historyLinksSection = dtH3(LinkoraExports.HISTORY_LINKS__LINKORA_EXPORTS.name)
 
             var historyLinks = ""
             historyLinksTable.forEach { historyLink ->
@@ -141,7 +152,7 @@ class ExportImpl @Inject constructor(
 
 
             // Archived Links :
-            var archivedLinksSection = dtH3("Archived Links")
+            var archivedLinksSection = dtH3(LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORTS.name)
 
             var archivedLinks = ""
             archivedLinksTable.forEach { archivedLink ->
