@@ -343,11 +343,11 @@
     <string name="saved_links_and_links_from_all_folders_including_archives">Saved Links and Links from All Folders (Including Archives)</string>
     <string name="regular_folders">Regular Folders</string>
     <string name="panel_folders">Panel Folders</string>
-    <string name="parsing_the_file">Parsing the File...</string>
-    <string name="inserting_data_into_the_database">Inserting Data into the Database...</string>
-    <string name="modifying_keys_to_prevent_conflicts_with_local_data">Modifying Keys to Prevent Conflicts with Local Data...</string>
+    <string name="parsing_the_file">Parsing the File…</string>
+    <string name="inserting_data_into_the_database">Inserting Data into the Database…</string>
+    <string name="modifying_keys_to_prevent_conflicts_with_local_data">Modifying Keys to Prevent Conflicts with Local Data…</string>
     <string name="importing_desc">Don\'t close the app. Data is processing and will be saved once changes are complete. Closing the app or removing it from the background will stop the operation.</string>
-    <string name="gathering_data_for_export">Gathering data for export...</string>
+    <string name="gathering_data_for_export">Gathering data for export…</string>
     <string name="data_export_desc">Keep the app open. Data is being processed and will be saved once done. Closing the app will cancel this operation. Linkora may use more of your device\'s resources during this time.</string>
     <string name="updating_folder_name_restriction">Updating the name is not possible as it is reserved for Linkora import/exports.</string>
     <string name="folder_name_restriction_desc">The folder name cannot be used as it is reserved for Linkora imports/exports.</string>
