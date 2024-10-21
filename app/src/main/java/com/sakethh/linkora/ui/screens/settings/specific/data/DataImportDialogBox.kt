@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
@@ -71,6 +72,7 @@ fun DataImportDialogBox() {
 
                 },
                 properties = DialogProperties(
+                    dismissOnClickOutside = false,
                     dismissOnBackPress = false,
                     usePlatformDefaultWidth = importRequestState.value == ImportRequestState.PARSING || importRequestState.value == ImportRequestState.ADDING_TO_DATABASE
                 )
@@ -135,6 +137,7 @@ fun DataImportDialogBox() {
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(top = 15.dp)
+                            .navigationBarsPadding()
                     ) {
                         Row(
                             modifier = Modifier

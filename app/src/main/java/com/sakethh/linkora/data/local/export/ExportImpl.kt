@@ -97,7 +97,24 @@ class ExportImpl @Inject constructor(
             )
         } else {
 
-            ExportRequestInfo.updateState(ExportRequestState.GATHERING_DATA)
+            ExportRequestInfo.totalLinksFromSavedLinks.intValue =
+                linksRepo.getAllSavedLinksAsList().size
+            ExportRequestInfo.totalLinksFromArchivedLinksTable.intValue = archivedLinksTable.size
+            ExportRequestInfo.totalLinksFromImpLinksTable.intValue = importantLinksTable.size
+            ExportRequestInfo.totalLinksFromHistoryLinksTable.intValue = historyLinksTable.size
+            ExportRequestInfo.totalRegularFoldersAndItsLinks.intValue =
+                foldersRepo.getAllRootFoldersList().size
+            ExportRequestInfo.totalArchivedFoldersAndItsLinks.intValue =
+                foldersRepo.getAllArchiveFoldersV10AsList().size
+
+            ExportRequestInfo.currentIterationOfLinksFromSavedLinks.intValue = 0
+            ExportRequestInfo.currentIterationOfLinksFromArchivedLinksTable.intValue = 0
+            ExportRequestInfo.currentIterationOfLinksFromImpLinksTable.intValue = 0
+            ExportRequestInfo.currentIterationOfLinksFromHistoryLinksTable.intValue = 0
+            ExportRequestInfo.currentIterationOfRegularFoldersAndItsLinks.intValue = 0
+            ExportRequestInfo.currentIterationOfArchivedFoldersAndItsLinks.intValue = 0
+
+
             var htmlFileRawText = ""
 
             // Saved Links :
@@ -107,7 +124,7 @@ class ExportImpl @Inject constructor(
             val savedLinksAsync = async {
                 linksRepo.getAllSavedLinksAsList().forEach { savedLink ->
                     savedLinks += dtA(linkTitle = savedLink.title, link = savedLink.webURL)
-                    linkoraLog("saved link in ${savedLink.id}")
+                    ++ExportRequestInfo.currentIterationOfLinksFromSavedLinks.intValue
                 }
             }
 
@@ -118,7 +135,7 @@ class ExportImpl @Inject constructor(
             val impLinksAsync = async {
                 importantLinksTable.forEach { impLink ->
                     impLinks += dtA(linkTitle = impLink.title, link = impLink.webURL)
-                    linkoraLog("imp link in ${impLink.id}")
+                    ++ExportRequestInfo.currentIterationOfLinksFromImpLinksTable.intValue
                 }
             }
 
@@ -149,6 +166,7 @@ class ExportImpl @Inject constructor(
             val historyLinksAsync = async {
                 historyLinksTable.forEach { historyLink ->
                     historyLinks += dtA(linkTitle = historyLink.title, link = historyLink.webURL)
+                    ++ExportRequestInfo.currentIterationOfLinksFromHistoryLinksTable.intValue
                 }
             }
 
@@ -159,6 +177,7 @@ class ExportImpl @Inject constructor(
             val archivedLinksAsync = async {
                 archivedLinksTable.forEach { archivedLink ->
                     archivedLinks += dtA(linkTitle = archivedLink.title, link = archivedLink.webURL)
+                    ++ExportRequestInfo.currentIterationOfLinksFromArchivedLinksTable.intValue
                 }
             }
 
@@ -233,6 +252,13 @@ class ExportImpl @Inject constructor(
             linkoraLog("folder in ${childFolder.id}")
             val nestedFolderHTML = foldersSectionInHtml(childFolder.id, forArchiveFolders)
             foldersSection += currentFolderDTH3 + dlP(folderLinksDTA + nestedFolderHTML)
+            if (childFolder.parentFolderID == null) {
+                if (forArchiveFolders) {
+                    ++ExportRequestInfo.currentIterationOfArchivedFoldersAndItsLinks.intValue
+                } else {
+                    ++ExportRequestInfo.currentIterationOfRegularFoldersAndItsLinks.intValue
+                }
+            }
         }
         return foldersSection
     }

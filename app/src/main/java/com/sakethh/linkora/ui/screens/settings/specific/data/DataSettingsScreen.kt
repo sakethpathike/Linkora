@@ -63,6 +63,7 @@ import com.sakethh.linkora.LocalizedStrings.data
 import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanently
 import com.sakethh.linkora.LocalizedStrings.deleteEntireDataPermanentlyDesc
 import com.sakethh.linkora.LocalizedStrings.deletedEntireDataFromTheLocalDatabase
+import com.sakethh.linkora.data.local.export.ExportRequestInfo
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
@@ -205,6 +206,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
+                            ExportRequestInfo.isHTMLBasedRequest.value = false
                             settingsScreenVM.exportDataToAFile(
                                 context = context,
                                 isDialogBoxVisible = isPermissionDialogBoxVisible,
@@ -227,6 +229,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
+                            ExportRequestInfo.isHTMLBasedRequest.value = true
                             settingsScreenVM.exportDataToAFile(
                                 context = context,
                                 isDialogBoxVisible = isPermissionDialogBoxVisible,
