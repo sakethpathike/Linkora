@@ -2,6 +2,7 @@ package com.sakethh.linkora.ui.screens.settings.specific.advanced.site_specific_
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.SiteSpecificUserAgent
 import com.sakethh.linkora.data.local.links.LinksRepo
 import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserAgentRepo
@@ -38,7 +39,7 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
     fun addANewSiteSpecificUserAgent(domain: String, userAgent: String) {
         viewModelScope.launch {
             if (siteSpecificUserAgentRepo.doesThisDomainExists(domain)) {
-                _uiEvent.send(CommonUiEvent.ShowToast("given domain already exists"))
+                _uiEvent.send(CommonUiEvent.ShowToast(LocalizedStrings.givenDomainAlreadyExists.value))
             } else {
                 siteSpecificUserAgentRepo.addANewSiteSpecificUserAgent(
                     siteSpecificUserAgent = SiteSpecificUserAgent(
@@ -47,7 +48,7 @@ class SiteSpecificUserAgentScreenVM @Inject constructor(
                     )
                 )
                 updateUserAgentInLinkBasedTables(domain, userAgent)
-                _uiEvent.send(CommonUiEvent.ShowToast("added the given domain successfully"))
+                _uiEvent.send(CommonUiEvent.ShowToast(LocalizedStrings.addedTheGivenDomainSuccessfully.toString()))
             }
         }
     }

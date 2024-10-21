@@ -1066,6 +1066,86 @@ object LocalizedStrings : ViewModel() {
     val linksSelected =
         _linksSelected
 
+    private val _panels = mutableStateOf("")
+    val panels =
+        _panels
+
+    private val _givenDomainAlreadyExists = mutableStateOf("")
+    val givenDomainAlreadyExists =
+        _givenDomainAlreadyExists
+
+    private val _addedTheGivenDomainSuccessfully = mutableStateOf("")
+    val addedTheGivenDomainSuccessfully =
+        _addedTheGivenDomainSuccessfully
+
+    private val _import = mutableStateOf("")
+    val import =
+        _import
+
+    private val _importUsingJsonFile = mutableStateOf("")
+    val importUsingJsonFile =
+        _importUsingJsonFile
+
+    private val _importUsingJsonFileDesc = mutableStateOf("")
+    val importUsingJsonFileDesc =
+        _importUsingJsonFileDesc
+
+    private val _importDataFromHtmlFile = mutableStateOf("")
+    val importDataFromHtmlFile =
+        _importDataFromHtmlFile
+
+    private val _importDataFromHtmlFileDesc = mutableStateOf("")
+    val importDataFromHtmlFileDesc =
+        _importDataFromHtmlFileDesc
+
+    private val _export = mutableStateOf("")
+    val export =
+        _export
+
+    private val _exportDataAsJson = mutableStateOf("")
+    val exportDataAsJson =
+        _exportDataAsJson
+
+    private val _exportDataAsJsonDesc = mutableStateOf("")
+    val exportDataAsJsonDesc =
+        _exportDataAsJsonDesc
+
+    private val _exportDataAsHtml = mutableStateOf("")
+    val exportDataAsHtml =
+        _exportDataAsHtml
+
+    private val _exportDataAsHtmlDesc = mutableStateOf("")
+    val exportDataAsHtmlDesc =
+        _exportDataAsHtmlDesc
+
+    private val _savedLinksAndLinksFromAllFoldersIncludingArchives = mutableStateOf("")
+    val savedLinksAndLinksFromAllFoldersIncludingArchives =
+        _savedLinksAndLinksFromAllFoldersIncludingArchives
+
+    private val _regularFolders = mutableStateOf("")
+    val regularFolders =
+        _regularFolders
+
+    private val _panelFolders = mutableStateOf("")
+    val panelFolders =
+        _panelFolders
+
+    private val _parsingTheFile = mutableStateOf("")
+    val parsingTheFile =
+        _parsingTheFile
+
+    private val _insertingDataIntoTheDatabase = mutableStateOf("")
+    val insertingDataIntoTheDatabase =
+        _insertingDataIntoTheDatabase
+
+    private val _modifyingKeysToPreventConflictsWithLocalData = mutableStateOf("")
+    val modifyingKeysToPreventConflictsWithLocalData =
+        _modifyingKeysToPreventConflictsWithLocalData
+
+    private val _importingDesc = mutableStateOf("")
+    val importingDesc =
+        _importingDesc
+
     private var count = 0
 
     private suspend fun loadStringsHelper(
@@ -1099,6 +1179,186 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "importing_desc",
+                        localId = R.string.importing_desc,
+                        mutableString = _importingDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "modifying_keys_to_prevent_conflicts_with_local_data",
+                        localId = R.string.modifying_keys_to_prevent_conflicts_with_local_data,
+                        mutableString = _modifyingKeysToPreventConflictsWithLocalData,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "inserting_data_into_the_database",
+                        localId = R.string.inserting_data_into_the_database,
+                        mutableString = _insertingDataIntoTheDatabase,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "parsing_the_file",
+                        localId = R.string.parsing_the_file,
+                        mutableString = _parsingTheFile,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "panel_folders",
+                        localId = R.string.panel_folders,
+                        mutableString = _panelFolders,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "regular_folders",
+                        localId = R.string.regular_folders,
+                        mutableString = _regularFolders,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "saved_links_and_links_from_all_folders_including_archives",
+                        localId = R.string.saved_links_and_links_from_all_folders_including_archives,
+                        mutableString = _savedLinksAndLinksFromAllFoldersIncludingArchives,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data_as_html_desc",
+                        localId = R.string.export_data_as_html_desc,
+                        mutableString = _exportDataAsHtmlDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data_as_html",
+                        localId = R.string.export_data_as_html,
+                        mutableString = _exportDataAsHtml,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data_as_json_desc",
+                        localId = R.string.export_data_as_json_desc,
+                        mutableString = _exportDataAsJsonDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export_data_as_json",
+                        localId = R.string.export_data_as_json,
+                        mutableString = _exportDataAsJson,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "export",
+                        localId = R.string.export,
+                        mutableString = _export,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_from_html_file_desc",
+                        localId = R.string.import_data_from_html_file_desc,
+                        mutableString = _importDataFromHtmlFileDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_data_from_html_file",
+                        localId = R.string.import_data_from_html_file,
+                        mutableString = _importDataFromHtmlFile,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_using_json_file_desc",
+                        localId = R.string.import_using_json_file_desc,
+                        mutableString = _importUsingJsonFileDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "import_using_json_file",
+                        localId = R.string.import_using_json_file,
+                        mutableString = _importUsingJsonFile,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "_import",
+                        localId = R.string._import,
+                        mutableString = _import,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "given_domain_already_exists",
+                        localId = R.string.given_domain_already_exists,
+                        mutableString = _givenDomainAlreadyExists,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "added_the_given_domain_successfully",
+                        localId = R.string.added_the_given_domain_successfully,
+                        mutableString = _addedTheGivenDomainSuccessfully,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "panels",
+                        localId = R.string.panels,
+                        mutableString = _panels,
+                        context = context
+                    )
+                },
                 async {
                     loadStringsHelper(
                         translationsRepo = translationsRepo,

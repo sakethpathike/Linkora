@@ -44,6 +44,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.restore.ImportRequestResult
 import com.sakethh.linkora.data.local.restore.ImportRequestState
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -90,7 +91,7 @@ fun DataImportDialogBox() {
                         .verticalScroll(rememberScrollState())
                 ) {
                     Text(
-                        text = if (importRequestState.value == ImportRequestState.PARSING) "Parsing the file..." else if (importRequestState.value == ImportRequestState.ADDING_TO_DATABASE) "Adding Data to the Database..." else "Modifying keys to avoid conflicts with existing local data...",
+                        text = if (importRequestState.value == ImportRequestState.PARSING) LocalizedStrings.parsingTheFile.value else if (importRequestState.value == ImportRequestState.ADDING_TO_DATABASE) LocalizedStrings.insertingDataIntoTheDatabase.value else LocalizedStrings.modifyingKeysToPreventConflictsWithLocalData.value,
                         style = MaterialTheme.typography.titleMedium,
                         fontSize = 20.sp
                     )
@@ -161,7 +162,7 @@ fun DataImportDialogBox() {
                                 )
                             }
                             Text(
-                                text = "Please keep the app open. Data is still being processed. Linkora will save it once the modification is complete. Closing the app or removing it from the background will cancel this operation.",
+                                text = LocalizedStrings.importingDesc.value,
                                 style = MaterialTheme.typography.titleSmall,
                                 fontSize = 14.sp,
                                 lineHeight = 18.sp,
@@ -180,42 +181,42 @@ fun DataImportDialogBox() {
 class DataImportDialogBoxVM : ViewModel() {
     fun dataImportSection() = listOf(
         DataImportDialogBox(
-            itemType = "Saved Links and Links from folders (including archived folders)",
+            itemType = LocalizedStrings.savedLinksAndLinksFromAllFoldersIncludingArchives.value,
             totalDetectedSize = ImportRequestResult.totalLinksFromLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Archived Links",
+            itemType = LocalizedStrings.archivedLinks.value,
             totalDetectedSize = ImportRequestResult.totalLinksFromArchivedLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromArchivedLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Important Links",
+            itemType = LocalizedStrings.importantLinks.value,
             totalDetectedSize = ImportRequestResult.totalLinksFromImpLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromImpLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "History Links",
+            itemType = LocalizedStrings.linksFromHistory.value,
             totalDetectedSize = ImportRequestResult.totalLinksFromHistoryLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfLinksFromHistoryLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Regular Folders",
+            itemType = LocalizedStrings.regularFolders.value,
             totalDetectedSize = ImportRequestResult.totalRegularFolders.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfRegularFolders.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Archived Folders",
+            itemType = LocalizedStrings.archivedFolders.value,
             totalDetectedSize = ImportRequestResult.totalArchivedFolders.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfArchivedFolders.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Panels",
+            itemType = LocalizedStrings.panels.value,
             totalDetectedSize = ImportRequestResult.totalPanels.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfPanels.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "Panel Folders",
+            itemType = LocalizedStrings.panelFolders.value,
             totalDetectedSize = ImportRequestResult.totalPanelFolders.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ImportRequestResult.currentIterationOfPanelFolders.intValue.toLong())
         ),

@@ -141,7 +141,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             }
             item {
                 Text(
-                    text = "Import",
+                    text = LocalizedStrings.import.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 16.sp,
                     lineHeight = 20.sp,
@@ -154,9 +154,9 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 RegularSettingComponent(
                     SettingsUIElement(
                         isIconNeeded = rememberSaveable { mutableStateOf(true) },
-                        title = "Import data from JSON file",
+                        title = LocalizedStrings.importUsingJsonFile.value,
                         doesDescriptionExists = true,
-                        description = "Import data from external JSON file which is based on Linkora Schema",
+                        description = LocalizedStrings.importUsingJsonFileDesc.value,
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
@@ -172,9 +172,9 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 RegularSettingComponent(
                     SettingsUIElement(
                         isIconNeeded = rememberSaveable { mutableStateOf(true) },
-                        title = "Import from HTML file",
+                        title = LocalizedStrings.importDataFromHtmlFile.value,
                         doesDescriptionExists = true,
-                        description = "Import data from an external HTML file which follows standard bookmarks import/export",
+                        description = LocalizedStrings.importDataFromHtmlFileDesc.value,
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
@@ -188,7 +188,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
             }
             item {
                 Text(
-                    text = "Export",
+                    text = LocalizedStrings.export.value,
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 16.sp,
                     lineHeight = 20.sp,
@@ -200,9 +200,9 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 RegularSettingComponent(
                     SettingsUIElement(
                         isIconNeeded = rememberSaveable { mutableStateOf(true) },
-                        title = "Export data in JSON format",
+                        title = LocalizedStrings.exportDataAsJson.value,
                         doesDescriptionExists = true,
-                        description = "Export all of your data data in JSON format",
+                        description = LocalizedStrings.exportDataAsJsonDesc.value,
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
@@ -223,9 +223,9 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 RegularSettingComponent(
                     SettingsUIElement(
                         isIconNeeded = rememberSaveable { mutableStateOf(true) },
-                        title = "Export data in HTML format",
+                        title = LocalizedStrings.exportDataAsHtml.value,
                         doesDescriptionExists = true,
-                        description = "Export all of your data (excluding Panels) data in HTML format",
+                        description = LocalizedStrings.exportDataAsHtmlDesc.value,
                         isSwitchNeeded = false,
                         isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
                         onSwitchStateChange = {

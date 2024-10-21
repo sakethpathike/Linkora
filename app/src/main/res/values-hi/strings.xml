@@ -328,4 +328,24 @@
     <string name="use_amoled_theme">एमोलेड थीम का उपयोग करें</string>
     <string name="_folders_selected">"चयनित फ़ोल्डर : "</string>
     <string name="links_selected">"चयनित लिंक : "</string>
+    <string name="panels">Panels</string>
+    <string name="given_domain_already_exists">given domain already exists</string>
+    <string name="added_the_given_domain_successfully">added the given domain successfully</string>
+    <string name="_import">Import</string>
+    <string name="import_using_json_file">Import using JSON file</string>
+    <string name="import_using_json_file_desc">Import data from external JSON file based on Linkora Schema</string>
+    <string name="import_data_from_html_file">Import data from HTML file</string>
+    <string name="import_data_from_html_file_desc">Import data from an external HTML file that follows the standard bookmarks import/export format.</string>
+    <string name="export">Export</string>
+    <string name="export_data_as_json">Export Data as JSON</string>
+    <string name="export_data_as_json_desc">Export All Data to a JSON File</string>
+    <string name="export_data_as_html">Export Data as HTML</string>
+    <string name="export_data_as_html_desc">Export All Your Data (Excluding Panels) as HTML File</string>
+    <string name="saved_links_and_links_from_all_folders_including_archives">Saved Links and Links from All Folders (Including Archives)</string>
+    <string name="regular_folders">Regular Folders</string>
+    <string name="panel_folders">Panel Folders</string>
+    <string name="parsing_the_file">Parsing the File...</string>
+    <string name="inserting_data_into_the_database">Inserting Data into the Database...</string>
+    <string name="modifying_keys_to_prevent_conflicts_with_local_data">Modifying Keys to Prevent Conflicts with Local Data...</string>
+    <string name="importing_desc">Don\'t close the app. Data is processing and will be saved once changes are complete. Closing the app or removing it from the background will stop the operation.</string>
 </resources>

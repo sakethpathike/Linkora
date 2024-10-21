@@ -48,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.LocalizedStrings.foldersListedInThisPanel
 import com.sakethh.linkora.LocalizedStrings.noFoldersFoundInThisPanel
 import com.sakethh.linkora.LocalizedStrings.youCanAddTheFollowingFoldersToThisPanel
@@ -104,7 +105,7 @@ fun SpecificPanelScreen(navController: NavController) {
                         .padding(15.dp)
                 ) {
                     Text(
-                        text = "Panels",
+                        text = LocalizedStrings.panels.value,
                         style = MaterialTheme.typography.titleLarge,
                         fontSize = 16.sp,
                         modifier = Modifier.clickable {
