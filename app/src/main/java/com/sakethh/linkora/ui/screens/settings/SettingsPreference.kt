@@ -25,8 +25,8 @@ import java.util.UUID
 
 object SettingsPreference : ViewModel() {
 
-    const val APP_VERSION_NAME = "v0.9.0"
-    private const val APP_VERSION_CODE = 31
+    const val APP_VERSION_NAME = "v0.10.0"
+    private const val APP_VERSION_CODE = 32
 
     val Context.dataStore by preferencesDataStore("linkoraDataStore")
 
