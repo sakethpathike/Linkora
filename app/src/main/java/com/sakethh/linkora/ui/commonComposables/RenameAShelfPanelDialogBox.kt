@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.screens.panels.PanelsScreenVM
 
 @Composable
 fun RenameAShelfPanelDialogBox(
@@ -45,10 +46,10 @@ fun RenameAShelfPanelDialogBox(
             },
             title = {
                 Text(
-                    text = ""/* LocalizedStrings.editPanelName.value.replace(
+                    text = LocalizedStrings.editPanelName.value.replace(
                         "\$\$\$\$",
-                        ShelfBtmSheetVM.selectedShelfData.shelfName
-                    )*/,
+                        PanelsScreenVM.selectedPanelData.panelName
+                    ),
                     style = MaterialTheme.typography.titleMedium,
                     fontSize = 22.sp,
                     lineHeight = 27.sp,

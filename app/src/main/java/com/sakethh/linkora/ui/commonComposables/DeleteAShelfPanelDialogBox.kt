@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings
+import com.sakethh.linkora.ui.screens.panels.PanelsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 data class DeleteAShelfDialogBoxParam(
@@ -55,10 +56,10 @@ fun DeleteAShelfPanelDialogBox(deleteAShelfDialogBoxParam: DeleteAShelfDialogBox
                     }
                 }, title = {
                     Text(
-                        text = ""/*LocalizedStrings.areYouSureWantToDeleteThePanel.value.replace(
+                        text = LocalizedStrings.areYouSureWantToDeleteThePanel.value.replace(
                             "\$\$\$\$",
-                            ShelfBtmSheetVM.selectedShelfData.shelfName
-                        )*/, style = MaterialTheme.typography.titleMedium,
+                            PanelsScreenVM.selectedPanelData.panelName
+                        ), style = MaterialTheme.typography.titleMedium,
                         fontSize = 22.sp,
                         lineHeight = 28.sp,
                         textAlign = TextAlign.Start
