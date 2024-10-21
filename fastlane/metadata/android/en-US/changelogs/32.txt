@@ -1,0 +1,9 @@
+- HTML-based imports/exports added (browser-standard).
+- Folders can be created while saving links in subfolders.
+- New import/export dialog boxes show progress.
+- JSON exports now include panel data.
+- Option to disable data fetching for direct link saving.
+- Improved subfolder loading for link saving.
+- Improved JSON import/export functionality.
+
+For detailed release notes, visit: https://github.com/sakethpathike/Linkora/releases/tag/release-v0.10.0
