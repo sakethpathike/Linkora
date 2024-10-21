@@ -107,6 +107,7 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.utils.TempValues
 import com.sakethh.linkora.utils.isAValidURL
 import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.EntryPoint
@@ -348,7 +349,7 @@ fun AddANewLinkDialogBox(
                                 })
                         }
                         item {
-                            if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
+                            if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -381,7 +382,7 @@ fun AddANewLinkDialogBox(
                                             )
                                         }
                                         Text(
-                                            text = LocalizedStrings.titleWillBeAutomaticallyDetected.value,
+                                            text = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) LocalizedStrings.titleWillBeAutomaticallyDetected.value else "No data will be fetched as this setting is enabled.",
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 14.sp,
                                             lineHeight = 18.sp,
@@ -549,7 +550,7 @@ fun AddANewLinkDialogBox(
 
                         }
                         item {
-                            if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
+                            if (!TempValues.forceSaveWithoutFetchingAnyMetaData.value && !SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
                                 Row(
                                     modifier = Modifier
                                         .padding(top = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp)
@@ -568,6 +569,10 @@ fun AddANewLinkDialogBox(
                                         checked = isAutoDetectTitleEnabled.value,
                                         onCheckedChange = {
                                             isAutoDetectTitleEnabled.value = it
+                                            if (it) {
+                                                TempValues.forceSaveWithoutFetchingAnyMetaData.value =
+                                                    false
+                                            }
                                         })
                                     Text(
                                         text = LocalizedStrings.forceAutoDetectTitle.value,
@@ -578,6 +583,40 @@ fun AddANewLinkDialogBox(
                             }
                         }
                         item {
+                            if (!isAutoDetectTitleEnabled.value && !SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
+                                Row(
+                                    modifier = Modifier
+                                        .padding(top = 10.dp)
+                                        .fillMaxWidth()
+                                        .clickable {
+                                            if (!isDataExtractingForTheLink) {
+                                                TempValues.forceSaveWithoutFetchingAnyMetaData.value =
+                                                    !TempValues.forceSaveWithoutFetchingAnyMetaData.value
+                                            }
+                                        }
+                                        .padding(
+                                            start = 10.dp, end = 20.dp
+                                        ), verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    androidx.compose.material3.Checkbox(enabled = !isDataExtractingForTheLink,
+                                        checked = TempValues.forceSaveWithoutFetchingAnyMetaData.value,
+                                        onCheckedChange = {
+                                            TempValues.forceSaveWithoutFetchingAnyMetaData.value =
+                                                it
+                                            if (it) {
+                                                isAutoDetectTitleEnabled.value = false
+                                            }
+                                        })
+                                    Text(
+                                        text = "Force Save without fetching metadata",
+                                        style = MaterialTheme.typography.titleSmall,
+                                        fontSize = 16.sp
+                                    )
+                                }
+                            }
+                            Spacer(Modifier.height(10.dp))
+                        }
+                        item {
                             if (!isDataExtractingForTheLink) {
                                 OutlinedButton(colors = ButtonDefaults.outlinedButtonColors(),
                                     border = BorderStroke(
@@ -586,13 +625,13 @@ fun AddANewLinkDialogBox(
                                     modifier = Modifier
                                         .padding(
                                             end = 20.dp,
-                                            top = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp,
                                             start = 20.dp
                                         )
                                         .fillMaxWidth()
                                         .pulsateEffect(),
                                     onClick = {
                                         shouldDialogBoxAppear.value = false
+                                        TempValues.forceSaveWithoutFetchingAnyMetaData.value = false
                                     }) {
                                     Text(
                                         text = LocalizedStrings.cancel.value,
@@ -627,7 +666,7 @@ fun AddANewLinkDialogBox(
                                         fontSize = 16.sp
                                     )
                                 }
-                                if (isAValidURL(linkTextFieldValue.value)) {
+                                if (isAValidURL(linkTextFieldValue.value) && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value && !TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(20.dp),
                                         thickness = 1.dp,

@@ -10,6 +10,7 @@ import androidx.compose.material.icons.automirrored.filled.ShortText
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Image
 import androidx.compose.material.icons.filled.OpenInBrowser
+import androidx.compose.material.icons.filled.PublicOff
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material.icons.filled.SystemUpdateAlt
 import androidx.compose.runtime.MutableState
@@ -464,6 +465,41 @@ open class SettingsScreenVM @Inject constructor(
                             ), dataStore = context.dataStore, newValue = it
                         )
                         SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
+
+                        if (it) {
+                            SettingsPreference.changeSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(
+                                    SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
+                                ), dataStore = context.dataStore, newValue = false
+                            )
+                            SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value = false
+                        }
+                    }
+                }), SettingsUIElement(
+                title = "Force-save links without fetching metadata",
+                doesDescriptionExists = true,
+                description = "Link will be saved as you save it, nothing gets fetched. Note that this will impact on refreshing links from link menu, link will NOT be refreshed if this is enabled.",
+                isSwitchNeeded = true,
+                isSwitchEnabled = SettingsPreference.forceSaveWithoutFetchingAnyMetaData,
+                isIconNeeded = mutableStateOf(true),
+                icon = Icons.Default.PublicOff,
+                onSwitchStateChange = {
+                    viewModelScope.launch {
+                        SettingsPreference.changeSettingPreferenceValue(
+                            preferenceKey = booleanPreferencesKey(
+                                SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
+                            ), dataStore = context.dataStore, newValue = it
+                        )
+                        SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value = it
+
+                        if (it) {
+                            SettingsPreference.changeSettingPreferenceValue(
+                                preferenceKey = booleanPreferencesKey(
+                                    SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
+                                ), dataStore = context.dataStore, newValue = false
+                            )
+                            SettingsPreference.isAutoDetectTitleForLinksEnabled.value = false
+                        }
                     }
                 }), SettingsUIElement(
                 title = LocalizedStrings.showAssociatedImageInLinkMenu.value,

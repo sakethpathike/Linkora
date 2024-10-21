@@ -66,6 +66,7 @@ object SettingsPreference : ViewModel() {
     val enableBaseURLForNonListViews = mutableStateOf(true)
     val enableFadedEdgeForNonListViews = mutableStateOf(true)
     val shouldFollowAmoledTheme = mutableStateOf(false)
+    val forceSaveWithoutFetchingAnyMetaData = mutableStateOf(false)
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -217,6 +218,12 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
                         dataStore = context.dataStore
                     ) ?: false
+                },
+                async {
+                    forceSaveWithoutFetchingAnyMetaData.value = readSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name),
+                        dataStore = context.dataStore
+                    ) ?: forceSaveWithoutFetchingAnyMetaData.value
                 },
                 async {
                     preferredAppLanguageName.value = readSettingPreferenceValue(

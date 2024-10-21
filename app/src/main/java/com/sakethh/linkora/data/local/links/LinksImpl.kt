@@ -22,6 +22,7 @@ import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.utils.TempValues
 import com.sakethh.linkora.utils.isAValidURL
 import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.utils.sanitizeLink
@@ -139,6 +140,12 @@ class LinksImpl @Inject constructor(
                 } else {
                     CommonUiEvent.ShowToast(couldNotRetrieveMetadataNowButLinkoraSavedTheLink.value)
                 }
+            }
+
+            if (SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value || TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
+                saveWithGivenData()
+                TempValues.forceSaveWithoutFetchingAnyMetaData.value = false
+                return CommonUiEvent.ShowToast("saved without fetching metadata")
             }
 
             if (RequestResult.isThisFirstRequest) {
