@@ -96,77 +96,95 @@ class ExportImpl @Inject constructor(
                 )
             )
         } else {
+
+            ExportRequestInfo.updateState(ExportRequestState.GATHERING_DATA)
             var htmlFileRawText = ""
 
             // Saved Links :
-            ExportRequestInfo.updateState(ExportRequestState.READING_SAVED_LINKS)
             var savedLinksSection = dtH3(LinkoraExports.SAVED_LINKS__LINKORA_EXPORT.name)
 
             var savedLinks = ""
-            linksRepo.getAllSavedLinksAsList().forEach { savedLink ->
-                savedLinks += dtA(linkTitle = savedLink.title, link = savedLink.webURL)
-                linkoraLog("saved link in ${savedLink.id}")
+            val savedLinksAsync = async {
+                linksRepo.getAllSavedLinksAsList().forEach { savedLink ->
+                    savedLinks += dtA(linkTitle = savedLink.title, link = savedLink.webURL)
+                    linkoraLog("saved link in ${savedLink.id}")
+                }
             }
 
-            savedLinksSection += dlP(savedLinks)
-            htmlFileRawText += savedLinksSection
-
-
             // Important Links :
-            ExportRequestInfo.updateState(ExportRequestState.READING_IMPORTANT_LINKS)
             var impLinksSection = dtH3(LinkoraExports.IMPORTANT_LINKS__LINKORA_EXPORT.name)
 
             var impLinks = ""
-            importantLinksTable.forEach { impLink ->
-                impLinks += dtA(linkTitle = impLink.title, link = impLink.webURL)
-                linkoraLog("imp link in ${impLink.id}")
+            val impLinksAsync = async {
+                importantLinksTable.forEach { impLink ->
+                    impLinks += dtA(linkTitle = impLink.title, link = impLink.webURL)
+                    linkoraLog("imp link in ${impLink.id}")
+                }
             }
-
-            impLinksSection += dlP(impLinks)
-            htmlFileRawText += impLinksSection
 
 
             // Regular Folders :
-            ExportRequestInfo.updateState(ExportRequestState.READING_REGULAR_FOLDERS)
-            htmlFileRawText += dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORT.name) + dlP(
-                foldersSectionInHtml(
-                    parentFolderId = null,
-                    forArchiveFolders = false
+            val regularFoldersAndRespectiveLinksAsync = async {
+                dtH3(LinkoraExports.REGULAR_FOLDERS__LINKORA_EXPORT.name) + dlP(
+                    foldersSectionInHtml(
+                        parentFolderId = null,
+                        forArchiveFolders = false
+                    )
                 )
-            )
-
+            }
             // Archived Folders :
-            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_FOLDERS)
-            htmlFileRawText += dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name) + dlP(
-                foldersSectionInHtml(
-                    parentFolderId = null,
-                    forArchiveFolders = true
+            val archivedFoldersAndRespectiveLinksAsync = async {
+                dtH3(LinkoraExports.ARCHIVED_FOLDERS__LINKORA_EXPORT.name) + dlP(
+                    foldersSectionInHtml(
+                        parentFolderId = null,
+                        forArchiveFolders = true
+                    )
                 )
-            )
-
+            }
 
             // History Links :
-            ExportRequestInfo.updateState(ExportRequestState.READING_HISTORY_LINKS)
             var historyLinksSection = dtH3(LinkoraExports.HISTORY_LINKS__LINKORA_EXPORT.name)
 
             var historyLinks = ""
-            historyLinksTable.forEach { historyLink ->
-                historyLinks += dtA(linkTitle = historyLink.title, link = historyLink.webURL)
+            val historyLinksAsync = async {
+                historyLinksTable.forEach { historyLink ->
+                    historyLinks += dtA(linkTitle = historyLink.title, link = historyLink.webURL)
+                }
             }
 
-            historyLinksSection += dlP(historyLinks)
-            htmlFileRawText += historyLinksSection
-
-
             // Archived Links :
-            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_LINKS)
             var archivedLinksSection = dtH3(LinkoraExports.ARCHIVED_LINKS__LINKORA_EXPORT.name)
 
             var archivedLinks = ""
-            archivedLinksTable.forEach { archivedLink ->
-                archivedLinks += dtA(linkTitle = archivedLink.title, link = archivedLink.webURL)
+            val archivedLinksAsync = async {
+                archivedLinksTable.forEach { archivedLink ->
+                    archivedLinks += dtA(linkTitle = archivedLink.title, link = archivedLink.webURL)
+                }
             }
 
+            ExportRequestInfo.updateState(ExportRequestState.READING_SAVED_LINKS)
+            savedLinksAsync.await()
+            savedLinksSection += dlP(savedLinks)
+            htmlFileRawText += savedLinksSection
+
+            ExportRequestInfo.updateState(ExportRequestState.READING_IMPORTANT_LINKS)
+            impLinksAsync.await()
+            impLinksSection += dlP(impLinks)
+            htmlFileRawText += impLinksSection
+
+            ExportRequestInfo.updateState(ExportRequestState.READING_REGULAR_FOLDERS)
+            htmlFileRawText += regularFoldersAndRespectiveLinksAsync.await()
+
+            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_FOLDERS)
+            htmlFileRawText += archivedFoldersAndRespectiveLinksAsync.await()
+
+            ExportRequestInfo.updateState(ExportRequestState.READING_HISTORY_LINKS)
+            historyLinksAsync.await()
+            historyLinksSection += dlP(historyLinks)
+            htmlFileRawText += historyLinksSection
+
+            ExportRequestInfo.updateState(ExportRequestState.READING_ARCHIVED_LINKS)
+            archivedLinksAsync.await()
             archivedLinksSection += dlP(archivedLinks)
             htmlFileRawText += archivedLinksSection
 
