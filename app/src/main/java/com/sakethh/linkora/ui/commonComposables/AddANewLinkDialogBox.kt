@@ -382,7 +382,7 @@ fun AddANewLinkDialogBox(
                                             )
                                         }
                                         Text(
-                                            text = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) LocalizedStrings.titleWillBeAutomaticallyDetected.value else "No data will be fetched as this setting is enabled.",
+                                            text = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) LocalizedStrings.titleWillBeAutomaticallyDetected.value else LocalizedStrings.noDataWillBeRetrievedBecauseThisSettingIsEnabled.value,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 14.sp,
                                             lineHeight = 18.sp,
@@ -608,7 +608,7 @@ fun AddANewLinkDialogBox(
                                             }
                                         })
                                     Text(
-                                        text = "Force Save without fetching metadata",
+                                        text = LocalizedStrings.forceSaveWithoutRetrievingMetadata.value,
                                         style = MaterialTheme.typography.titleSmall,
                                         fontSize = 16.sp
                                     )

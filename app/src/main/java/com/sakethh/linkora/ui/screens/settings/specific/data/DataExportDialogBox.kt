@@ -43,6 +43,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.data.local.export.ExportRequestInfo
 import com.sakethh.linkora.data.local.export.ExportRequestState
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -100,7 +101,7 @@ fun DataExportDialogBox() {
                         )
                     } else {
                         Text(
-                            text = "Collecting the data for exporting...",
+                            text = LocalizedStrings.gatheringDataForExport.value,
                             style = MaterialTheme.typography.titleMedium,
                             fontSize = 20.sp
                         )
@@ -161,7 +162,7 @@ fun DataExportDialogBox() {
                                     )
                                 }
                                 Text(
-                                    text = "Please keep the app open. Data is still being processed. Linkora will save it once the modification is complete. Closing the app or removing it from the background will cancel this operation.",
+                                    text = LocalizedStrings.dataExportDesc.value,
                                     style = MaterialTheme.typography.titleSmall,
                                     fontSize = 14.sp,
                                     lineHeight = 18.sp,
@@ -182,32 +183,32 @@ class DataExportDialogBoxVM : ViewModel() {
 
     fun dataExportSection() = listOf(
         DataImportDialogBox(
-            itemType = "READING_SAVED_LINKS",
+            itemType = LocalizedStrings.savedLinks.value,
             totalDetectedSize = ExportRequestInfo.totalLinksFromSavedLinks.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfLinksFromSavedLinks.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "READING_IMPORTANT_LINKS",
+            itemType = LocalizedStrings.importantLinks.value,
             totalDetectedSize = ExportRequestInfo.totalLinksFromImpLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfLinksFromImpLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "READING_HISTORY_LINKS",
+            itemType = LocalizedStrings.linksFromHistory.value,
             totalDetectedSize = ExportRequestInfo.totalLinksFromHistoryLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfLinksFromHistoryLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "READING_ARCHIVED_LINKS",
+            itemType = LocalizedStrings.archivedLinks.value,
             totalDetectedSize = ExportRequestInfo.totalLinksFromArchivedLinksTable.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfLinksFromArchivedLinksTable.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "READING_REGULAR_FOLDERS",
+            itemType = LocalizedStrings.regularFolders.value,
             totalDetectedSize = ExportRequestInfo.totalRegularFoldersAndItsLinks.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfRegularFoldersAndItsLinks.intValue.toLong())
         ),
         DataImportDialogBox(
-            itemType = "READING_ARCHIVED_FOLDERS",
+            itemType = LocalizedStrings.archivedFolders.value,
             totalDetectedSize = ExportRequestInfo.totalArchivedFoldersAndItsLinks.intValue.toLong(),
             currentIterationCount = mutableLongStateOf(ExportRequestInfo.currentIterationOfArchivedFoldersAndItsLinks.intValue.toLong())
         )

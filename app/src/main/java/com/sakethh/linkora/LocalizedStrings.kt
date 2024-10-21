@@ -1146,6 +1146,30 @@ object LocalizedStrings : ViewModel() {
     val importingDesc =
         _importingDesc
 
+    private val _gatheringDataForExport = mutableStateOf("")
+    val gatheringDataForExport =
+        _gatheringDataForExport
+
+    private val _dataExportDesc = mutableStateOf("")
+    val dataExportDesc =
+        _dataExportDesc
+
+    private val _updatingFolderNameRestriction = mutableStateOf("")
+    val updatingFolderNameRestriction =
+        _updatingFolderNameRestriction
+
+    private val _folderNameRestrictionDesc = mutableStateOf("")
+    val folderNameRestrictionDesc =
+        _folderNameRestrictionDesc
+
+    private val _noDataWillBeRetrievedBecauseThisSettingIsEnabled = mutableStateOf("")
+    val noDataWillBeRetrievedBecauseThisSettingIsEnabled =
+        _noDataWillBeRetrievedBecauseThisSettingIsEnabled
+
+    private val _forceSaveWithoutRetrievingMetadata = mutableStateOf("")
+    val forceSaveWithoutRetrievingMetadata =
+        _forceSaveWithoutRetrievingMetadata
+
     private var count = 0
 
     private suspend fun loadStringsHelper(
@@ -1179,6 +1203,60 @@ object LocalizedStrings : ViewModel() {
         viewModelScope.launch {
             count = 0
             awaitAll(
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "force_save_without_retrieving_metadata",
+                        localId = R.string.force_save_without_retrieving_metadata,
+                        mutableString = _forceSaveWithoutRetrievingMetadata,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "no_data_will_be_retrieved_because_this_setting_is_enabled",
+                        localId = R.string.no_data_will_be_retrieved_because_this_setting_is_enabled,
+                        mutableString = _noDataWillBeRetrievedBecauseThisSettingIsEnabled,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "folder_name_restriction_desc",
+                        localId = R.string.folder_name_restriction_desc,
+                        mutableString = _folderNameRestrictionDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "updating_folder_name_restriction",
+                        localId = R.string.updating_folder_name_restriction,
+                        mutableString = _updatingFolderNameRestriction,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "data_export_desc",
+                        localId = R.string.data_export_desc,
+                        mutableString = _dataExportDesc,
+                        context = context
+                    )
+                },
+                async {
+                    loadStringsHelper(
+                        translationsRepo = translationsRepo,
+                        remoteStringID = "gathering_data_for_export",
+                        localId = R.string.gathering_data_for_export,
+                        mutableString = _gatheringDataForExport,
+                        context = context
+                    )
+                },
                 async {
                     loadStringsHelper(
                         translationsRepo = translationsRepo,

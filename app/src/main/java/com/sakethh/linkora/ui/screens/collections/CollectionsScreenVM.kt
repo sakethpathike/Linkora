@@ -309,7 +309,7 @@ open class CollectionsScreenVM @Inject constructor(
                 viewModelScope.launch {
                     if (LinkoraExports.entries.map { it.name }
                             .contains(specificCollectionsScreenUIEvent.folderName)) {
-                        pushAUIEvent(CommonUiEvent.ShowToast("cannot update name as it is restricted and reserved for linkora import/exports"))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.updatingFolderNameRestriction.value))
                     } else {
                         foldersRepo.updateAFolderName(
                             specificCollectionsScreenUIEvent.folderId,
@@ -374,7 +374,7 @@ open class CollectionsScreenVM @Inject constructor(
                 viewModelScope.launch {
                     if (LinkoraExports.entries.map { it.name }
                             .contains(specificCollectionsScreenUIEvent.foldersTable.folderName)) {
-                        pushAUIEvent(CommonUiEvent.ShowToast("Folder name is restricted and reserved for linkora exports/imports"))
+                        pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderNameRestrictionDesc.value))
                     } else {
                         foldersRepo.createANewFolder(specificCollectionsScreenUIEvent.foldersTable)
                         pushAUIEvent(CommonUiEvent.ShowToast(LocalizedStrings.folderCreatedSuccessfully.value))
