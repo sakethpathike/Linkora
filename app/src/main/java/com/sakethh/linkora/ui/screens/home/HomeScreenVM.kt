@@ -22,7 +22,8 @@ import com.sakethh.linkora.data.local.sorting.links.folder.regular.RegularFolder
 import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.CustomWebTab
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.CollectionsScreenRoute
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
 import com.sakethh.linkora.ui.navigation.NavigationVM
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
@@ -166,9 +167,9 @@ open class HomeScreenVM @Inject constructor(
     init {
         NavigationVM.startDestination.value =
                     if (SettingsPreference.isHomeScreenEnabled.value) {
-                        NavigationRoutes.HOME_SCREEN.name
+                        HomeScreenRoute
                     } else {
-                        NavigationRoutes.COLLECTIONS_SCREEN.name
+                        CollectionsScreenRoute
                     }
 
         if (BuildConfig.DEBUG) {

@@ -68,7 +68,7 @@ import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLi
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.LinkLayoutSettingsRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
@@ -230,7 +230,7 @@ fun AllLinksScreen(navController: NavController) {
         actions = {
             if (!isAllTablesEmpty) {
                 IconButton(onClick = {
-                    navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+                    navController.navigate(LinkLayoutSettingsRoute)
                 }) {
                     Icon(Icons.Default.Dashboard, null)
                 }

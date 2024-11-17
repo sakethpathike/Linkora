@@ -13,6 +13,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
@@ -22,24 +23,23 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 @Composable
 fun BottomNavigationBar(navController: NavController) {
     val navigationVM: NavigationVM = viewModel()
-    val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
+    val currentRoute = navController.currentBackStackEntryAsState().value?.destination
     LinkoraTheme {
         NavigationBar(
             modifier = Modifier.fillMaxWidth()
         ) {
             if (SettingsPreference.isHomeScreenEnabled.value) {
-                NavigationBarItem(selected = currentRoute == NavigationRoutes.HOME_SCREEN.name,
+                NavigationBarItem(
+                    selected = currentRoute?.hasRoute(HomeScreenRoute::class) == true,
                     onClick = {
-                        if (currentRoute != NavigationRoutes.HOME_SCREEN.name) {
-                            navController.navigate(
-                                NavigationRoutes.HOME_SCREEN.name
-                            )
+                        if (currentRoute?.hasRoute(HomeScreenRoute::class) == false) {
+                            navController.navigate(HomeScreenRoute)
                             HomeScreenVM.initialStart = true
                         }
                     },
                     icon = {
                         Icon(
-                            imageVector = if (currentRoute == NavigationRoutes.HOME_SCREEN.name) {
+                            imageVector = if (currentRoute?.hasRoute(HomeScreenRoute::class) == true) {
                                 Icons.Filled.Home
                             } else {
                                 Icons.Outlined.Home
@@ -56,14 +56,15 @@ fun BottomNavigationBar(navController: NavController) {
             }
             navigationVM.btmBarList.forEach {
                 NavigationBarItem(
-                    selected = currentRoute == it.navigationRoute.name, onClick = {
-                        if (currentRoute != it.navigationRoute.name) {
-                            navController.navigate(it.navigationRoute.name)
+                    selected = currentRoute?.hasRoute(it.navigationRoute::class) == true,
+                    onClick = {
+                        if (currentRoute?.hasRoute(it.navigationRoute::class) == false) {
+                            navController.navigate(it.navigationRoute)
                             HomeScreenVM.initialStart = true
                         }
                     }, icon = {
                         Icon(
-                            imageVector = if (currentRoute == it.navigationRoute.name) {
+                            imageVector = if (currentRoute?.hasRoute(it.navigationRoute::class) == true) {
                                 it.selectedIcon
                             } else {
                                 it.nonSelectedIcon

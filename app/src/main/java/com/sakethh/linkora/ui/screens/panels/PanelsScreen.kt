@@ -44,7 +44,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteAShelfDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.DeleteAShelfPanelDialogBox
 import com.sakethh.linkora.ui.commonComposables.RenameAShelfPanelDialogBox
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.SpecificPanelScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
@@ -116,7 +116,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                         },
                         onOptionClick = {
                             PanelsScreenVM.selectedPanelData = it
-                            navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
+                            navController.navigate(SpecificPanelScreenRoute)
                         },
                         elementName = it.panelName,
                         elementImageVector = Icons.Default.ViewArray,
@@ -127,7 +127,7 @@ fun ShelfPanelsScreen(navController: NavController) {
                         },
                         onTuneIconClick = {
                             PanelsScreenVM.selectedPanelData = it
-                            navController.navigate(NavigationRoutes.SPECIFIC_PANEL_SCREEN.name)
+                            navController.navigate(SpecificPanelScreenRoute)
                         }
                     )
                 }

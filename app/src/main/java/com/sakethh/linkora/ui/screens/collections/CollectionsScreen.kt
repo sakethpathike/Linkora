@@ -97,7 +97,10 @@ import com.sakethh.linkora.ui.commonComposables.RenameDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.AllLinksScreenRoute
+import com.sakethh.linkora.ui.navigation.ArchiveScreenRoute
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
+import com.sakethh.linkora.ui.navigation.SpecificCollectionScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
@@ -302,7 +305,7 @@ fun CollectionsScreen(navController: NavController) {
                                         }, indication = null, onClick = {
                                             SpecificCollectionsScreenVM.screenType.value =
                                                 SpecificScreenType.ALL_LINKS_SCREEN
-                                            navController.navigate(NavigationRoutes.ALL_LINKS_SCREEN.name)
+                                            navController.navigate(AllLinksScreenRoute)
                                         }, onLongClick = {
 
                                         })
@@ -351,7 +354,7 @@ fun CollectionsScreen(navController: NavController) {
                                         }, indication = null, onClick = {
                                             SpecificCollectionsScreenVM.screenType.value =
                                                 SpecificScreenType.SAVED_LINKS_SCREEN
-                                            navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                            navController.navigate(SpecificCollectionScreenRoute)
                                         }, onLongClick = {})
                                         .pulsateEffect()
                                 ) {
@@ -392,7 +395,7 @@ fun CollectionsScreen(navController: NavController) {
                                             onClick = {
                                                 SpecificCollectionsScreenVM.screenType.value =
                                                     SpecificScreenType.IMPORTANT_LINKS_SCREEN
-                                                navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                navController.navigate(SpecificCollectionScreenRoute)
                                             },
                                             onLongClick = {
 
@@ -442,7 +445,7 @@ fun CollectionsScreen(navController: NavController) {
                                             MutableInteractionSource()
                                         }, indication = null,
                                             onClick = {
-                                                navController.navigate(NavigationRoutes.ARCHIVE_SCREEN.name)
+                                                navController.navigate(ArchiveScreenRoute)
                                             },
                                             onLongClick = {
 
@@ -592,7 +595,7 @@ fun CollectionsScreen(navController: NavController) {
                                         SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     CollectionsScreenVM.currentClickedFolderData.value = folderData
                                     CollectionsScreenVM.rootFolderID = folderData.id
-                                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                    navController.navigate(SpecificCollectionScreenRoute)
                                 }
                                 if (TransferActions.sourceFolders.map { it.id }
                                         .contains(folderData.id)) {
@@ -890,7 +893,7 @@ fun CollectionsScreen(navController: NavController) {
         } else if (!SettingsPreference.isHomeScreenEnabled.value) {
             activity?.moveTaskToBack(true)
         } else {
-            navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+            navController.navigate(HomeScreenRoute) {
                 popUpTo(0)
             }
         }

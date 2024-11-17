@@ -36,9 +36,10 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavBackStackEntry
+import androidx.navigation.NavDestination.Companion.hasRoute
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.CollectionsScreenRoute
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 
@@ -122,12 +123,18 @@ fun TransferActionsBtmBar(currentBackStackEntry: State<NavBackStackEntry?>) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Row(modifier = Modifier.animateContentSize()) {
                     if (!isPasteButtonClicked.value) {
-                        if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActions.sourceLinks.isNotEmpty()) return
+                        if (currentBackStackEntry.value?.destination?.hasRoute(
+                                CollectionsScreenRoute::class
+                            ) == true && TransferActions.sourceLinks.isNotEmpty()
+                        ) return
                         IconButton(onClick = {
                             TransferActions.isAnyActionGoingOn.value = true
                             isPasteButtonClicked.value = !isPasteButtonClicked.value
 
-                            if (currentBackStackEntry.value?.destination?.route == NavigationRoutes.COLLECTIONS_SCREEN.name && TransferActions.sourceLinks.isEmpty()) {
+                            if (currentBackStackEntry.value?.destination?.hasRoute(
+                                    CollectionsScreenRoute::class
+                                ) == true && TransferActions.sourceLinks.isEmpty()
+                            ) {
                                 // if in collections screen then we are supposed to mark selected folders as root folders
                                 TransferActions.transferFoldersJob =
                                     TransferActions.transferFolders(

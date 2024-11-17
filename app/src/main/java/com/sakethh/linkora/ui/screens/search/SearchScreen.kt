@@ -106,7 +106,8 @@ import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLi
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
+import com.sakethh.linkora.ui.navigation.SpecificCollectionScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
@@ -570,7 +571,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             folderData
                                                         CollectionsScreenVM.rootFolderID =
                                                             folderData.id
-                                                        navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                        navController.navigate(
+                                                            SpecificCollectionScreenRoute
+                                                        )
                                                     }
                                                 },
                                                 onLongClick = {
@@ -1274,7 +1277,9 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                             folderData
                                                         CollectionsScreenVM.rootFolderID =
                                                             folderData.id
-                                                        navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                                                        navController.navigate(
+                                                            SpecificCollectionScreenRoute
+                                                        )
                                                     }
                                                 },
                                                 onLongClick = {
@@ -1687,7 +1692,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 searchScreenVM.selectedHistoryLinksData.clear()
                 SearchScreenVM.selectedArchiveFoldersData.clear()
             } else if (SettingsPreference.isHomeScreenEnabled.value) {
-                navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                navController.navigate(HomeScreenRoute) {
                     popUpTo(0)
                 }
             } else {

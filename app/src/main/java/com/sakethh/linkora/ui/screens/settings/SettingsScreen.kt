@@ -36,8 +36,17 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.sakethh.linkora.BuildConfig
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.R
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.AboutSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.AcknowledgmentsSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.AdvancedSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.CollectionsScreenRoute
+import com.sakethh.linkora.ui.navigation.DataSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.GeneralSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
+import com.sakethh.linkora.ui.navigation.LanguageSettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.LinkLayoutSettingsRoute
+import com.sakethh.linkora.ui.navigation.PrivacySettingsScreenRoute
+import com.sakethh.linkora.ui.navigation.ThemeSettingsScreenRoute
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM.Companion.currentSelectedSettingSection
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsSectionComposable
 import com.sakethh.linkora.ui.theme.LinkoraTheme
@@ -89,11 +98,11 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
         }
         BackHandler {
             if (SettingsPreference.isHomeScreenEnabled.value) {
-                navController.navigate(NavigationRoutes.HOME_SCREEN.name) {
+                navController.navigate(HomeScreenRoute) {
                     popUpTo(0)
                 }
             } else {
-                navController.navigate(NavigationRoutes.COLLECTIONS_SCREEN.name) {
+                navController.navigate(CollectionsScreenRoute) {
                     popUpTo(0)
                 }
             }
@@ -114,7 +123,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.THEME
-                navController.navigate(NavigationRoutes.THEME_SETTINGS_SCREEN.name)
+                navController.navigate(ThemeSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.theme.value,
             sectionIcon = Icons.Default.ColorLens
@@ -123,7 +132,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.GENERAL
-                navController.navigate(NavigationRoutes.GENERAL_SETTINGS_SCREEN.name)
+                navController.navigate(GeneralSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.general.value,
             sectionIcon = Icons.Default.SettingsInputSvideo
@@ -132,14 +141,14 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.ADVANCED
-                navController.navigate(NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name)
+                navController.navigate(AdvancedSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.advanced.value,
             sectionIcon = Icons.Default.Build
         ),
         SettingsScreenOption(
             onClick = {
-                navController.navigate(NavigationRoutes.LINK_LAYOUT_SETTINGS.name)
+                navController.navigate(LinkLayoutSettingsRoute)
             },
             sectionTitle = LocalizedStrings.linkLayout.value,
             sectionIcon = Icons.Default.Dashboard
@@ -148,7 +157,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.LANGUAGE
-                navController.navigate(NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name)
+                navController.navigate(LanguageSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.language.value,
             sectionIcon = Icons.Default.Language
@@ -157,7 +166,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.DATA
-                navController.navigate(NavigationRoutes.DATA_SETTINGS_SCREEN.name)
+                navController.navigate(DataSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.data.value,
             sectionIcon = Icons.Default.Storage
@@ -166,7 +175,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.PRIVACY
-                navController.navigate(NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name)
+                navController.navigate(PrivacySettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.privacy.value,
             sectionIcon = Icons.Default.PrivacyTip
@@ -175,7 +184,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.ABOUT
-                navController.navigate(NavigationRoutes.ABOUT_SETTINGS_SCREEN.name)
+                navController.navigate(AboutSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.about.value,
             sectionIcon = Icons.Default.Info
@@ -184,7 +193,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
             onClick = {
                 currentSelectedSettingSection.value =
                     SettingsSections.ACKNOWLEDGMENT
-                navController.navigate(NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name)
+                navController.navigate(AcknowledgmentsSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.acknowledgments.value,
             sectionIcon = Icons.Default.Group

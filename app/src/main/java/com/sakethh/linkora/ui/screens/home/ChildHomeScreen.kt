@@ -55,7 +55,7 @@ import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLi
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.SpecificCollectionScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
@@ -296,7 +296,7 @@ fun ChildHomeScreen(
                     CollectionsScreenVM.currentClickedFolderData.value =
                         folderElement
                     CollectionsScreenVM.rootFolderID = folderElement.id
-                    navController.navigate(NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name)
+                    navController.navigate(SpecificCollectionScreenRoute)
                 }
             },
             showMoreIcon = !homeScreenVM.isSelectionModeEnabled.value,

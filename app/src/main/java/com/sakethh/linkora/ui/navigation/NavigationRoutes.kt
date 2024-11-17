@@ -1,8 +1,60 @@
 package com.sakethh.linkora.ui.navigation
 
-enum class NavigationRoutes {
-    HOME_SCREEN, SETTINGS_SCREEN, COLLECTIONS_SCREEN, SPECIFIC_COLLECTION_SCREEN, ARCHIVE_SCREEN, SEARCH_SCREEN,
-    ABOUT_SETTINGS_SCREEN, ACKNOWLEDGMENTS_SETTINGS_SCREEN, DATA_SETTINGS_SCREEN, GENERAL_SETTINGS_SCREEN,
-    LANGUAGE_SETTINGS_SCREEN, PRIVACY_SETTINGS_SCREEN, THEME_SETTINGS_SCREEN, SHELF_SCREEN, SPECIFIC_PANEL_SCREEN,
-    LINK_LAYOUT_SETTINGS, ALL_LINKS_SCREEN, ADVANCED_SETTINGS_SCREEN, SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN
-}
+import kotlinx.serialization.Serializable
+
+@Serializable
+data object HomeScreenRoute
+
+@Serializable
+data object SettingsScreenRoute
+
+@Serializable
+data object CollectionsScreenRoute
+
+@Serializable
+data object SpecificCollectionScreenRoute
+
+@Serializable
+data object ArchiveScreenRoute
+
+@Serializable
+data object SearchScreenRoute
+
+@Serializable
+data object AboutSettingsScreenRoute
+
+@Serializable
+data object AcknowledgmentsSettingsScreenRoute
+
+@Serializable
+data object DataSettingsScreenRoute
+
+@Serializable
+data object GeneralSettingsScreenRoute
+
+@Serializable
+data object LanguageSettingsScreenRoute
+
+@Serializable
+data object PrivacySettingsScreenRoute
+
+@Serializable
+data object ThemeSettingsScreenRoute
+
+@Serializable
+data object ShelfScreenRoute
+
+@Serializable
+data object SpecificPanelScreenRoute
+
+@Serializable
+data object LinkLayoutSettingsRoute
+
+@Serializable
+data object AllLinksScreenRoute
+
+@Serializable
+data object AdvancedSettingsScreenRoute
+
+@Serializable
+data object SiteSpecificUserAgentSettingsScreenRoute

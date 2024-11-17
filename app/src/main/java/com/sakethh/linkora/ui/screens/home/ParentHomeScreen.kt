@@ -100,7 +100,7 @@ import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtn
 import com.sakethh.linkora.ui.commonComposables.FloatingActionBtnParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.ShelfScreenRoute
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
@@ -410,7 +410,7 @@ fun ParentHomeScreen(
                                 modifier = Modifier
                                     .pulsateEffect(0.9f),
                                 onClick = {
-                                    navController.navigate(NavigationRoutes.SHELF_SCREEN.name)
+                                    navController.navigate(ShelfScreenRoute)
                                 }) {
                                 Icon(imageVector = Icons.Outlined.Tune, contentDescription = null)
                             }

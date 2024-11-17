@@ -53,7 +53,7 @@ import com.sakethh.linkora.LocalizedStrings.foldersListedInThisPanel
 import com.sakethh.linkora.LocalizedStrings.noFoldersFoundInThisPanel
 import com.sakethh.linkora.LocalizedStrings.youCanAddTheFollowingFoldersToThisPanel
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 
@@ -85,7 +85,7 @@ fun SpecificPanelScreen(navController: NavController) {
     }, floatingActionButton = {
         FloatingActionButton(onClick = {
             HomeScreenVM.initialStart = true
-            navController.navigate(NavigationRoutes.HOME_SCREEN.name)
+            navController.navigate(HomeScreenRoute)
         }) {
             Icon(imageVector = Icons.Default.Home, contentDescription = "")
         }

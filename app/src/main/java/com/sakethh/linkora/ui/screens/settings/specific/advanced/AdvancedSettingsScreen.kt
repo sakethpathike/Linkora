@@ -39,7 +39,7 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.SiteSpecificUserAgentSettingsScreenRoute
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.localizationServerURL
@@ -91,12 +91,12 @@ fun AdvancedSettingsScreen(navController: NavController) {
                         .clickable(interactionSource = remember {
                             MutableInteractionSource()
                         }, onClick = {
-                            navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name)
+                            navController.navigate(SiteSpecificUserAgentSettingsScreenRoute)
                         }, indication = null)
                 ) {
                     Spacer(modifier = Modifier.width(10.dp))
                     FilledTonalIconButton(onClick = {
-                        navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name)
+                        navController.navigate(SiteSpecificUserAgentSettingsScreenRoute)
                     }) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.Rule,
@@ -117,7 +117,7 @@ fun AdvancedSettingsScreen(navController: NavController) {
                     contentAlignment = Alignment.CenterEnd,
                     modifier = Modifier
                         .clickable(onClick = {
-                            navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name)
+                            navController.navigate(SiteSpecificUserAgentSettingsScreenRoute)
                         }, interactionSource = remember {
                             MutableInteractionSource()
                         }, indication = null)
@@ -130,7 +130,11 @@ fun AdvancedSettingsScreen(navController: NavController) {
                             .padding(start = 20.dp, end = 32.dp)
                     )
                     Row {
-                        IconButton(onClick = { navController.navigate(NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name) }) {
+                        IconButton(onClick = {
+                            navController.navigate(
+                                SiteSpecificUserAgentSettingsScreenRoute
+                            )
+                        }) {
                             Icon(
                                 imageVector = Icons.Default.ChevronRight,
                                 contentDescription = null,

@@ -37,85 +37,84 @@ fun MainNavigation(
         navController = navController,
         startDestination = NavigationVM.startDestination.value
     ) {
-        composable(route = NavigationRoutes.HOME_SCREEN.name) {
+        composable<HomeScreenRoute> {
             ParentHomeScreen(navController = navController, customWebTab)
         }
-        composable(route = NavigationRoutes.COLLECTIONS_SCREEN.name) {
+        composable<CollectionsScreenRoute> {
             CollectionsScreen(navController = navController)
         }
-        composable(route = NavigationRoutes.SETTINGS_SCREEN.name) {
+        composable<SettingsScreenRoute> {
             SettingsScreen(navController = navController)
         }
-        composable(route = NavigationRoutes.SPECIFIC_COLLECTION_SCREEN.name) {
+        composable<SpecificCollectionScreenRoute> {
             SpecificCollectionScreen(navController = navController)
         }
-        composable(route = NavigationRoutes.ARCHIVE_SCREEN.name) {
+        composable<ArchiveScreenRoute> {
             ParentArchiveScreen(navController = navController, customWebTab)
         }
-        composable(route = NavigationRoutes.SEARCH_SCREEN.name) {
+        composable<SearchScreenRoute> {
             SearchScreen(navController = navController, customWebTab)
         }
-        composable(route = NavigationRoutes.ABOUT_SETTINGS_SCREEN.name) {
+        composable<AboutSettingsScreenRoute> {
             AboutSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
                 customWebTab = customWebTab
             )
         }
-        composable(route = NavigationRoutes.ACKNOWLEDGMENTS_SETTINGS_SCREEN.name) {
+        composable<AcknowledgmentsSettingsScreenRoute> {
             AcknowledgmentsSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
             )
         }
-        composable(route = NavigationRoutes.DATA_SETTINGS_SCREEN.name) {
+        composable<DataSettingsScreenRoute> {
             DataSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
             )
         }
-        composable(route = NavigationRoutes.GENERAL_SETTINGS_SCREEN.name) {
+        composable<GeneralSettingsScreenRoute> {
             GeneralSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM
             )
         }
-        composable(route = NavigationRoutes.PRIVACY_SETTINGS_SCREEN.name) {
+        composable<PrivacySettingsScreenRoute> {
             PrivacySettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
             )
         }
-        composable(route = NavigationRoutes.THEME_SETTINGS_SCREEN.name) {
+        composable<ThemeSettingsScreenRoute> {
             ThemeSettingsScreen(
                 navController = navController,
                 settingsScreenVM = settingsScreenVM,
             )
         }
-        composable(route = NavigationRoutes.LANGUAGE_SETTINGS_SCREEN.name) {
+        composable<LanguageSettingsScreenRoute> {
             LanguageSettingsScreen(
                 navController = navController,
                 customWebTab = customWebTab
             )
         }
-        composable(route = NavigationRoutes.SHELF_SCREEN.name) {
+        composable<ShelfScreenRoute> {
             ShelfPanelsScreen(navController)
         }
-        composable(route = NavigationRoutes.SPECIFIC_PANEL_SCREEN.name) {
+        composable<SpecificPanelScreenRoute> {
             SpecificPanelScreen(navController)
         }
-        composable(route = NavigationRoutes.LINK_LAYOUT_SETTINGS.name) {
+        composable<LinkLayoutSettingsRoute> {
             LinkLayoutSettings(navController)
         }
-        composable(route = NavigationRoutes.ALL_LINKS_SCREEN.name) {
+        composable<AllLinksScreenRoute> {
             AllLinksScreen(navController)
         }
-        composable(route = NavigationRoutes.ADVANCED_SETTINGS_SCREEN.name) {
+        composable<AdvancedSettingsScreenRoute> {
             AdvancedSettingsScreen(navController)
         }
-        composable(route = NavigationRoutes.SITE_SPECIFIC_USER_AGENT_SETTINGS_SCREEN.name) {
+        composable<SiteSpecificUserAgentSettingsScreenRoute> {
             SiteSpecificUserAgentSettingsScreen(navController)
         }
     }
-
 }

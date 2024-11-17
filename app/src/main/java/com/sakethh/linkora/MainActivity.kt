@@ -17,7 +17,6 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -25,14 +24,17 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.accompanist.systemuicontroller.rememberSystemUiController
-import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.navigation.BottomNavigationBar
+import com.sakethh.linkora.ui.navigation.CollectionsScreenRoute
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
 import com.sakethh.linkora.ui.navigation.MainNavigation
-import com.sakethh.linkora.ui.navigation.NavigationRoutes
+import com.sakethh.linkora.ui.navigation.SearchScreenRoute
+import com.sakethh.linkora.ui.navigation.SettingsScreenRoute
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
@@ -47,7 +49,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -69,29 +70,33 @@ class MainActivity : ComponentActivity() {
                 val systemUIController = rememberSystemUiController()
                 val navController = rememberNavController()
                 val currentBackStackEntry = navController.currentBackStackEntryAsState()
-                val currentRoute = rememberSaveable(
-                    inputs = arrayOf(currentBackStackEntry.value?.destination?.route)
-                ) {
-                    currentBackStackEntry.value?.destination?.route.toString()
-                }
                 val bottomBarSheetState =
                     androidx.compose.material.rememberBottomSheetScaffoldState()
                 systemUIController.setStatusBarColor(colorScheme.surface)
-                val rootRoutes = rememberSaveable {
-                    mutableListOf(
-                        NavigationRoutes.HOME_SCREEN.name,
-                        NavigationRoutes.SEARCH_SCREEN.name,
-                        NavigationRoutes.COLLECTIONS_SCREEN.name,
-                        NavigationRoutes.SETTINGS_SCREEN.name
-                    )
-                }
+                val navigationBarElevation = NavigationBarDefaults.Elevation
+                val nonSpecificCollectionScreenBtmNavColor = colorScheme.surfaceColorAtElevation(
+                    navigationBarElevation
+                )
+                val specificCollectionScreenBtmNavColor = colorScheme.surface
                 LaunchedEffect(
-                    key1 = currentRoute,
+                    key1 = currentBackStackEntry.value,
                     key2 = SearchScreenVM.isSearchEnabled.value,
                     key3 = TransferActions.currentTransferActionType.value
                 ) {
-                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING || (rootRoutes.any {
-                            it == currentRoute
+                    val mainRoutes = (listOf(
+                        HomeScreenRoute,
+                        SearchScreenRoute,
+                        CollectionsScreenRoute,
+                        SettingsScreenRoute
+                    ))
+                    systemUIController.setNavigationBarColor(
+                        color = if (mainRoutes.any {
+                                currentBackStackEntry.value?.destination?.hasRoute(it::class) == true
+                            })
+                            nonSpecificCollectionScreenBtmNavColor else specificCollectionScreenBtmNavColor
+                    )
+                    if (TransferActions.currentTransferActionType.value != TransferActionType.NOTHING || (mainRoutes.any {
+                            currentBackStackEntry.value?.destination?.hasRoute(it::class) == true
                         } && !SearchScreenVM.isSearchEnabled.value)) {
                         coroutineScope.launch {
                             bottomBarSheetState.bottomSheetState.expand()
@@ -170,16 +175,6 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                val navigationBarElevation = NavigationBarDefaults.Elevation
-                val nonSpecificCollectionScreenBtmNavColor = colorScheme.surfaceColorAtElevation(
-                    navigationBarElevation
-                )
-                val specificCollectionScreenBtmNavColor = colorScheme.surface
-                systemUIController.setNavigationBarColor(
-                    color = if (rootRoutes.any {
-                            it == currentRoute
-                        }) nonSpecificCollectionScreenBtmNavColor else specificCollectionScreenBtmNavColor
-                )
             }
         }
     }

@@ -72,7 +72,7 @@ android {
         compose true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion '1.5.3'
+        kotlinCompilerExtensionVersion '1.5.7'
     }
     packagingOptions {
         resources {
@@ -119,7 +119,7 @@ dependencies {
 
     implementation "androidx.lifecycle:lifecycle-viewmodel-compose:2.7.0"
     implementation 'com.google.accompanist:accompanist-systemuicontroller:0.26.3-beta'
-    implementation 'com.google.accompanist:accompanist-navigation-animation:0.26.2-beta'
+    implementation "androidx.navigation:navigation-compose:2.8.4"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.1.0-alpha13"
     implementation "androidx.compose.material:material-icons-extended:1.6.2"
 
