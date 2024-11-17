@@ -7,8 +7,6 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.outlined.Folder
 import androidx.compose.material.icons.outlined.Search
 import androidx.compose.material.icons.outlined.Settings
-import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.sakethh.linkora.LocalizedStrings
 
@@ -34,11 +32,5 @@ class NavigationVM : ViewModel() {
             navigationRoute = SettingsScreenRoute
         ),
     )
-
-
-    companion object {
-        val startDestination: MutableState<Any> =
-            mutableStateOf(HomeScreenRoute)
-    }
 
 }

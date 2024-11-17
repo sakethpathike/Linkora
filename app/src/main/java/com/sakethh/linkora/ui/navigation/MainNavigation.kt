@@ -14,6 +14,7 @@ import com.sakethh.linkora.ui.screens.linkLayout.LinkLayoutSettings
 import com.sakethh.linkora.ui.screens.panels.ShelfPanelsScreen
 import com.sakethh.linkora.ui.screens.panels.SpecificPanelScreen
 import com.sakethh.linkora.ui.screens.search.SearchScreen
+import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.specific.AboutSettingsScreen
@@ -35,7 +36,13 @@ fun MainNavigation(
 
     NavHost(
         navController = navController,
-        startDestination = NavigationVM.startDestination.value
+        startDestination = if (SettingsPreference.isHomeScreenEnabled.value.not() && SettingsPreference.startDestination.value == HomeScreenRoute.toString()) {
+            CollectionsScreenRoute
+        } else when (SettingsPreference.startDestination.value) {
+            HomeScreenRoute.toString() -> HomeScreenRoute
+            SearchScreenRoute.toString() -> SearchScreenRoute
+            else -> CollectionsScreenRoute
+        }
     ) {
         composable<HomeScreenRoute> {
             ParentHomeScreen(navController = navController, customWebTab)

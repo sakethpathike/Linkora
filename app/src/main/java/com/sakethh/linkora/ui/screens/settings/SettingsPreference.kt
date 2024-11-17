@@ -14,6 +14,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.BuildConfig
+import com.sakethh.linkora.ui.navigation.HomeScreenRoute
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.utils.LinkoraValues
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
@@ -67,6 +68,7 @@ object SettingsPreference : ViewModel() {
     val enableFadedEdgeForNonListViews = mutableStateOf(true)
     val shouldFollowAmoledTheme = mutableStateOf(false)
     val forceSaveWithoutFetchingAnyMetaData = mutableStateOf(false)
+    val startDestination = mutableStateOf(HomeScreenRoute.toString())
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -126,6 +128,12 @@ object SettingsPreference : ViewModel() {
                         preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
                         dataStore = context.dataStore
                     ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
+                },
+                async {
+                    startDestination.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(SettingsPreferences.INITIAL_ROUTE.name),
+                        dataStore = context.dataStore
+                    ) ?: startDestination.value
                 },
                 async {
                     shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
