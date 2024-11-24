@@ -17,9 +17,14 @@ val playWriteITTradFontFamily = FontFamily(
     Font(R.font.playwriteittrad, weight = FontWeight.Normal)
 )
 
-val Typography = Typography(
+val CommonTypography = Typography(
     titleLarge = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.SemiBold),
     titleMedium = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Medium),
     titleSmall = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal),
-    bodyMedium = TextStyle(fontFamily = playWriteITTradFontFamily, fontWeight = FontWeight.Normal)
+    bodyMedium = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal),
+)
+
+val SpecificTypography = Typography(
+    bodyMedium = TextStyle(fontFamily = playWriteITTradFontFamily, fontWeight = FontWeight.Normal),
+    titleSmall = TextStyle(fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal),
 )

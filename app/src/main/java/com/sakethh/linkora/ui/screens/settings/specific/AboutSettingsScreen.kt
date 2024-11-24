@@ -64,6 +64,8 @@ import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoCompon
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionUpdateBtmContent
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
+import com.sakethh.linkora.ui.theme.LinkoraTheme
+import com.sakethh.linkora.ui.theme.SpecificTypography
 import com.sakethh.linkora.utils.isNetworkAvailable
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -98,7 +100,6 @@ fun AboutSettingsScreen(
     val shouldBtmModalSheetBeVisible = rememberSaveable {
         mutableStateOf(false)
     }
-    val typography = MaterialTheme.typography
     SpecificScreenScaffold(
         topAppBarText = LocalizedStrings.about.value,
         navController = navController
@@ -112,17 +113,20 @@ fun AboutSettingsScreen(
         ) {
             item(key = "settingsCard") {
                 Row {
-                    Text(
-                        text = LocalizedStrings.linkora.value,
-                        style =
-                        remember {
-                            if (SettingsPreference.preferredAppLanguageCode.value == "en") typography.bodyMedium else typography.titleSmall
-                        },
-                        fontSize = 18.sp,
-                        modifier = Modifier
-                            .padding(start = 15.dp)
-                            .alignByBaseline()
-                    )
+                    LinkoraTheme(typography = SpecificTypography) {
+                        val typography = MaterialTheme.typography
+                        Text(
+                            text = LocalizedStrings.linkora.value,
+                            style =
+                            remember {
+                                if (SettingsPreference.preferredAppLanguageCode.value == "en") typography.bodyMedium else typography.titleSmall
+                            },
+                            fontSize = 18.sp,
+                            modifier = Modifier
+                                .padding(start = 15.dp)
+                                .alignByBaseline()
+                        )
+                    }
                     Text(
                         text = SettingsPreference.APP_VERSION_NAME,
                         style = MaterialTheme.typography.titleSmall,

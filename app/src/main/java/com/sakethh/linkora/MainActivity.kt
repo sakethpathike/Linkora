@@ -13,9 +13,12 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -44,11 +47,14 @@ import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
 import com.sakethh.linkora.ui.transferActions.TransferActions
 import com.sakethh.linkora.ui.transferActions.TransferActionsBtmBar
+import com.sakethh.linkora.utils.UiEvent
+import com.sakethh.linkora.utils.UiEventManager
 import com.sakethh.linkora.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.Locale
@@ -78,6 +84,18 @@ class MainActivity : ComponentActivity() {
                     navigationBarElevation
                 )
                 val specificCollectionScreenBtmNavColor = colorScheme.surface
+                val snackBarHostState = remember {
+                    SnackbarHostState()
+                }
+                LaunchedEffect(Unit) {
+                    UiEventManager.eventChannel.collectLatest {
+                        when (it) {
+                            is UiEvent.ShowSnackBar -> {
+                                snackBarHostState.showSnackbar(message = it.msg)
+                            }
+                        }
+                    }
+                }
                 LaunchedEffect(
                     key1 = currentBackStackEntry.value,
                     key2 = SearchScreenVM.isSearchEnabled.value,
@@ -110,7 +128,9 @@ class MainActivity : ComponentActivity() {
                 val customWebTab: CustomWebTab = hiltViewModel()
                 val mainActivityVM: MainActivityVM = hiltViewModel()
                 val settingsScreenVM: SettingsScreenVM = hiltViewModel()
-                Scaffold(modifier = Modifier.fillMaxSize()) {
+                Scaffold(modifier = Modifier.fillMaxSize(), snackbarHost = {
+                    SnackbarHost(hostState = snackBarHostState)
+                }) {
                     androidx.compose.material.BottomSheetScaffold(sheetPeekHeight = 0.dp,
                         sheetGesturesEnabled = false,
                         scaffoldState = bottomBarSheetState,

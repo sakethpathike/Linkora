@@ -24,6 +24,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Cancel
+import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Html
@@ -68,6 +69,7 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
+import com.sakethh.linkora.ui.navigation.CustomServerSetupScreen
 import com.sakethh.linkora.ui.screens.settings.SettingsPreference
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
@@ -138,6 +140,35 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
         ) {
             item {
                 Spacer(modifier = Modifier)
+            }
+            item {
+                Text(
+                    text = "Sync",
+                    style = MaterialTheme.typography.titleMedium,
+                    fontSize = 16.sp,
+                    lineHeight = 20.sp,
+                    textAlign = TextAlign.Start,
+                    modifier = Modifier.padding(start = 15.dp, end = 15.dp),
+                )
+            }
+            item {
+                RegularSettingComponent(
+                    SettingsUIElement(isIconNeeded = rememberSaveable {
+                        mutableStateOf(
+                            true
+                        )
+                    },
+                        title = "Connect to Custom Hosted Server",
+                        doesDescriptionExists = false,
+                        description = "",
+                        isSwitchNeeded = false,
+                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        onSwitchStateChange = {
+                            navController.navigate(CustomServerSetupScreen)
+                        },
+                        icon = Icons.Default.CloudSync,
+                        shouldFilledIconBeUsed = rememberSaveable { mutableStateOf(true) })
+                )
             }
             item {
                 Text(
@@ -409,9 +440,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(
-                                        start = 15.dp,
-                                        end = 15.dp,
-                                        top = 20.dp
+                                        start = 15.dp, end = 15.dp, top = 20.dp
                                     )
                             ) {
                                 Row(
@@ -460,7 +489,6 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                 context.openApplicationSettings()
             })
 
-        // TODO
         ImportExceptionDialogBox(
             isVisible = isImportExceptionBoxVisible,
             onClick = { activityResultLauncher.launch("text/html") },

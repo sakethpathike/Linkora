@@ -58,3 +58,6 @@ data object AdvancedSettingsScreenRoute
 
 @Serializable
 data object SiteSpecificUserAgentSettingsScreenRoute
+
+@Serializable
+data object CustomServerSetupScreen

@@ -25,6 +25,7 @@ import com.sakethh.linkora.ui.screens.settings.specific.ThemeSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.advanced.AdvancedSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.advanced.site_specific_user_agent.SiteSpecificUserAgentSettingsScreen
 import com.sakethh.linkora.ui.screens.settings.specific.data.DataSettingsScreen
+import com.sakethh.linkora.ui.screens.settings.specific.data.sync.CustomServerSetupScreen
 import com.sakethh.linkora.ui.screens.settings.specific.language.LanguageSettingsScreen
 
 @Composable
@@ -122,6 +123,9 @@ fun MainNavigation(
         }
         composable<SiteSpecificUserAgentSettingsScreenRoute> {
             SiteSpecificUserAgentSettingsScreen(navController)
+        }
+        composable<CustomServerSetupScreen> {
+            CustomServerSetupScreen(navController)
         }
     }
 }
