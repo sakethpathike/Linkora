@@ -19,7 +19,7 @@ import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.Optio
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.utils.LinkoraExports
 import com.sakethh.linkora.utils.linkoraLog
@@ -135,7 +135,7 @@ open class CollectionsScreenVM @Inject constructor(
     init {
         changeRetrievedFoldersData(
             sortingPreferences = SortingPreferences.valueOf(
-                SettingsPreference.selectedSortingType.value
+                Preferences.selectedSortingType.value
             )
         )
     }

@@ -24,10 +24,10 @@ import com.sakethh.linkora.data.local.restore.ImportRepo
 import com.sakethh.linkora.data.remote.localization.LocalizationRepo
 import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
+import com.sakethh.linkora.ui.screens.settings.Preferences.useLanguageStringsBasedOnFetchedValuesFromServer
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
@@ -68,13 +68,13 @@ class LanguageSettingsScreenVM @Inject constructor(
             languageName = "English",
             languageCode = "en",
             languageContributionLink = "",
-            localizedStringsCount = SettingsPreference.totalLocalAppStrings.intValue
+            localizedStringsCount = Preferences.totalLocalAppStrings.intValue
         ),
         Language(
             languageName = "हिंदी",
             languageCode = "hi",
             languageContributionLink = "",
-            localizedStringsCount = SettingsPreference.totalLocalAppStrings.intValue
+            localizedStringsCount = Preferences.totalLocalAppStrings.intValue
         ),
     )
 
@@ -104,20 +104,20 @@ class LanguageSettingsScreenVM @Inject constructor(
     fun onClick(languageSettingsScreenUIEvent: LanguageSettingsScreenUIEvent) {
         when (languageSettingsScreenUIEvent) {
             is LanguageSettingsScreenUIEvent.UpdatePreferredLocalLanguage -> {
-                SettingsPreference.preferredAppLanguageCode.value =
+                Preferences.preferredAppLanguageCode.value =
                     languageSettingsScreenUIEvent.languageCode
 
-                SettingsPreference.preferredAppLanguageName.value =
+                Preferences.preferredAppLanguageName.value =
                     languageSettingsScreenUIEvent.languageName
-                SettingsPreference.changeSettingPreferenceValue(
-                    stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+                Preferences.changeSettingPreferenceValue(
+                    stringPreferencesKey(PreferenceType.APP_LANGUAGE_CODE.name),
                     languageSettingsScreenUIEvent.context.dataStore,
-                    SettingsPreference.preferredAppLanguageCode.value
+                    Preferences.preferredAppLanguageCode.value
                 )
-                SettingsPreference.changeSettingPreferenceValue(
-                    stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+                Preferences.changeSettingPreferenceValue(
+                    stringPreferencesKey(PreferenceType.APP_LANGUAGE_NAME.name),
                     languageSettingsScreenUIEvent.context.dataStore,
-                    SettingsPreference.preferredAppLanguageName.value
+                    Preferences.preferredAppLanguageName.value
                 )
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && !useLanguageStringsBasedOnFetchedValuesFromServer.value) {
@@ -161,9 +161,9 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.UseCompiledStrings -> {
-                SettingsPreference.changeSettingPreferenceValue(
+                Preferences.changeSettingPreferenceValue(
                     booleanPreferencesKey(
-                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                        PreferenceType.USE_REMOTE_LANGUAGE_STRINGS.name
                     ), languageSettingsScreenUIEvent.context.dataStore, newValue = false
                 )
                 useLanguageStringsBasedOnFetchedValuesFromServer.value =
@@ -179,9 +179,9 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.UseStringsFetchedFromTheServer -> {
-                SettingsPreference.changeSettingPreferenceValue(
+                Preferences.changeSettingPreferenceValue(
                     booleanPreferencesKey(
-                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                        PreferenceType.USE_REMOTE_LANGUAGE_STRINGS.name
                     ), languageSettingsScreenUIEvent.context.dataStore, newValue = true
                 )
                 useLanguageStringsBasedOnFetchedValuesFromServer.value =
@@ -201,13 +201,13 @@ class LanguageSettingsScreenVM @Inject constructor(
                     translationsRepo.deleteAllLocalizedStringsForThisLanguage(
                         languageSettingsScreenUIEvent.languageCode
                     )
-                    if (SettingsPreference.preferredAppLanguageCode.value != languageSettingsScreenUIEvent.languageCode) {
+                    if (Preferences.preferredAppLanguageCode.value != languageSettingsScreenUIEvent.languageCode) {
                         linkoraLog("not preferredAppLanguageCode")
                         return@launch
                     }
-                    SettingsPreference.changeSettingPreferenceValue(
+                    Preferences.changeSettingPreferenceValue(
                         booleanPreferencesKey(
-                            SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                            PreferenceType.USE_REMOTE_LANGUAGE_STRINGS.name
                         ), languageSettingsScreenUIEvent.context.dataStore, false
                     )
                     useLanguageStringsBasedOnFetchedValuesFromServer.value = false
@@ -246,24 +246,24 @@ class LanguageSettingsScreenVM @Inject constructor(
 
                         is RequestResult.Success -> {
                             remoteLanguagesData.let {
-                                SettingsPreference.changeSettingPreferenceValue(
-                                    intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
+                                Preferences.changeSettingPreferenceValue(
+                                    intPreferencesKey(PreferenceType.TOTAL_REMOTE_STRINGS.name),
                                     languageSettingsScreenUIEvent.context.dataStore,
                                     it.data.totalStrings
                                 )
-                                SettingsPreference.totalRemoteStrings.intValue =
+                                Preferences.totalRemoteStrings.intValue =
                                     it.data.totalStrings
                                 linkoraLog(triggeredFromRetrieveStrings.toString())
-                                if (SettingsPreference.remoteStringsLastUpdatedOn.value == it.data.lastUpdatedOn && !triggeredFromRetrieveStrings) {
+                                if (Preferences.remoteStringsLastUpdatedOn.value == it.data.lastUpdatedOn && !triggeredFromRetrieveStrings) {
                                     pushUiEvent(CommonUiEvent.ShowToast(LocalizedStrings.languageInfoAndStringsAreUpToDate.value))
                                     return@launch
                                 }
-                                SettingsPreference.changeSettingPreferenceValue(
-                                    stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
+                                Preferences.changeSettingPreferenceValue(
+                                    stringPreferencesKey(PreferenceType.REMOTE_STRINGS_LAST_UPDATED_ON.name),
                                     languageSettingsScreenUIEvent.context.dataStore,
                                     it.data.lastUpdatedOn
                                 )
-                                SettingsPreference.remoteStringsLastUpdatedOn.value =
+                                Preferences.remoteStringsLastUpdatedOn.value =
                                     it.data.lastUpdatedOn
                             }
                             remoteLanguagesData.let {
@@ -286,9 +286,9 @@ class LanguageSettingsScreenVM @Inject constructor(
             }
 
             is LanguageSettingsScreenUIEvent.ResetAppLanguage -> {
-                SettingsPreference.changeSettingPreferenceValue(
+                Preferences.changeSettingPreferenceValue(
                     booleanPreferencesKey(
-                        SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name
+                        PreferenceType.USE_REMOTE_LANGUAGE_STRINGS.name
                     ), languageSettingsScreenUIEvent.context.dataStore, false
                 )
                 useLanguageStringsBasedOnFetchedValuesFromServer.value = false

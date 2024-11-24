@@ -14,7 +14,7 @@ import com.sakethh.linkora.data.local.sorting.links.important.ImportantLinksSort
 import com.sakethh.linkora.data.local.sorting.links.saved.SavedLinksSortingRepo
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -57,7 +57,7 @@ class AllLinksScreenVM @Inject constructor(
         ),
     )
 
-    val savedLinks = when (SettingsPreference.selectedSortingType.value) {
+    val savedLinks = when (Preferences.selectedSortingType.value) {
         SortingPreferences.NEW_TO_OLD.name -> {
             savedLinksSortingRepo.sortByLatestToOldest()
         }
@@ -74,7 +74,7 @@ class AllLinksScreenVM @Inject constructor(
             savedLinksSortingRepo.sortByZToA()
         }
     }
-    val importantLinks = when (SettingsPreference.selectedSortingType.value) {
+    val importantLinks = when (Preferences.selectedSortingType.value) {
         SortingPreferences.NEW_TO_OLD.name -> {
             importantLinksSortingRepo.sortByLatestToOldest()
         }
@@ -91,7 +91,7 @@ class AllLinksScreenVM @Inject constructor(
             importantLinksSortingRepo.sortByZToA()
         }
     }
-    val historyLinks = when (SettingsPreference.selectedSortingType.value) {
+    val historyLinks = when (Preferences.selectedSortingType.value) {
         SortingPreferences.NEW_TO_OLD.name -> {
             historyLinksSortingRepo.sortByLatestToOldest()
         }
@@ -108,7 +108,7 @@ class AllLinksScreenVM @Inject constructor(
             historyLinksSortingRepo.sortByZToA()
         }
     }
-    val archivedLinks = when (SettingsPreference.selectedSortingType.value) {
+    val archivedLinks = when (Preferences.selectedSortingType.value) {
         SortingPreferences.NEW_TO_OLD.name -> {
             archivedLinksSortingRepo.sortByLatestToOldest()
         }
@@ -125,7 +125,7 @@ class AllLinksScreenVM @Inject constructor(
             archivedLinksSortingRepo.sortByZToA()
         }
     }
-    val regularFoldersLinks = when (SettingsPreference.selectedSortingType.value) {
+    val regularFoldersLinks = when (Preferences.selectedSortingType.value) {
         SortingPreferences.NEW_TO_OLD.name -> {
             regularFolderLinksSortingRepo.sortByLatestToOldestV10()
         }

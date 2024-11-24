@@ -21,7 +21,7 @@ import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.utils.TempValues
 import com.sakethh.linkora.utils.isAValidURL
 import com.sakethh.linkora.utils.linkoraLog
@@ -142,7 +142,7 @@ class LinksImpl @Inject constructor(
                 }
             }
 
-            if (SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value || TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
+            if (Preferences.forceSaveWithoutFetchingAnyMetaData.value || TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
                 saveWithGivenData()
                 TempValues.forceSaveWithoutFetchingAnyMetaData.value = false
                 return CommonUiEvent.ShowToast("saved without fetching metadata")
@@ -198,7 +198,7 @@ class LinksImpl @Inject constructor(
                             LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                                 linkoraLog(tweetMetaData.data.toString())
                                 val linkTableData = LinksTable(
-                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) tweetMetaData.data.text else linksTable!!.title,
+                                    title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) tweetMetaData.data.text else linksTable!!.title,
                                     webURL = tweetMetaData.data.tweetURL,
                                     baseURL = "twitter.com",
                                     imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url ?: tweetMetaData.data.user_profile_image_url else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "video" }) tweetMetaData.data.media_extended.find { it.type == "video" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "gif" }) tweetMetaData.data.media_extended.find { it.type == "gif" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url
@@ -227,7 +227,7 @@ class LinksImpl @Inject constructor(
                             LinkType.IMP_LINK -> {
                                 linkoraLog(tweetMetaData.data.toString())
                                 val importantLinkScrappedData = ImportantLinks(
-                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle)
+                                    title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle)
                                         tweetMetaData.data.text else importantLink!!.title,
                                     webURL = sanitizeLink(importantLink!!.webURL),
                                     baseURL = "twitter.com",
@@ -250,7 +250,7 @@ class LinksImpl @Inject constructor(
                             LinkType.HISTORY_LINK -> {
                                 linkoraLog(tweetMetaData.data.toString())
                                 val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
+                                    title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
                                     ) tweetMetaData.data.text else recentlyVisited!!.title,
                                     webURL = sanitizeLink(recentlyVisited!!.webURL),
                                     baseURL = "twitter.com",
@@ -275,7 +275,7 @@ class LinksImpl @Inject constructor(
 
                             LinkType.ARCHIVE_LINK -> {
                                 val archiveLinkScrappedData = ArchivedLinks(
-                                    title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
+                                    title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle
                                     ) tweetMetaData.data.text else archivedLinks!!.title,
                                     webURL = sanitizeLink(archivedLinks!!.webURL),
                                     baseURL = "twitter.com",
@@ -338,9 +338,9 @@ class LinksImpl @Inject constructor(
                     linkoraLog("didn't find existing user agent, so retrieved baseurl is $userAgentByPartialDomain")
                     userAgentByPartialDomain
                 } else if (RequestResult.isThisFirstRequest.not()) {
-                    SettingsPreference.secondaryJsoupUserAgent.value
+                    Preferences.secondaryJsoupUserAgent.value
                 } else {
-                    SettingsPreference.primaryJsoupUserAgent.value
+                    Preferences.primaryJsoupUserAgent.value
                 }
 
             when (val linkDataExtractor =
@@ -391,7 +391,7 @@ class LinksImpl @Inject constructor(
                     when (linkType) {
                         LinkType.FOLDER_LINK, LinkType.SAVED_LINK -> {
                             val linkData = LinksTable(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
                                     "&amp;",
                                     "&"
                                 ) else linksTable!!.title,
@@ -423,7 +423,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.IMP_LINK -> {
                             val importantLinkScrappedData = ImportantLinks(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
                                     "&amp;",
                                     "&"
                                 ) else importantLink!!.title,
@@ -447,7 +447,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.HISTORY_LINK -> {
                             val recentlyVisitedLinkScrappedData = RecentlyVisited(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
                                     "&amp;",
                                     "&"
                                 ) else recentlyVisited!!.title,
@@ -472,7 +472,7 @@ class LinksImpl @Inject constructor(
 
                         LinkType.ARCHIVE_LINK -> {
                             val archiveLinkScrappedData = ArchivedLinks(
-                                title = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
+                                title = if (Preferences.isAutoDetectTitleForLinksEnabled.value || autoDetectTitle) linkDataExtractor.data.title.replace(
                                     "&amp;",
                                     "&"
                                 ) else archivedLinks!!.title,

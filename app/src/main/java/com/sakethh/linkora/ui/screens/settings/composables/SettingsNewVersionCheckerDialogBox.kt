@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.LocalizedStrings.retrievingLatestInformation
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -40,7 +40,7 @@ fun SettingsNewVersionCheckerDialogBox(
     ),
     text: String = retrievingLatestInformation.value
 ) {
-    if (shouldDialogBoxAppear.value && !SettingsPreference.didServerTimeOutErrorOccurred.value) {
+    if (shouldDialogBoxAppear.value && !Preferences.didServerTimeOutErrorOccurred.value) {
         LinkoraTheme {
             BasicAlertDialog(
                 onDismissRequest = { }, modifier = Modifier

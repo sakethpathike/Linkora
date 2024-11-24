@@ -69,12 +69,12 @@ import com.sakethh.linkora.LocalizedStrings.resetAppLanguage
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageCode
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.preferredAppLanguageName
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
+import com.sakethh.linkora.ui.screens.settings.Preferences.preferredAppLanguageCode
+import com.sakethh.linkora.ui.screens.settings.Preferences.preferredAppLanguageName
+import com.sakethh.linkora.ui.screens.settings.Preferences.readSettingPreferenceValue
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.utils.linkoraLog
@@ -207,7 +207,7 @@ fun LanguageSettingsScreen(
                             )
                         }
                         Text(
-                            text = if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value)
+                            text = if (Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value)
                                 LocalizedStrings.displayingRemoteStrings.value else
                                 LocalizedStrings.displayingCompiledStrings.value,
                             style = MaterialTheme.typography.titleSmall,
@@ -289,11 +289,11 @@ fun LanguageSettingsScreen(
                     },
                     text = it.languageName,
                     isRemoteLanguage = false,
-                    localizationStatus = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value)
+                    localizationStatus = (if (Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value)
                         remotelyAvailableLanguages.find { language -> language.languageCode == it.languageCode }?.localizedStringsCount
-                            ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalLocalAppStrings.intValue else SettingsPreference.totalRemoteStrings.intValue.toString()) + " " + LocalizedStrings.stringsLocalized.value,
-                    localizationStatusFraction = (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
-                        ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / (if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) SettingsPreference.totalRemoteStrings.intValue else SettingsPreference.totalLocalAppStrings.intValue).toFloat(),
+                            ?: 0 else it.localizedStringsCount).toString() + "/" + (if (!Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value) Preferences.totalLocalAppStrings.intValue else Preferences.totalRemoteStrings.intValue.toString()) + " " + LocalizedStrings.stringsLocalized.value,
+                    localizationStatusFraction = (if (Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value) remotelyAvailableLanguages.find { lang -> lang.languageCode == it.languageCode }?.localizedStringsCount
+                        ?: 0 else it.localizedStringsCount.toFloat()).toFloat() / (if (Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value) Preferences.totalRemoteStrings.intValue else Preferences.totalLocalAppStrings.intValue).toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
@@ -323,8 +323,8 @@ fun LanguageSettingsScreen(
                     },
                     text = it.languageName,
                     isRemoteLanguage = true,
-                    localizationStatus = it.localizedStringsCount.toString() + "/" + SettingsPreference.totalLocalAppStrings.intValue + " ${LocalizedStrings.stringsLocalized.value}",
-                    localizationStatusFraction = it.localizedStringsCount.toFloat() / SettingsPreference.totalLocalAppStrings.intValue.toFloat(),
+                    localizationStatus = it.localizedStringsCount.toString() + "/" + Preferences.totalLocalAppStrings.intValue + " ${LocalizedStrings.stringsLocalized.value}",
+                    localizationStatusFraction = it.localizedStringsCount.toFloat() / Preferences.totalLocalAppStrings.intValue.toFloat(),
                 )
                 Spacer(modifier = Modifier.height(15.dp))
             }
@@ -573,12 +573,12 @@ fun LanguageSettingsScreen(
     )
     LaunchedEffect(key1 = Unit) {
         preferredAppLanguageName.value = readSettingPreferenceValue(
-            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+            stringPreferencesKey(PreferenceType.APP_LANGUAGE_NAME.name),
             context.dataStore
         ) ?: "English"
 
         preferredAppLanguageCode.value = readSettingPreferenceValue(
-            stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+            stringPreferencesKey(PreferenceType.APP_LANGUAGE_CODE.name),
             context.dataStore
         ) ?: "en"
     }

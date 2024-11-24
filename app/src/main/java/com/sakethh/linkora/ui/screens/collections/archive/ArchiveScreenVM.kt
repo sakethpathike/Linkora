@@ -19,7 +19,7 @@ import com.sakethh.linkora.data.local.sorting.links.archive.ArchivedLinksSorting
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.utils.LinkoraExports
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -96,7 +96,7 @@ class ArchiveScreenVM @Inject constructor(
     init {
         changeRetrievedData(
             sortingPreferences = SortingPreferences.valueOf(
-                SettingsPreference.selectedSortingType.value
+                Preferences.selectedSortingType.value
             )
         )
     }

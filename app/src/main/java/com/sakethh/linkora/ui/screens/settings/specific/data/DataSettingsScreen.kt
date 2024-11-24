@@ -9,6 +9,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,8 +20,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.BrokenImage
 import androidx.compose.material.icons.filled.Cancel
@@ -28,6 +31,7 @@ import androidx.compose.material.icons.filled.CloudSync
 import androidx.compose.material.icons.filled.DataObject
 import androidx.compose.material.icons.filled.DeleteForever
 import androidx.compose.material.icons.filled.Html
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialogDefaults
@@ -49,6 +53,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
@@ -70,7 +75,7 @@ import com.sakethh.linkora.ui.commonComposables.DataDialogBoxType
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBox
 import com.sakethh.linkora.ui.commonComposables.DeleteDialogBoxParam
 import com.sakethh.linkora.ui.navigation.CustomServerSetupScreen
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.ImportExceptionDialogBox
@@ -151,6 +156,28 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                     modifier = Modifier.padding(start = 15.dp, end = 15.dp),
                 )
             }
+            if (Preferences.syncHostUrl.value.isNotBlank()) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .padding(start = 15.dp, end = 15.dp)
+                            .clip(RoundedCornerShape(15.dp))
+                            .border(
+                                1.5.dp, color = MaterialTheme.colorScheme.primary,
+                                RoundedCornerShape(15.dp)
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Spacer(Modifier.width(15.dp))
+                        Icon(imageVector = Icons.Default.Info, contentDescription = null)
+                        Text(
+                            text = "Server configuration saved for: ${Preferences.syncHostUrl.value}\nMake sure it’s running if hosted locally.",
+                            style = MaterialTheme.typography.titleSmall,
+                            modifier = Modifier.padding(start = 15.dp, top = 15.dp, bottom = 15.dp)
+                        )
+                    }
+                }
+            }
             item {
                 RegularSettingComponent(
                     SettingsUIElement(isIconNeeded = rememberSaveable {
@@ -158,11 +185,11 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                             true
                         )
                     },
-                        title = "Connect to Custom Hosted Server",
+                        title = "Setup Custom Hosted Server",
                         doesDescriptionExists = false,
                         description = "",
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             navController.navigate(CustomServerSetupScreen)
                         },
@@ -189,7 +216,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         doesDescriptionExists = true,
                         description = LocalizedStrings.importUsingJsonFileDesc.value,
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             importBasedOnJsonFormat = true
                             activityResultLauncher.launch("application/json")
@@ -207,7 +234,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         doesDescriptionExists = true,
                         description = LocalizedStrings.importDataFromHtmlFileDesc.value,
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             importBasedOnJsonFormat = false
                             activityResultLauncher.launch("text/html")
@@ -235,7 +262,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         doesDescriptionExists = true,
                         description = LocalizedStrings.exportDataAsJsonDesc.value,
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             ExportRequestInfo.isHTMLBasedRequest.value = false
                             settingsScreenVM.exportDataToAFile(
@@ -258,7 +285,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         doesDescriptionExists = true,
                         description = LocalizedStrings.exportDataAsHtmlDesc.value,
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             ExportRequestInfo.isHTMLBasedRequest.value = true
                             settingsScreenVM.exportDataToAFile(
@@ -290,7 +317,7 @@ fun DataSettingsScreen(navController: NavController, settingsScreenVM: SettingsS
                         doesDescriptionExists = true,
                         description = deleteEntireDataPermanentlyDesc.value,
                         isSwitchNeeded = false,
-                        isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                        isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                         onSwitchStateChange = {
                             shouldDeleteEntireDialogBoxAppear.value = true
                         },

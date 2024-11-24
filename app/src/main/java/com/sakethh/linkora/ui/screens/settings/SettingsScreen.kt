@@ -97,7 +97,7 @@ fun SettingsScreen(navController: NavController = rememberNavController()) {
             }
         }
         BackHandler {
-            if (SettingsPreference.isHomeScreenEnabled.value) {
+            if (Preferences.isHomeScreenEnabled.value) {
                 navController.navigate(HomeScreenRoute) {
                     popUpTo(0)
                 }
@@ -122,7 +122,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.THEME
+                    SettingsSection.THEME
                 navController.navigate(ThemeSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.theme.value,
@@ -131,7 +131,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.GENERAL
+                    SettingsSection.GENERAL
                 navController.navigate(GeneralSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.general.value,
@@ -140,7 +140,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.ADVANCED
+                    SettingsSection.ADVANCED
                 navController.navigate(AdvancedSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.advanced.value,
@@ -156,7 +156,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.LANGUAGE
+                    SettingsSection.LANGUAGE
                 navController.navigate(LanguageSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.language.value,
@@ -165,7 +165,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.DATA
+                    SettingsSection.DATA
                 navController.navigate(DataSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.data.value,
@@ -174,7 +174,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.PRIVACY
+                    SettingsSection.PRIVACY
                 navController.navigate(PrivacySettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.privacy.value,
@@ -183,7 +183,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.ABOUT
+                    SettingsSection.ABOUT
                 navController.navigate(AboutSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.about.value,
@@ -192,7 +192,7 @@ private fun settingsScreenOptions(navController: NavController): List<SettingsSc
         SettingsScreenOption(
             onClick = {
                 currentSelectedSettingSection.value =
-                    SettingsSections.ACKNOWLEDGMENT
+                    SettingsSection.ACKNOWLEDGMENT
                 navController.navigate(AcknowledgmentsSettingsScreenRoute)
             },
             sectionTitle = LocalizedStrings.acknowledgments.value,

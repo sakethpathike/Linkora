@@ -105,7 +105,7 @@ import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
@@ -721,7 +721,7 @@ fun CollectionsScreen(navController: NavController) {
                     )
                     collectionsScreenVM.changeRetrievedFoldersData(
                         SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         )
                     )
                     shouldRenameDialogBoxBeVisible.value = false
@@ -754,7 +754,7 @@ fun CollectionsScreen(navController: NavController) {
                 onDeleted = {
                     collectionsScreenVM.changeRetrievedFoldersData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         )
                     )
                 })
@@ -832,7 +832,7 @@ fun CollectionsScreen(navController: NavController) {
                 shouldDialogBoxAppear = shouldDialogForNewFolderAppear, onCreated = {
                     collectionsScreenVM.changeRetrievedFoldersData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         )
                     )
                 }, inAChildFolderScreen = false,
@@ -890,7 +890,7 @@ fun CollectionsScreen(navController: NavController) {
             areFoldersSelectable.value = false
             collectionsScreenVM.areAllFoldersChecked.value = false
             collectionsScreenVM.changeAllFoldersSelectedData()
-        } else if (!SettingsPreference.isHomeScreenEnabled.value) {
+        } else if (!Preferences.isHomeScreenEnabled.value) {
             activity?.moveTaskToBack(true)
         } else {
             navController.navigate(HomeScreenRoute) {

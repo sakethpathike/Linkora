@@ -52,7 +52,7 @@ import com.sakethh.linkora.data.remote.releases.GitHubReleasesRepo
 import com.sakethh.linkora.data.remote.releases.model.GitHubReleaseDTOItem
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorker
 import com.sakethh.linkora.worker.refreshLinks.RefreshLinksWorkerRequestBuilder
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -119,7 +119,7 @@ open class SettingsScreenVM @Inject constructor(
 
     companion object {
         val isAnyRefreshingTaskGoingOn = mutableStateOf(false)
-        val currentSelectedSettingSection = mutableStateOf(SettingsSections.THEME)
+        val currentSelectedSettingSection = mutableStateOf(SettingsSection.THEME)
         private val _latestReleaseInfoFromGitHubReleases = MutableStateFlow(
             GitHubReleaseDTOItem(
                 assets = listOf(),
@@ -417,62 +417,62 @@ open class SettingsScreenVM @Inject constructor(
         listOf(
             SettingsUIElement(
                 title = useInAppBrowser.value,
-                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
+                doesDescriptionExists = Preferences.showDescriptionForSettingsState.value,
                 description = useInAppBrowserDesc.value,
                 isSwitchNeeded = true,
-                isSwitchEnabled = SettingsPreference.isInAppWebTabEnabled,
+                isSwitchEnabled = Preferences.isInAppWebTabEnabled,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.OpenInBrowser,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.CUSTOM_TABS.name
+                                PreferenceType.CUSTOM_TABS.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.isInAppWebTabEnabled.value = it
+                        Preferences.isInAppWebTabEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = enableHomeScreen.value,
-                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
+                doesDescriptionExists = Preferences.showDescriptionForSettingsState.value,
                 description = enableHomeScreenDesc.value,
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Home,
-                isSwitchEnabled = SettingsPreference.isHomeScreenEnabled,
+                isSwitchEnabled = Preferences.isHomeScreenEnabled,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.HOME_SCREEN_VISIBILITY.name
+                                PreferenceType.HOME_SCREEN_VISIBILITY.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.isHomeScreenEnabled.value = it
+                        Preferences.isHomeScreenEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = autoDetectTitle.value,
                 doesDescriptionExists = true,
                 description = autoDetectTitleDesc.value,
                 isSwitchNeeded = true,
-                isSwitchEnabled = SettingsPreference.isAutoDetectTitleForLinksEnabled,
+                isSwitchEnabled = Preferences.isAutoDetectTitleForLinksEnabled,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Search,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
+                                PreferenceType.AUTO_DETECT_TITLE_FOR_LINK.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.isAutoDetectTitleForLinksEnabled.value = it
+                        Preferences.isAutoDetectTitleForLinksEnabled.value = it
 
                         if (it) {
-                            SettingsPreference.changeSettingPreferenceValue(
+                            Preferences.changeSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(
-                                    SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
+                                    PreferenceType.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
                                 ), dataStore = context.dataStore, newValue = false
                             )
-                            SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value = false
+                            Preferences.forceSaveWithoutFetchingAnyMetaData.value = false
                         }
                     }
                 }), SettingsUIElement(
@@ -480,25 +480,25 @@ open class SettingsScreenVM @Inject constructor(
                 doesDescriptionExists = true,
                 description = "Link will be saved as you save it, nothing gets fetched. Note that this will impact on refreshing links from link menu, link will NOT be refreshed if this is enabled.",
                 isSwitchNeeded = true,
-                isSwitchEnabled = SettingsPreference.forceSaveWithoutFetchingAnyMetaData,
+                isSwitchEnabled = Preferences.forceSaveWithoutFetchingAnyMetaData,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.PublicOff,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
+                                PreferenceType.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value = it
+                        Preferences.forceSaveWithoutFetchingAnyMetaData.value = it
 
                         if (it) {
-                            SettingsPreference.changeSettingPreferenceValue(
+                            Preferences.changeSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(
-                                    SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name
+                                    PreferenceType.AUTO_DETECT_TITLE_FOR_LINK.name
                                 ), dataStore = context.dataStore, newValue = false
                             )
-                            SettingsPreference.isAutoDetectTitleForLinksEnabled.value = false
+                            Preferences.isAutoDetectTitleForLinksEnabled.value = false
                         }
                     }
                 }), SettingsUIElement(
@@ -506,34 +506,34 @@ open class SettingsScreenVM @Inject constructor(
                 doesDescriptionExists = true,
                 description = LocalizedStrings.enablesTheDisplayOfAnAssociatedImageWithinTheLinkMenu.value,
                 isSwitchNeeded = true,
-                isSwitchEnabled = SettingsPreference.showAssociatedImagesInLinkMenu,
+                isSwitchEnabled = Preferences.showAssociatedImagesInLinkMenu,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.Image,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name
+                                PreferenceType.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.showAssociatedImagesInLinkMenu.value = it
+                        Preferences.showAssociatedImagesInLinkMenu.value = it
                     }
                 }), SettingsUIElement(
                 title = autoCheckForUpdates.value,
-                doesDescriptionExists = SettingsPreference.showDescriptionForSettingsState.value,
+                doesDescriptionExists = Preferences.showDescriptionForSettingsState.value,
                 description = autoCheckForUpdatesDesc.value,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.Default.SystemUpdateAlt,
                 isSwitchNeeded = true,
-                isSwitchEnabled = SettingsPreference.isAutoCheckUpdatesEnabled,
+                isSwitchEnabled = Preferences.isAutoCheckUpdatesEnabled,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.AUTO_CHECK_UPDATES.name
+                                PreferenceType.AUTO_CHECK_UPDATES.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.isAutoCheckUpdatesEnabled.value = it
+                        Preferences.isAutoCheckUpdatesEnabled.value = it
                     }
                 }), SettingsUIElement(
                 title = showDescriptionForSettings.value,
@@ -542,15 +542,15 @@ open class SettingsScreenVM @Inject constructor(
                 isSwitchNeeded = true,
                 isIconNeeded = mutableStateOf(true),
                 icon = Icons.AutoMirrored.Default.ShortText,
-                isSwitchEnabled = SettingsPreference.showDescriptionForSettingsState,
+                isSwitchEnabled = Preferences.showDescriptionForSettingsState,
                 onSwitchStateChange = {
                     viewModelScope.launch {
-                        SettingsPreference.changeSettingPreferenceValue(
+                        Preferences.changeSettingPreferenceValue(
                             preferenceKey = booleanPreferencesKey(
-                                SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name
+                                PreferenceType.SETTING_COMPONENT_DESCRIPTION_STATE.name
                             ), dataStore = context.dataStore, newValue = it
                         )
-                        SettingsPreference.showDescriptionForSettingsState.value = it
+                        Preferences.showDescriptionForSettingsState.value = it
                     }
                 })
         )
@@ -632,9 +632,9 @@ open class SettingsScreenVM @Inject constructor(
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 localDatabase.clearAllTables()
-                SettingsPreference.lastSelectedPanelID.longValue = -1
-                SettingsPreference.changeSettingPreferenceValue(
-                    intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                Preferences.lastSelectedPanelID.longValue = -1
+                Preferences.changeSettingPreferenceValue(
+                    intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
                     context.dataStore,
                     newValue = -1
                 )

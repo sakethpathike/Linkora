@@ -55,9 +55,9 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.CollectionsScreenRoute
 import com.sakethh.linkora.ui.navigation.HomeScreenRoute
 import com.sakethh.linkora.ui.navigation.SearchScreenRoute
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
@@ -130,18 +130,18 @@ fun GeneralSettingsScreen(
     }
     if (showInitialNavigationChangerDialogBox.value) {
         val currentlySelectedRoute = rememberSaveable {
-            mutableStateOf(SettingsPreference.startDestination.value)
+            mutableStateOf(Preferences.startDestination.value)
         }
         AlertDialog(onDismissRequest = {
             showInitialNavigationChangerDialogBox.value = false
         }, confirmButton = {
             Button(onClick = {
-                SettingsPreference.changeSettingPreferenceValue(
+                Preferences.changeSettingPreferenceValue(
                     stringPreferencesKey(
-                        SettingsPreferences.INITIAL_ROUTE.name
+                        PreferenceType.INITIAL_ROUTE.name
                     ), context.dataStore, currentlySelectedRoute.value
                 )
-                SettingsPreference.startDestination.value = currentlySelectedRoute.value
+                Preferences.startDestination.value = currentlySelectedRoute.value
                 showInitialNavigationChangerDialogBox.value = false
             }, modifier = Modifier.fillMaxWidth()) {
                 Text(text = "Confirm", style = MaterialTheme.typography.titleSmall)

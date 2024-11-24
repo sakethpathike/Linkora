@@ -11,10 +11,10 @@ import com.sakethh.linkora.data.RequestResult
 import com.sakethh.linkora.data.local.LocalDatabase
 import com.sakethh.linkora.data.remote.metadata.twitter.TwitterMetaDataRepo
 import com.sakethh.linkora.data.remote.scrape.LinkMetaDataScrapperService
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.readSettingPreferenceValue
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
+import com.sakethh.linkora.ui.screens.settings.Preferences.readSettingPreferenceValue
 import com.sakethh.linkora.utils.linkoraLog
 import com.sakethh.linkora.utils.sanitizeLink
 import dagger.assisted.Assisted
@@ -55,19 +55,19 @@ class RefreshLinksWorker @AssistedInject constructor(
             linksTable.size + impLinksTable.size + archiveLinksTable.size + recentlyVisitedTable.size
 
         val linksTableCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(PreferenceType.REFRESH_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val impLinksTableCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(PreferenceType.REFRESH_IMP_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val archiveTableIndexCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(PreferenceType.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
         val recentlyTableIndexCompletedIndex = readSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+            intPreferencesKey(PreferenceType.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
             applicationContext.dataStore
         ) ?: -1
 
@@ -131,7 +131,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url  else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "video" }) tweetMetaData.data.media_extended.find { it.type == "video" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url else if(tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "gif" }) tweetMetaData.data.media_extended.find { it.type == "gif" }?.thumbnail_url ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                             userAgent = modifiedLink.userAgent
-                                                ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                ?: Preferences.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
@@ -140,7 +140,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 linkMetaDataScrapperService.scrapeLinkData(
                                     modifiedLink.webURL,
                                     modifiedLink.userAgent
-                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                        ?: Preferences.primaryJsoupUserAgent.value
                                 )) {
                                 is RequestResult.Failure -> {
 
@@ -151,7 +151,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL,
                                         userAgent = modifiedLink.userAgent
-                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                            ?: Preferences.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -159,8 +159,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromLinksTable(
                             modifiedLink
                         )
-                        SettingsPreference.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsPreferences.REFRESH_LINKS_TABLE_INDEX.name),
+                        Preferences.changeSettingPreferenceValue(
+                            intPreferencesKey(PreferenceType.REFRESH_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             linksTableCompletedIndex + 1 + index
                         )
@@ -193,7 +193,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                             userAgent = modifiedLink.userAgent
-                                                ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                ?: Preferences.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
@@ -202,7 +202,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 linkMetaDataScrapperService.scrapeLinkData(
                                     modifiedLink.webURL,
                                     modifiedLink.userAgent
-                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                        ?: Preferences.primaryJsoupUserAgent.value
                                 )) {
                                 is RequestResult.Failure -> {
 
@@ -213,7 +213,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL,
                                         userAgent = modifiedLink.userAgent
-                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                            ?: Preferences.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -221,8 +221,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromImpLinksTable(
                             modifiedLink
                         )
-                        SettingsPreference.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsPreferences.REFRESH_IMP_LINKS_TABLE_INDEX.name),
+                        Preferences.changeSettingPreferenceValue(
+                            intPreferencesKey(PreferenceType.REFRESH_IMP_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             impLinksTableCompletedIndex + 1 + index
                         )
@@ -255,7 +255,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                 ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                             userAgent = modifiedLink.userAgent
-                                                ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                ?: Preferences.primaryJsoupUserAgent.value
                                         )
                                 }
                             }
@@ -264,7 +264,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                 linkMetaDataScrapperService.scrapeLinkData(
                                     modifiedLink.webURL,
                                     modifiedLink.userAgent
-                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                        ?: Preferences.primaryJsoupUserAgent.value
                                 )) {
                                 is RequestResult.Failure -> {
 
@@ -275,7 +275,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                         title = scrappedData.data.title,
                                         imgURL = scrappedData.data.imgURL,
                                         userAgent = modifiedLink.userAgent
-                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                            ?: Preferences.primaryJsoupUserAgent.value
                                     )
                                 }
                             }
@@ -283,8 +283,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                         localDatabase.linksDao().updateALinkDataFromArchivedLinksTable(
                             modifiedLink
                         )
-                        SettingsPreference.changeSettingPreferenceValue(
-                            intPreferencesKey(SettingsPreferences.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
+                        Preferences.changeSettingPreferenceValue(
+                            intPreferencesKey(PreferenceType.REFRESH_ARCHIVE_LINKS_TABLE_INDEX.name),
                             applicationContext.dataStore,
                             archiveTableIndexCompletedIndex + 1 + index
                         )
@@ -319,7 +319,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                                 imgURL = if (tweetMetaData.data.hasMedia && tweetMetaData.data.media_extended.isNotEmpty() && tweetMetaData.data.media_extended.any { it.type == "image" }) tweetMetaData.data.media_extended.find { it.type == "image" }?.url
                                                     ?: tweetMetaData.data.user_profile_image_url else tweetMetaData.data.user_profile_image_url,
                                                 userAgent = modifiedLink.userAgent
-                                                    ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                    ?: Preferences.primaryJsoupUserAgent.value
                                             )
                                     }
                                 }
@@ -328,7 +328,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                     linkMetaDataScrapperService.scrapeLinkData(
                                         modifiedLink.webURL,
                                         modifiedLink.userAgent
-                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                            ?: Preferences.primaryJsoupUserAgent.value
                                     )) {
                                     is RequestResult.Failure -> {
 
@@ -339,7 +339,7 @@ class RefreshLinksWorker @AssistedInject constructor(
                                             title = scrappedData.data.title,
                                             imgURL = scrappedData.data.imgURL,
                                             userAgent = modifiedLink.userAgent
-                                                ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                ?: Preferences.primaryJsoupUserAgent.value
                                         )
                                     }
                                 }
@@ -347,8 +347,8 @@ class RefreshLinksWorker @AssistedInject constructor(
                             localDatabase.linksDao().updateALinkDataFromRecentlyVisitedLinksTable(
                                 modifiedLink
                             )
-                            SettingsPreference.changeSettingPreferenceValue(
-                                intPreferencesKey(SettingsPreferences.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
+                            Preferences.changeSettingPreferenceValue(
+                                intPreferencesKey(PreferenceType.REFRESH_RECENTLY_VISITED_LINKS_TABLE_INDEX.name),
                                 applicationContext.dataStore,
                                 recentlyTableIndexCompletedIndex + index + 1
                             )

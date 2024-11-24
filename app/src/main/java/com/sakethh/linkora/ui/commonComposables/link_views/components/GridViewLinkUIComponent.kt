@@ -35,7 +35,7 @@ import androidx.compose.ui.unit.sp
 import com.sakethh.linkora.ui.CoilImage
 import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.utils.fadedEdges
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -58,7 +58,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
             .padding(4.dp)
             .clip(RoundedCornerShape(5.dp))
             .then(
-                if (SettingsPreference.enableBorderForNonListViews.value) Modifier.border(
+                if (Preferences.enableBorderForNonListViews.value) Modifier.border(
                     width = 1.dp,
                     color = MaterialTheme.colorScheme.secondary.copy(0.5f),
                     shape = RoundedCornerShape(5.dp)
@@ -88,15 +88,15 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                     modifier = Modifier
                         .fillMaxSize()
                         .then(
-                            if (SettingsPreference.enableFadedEdgeForNonListViews.value) Modifier.fadedEdges(
+                            if (Preferences.enableFadedEdgeForNonListViews.value) Modifier.fadedEdges(
                                 colorScheme
                             ) else Modifier
                         ),
                     imgURL = linkUIComponentParam.imgURL,
-                    contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !SettingsPreference.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit,
+                    contentScale = if (linkUIComponentParam.imgURL.startsWith("https://pbs.twimg.com/profile_images/") || !Preferences.isShelfMinimizedInHomeScreen.value || !forStaggeredView) ContentScale.Crop else ContentScale.Fit,
                     userAgent = linkUIComponentParam.userAgent
                 )
-                if (!SettingsPreference.enableBaseURLForNonListViews.value && !SettingsPreference.enableTitleForNonListViews.value) {
+                if (!Preferences.enableBaseURLForNonListViews.value && !Preferences.enableTitleForNonListViews.value) {
                     Icon(
                         Icons.Default.MoreVert,
                         null,
@@ -111,11 +111,11 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                 }
             }
         }
-        if (SettingsPreference.enableTitleForNonListViews.value) {
+        if (Preferences.enableTitleForNonListViews.value) {
             Text(
                 text = linkUIComponentParam.title,
                 modifier = Modifier.padding(
-                    start = if (SettingsPreference.enableBorderForNonListViews.value) 10.dp else 0.dp,
+                    start = if (Preferences.enableBorderForNonListViews.value) 10.dp else 0.dp,
                     top = 10.dp,
                     end = 10.dp,
                     bottom = if (linkUIComponentParam.isSelectionModeEnabled.value) 10.dp else 0.dp
@@ -124,7 +124,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                 overflow = TextOverflow.Ellipsis, fontSize = 12.sp
             )
         }
-        if (!linkUIComponentParam.isSelectionModeEnabled.value && SettingsPreference.enableBaseURLForNonListViews.value) {
+        if (!linkUIComponentParam.isSelectionModeEnabled.value && Preferences.enableBaseURLForNonListViews.value) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -133,7 +133,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                     .padding(
                         top = 10.dp,
                         bottom = 10.dp,
-                        end = if (SettingsPreference.enableBorderForNonListViews.value) 5.dp else 0.dp
+                        end = if (Preferences.enableBorderForNonListViews.value) 5.dp else 0.dp
                     )
             ) {
                 Box(Modifier.fillMaxWidth(0.75f)) {
@@ -142,7 +142,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                             .replace("http://", "").replace("https://", ""),
                         modifier = Modifier
                             .padding(
-                                start = if (SettingsPreference.enableBorderForNonListViews.value) 10.dp else 0.dp,
+                                start = if (Preferences.enableBorderForNonListViews.value) 10.dp else 0.dp,
                             )
                             .background(
                                 color = MaterialTheme.colorScheme.primary.copy(0.25f),
@@ -160,7 +160,7 @@ fun GridViewLinkUIComponent(linkUIComponentParam: LinkUIComponentParam, forStagg
                         linkUIComponentParam.onMoreIconClick()
                     })
             }
-        } else if (!SettingsPreference.enableBaseURLForNonListViews.value && SettingsPreference.enableTitleForNonListViews.value) {
+        } else if (!Preferences.enableBaseURLForNonListViews.value && Preferences.enableTitleForNonListViews.value) {
             Box(modifier = Modifier.fillMaxWidth(), contentAlignment = Alignment.CenterEnd) {
                 Icon(
                     Icons.Default.MoreVert,

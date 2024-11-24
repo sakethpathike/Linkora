@@ -25,9 +25,9 @@ import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.archive.ArchiveScreenModal
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -90,8 +90,8 @@ open class HomeScreenVM @Inject constructor(
                     _selectedPanelFoldersForSelectedPanel.emit(it)
                 }
         }
-        SettingsPreference.changeSettingPreferenceValue(
-            intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+        Preferences.changeSettingPreferenceValue(
+            intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
             context.dataStore,
             newValue = panelId.toInt()
         )
@@ -208,7 +208,7 @@ open class HomeScreenVM @Inject constructor(
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -233,7 +233,7 @@ open class HomeScreenVM @Inject constructor(
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -318,7 +318,7 @@ open class HomeScreenVM @Inject constructor(
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -366,7 +366,7 @@ open class HomeScreenVM @Inject constructor(
                 }.invokeOnCompletion {
                     changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         ),
                         folderID = 0,
                         screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN

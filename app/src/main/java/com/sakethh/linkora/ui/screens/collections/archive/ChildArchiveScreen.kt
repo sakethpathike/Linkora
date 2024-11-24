@@ -55,7 +55,7 @@ import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.utils.baseUrl
@@ -133,7 +133,7 @@ fun ChildArchiveScreen(
             imgURL = it.imgURL,
             onMoreIconClick = {
                 selectedLinkUserAgent.value =
-                    it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                    it.userAgent ?: Preferences.primaryJsoupUserAgent.value
                 archiveScreenVM.selectedArchivedLinkData.value = it
                 shouldOptionsBtmModalSheetBeVisible.value = true
                 selectedURLOrFolderName.value = it.webURL
@@ -189,14 +189,14 @@ fun ChildArchiveScreen(
                     it
                 )
             ),
-            userAgent = it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+            userAgent = it.userAgent ?: Preferences.primaryJsoupUserAgent.value
         )
     }
 
     LinkoraTheme {
         if (archiveScreenType == ArchiveScreenType.LINKS) {
             if (archiveLinksData.isNotEmpty()) {
-                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                when (Preferences.currentlySelectedLinkLayout.value) {
                     LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
                         LazyColumn(
                             modifier = Modifier
@@ -210,7 +210,7 @@ fun ChildArchiveScreen(
                                 }) { index, it ->
                                 ListViewLinkUIComponent(
                                     commonLinkParam(it),
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                 )
                             }
                         }
@@ -392,8 +392,8 @@ fun ChildArchiveScreen(
             MenuBtmSheetParam(
                 showQuickActions = mutableStateOf(
                     archiveScreenType == ArchiveScreenType.LINKS && (
-                            SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
-                                    || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name
+                            Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                    || Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name
                             )
                 ),
                 inArchiveScreen = mutableStateOf(true),
@@ -460,7 +460,7 @@ fun ChildArchiveScreen(
                         onTaskCompleted = {
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SortingPreferences.valueOf(
-                                    SettingsPreference.selectedSortingType.value
+                                    Preferences.selectedSortingType.value
                                 )
                             )
                         }
@@ -468,7 +468,7 @@ fun ChildArchiveScreen(
                 }, onDeleted = {
                     archiveScreenVM.changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         )
                     )
                 })
@@ -497,7 +497,7 @@ fun ChildArchiveScreen(
                             shouldRenameDialogBoxAppear.value = false
                             archiveScreenVM.changeRetrievedData(
                                 sortingPreferences = SortingPreferences.valueOf(
-                                    SettingsPreference.selectedSortingType.value
+                                    Preferences.selectedSortingType.value
                                 )
                             )
                         }, folderID = CollectionsScreenVM.selectedFolderData.value.id

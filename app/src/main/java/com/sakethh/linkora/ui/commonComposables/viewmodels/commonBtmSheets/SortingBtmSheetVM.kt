@@ -5,9 +5,9 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.LocalizedStrings
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import kotlinx.coroutines.launch
 
@@ -24,12 +24,12 @@ class SortingBtmSheetVM :
         { context ->
             listOf(
                 SortingBtmSheet(sortingName = LocalizedStrings.newestToOldest.value, onClick = {
-                    SettingsPreference.selectedSortingType.value =
+                    Preferences.selectedSortingType.value =
                         SortingPreferences.NEW_TO_OLD.name
                     viewModelScope.launch {
-                        SettingsPreference.changeSortingPreferenceValue(
+                        Preferences.changeSortingPreferenceValue(
                             preferenceKey = stringPreferencesKey(
-                                SettingsPreferences.SORTING_PREFERENCE.name
+                                PreferenceType.SORTING_PREFERENCE.name
                             ),
                             dataStore = context.dataStore,
                             newValue = SortingPreferences.NEW_TO_OLD
@@ -37,12 +37,12 @@ class SortingBtmSheetVM :
                     }
                 }, sortingType = SortingPreferences.NEW_TO_OLD),
                 SortingBtmSheet(sortingName = LocalizedStrings.oldestToNewest.value, onClick = {
-                    SettingsPreference.selectedSortingType.value =
+                    Preferences.selectedSortingType.value =
                         SortingPreferences.OLD_TO_NEW.name
                     viewModelScope.launch {
-                        SettingsPreference.changeSortingPreferenceValue(
+                        Preferences.changeSortingPreferenceValue(
                             preferenceKey = stringPreferencesKey(
-                                SettingsPreferences.SORTING_PREFERENCE.name
+                                PreferenceType.SORTING_PREFERENCE.name
                             ),
                             dataStore = context.dataStore,
                             newValue = SortingPreferences.OLD_TO_NEW
@@ -50,12 +50,12 @@ class SortingBtmSheetVM :
                     }
                 }, sortingType = SortingPreferences.OLD_TO_NEW),
                 SortingBtmSheet(sortingName = LocalizedStrings.aToZSequence.value, onClick = {
-                    SettingsPreference.selectedSortingType.value =
+                    Preferences.selectedSortingType.value =
                         SortingPreferences.A_TO_Z.name
                     viewModelScope.launch {
-                        SettingsPreference.changeSortingPreferenceValue(
+                        Preferences.changeSortingPreferenceValue(
                             preferenceKey = stringPreferencesKey(
-                                SettingsPreferences.SORTING_PREFERENCE.name
+                                PreferenceType.SORTING_PREFERENCE.name
                             ),
                             dataStore = context.dataStore,
                             newValue = SortingPreferences.A_TO_Z
@@ -66,12 +66,12 @@ class SortingBtmSheetVM :
                     sortingType = SortingPreferences.Z_TO_A,
                     sortingName = LocalizedStrings.ztoASequence.value,
                     onClick = {
-                        SettingsPreference.selectedSortingType.value =
+                        Preferences.selectedSortingType.value =
                             SortingPreferences.Z_TO_A.name
                         viewModelScope.launch {
-                            SettingsPreference.changeSortingPreferenceValue(
+                            Preferences.changeSortingPreferenceValue(
                                 preferenceKey = stringPreferencesKey(
-                                    SettingsPreferences.SORTING_PREFERENCE.name
+                                    PreferenceType.SORTING_PREFERENCE.name
                                 ),
                                 dataStore = context.dataStore,
                                 newValue = SortingPreferences.Z_TO_A

@@ -23,9 +23,9 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.CommonUiEvent
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.SettingsUIElement
 import com.sakethh.linkora.ui.screens.settings.composables.RegularSettingComponent
@@ -60,7 +60,7 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                 .navigationBarsPadding(),
             verticalArrangement = Arrangement.spacedBy(30.dp)
         ) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !SettingsPreference.shouldDarkThemeBeEnabled.value) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !Preferences.shouldDarkThemeBeEnabled.value) {
                 item(key = "Follow System Theme") {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
@@ -68,24 +68,24 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                             doesDescriptionExists = false,
                             isSwitchNeeded = true,
                             description = null,
-                            isSwitchEnabled = SettingsPreference.shouldFollowSystemTheme,
+                            isSwitchEnabled = Preferences.shouldFollowSystemTheme,
                             onSwitchStateChange = {
-                                SettingsPreference.changeSettingPreferenceValue(
+                                Preferences.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
-                                        SettingsPreferences.FOLLOW_SYSTEM_THEME.name
+                                        PreferenceType.FOLLOW_SYSTEM_THEME.name
                                     ),
                                     dataStore = context.dataStore,
-                                    newValue = !SettingsPreference.shouldFollowSystemTheme.value
+                                    newValue = !Preferences.shouldFollowSystemTheme.value
                                 )
-                                SettingsPreference.shouldFollowSystemTheme.value =
-                                    !SettingsPreference.shouldFollowSystemTheme.value
+                                Preferences.shouldFollowSystemTheme.value =
+                                    !Preferences.shouldFollowSystemTheme.value
                             }, isIconNeeded = remember {
                                 mutableStateOf(false)
                             })
                     )
                 }
             }
-            if (!SettingsPreference.shouldFollowSystemTheme.value) {
+            if (!Preferences.shouldFollowSystemTheme.value) {
                 item(key = "Use Dark Mode") {
                     RegularSettingComponent(
                         settingsUIElement = SettingsUIElement(
@@ -93,42 +93,42 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                             doesDescriptionExists = false,
                             description = null,
                             isSwitchNeeded = true,
-                            isSwitchEnabled = SettingsPreference.shouldDarkThemeBeEnabled,
+                            isSwitchEnabled = Preferences.shouldDarkThemeBeEnabled,
                             onSwitchStateChange = {
-                                SettingsPreference.changeSettingPreferenceValue(
+                                Preferences.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
-                                        SettingsPreferences.DARK_THEME.name
+                                        PreferenceType.DARK_THEME.name
                                     ),
                                     dataStore = context.dataStore,
-                                    newValue = !SettingsPreference.shouldDarkThemeBeEnabled.value
+                                    newValue = !Preferences.shouldDarkThemeBeEnabled.value
                                 )
-                                SettingsPreference.shouldDarkThemeBeEnabled.value =
-                                    !SettingsPreference.shouldDarkThemeBeEnabled.value
+                                Preferences.shouldDarkThemeBeEnabled.value =
+                                    !Preferences.shouldDarkThemeBeEnabled.value
                             }, isIconNeeded = remember {
                                 mutableStateOf(false)
                             })
                     )
                 }
             }
-            if (SettingsPreference.shouldDarkThemeBeEnabled.value || (isSystemInDarkTheme && SettingsPreference.shouldFollowSystemTheme.value)) {
-            item(key = SettingsPreferences.AMOLED_THEME_STATE.name) {
+            if (Preferences.shouldDarkThemeBeEnabled.value || (isSystemInDarkTheme && Preferences.shouldFollowSystemTheme.value)) {
+                item(key = PreferenceType.AMOLED_THEME_STATE.name) {
                 RegularSettingComponent(
                     settingsUIElement = SettingsUIElement(
                         title = LocalizedStrings.useAmoledTheme.value,
                         doesDescriptionExists = false,
                         description = "",
                         isSwitchNeeded = true,
-                        isSwitchEnabled = SettingsPreference.shouldFollowAmoledTheme,
+                        isSwitchEnabled = Preferences.shouldFollowAmoledTheme,
                         onSwitchStateChange = {
-                            SettingsPreference.changeSettingPreferenceValue(
+                            Preferences.changeSettingPreferenceValue(
                                 preferenceKey = booleanPreferencesKey(
-                                    SettingsPreferences.AMOLED_THEME_STATE.name
+                                    PreferenceType.AMOLED_THEME_STATE.name
                                 ),
                                 dataStore = context.dataStore,
-                                newValue = !SettingsPreference.shouldFollowAmoledTheme.value
+                                newValue = !Preferences.shouldFollowAmoledTheme.value
                             )
-                            SettingsPreference.shouldFollowAmoledTheme.value =
-                                !SettingsPreference.shouldFollowAmoledTheme.value
+                            Preferences.shouldFollowAmoledTheme.value =
+                                !Preferences.shouldFollowAmoledTheme.value
                         }, isIconNeeded = remember {
                             mutableStateOf(false)
                         })
@@ -143,17 +143,17 @@ fun ThemeSettingsScreen(navController: NavController, settingsScreenVM: Settings
                             doesDescriptionExists = true,
                             description = LocalizedStrings.useDynamicThemingDesc.value,
                             isSwitchNeeded = true,
-                            isSwitchEnabled = SettingsPreference.shouldFollowDynamicTheming,
+                            isSwitchEnabled = Preferences.shouldFollowDynamicTheming,
                             onSwitchStateChange = {
-                                SettingsPreference.changeSettingPreferenceValue(
+                                Preferences.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
-                                        SettingsPreferences.DYNAMIC_THEMING.name
+                                        PreferenceType.DYNAMIC_THEMING.name
                                     ),
                                     dataStore = context.dataStore,
-                                    newValue = !SettingsPreference.shouldFollowDynamicTheming.value
+                                    newValue = !Preferences.shouldFollowDynamicTheming.value
                                 )
-                                SettingsPreference.shouldFollowDynamicTheming.value =
-                                    !SettingsPreference.shouldFollowDynamicTheming.value
+                                Preferences.shouldFollowDynamicTheming.value =
+                                    !Preferences.shouldFollowDynamicTheming.value
                             }, isIconNeeded = remember {
                                 mutableStateOf(false)
                             })

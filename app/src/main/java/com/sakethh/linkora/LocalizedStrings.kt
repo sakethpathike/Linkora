@@ -7,7 +7,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.sakethh.linkora.data.local.localization.language.translations.TranslationsRepo
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.utils.ifNullOrBlank
 import com.sakethh.linkora.utils.linkoraLog
 import dagger.hilt.EntryPoint
@@ -1180,11 +1180,11 @@ object LocalizedStrings : ViewModel() {
         context: Context
     ) {
         count++
-        if (SettingsPreference.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
+        if (Preferences.useLanguageStringsBasedOnFetchedValuesFromServer.value) {
             mutableString.value =
                 (translationsRepo.getLocalizedStringValueFor(
                     remoteStringID,
-                    SettingsPreference.preferredAppLanguageCode.value
+                    Preferences.preferredAppLanguageCode.value
                 ).let {
                     it.ifNullOrBlank {
                         context.getString(localId)

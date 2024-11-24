@@ -99,7 +99,7 @@ import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.FolderIndividualComponent
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
@@ -249,7 +249,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 }
             } else if (!areElementsSelectable.value && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN && SpecificCollectionsScreenVM.screenType.value != SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN) {
                 FloatingActionButton(onClick = {
-                    if (!SettingsPreference.isBtmSheetEnabledForSavingLinks.value) {
+                    if (!Preferences.isBtmSheetEnabledForSavingLinks.value) {
                         shouldNewLinkDialogBoxBeVisible.value = true
                     } else {
                         coroutineScope.launch {
@@ -584,7 +584,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     imgURL = linkData.imgURL,
                     onMoreIconClick = {
                         selectedLinkUserAgent.value =
-                            linkData.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                            linkData.userAgent ?: Preferences.primaryJsoupUserAgent.value
                         selectedItemTitle.value = linkData.title
                         selectedItemNote.value = linkData.infoForSaving
                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -730,7 +730,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                             )
                         )
                     },
-                    userAgent = linkData.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                    userAgent = linkData.userAgent ?: Preferences.primaryJsoupUserAgent.value
                 )
             }
 
@@ -824,7 +824,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 .fillMaxSize()
                 .animateContentSize()
 
-            when (SettingsPreference.currentlySelectedLinkLayout.value) {
+            when (Preferences.currentlySelectedLinkLayout.value) {
                 LinkLayout.TITLE_ONLY_LIST_VIEW.name, LinkLayout.REGULAR_LIST_VIEW.name -> {
                     LazyColumn(
                         modifier = Modifier
@@ -852,7 +852,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         ListViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                            forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                         )
                                     }
                                 } else {
@@ -871,7 +871,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         ListViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                            forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                         )
                                     }
                                 } else {
@@ -904,7 +904,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     isLinkedWithArchivedFolder = false
                                                 )
                                             ),
-                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                            forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                         )
                                     }
                                 } else {
@@ -932,7 +932,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         ListViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                            forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                         )
                                     }
                                 } else {
@@ -976,7 +976,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -997,7 +997,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1032,7 +1032,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     isLinkedWithArchivedFolder = false
                                                 )
                                             ),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1064,7 +1064,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1110,7 +1110,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1129,7 +1129,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1162,7 +1162,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                                     isLinkedWithArchivedFolder = false
                                                 )
                                             ),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1192,7 +1192,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                         }) { linkIndex, linkData ->
                                         GridViewLinkUIComponent(
                                             commonLinkParam(linkData),
-                                            forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                            forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                         )
                                     }
                                 } else {
@@ -1303,7 +1303,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                     }
                 },
                 webUrl = selectedWebURL.value,
-                showQuickActions = mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
+                showQuickActions = mutableStateOf(Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
                 inSpecificArchiveScreen = mutableStateOf(SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
                 inArchiveScreen = mutableStateOf(SpecificCollectionsScreenVM.screenType.value == SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN),
                 btmModalSheetState = btmModalSheetState,
@@ -1355,7 +1355,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                 specificCollectionsScreenVM.changeRetrievedData(
                                     folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                     sortingPreferences = SortingPreferences.valueOf(
-                                        SettingsPreference.selectedSortingType.value
+                                        Preferences.selectedSortingType.value
                                     )
                                 )
                             },
@@ -1408,7 +1408,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                         specificCollectionsScreenVM.changeRetrievedData(
                             folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                             sortingPreferences = SortingPreferences.valueOf(
-                                SettingsPreference.selectedSortingType.value
+                                Preferences.selectedSortingType.value
                             )
                         )
                     } else {
@@ -1426,7 +1426,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                                     specificCollectionsScreenVM.changeRetrievedData(
                                         folderID = CollectionsScreenVM.currentClickedFolderData.value.id,
                                         sortingPreferences = SortingPreferences.valueOf(
-                                            SettingsPreference.selectedSortingType.value
+                                            Preferences.selectedSortingType.value
                                         )
                                     )
                                 },
@@ -1439,7 +1439,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onDeleted = {
                     specificCollectionsScreenVM.changeRetrievedData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         ),
                         folderID = CollectionsScreenVM.currentClickedFolderData.value.id
                     )
@@ -1518,7 +1518,7 @@ fun SpecificCollectionScreen(navController: NavController) {
                 onCreated = {
                     collectionsScreenVM.changeRetrievedFoldersData(
                         sortingPreferences = SortingPreferences.valueOf(
-                            SettingsPreference.selectedSortingType.value
+                            Preferences.selectedSortingType.value
                         )
                     )
                 },

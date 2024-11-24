@@ -42,9 +42,9 @@ import com.sakethh.linkora.ui.commonComposables.link_views.LinkUIComponentParam
 import com.sakethh.linkora.ui.commonComposables.link_views.components.GridViewLinkUIComponent
 import com.sakethh.linkora.ui.commonComposables.link_views.components.ListViewLinkUIComponent
 import com.sakethh.linkora.ui.screens.linkLayout.model.LinkPref
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -63,7 +63,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
                 onLongClick = { -> },
-                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
+                userAgent = Preferences.primaryJsoupUserAgent.value
+            ),
             LinkUIComponentParam(
                 title = "A Plague Tale: Requiem | Download and Buy Today - Epic Games Store",
                 webBaseURL = "store.epicgames.com",
@@ -75,7 +76,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
                 onLongClick = { -> },
-                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
+                userAgent = Preferences.primaryJsoupUserAgent.value
+            ),
             LinkUIComponentParam(
                 title = "Nas | Spotify",
                 webBaseURL = "open.spotify.com",
@@ -87,7 +89,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
                 onLongClick = { -> },
-                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
+                userAgent = Preferences.primaryJsoupUserAgent.value
+            ),
             LinkUIComponentParam(
                 title = "Hacker (small type)",
                 webBaseURL = "twitter.com",
@@ -99,7 +102,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
                 onLongClick = { -> },
-                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
+                userAgent = Preferences.primaryJsoupUserAgent.value
+            ),
             LinkUIComponentParam(title = "Philipp Lackner - YouTube",
                 webBaseURL = "youtube.com",
                 imgURL = "https://yt3.googleusercontent.com/mhup7lzHh_c9b55z0edX65ReN9iJmTF2JU7vMGER9LTOora-NnXtvZdtn_vJmTvW6-y97z0Y=s900-c-k-c0x00ffffff-no-rj",
@@ -110,7 +114,8 @@ fun LinkLayoutSettings(navController: NavController) {
                 isSelectionModeEnabled = mutableStateOf(false),
                 isItemSelected = mutableStateOf(false),
                 onLongClick = { -> },
-                userAgent = SettingsPreference.primaryJsoupUserAgent.value),
+                userAgent = Preferences.primaryJsoupUserAgent.value
+            ),
         )
     }
 
@@ -118,55 +123,55 @@ fun LinkLayoutSettings(navController: NavController) {
         listOf(
             LinkPref(
                 onClick = {
-                    SettingsPreference.enableBorderForNonListViews.value =
-                        !SettingsPreference.enableBorderForNonListViews.value
-                    SettingsPreference.changeSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                    Preferences.enableBorderForNonListViews.value =
+                        !Preferences.enableBorderForNonListViews.value
+                    Preferences.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(PreferenceType.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                         dataStore = navController.context.dataStore,
-                        newValue = SettingsPreference.enableBorderForNonListViews.value
+                        newValue = Preferences.enableBorderForNonListViews.value
                     )
                 },
                 title = LocalizedStrings.showBorderAroundLinks.value,
-                isSwitchChecked = SettingsPreference.enableBorderForNonListViews
+                isSwitchChecked = Preferences.enableBorderForNonListViews
             ),
             LinkPref(
                 onClick = {
-                    SettingsPreference.enableTitleForNonListViews.value =
-                        !SettingsPreference.enableTitleForNonListViews.value
-                    SettingsPreference.changeSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                    Preferences.enableTitleForNonListViews.value =
+                        !Preferences.enableTitleForNonListViews.value
+                    Preferences.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(PreferenceType.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                         dataStore = navController.context.dataStore,
-                        newValue = SettingsPreference.enableTitleForNonListViews.value
+                        newValue = Preferences.enableTitleForNonListViews.value
                     )
                 },
                 title = LocalizedStrings.showTitle.value,
-                isSwitchChecked = SettingsPreference.enableTitleForNonListViews
+                isSwitchChecked = Preferences.enableTitleForNonListViews
             ),
             LinkPref(
                 onClick = {
-                    SettingsPreference.enableBaseURLForNonListViews.value =
-                        !SettingsPreference.enableBaseURLForNonListViews.value
-                    SettingsPreference.changeSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                    Preferences.enableBaseURLForNonListViews.value =
+                        !Preferences.enableBaseURLForNonListViews.value
+                    Preferences.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(PreferenceType.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                         dataStore = navController.context.dataStore,
-                        newValue = SettingsPreference.enableBaseURLForNonListViews.value
+                        newValue = Preferences.enableBaseURLForNonListViews.value
                     )
                 },
                 title = LocalizedStrings.showBaseUrl.value,
-                isSwitchChecked = SettingsPreference.enableBaseURLForNonListViews
+                isSwitchChecked = Preferences.enableBaseURLForNonListViews
             ),
             LinkPref(
                 onClick = {
-                    SettingsPreference.enableFadedEdgeForNonListViews.value =
-                        !SettingsPreference.enableFadedEdgeForNonListViews.value
-                    SettingsPreference.changeSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                    Preferences.enableFadedEdgeForNonListViews.value =
+                        !Preferences.enableFadedEdgeForNonListViews.value
+                    Preferences.changeSettingPreferenceValue(
+                        preferenceKey = booleanPreferencesKey(PreferenceType.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                         dataStore = navController.context.dataStore,
-                        newValue = SettingsPreference.enableFadedEdgeForNonListViews.value
+                        newValue = Preferences.enableFadedEdgeForNonListViews.value
                     )
                 },
                 title = LocalizedStrings.showBottomFadedEdge.value,
-                isSwitchChecked = SettingsPreference.enableFadedEdgeForNonListViews
+                isSwitchChecked = Preferences.enableFadedEdgeForNonListViews
             ),
         )
     }
@@ -175,8 +180,8 @@ fun LinkLayoutSettings(navController: NavController) {
         topAppBarText = LocalizedStrings.linkLayoutSettings.value,
         navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
-        if (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.REGULAR_LIST_VIEW.name
-            || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+        if (Preferences.currentlySelectedLinkLayout.value == LinkLayout.REGULAR_LIST_VIEW.name
+            || Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
         ) {
             LazyColumn(
                 modifier = Modifier
@@ -217,14 +222,14 @@ fun LinkLayoutSettings(navController: NavController) {
                 items(sampleList) {
                     ListViewLinkUIComponent(
                         it,
-                        forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                        forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                     )
                 }
                 item {
                     Spacer(Modifier.height(100.dp))
                 }
             }
-        } else if (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name) {
+        } else if (Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name) {
             LazyVerticalGrid(
                 columns = GridCells.Adaptive(150.dp),
                 modifier = Modifier
@@ -399,9 +404,9 @@ private fun LinkViewRadioButtonComponent(
         modifier = Modifier
             .fillMaxWidth()
             .clickable {
-                SettingsPreference.currentlySelectedLinkLayout.value = linkLayout.name
-                SettingsPreference.changeSettingPreferenceValue(
-                    preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
+                Preferences.currentlySelectedLinkLayout.value = linkLayout.name
+                Preferences.changeSettingPreferenceValue(
+                    preferenceKey = stringPreferencesKey(PreferenceType.CURRENTLY_SELECTED_LINK_VIEW.name),
                     dataStore = navController.context.dataStore,
                     newValue = linkLayout.name
                 )
@@ -409,11 +414,11 @@ private fun LinkViewRadioButtonComponent(
             .padding(paddingValues)
     ) {
         RadioButton(
-            selected = SettingsPreference.currentlySelectedLinkLayout.value == linkLayout.name,
+            selected = Preferences.currentlySelectedLinkLayout.value == linkLayout.name,
             onClick = {
-                SettingsPreference.currentlySelectedLinkLayout.value = linkLayout.name
-                SettingsPreference.changeSettingPreferenceValue(
-                    preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
+                Preferences.currentlySelectedLinkLayout.value = linkLayout.name
+                Preferences.changeSettingPreferenceValue(
+                    preferenceKey = stringPreferencesKey(PreferenceType.CURRENTLY_SELECTED_LINK_VIEW.name),
                     dataStore = navController.context.dataStore,
                     newValue = linkLayout.name
                 )

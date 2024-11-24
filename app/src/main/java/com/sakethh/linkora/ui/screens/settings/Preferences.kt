@@ -24,7 +24,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.UUID
 
-object SettingsPreference : ViewModel() {
+object Preferences : ViewModel() {
 
     const val APP_VERSION_NAME = "v0.10.0"
     private const val APP_VERSION_CODE = 32
@@ -69,6 +69,8 @@ object SettingsPreference : ViewModel() {
     val shouldFollowAmoledTheme = mutableStateOf(false)
     val forceSaveWithoutFetchingAnyMetaData = mutableStateOf(false)
     val startDestination = mutableStateOf(HomeScreenRoute.toString())
+    val syncHostUrl = mutableStateOf("")
+    val syncAPIKey = mutableStateOf("")
 
     suspend fun <T> readSettingPreferenceValue(
         preferenceKey: androidx.datastore.preferences.core.Preferences.Key<T>,
@@ -111,206 +113,218 @@ object SettingsPreference : ViewModel() {
             kotlinx.coroutines.awaitAll(
                 async {
                     isHomeScreenEnabled.value = if (readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.HOME_SCREEN_VISIBILITY.name),
                             dataStore = context.dataStore
                         ) == null
                     ) {
                         true
                     } else {
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.HOME_SCREEN_VISIBILITY.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.HOME_SCREEN_VISIBILITY.name),
                             dataStore = context.dataStore
                         ) == true
                     }
                 },
                 async {
                     shouldFollowSystemTheme.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FOLLOW_SYSTEM_THEME.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.FOLLOW_SYSTEM_THEME.name),
                         dataStore = context.dataStore
                     ) ?: (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q)
                 },
                 async {
                     startDestination.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.INITIAL_ROUTE.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.INITIAL_ROUTE.name),
                         dataStore = context.dataStore
                     ) ?: startDestination.value
                 },
                 async {
+                    syncHostUrl.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(PreferenceType.SYNC_HOST_URL.name),
+                        dataStore = context.dataStore
+                    ) ?: syncHostUrl.value
+                },
+                async {
+                    syncAPIKey.value = readSettingPreferenceValue(
+                        preferenceKey = stringPreferencesKey(PreferenceType.SYNC_API_KEY.name),
+                        dataStore = context.dataStore
+                    ) ?: syncAPIKey.value
+                },
+                async {
                     shouldDarkThemeBeEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DARK_THEME.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.DARK_THEME.name),
                         dataStore = context.dataStore
                     ) ?: (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q)
                 },
                 async {
                     shouldFollowDynamicTheming.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.DYNAMIC_THEMING.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.DYNAMIC_THEMING.name),
                         dataStore = context.dataStore
                     ) ?: false
                 },
                 async {
                     primaryJsoupUserAgent.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.JSOUP_USER_AGENT.name),
                         dataStore = context.dataStore
                     )
                         ?: primaryJsoupUserAgent.value
                 },
                 async {
                     secondaryJsoupUserAgent.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.SECONDARY_JSOUP_USER_AGENT.name),
                         dataStore = context.dataStore
                     )
                         ?: secondaryJsoupUserAgent.value
                 },
                 async {
                     showDescriptionForSettingsState.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SETTING_COMPONENT_DESCRIPTION_STATE.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.SETTING_COMPONENT_DESCRIPTION_STATE.name),
                         dataStore = context.dataStore
                     ) ?: true
                 },
                 async {
                     isInAppWebTabEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.CUSTOM_TABS.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.CUSTOM_TABS.name),
                         dataStore = context.dataStore
                     ) ?: false
                 },
                 async {
                     didDataAutoDataMigratedFromV9.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name),
                         dataStore = context.dataStore
                     ) ?: false
                 },
                 async {
                     isAutoDetectTitleForLinksEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_DETECT_TITLE_FOR_LINK.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.AUTO_DETECT_TITLE_FOR_LINK.name),
                         dataStore = context.dataStore
                     ) ?: false
                 },
                 async {
                     totalRemoteStrings.intValue = readSettingPreferenceValue(
-                        preferenceKey = intPreferencesKey(SettingsPreferences.TOTAL_REMOTE_STRINGS.name),
+                        preferenceKey = intPreferencesKey(PreferenceType.TOTAL_REMOTE_STRINGS.name),
                         dataStore = context.dataStore
                     ) ?: 0
                 },
                 async {
                     isSendCrashReportsEnabled.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SEND_CRASH_REPORTS.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.SEND_CRASH_REPORTS.name),
                         dataStore = context.dataStore
                     ) ?: true
                 },
                 async {
                     isAutoCheckUpdatesEnabled.value = (readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.AUTO_CHECK_UPDATES.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.AUTO_CHECK_UPDATES.name),
                         dataStore = context.dataStore
                     ) ?: BuildConfig.FLAVOR) != "fdroid"
                 },
                 async {
                     selectedSortingType.value = readSortingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.SORTING_PREFERENCE.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.SORTING_PREFERENCE.name),
                         dataStore = context.dataStore
                     ) ?: SortingPreferences.NEW_TO_OLD.name
                 },
                 async {
                     savedAppCode.intValue = readSettingPreferenceValue(
-                        preferenceKey = intPreferencesKey(SettingsPreferences.SAVED_APP_CODE.name),
+                        preferenceKey = intPreferencesKey(PreferenceType.SAVED_APP_CODE.name),
                         dataStore = context.dataStore
                     ) ?: (APP_VERSION_CODE - 1)
                 },
                 async {
                     showAssociatedImagesInLinkMenu.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.ASSOCIATED_IMAGES_IN_LINK_MENU_VISIBILITY.name),
                         dataStore = context.dataStore
                     ) ?: true
                 },
                 async {
                     isShelfMinimizedInHomeScreen.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.SHELF_VISIBLE_STATE.name),
                         dataStore = context.dataStore
                     ) ?: false
                 },
                 async {
                     forceSaveWithoutFetchingAnyMetaData.value = readSettingPreferenceValue(
-                        preferenceKey = booleanPreferencesKey(SettingsPreferences.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name),
+                        preferenceKey = booleanPreferencesKey(PreferenceType.FORCE_SAVE_WITHOUT_FETCHING_META_DATA.name),
                         dataStore = context.dataStore
                     ) ?: forceSaveWithoutFetchingAnyMetaData.value
                 },
                 async {
                     preferredAppLanguageName.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_NAME.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.APP_LANGUAGE_NAME.name),
                         dataStore = context.dataStore
                     ) ?: "English"
                 },
                 async {
                     preferredAppLanguageCode.value = readSettingPreferenceValue(
-                        preferenceKey = stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+                        preferenceKey = stringPreferencesKey(PreferenceType.APP_LANGUAGE_CODE.name),
                         dataStore = context.dataStore
                     ) ?: "en"
                 },
                 async {
                     lastSelectedPanelID.longValue = (readSettingPreferenceValue(
-                        preferenceKey = intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                        preferenceKey = intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
                         dataStore = context.dataStore
                     ) ?: -1).toLong()
                 },
                 async {
                     useLanguageStringsBasedOnFetchedValuesFromServer.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.USE_REMOTE_LANGUAGE_STRINGS.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.USE_REMOTE_LANGUAGE_STRINGS.name),
                             dataStore = context.dataStore
                         ) ?: false
                 },
                 async {
                     enableBorderForNonListViews.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.BORDER_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
                         ) ?: enableBorderForNonListViews.value
                 },
                 async {
                     enableTitleForNonListViews.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.TITLE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
                         ) ?: enableTitleForNonListViews.value
                 },
                 async {
                     enableBaseURLForNonListViews.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.BASE_URL_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
                         ) ?: enableBaseURLForNonListViews.value
                 },
                 async {
                     enableFadedEdgeForNonListViews.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.FADED_EDGE_VISIBILITY_FOR_NON_LIST_VIEWS.name),
                             dataStore = context.dataStore
                         ) ?: enableFadedEdgeForNonListViews.value
                 },
                 async {
                     localizationServerURL.value =
                         readSettingPreferenceValue(
-                            preferenceKey = stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
+                            preferenceKey = stringPreferencesKey(PreferenceType.LOCALIZATION_SERVER_URL.name),
                             dataStore = context.dataStore
                         ) ?: LinkoraValues.LINKORA_LOCALIZATION_SERVER
                 },
                 async {
                     remoteStringsLastUpdatedOn.value =
                         readSettingPreferenceValue(
-                            preferenceKey = stringPreferencesKey(SettingsPreferences.REMOTE_STRINGS_LAST_UPDATED_ON.name),
+                            preferenceKey = stringPreferencesKey(PreferenceType.REMOTE_STRINGS_LAST_UPDATED_ON.name),
                             dataStore = context.dataStore
                         ) ?: ""
                 },
                 async {
                     currentlySelectedLinkLayout.value =
                         readSettingPreferenceValue(
-                            preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENTLY_SELECTED_LINK_VIEW.name),
+                            preferenceKey = stringPreferencesKey(PreferenceType.CURRENTLY_SELECTED_LINK_VIEW.name),
                             dataStore = context.dataStore
                         ) ?: currentlySelectedLinkLayout.value
                 },
                 async {
                     shouldFollowAmoledTheme.value =
                         readSettingPreferenceValue(
-                            preferenceKey = booleanPreferencesKey(SettingsPreferences.AMOLED_THEME_STATE.name),
+                            preferenceKey = booleanPreferencesKey(PreferenceType.AMOLED_THEME_STATE.name),
                             dataStore = context.dataStore
                         ) ?: false
                 },
@@ -318,7 +332,7 @@ object SettingsPreference : ViewModel() {
                     RefreshLinksWorkerRequestBuilder.REFRESH_LINKS_WORKER_TAG.emit(
                         UUID.fromString(
                             readSettingPreferenceValue(
-                                preferenceKey = stringPreferencesKey(SettingsPreferences.CURRENT_WORK_MANAGER_WORK_UUID.name),
+                                preferenceKey = stringPreferencesKey(PreferenceType.CURRENT_WORK_MANAGER_WORK_UUID.name),
                                 dataStore = context.dataStore
                             ) ?: "d267865d-e1c9-42b7-be38-1ab6db0e312b"
                         )

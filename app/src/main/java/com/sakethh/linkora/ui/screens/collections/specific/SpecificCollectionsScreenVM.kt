@@ -26,7 +26,7 @@ import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -195,7 +195,7 @@ open class SpecificCollectionsScreenVM @Inject constructor(
     init {
         viewModelScope.launch {
             changeRetrievedData(
-                sortingPreferences = SortingPreferences.valueOf(SettingsPreference.selectedSortingType.value),
+                sortingPreferences = SortingPreferences.valueOf(Preferences.selectedSortingType.value),
                 folderID = currentClickedFolderData.value.id,
                 isFoldersSortingSelected = true,
                 isLinksSortingSelected = true

@@ -13,21 +13,24 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CustomServerSetupScreen(navController: NavController) {
-    val serverUrl = rememberSaveable {
-        mutableStateOf("")
+    val serverUrl = rememberSaveable(Preferences.syncHostUrl.value) {
+        mutableStateOf(Preferences.syncHostUrl.value)
     }
-    val apiKey = rememberSaveable {
-        mutableStateOf("")
+    val apiKey = rememberSaveable(Preferences.syncAPIKey.value) {
+        mutableStateOf(Preferences.syncAPIKey.value)
     }
     val customServerSetupScreenViewModel: CustomServerSetupScreenViewModel = hiltViewModel()
+    val context = LocalContext.current
     SpecificScreenScaffold(
         topAppBarText = "Custom Server Setup", navController = navController
     ) { paddingValues, topAppBarScrollBehaviour ->
@@ -41,7 +44,7 @@ fun CustomServerSetupScreen(navController: NavController) {
                 ServerConfigValueHolder(
                     holderLabel = "Host URL",
                     value = serverUrl.value,
-                    onSaveClick = {
+                    onConfirmClick = {
                         serverUrl.value = it
                     },
                     info = "For a server running on a local machine (ensure that this device and the server are running on the same Wi-Fi network), the URL must include the correct port number, corresponding to the one used by the server."
@@ -52,7 +55,7 @@ fun CustomServerSetupScreen(navController: NavController) {
                 ServerConfigValueHolder(
                     holderLabel = "API Key",
                     value = apiKey.value,
-                    onSaveClick = {
+                    onConfirmClick = {
                         apiKey.value = it
                     },
                     info =
@@ -70,12 +73,13 @@ fun CustomServerSetupScreen(navController: NavController) {
                     Button(modifier = Modifier
                         .padding(20.dp)
                         .fillMaxWidth(), onClick = {
-                        customServerSetupScreenViewModel.connectToServer(
+                        customServerSetupScreenViewModel.saveConnection(
+                            context,
                             serverUrl.value,
                             apiKey.value
                         )
                     }) {
-                        Text(text = "Connect", style = MaterialTheme.typography.titleMedium)
+                        Text(text = "Save Connection", style = MaterialTheme.typography.titleMedium)
                     }
                 }
             }

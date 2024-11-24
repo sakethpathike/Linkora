@@ -117,7 +117,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM.Companion.selectedFolderID
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -222,7 +222,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
             imgURL = it.imgURL,
             onMoreIconClick = {
                 selectedLinkUserAgent.value =
-                    it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                    it.userAgent ?: Preferences.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value = OptionsBtmSheetType.LINK
                 SearchScreenVM.selectedLinkID = it.id
                 selectedLinkTitle.value = it.title
@@ -286,7 +286,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                     it
                 )
             ),
-            userAgent = it.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+            userAgent = it.userAgent ?: Preferences.primaryJsoupUserAgent.value
         )
     }
 
@@ -646,7 +646,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
-                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                            ?: Preferences.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -725,7 +725,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     },
                                                     userAgent = it.userAgent
-                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                        ?: Preferences.primaryJsoupUserAgent.value
                                                 )
                                             )
                                         }
@@ -770,7 +770,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
-                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                            ?: Preferences.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -850,7 +850,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     },
                                                     userAgent = it.userAgent
-                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                        ?: Preferences.primaryJsoupUserAgent.value
                                                 )
                                             )
                                         }
@@ -895,7 +895,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
-                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                            ?: Preferences.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -974,7 +974,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     },
                                                     userAgent = it.userAgent
-                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                        ?: Preferences.primaryJsoupUserAgent.value
                                                 )
                                             )
                                         }
@@ -1019,7 +1019,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
-                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                            ?: Preferences.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1098,7 +1098,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     },
                                                     userAgent = it.userAgent
-                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                        ?: Preferences.primaryJsoupUserAgent.value
                                                 )
                                             )
                                         }
@@ -1143,7 +1143,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                     imgURL = it.imgURL,
                                                     onMoreIconClick = {
                                                         selectedLinkUserAgent.value = it.userAgent
-                                                            ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                            ?: Preferences.primaryJsoupUserAgent.value
                                                         SpecificCollectionsScreenVM.selectedBtmSheetType.value =
                                                             OptionsBtmSheetType.LINK
                                                         SearchScreenVM.selectedLinkID = it.id
@@ -1222,7 +1222,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                                                         )
                                                     },
                                                     userAgent = it.userAgent
-                                                        ?: SettingsPreference.primaryJsoupUserAgent.value
+                                                        ?: Preferences.primaryJsoupUserAgent.value
                                                 )
                                             )
                                         }
@@ -1429,7 +1429,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 Spacer(modifier = Modifier.height(5.dp))
             }
             if (historyLinksData.isNotEmpty()) {
-                when (SettingsPreference.currentlySelectedLinkLayout.value) {
+                when (Preferences.currentlySelectedLinkLayout.value) {
                     LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
                         LazyColumn(
                             modifier = Modifier
@@ -1441,7 +1441,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                             }) { index, it ->
                                 ListViewLinkUIComponent(
                                     commonLinkParam(it),
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                 )
                             }
                             item {
@@ -1515,8 +1515,8 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 webUrl = selectedWebURL.value,
                 showQuickActions = mutableStateOf(
                     !SearchScreenVM.isSearchEnabled.value &&
-                            (SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name ||
-                                    SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
+                            (Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name ||
+                                    Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
                 ),
                 btmModalSheetState = optionsBtmSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
@@ -1691,7 +1691,7 @@ fun SearchScreen(navController: NavController, customWebTab: CustomWebTab) {
                 searchScreenVM.selectedArchiveLinksTableData.clear()
                 searchScreenVM.selectedHistoryLinksData.clear()
                 SearchScreenVM.selectedArchiveFoldersData.clear()
-            } else if (SettingsPreference.isHomeScreenEnabled.value) {
+            } else if (Preferences.isHomeScreenEnabled.value) {
                 navController.navigate(HomeScreenRoute) {
                     popUpTo(0)
                 }

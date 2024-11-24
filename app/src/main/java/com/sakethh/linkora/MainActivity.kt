@@ -39,9 +39,9 @@ import com.sakethh.linkora.ui.navigation.MainNavigation
 import com.sakethh.linkora.ui.navigation.SearchScreenRoute
 import com.sakethh.linkora.ui.navigation.SettingsScreenRoute
 import com.sakethh.linkora.ui.screens.search.SearchScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.ui.transferActions.TransferActionType
@@ -66,7 +66,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         lifecycleScope.launch {
-            SettingsPreference.readAllPreferencesValues(this@MainActivity)
+            Preferences.readAllPreferencesValues(this@MainActivity)
             LocalizedStrings.loadStrings(this@MainActivity)
         }
         setContent {
@@ -151,19 +151,19 @@ class MainActivity : ComponentActivity() {
                     }
                 }
                 LaunchedEffect(
-                    key1 = SettingsPreference.isAutoCheckUpdatesEnabled.value,
+                    key1 = Preferences.isAutoCheckUpdatesEnabled.value,
                     key2 = SettingsScreenVM.latestReleaseInfoFromGitHubReleases.collectAsState().value.releaseName
                 ) {
                     async {
-                        if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
+                        if (isNetworkAvailable(context) && Preferences.isAutoCheckUpdatesEnabled.value) {
                             settingsScreenVM.latestAppVersionRetriever { }
                         }
                     }.await()
-                    if (isNetworkAvailable(context) && SettingsPreference.isAutoCheckUpdatesEnabled.value) {
-                        SettingsPreference.isOnLatestUpdate.value =
-                            SettingsPreference.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
+                    if (isNetworkAvailable(context) && Preferences.isAutoCheckUpdatesEnabled.value) {
+                        Preferences.isOnLatestUpdate.value =
+                            Preferences.APP_VERSION_NAME == SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName
                         withContext(Dispatchers.Main) {
-                            if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName && SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName != "") {
+                            if (Preferences.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName && SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName != "") {
                                 Toast.makeText(
                                     context,
                                     context.getString(R.string.a_new_update_is_available),
@@ -173,22 +173,22 @@ class MainActivity : ComponentActivity() {
                         }
                     }
                 }
-                LaunchedEffect(key1 = SettingsPreference.didDataAutoDataMigratedFromV9.value) {
-                    if (!SettingsPreference.didDataAutoDataMigratedFromV9.value) {
+                LaunchedEffect(key1 = Preferences.didDataAutoDataMigratedFromV9.value) {
+                    if (!Preferences.didDataAutoDataMigratedFromV9.value) {
                         CoroutineScope(Dispatchers.IO).launch {
                             try {
                                 mainActivityVM.migrateArchiveFoldersV9toV10()
                                 mainActivityVM.migrateRegularFoldersLinksDataFromV9toV10()
                             } finally {
-                                SettingsPreference.changeSettingPreferenceValue(
+                                Preferences.changeSettingPreferenceValue(
                                     preferenceKey = booleanPreferencesKey(
-                                        SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                        PreferenceType.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
                                     ), dataStore = context.dataStore, newValue = true
                                 )
-                                SettingsPreference.didDataAutoDataMigratedFromV9.value =
-                                    SettingsPreference.readSettingPreferenceValue(
+                                Preferences.didDataAutoDataMigratedFromV9.value =
+                                    Preferences.readSettingPreferenceValue(
                                         preferenceKey = booleanPreferencesKey(
-                                            SettingsPreferences.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
+                                            PreferenceType.IS_DATA_MIGRATION_COMPLETED_FROM_V9.name
                                         ), dataStore = context.dataStore
                                     ) ?: true
                             }
@@ -202,8 +202,8 @@ class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context?) {
         if (newBase != null && Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) {
             CoroutineScope(Dispatchers.Default).launch {
-                val appLanguageCode = SettingsPreference.readSettingPreferenceValue(
-                    stringPreferencesKey(SettingsPreferences.APP_LANGUAGE_CODE.name),
+                val appLanguageCode = Preferences.readSettingPreferenceValue(
+                    stringPreferencesKey(PreferenceType.APP_LANGUAGE_CODE.name),
                     newBase.dataStore
                 ) ?: "en"
                 val locale = Locale(appLanguageCode)

@@ -58,7 +58,7 @@ import com.sakethh.linkora.R
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SettingsScreenVM
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsAppInfoComponent
 import com.sakethh.linkora.ui.screens.settings.composables.SettingsNewVersionCheckerDialogBox
@@ -119,7 +119,7 @@ fun AboutSettingsScreen(
                             text = LocalizedStrings.linkora.value,
                             style =
                             remember {
-                                if (SettingsPreference.preferredAppLanguageCode.value == "en") typography.bodyMedium else typography.titleSmall
+                                if (Preferences.preferredAppLanguageCode.value == "en") typography.bodyMedium else typography.titleSmall
                             },
                             fontSize = 18.sp,
                             modifier = Modifier
@@ -128,7 +128,7 @@ fun AboutSettingsScreen(
                         )
                     }
                     Text(
-                        text = SettingsPreference.APP_VERSION_NAME,
+                        text = Preferences.APP_VERSION_NAME,
                         style = MaterialTheme.typography.titleSmall,
                         fontSize = 12.sp,
                         modifier = Modifier.alignByBaseline()
@@ -136,7 +136,7 @@ fun AboutSettingsScreen(
                 }
             }
             item {
-                if (!SettingsPreference.isAutoCheckUpdatesEnabled.value && !SettingsPreference.isOnLatestUpdate.value && isNetworkAvailable(
+                if (!Preferences.isAutoCheckUpdatesEnabled.value && !Preferences.isOnLatestUpdate.value && isNetworkAvailable(
                         context
                     )
                 ) {
@@ -149,12 +149,12 @@ fun AboutSettingsScreen(
                             if (isNetworkAvailable(context)) {
                                 settingsScreenVM.latestAppVersionRetriever {
                                     shouldVersionCheckerDialogAppear.value = false
-                                    if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                                    if (Preferences.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                         shouldBtmModalSheetBeVisible.value = true
-                                        SettingsPreference.isOnLatestUpdate.value =
+                                        Preferences.isOnLatestUpdate.value =
                                             false
                                     } else {
-                                        SettingsPreference.isOnLatestUpdate.value =
+                                        Preferences.isOnLatestUpdate.value =
                                             true
                                     }
                                 }
@@ -167,7 +167,7 @@ fun AboutSettingsScreen(
                                 ).show()
                             }
                         })
-                } else if (SettingsPreference.isAutoCheckUpdatesEnabled.value && !SettingsPreference.isOnLatestUpdate.value && isNetworkAvailable(
+                } else if (Preferences.isAutoCheckUpdatesEnabled.value && !Preferences.isOnLatestUpdate.value && isNetworkAvailable(
                         context
                     )
                 ) {
@@ -188,12 +188,12 @@ fun AboutSettingsScreen(
                                     settingsScreenVM.latestAppVersionRetriever { }
                                 }
                                 shouldVersionCheckerDialogAppear.value = false
-                                if (SettingsPreference.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
+                                if (Preferences.APP_VERSION_NAME != SettingsScreenVM.latestReleaseInfoFromGitHubReleases.value.releaseName) {
                                     shouldBtmModalSheetBeVisible.value = true
-                                    SettingsPreference.isOnLatestUpdate.value =
+                                    Preferences.isOnLatestUpdate.value =
                                         false
                                 } else {
-                                    SettingsPreference.isOnLatestUpdate.value =
+                                    Preferences.isOnLatestUpdate.value =
                                         true
                                 }
                             } else {

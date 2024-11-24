@@ -47,9 +47,9 @@ import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.SpecificPanelScreenRoute
 import com.sakethh.linkora.ui.screens.DataEmptyScreen
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -162,10 +162,10 @@ fun ShelfPanelsScreen(navController: NavController) {
                         PanelsScreenVM.selectedPanelData
                     )
                 )
-                if (SettingsPreference.lastSelectedPanelID.longValue == PanelsScreenVM.selectedPanelData.panelId) {
-                    SettingsPreference.lastSelectedPanelID.longValue = -1
-                    SettingsPreference.changeSettingPreferenceValue(
-                        intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                if (Preferences.lastSelectedPanelID.longValue == PanelsScreenVM.selectedPanelData.panelId) {
+                    Preferences.lastSelectedPanelID.longValue = -1
+                    Preferences.changeSettingPreferenceValue(
+                        intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
                         context.dataStore,
                         newValue = -1
                     )

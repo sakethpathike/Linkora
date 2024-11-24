@@ -63,7 +63,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import kotlinx.coroutines.async
@@ -90,7 +90,7 @@ fun ChildHomeScreen(
             if (homeScreenType == HomeScreenVM.HomeScreenType.SAVED_LINKS) {
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SortingPreferences.valueOf(
-                        SettingsPreference.selectedSortingType.value
+                        Preferences.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.SAVED_LINKS_SCREEN
@@ -100,7 +100,7 @@ fun ChildHomeScreen(
             if (homeScreenType == HomeScreenVM.HomeScreenType.IMP_LINKS) {
                 specificCollectionsScreenVM.changeRetrievedData(
                     sortingPreferences = SortingPreferences.valueOf(
-                        SettingsPreference.selectedSortingType.value
+                        Preferences.selectedSortingType.value
                     ),
                     folderID = 0,
                     screenType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -174,7 +174,7 @@ fun ChildHomeScreen(
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
                 selectedLinkUserAgent.value =
-                    linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                    linksTable.userAgent ?: Preferences.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.screenType.value = when (homeScreenType) {
                     HomeScreenVM.HomeScreenType.SAVED_LINKS -> SpecificScreenType.SAVED_LINKS_SCREEN
                     HomeScreenVM.HomeScreenType.IMP_LINKS -> SpecificScreenType.IMPORTANT_LINKS_SCREEN
@@ -243,7 +243,7 @@ fun ChildHomeScreen(
                     onTaskCompleted = {},
                     forceOpenInExternalBrowser = true
                 )
-            }, userAgent = linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+            }, userAgent = linksTable.userAgent ?: Preferences.primaryJsoupUserAgent.value
         )
     }
 
@@ -313,7 +313,7 @@ fun ChildHomeScreen(
         )
     }
     LinkoraTheme {
-        when (SettingsPreference.currentlySelectedLinkLayout.value) {
+        when (Preferences.currentlySelectedLinkLayout.value) {
             LinkLayout.TITLE_ONLY_LIST_VIEW.name, LinkLayout.REGULAR_LIST_VIEW.name -> {
                 LazyColumn(
                     modifier = Modifier
@@ -329,7 +329,7 @@ fun ChildHomeScreen(
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
                                 ListViewLinkUIComponent(
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -347,7 +347,7 @@ fun ChildHomeScreen(
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
                                 ListViewLinkUIComponent(
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
                                             id = it.id,
@@ -384,7 +384,7 @@ fun ChildHomeScreen(
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
                                 ListViewLinkUIComponent(
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -419,7 +419,7 @@ fun ChildHomeScreen(
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -441,7 +441,7 @@ fun ChildHomeScreen(
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
                                             id = it.id,
@@ -487,7 +487,7 @@ fun ChildHomeScreen(
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -524,7 +524,7 @@ fun ChildHomeScreen(
                                 linksTable.id.toString() + linksTable.webURL
                             }) {
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -542,7 +542,7 @@ fun ChildHomeScreen(
                                 importantLinks.webURL + importantLinks.id.toString()
                             }) {
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(
                                         LinksTable(
                                             id = it.id,
@@ -584,7 +584,7 @@ fun ChildHomeScreen(
                         if (folderLinksData.isNotEmpty()) {
                             itemsIndexed(items = folderLinksData) { index, it ->
                                 GridViewLinkUIComponent(
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name,
                                     linkUIComponentParam = modifiedLinkUIComponentParam(it)
                                 )
                             }
@@ -603,7 +603,7 @@ fun ChildHomeScreen(
         MenuBtmSheetUI(
             MenuBtmSheetParam(
                 webUrl = selectedWebURL.value,
-                showQuickActions = mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
+                showQuickActions = mutableStateOf(Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name),
                 btmModalSheetState = btmModalSheetState,
                 shouldBtmModalSheetBeVisible = shouldOptionsBtmModalSheetBeVisible,
                 btmSheetFor = if (homeScreenType.name == HomeScreenVM.HomeScreenType.IMP_LINKS.name) OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN else SpecificCollectionsScreenVM.selectedBtmSheetType.value,

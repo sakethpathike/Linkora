@@ -105,7 +105,7 @@ import com.sakethh.linkora.data.local.site_specific_user_agent.SiteSpecificUserA
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.AddANewLinkDialogBoxVM
 import com.sakethh.linkora.ui.screens.collections.CollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.utils.TempValues
 import com.sakethh.linkora.utils.isAValidURL
@@ -147,7 +147,7 @@ fun AddANewLinkDialogBox(
         mutableStateOf(false)
     }
     val isAutoDetectTitleEnabled = rememberSaveable {
-        mutableStateOf(SettingsPreference.isAutoDetectTitleForLinksEnabled.value)
+        mutableStateOf(Preferences.isAutoDetectTitleForLinksEnabled.value)
     }
     val isCreateANewFolderIconClicked = rememberSaveable {
         mutableStateOf(false)
@@ -167,11 +167,11 @@ fun AddANewLinkDialogBox(
     val isChildFoldersBottomSheetExpanded = mutableStateOf(false)
     val btmSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     LaunchedEffect(key1 = Unit) {
-        AddANewLinkDialogBox.currentUserAgent.value = SettingsPreference.primaryJsoupUserAgent.value
+        AddANewLinkDialogBox.currentUserAgent.value = Preferences.primaryJsoupUserAgent.value
         awaitAll(async {
             if (screenType == SpecificScreenType.INTENT_ACTIVITY) {
                 this.launch {
-                    SettingsPreference.readAllPreferencesValues(context)
+                    Preferences.readAllPreferencesValues(context)
                 }
             }
         })
@@ -301,7 +301,7 @@ fun AddANewLinkDialogBox(
                         }
                         item {
                             Box(modifier = Modifier.animateContentSize()) {
-                                if (!SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
+                                if (!Preferences.isAutoDetectTitleForLinksEnabled.value && !isAutoDetectTitleEnabled.value) {
                                     OutlinedTextField(readOnly = isDataExtractingForTheLink,
                                         modifier = Modifier
                                             .padding(
@@ -349,7 +349,7 @@ fun AddANewLinkDialogBox(
                                 })
                         }
                         item {
-                            if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value || SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
+                            if (Preferences.isAutoDetectTitleForLinksEnabled.value || Preferences.forceSaveWithoutFetchingAnyMetaData.value) {
                                 Card(
                                     border = BorderStroke(
                                         1.dp,
@@ -382,7 +382,7 @@ fun AddANewLinkDialogBox(
                                             )
                                         }
                                         Text(
-                                            text = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) LocalizedStrings.titleWillBeAutomaticallyDetected.value else LocalizedStrings.noDataWillBeRetrievedBecauseThisSettingIsEnabled.value,
+                                            text = if (Preferences.isAutoDetectTitleForLinksEnabled.value) LocalizedStrings.titleWillBeAutomaticallyDetected.value else LocalizedStrings.noDataWillBeRetrievedBecauseThisSettingIsEnabled.value,
                                             style = MaterialTheme.typography.titleSmall,
                                             fontSize = 14.sp,
                                             lineHeight = 18.sp,
@@ -539,7 +539,7 @@ fun AddANewLinkDialogBox(
                                     }
                                 }
 
-                                if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) {
+                                if (Preferences.isAutoDetectTitleForLinksEnabled.value) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(20.dp),
                                         thickness = 1.dp,
@@ -550,10 +550,10 @@ fun AddANewLinkDialogBox(
 
                         }
                         item {
-                            if (!TempValues.forceSaveWithoutFetchingAnyMetaData.value && !SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
+                            if (!TempValues.forceSaveWithoutFetchingAnyMetaData.value && !Preferences.isAutoDetectTitleForLinksEnabled.value && !Preferences.forceSaveWithoutFetchingAnyMetaData.value) {
                                 Row(
                                     modifier = Modifier
-                                        .padding(top = if (SettingsPreference.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp)
+                                        .padding(top = if (Preferences.isAutoDetectTitleForLinksEnabled.value) 0.dp else 10.dp)
                                         .fillMaxWidth()
                                         .clickable {
                                             if (!isDataExtractingForTheLink) {
@@ -583,7 +583,7 @@ fun AddANewLinkDialogBox(
                             }
                         }
                         item {
-                            if (!isAutoDetectTitleEnabled.value && !SettingsPreference.isAutoDetectTitleForLinksEnabled.value && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value) {
+                            if (!isAutoDetectTitleEnabled.value && !Preferences.isAutoDetectTitleForLinksEnabled.value && !Preferences.forceSaveWithoutFetchingAnyMetaData.value) {
                                 Row(
                                     modifier = Modifier
                                         .padding(top = 10.dp)
@@ -666,7 +666,7 @@ fun AddANewLinkDialogBox(
                                         fontSize = 16.sp
                                     )
                                 }
-                                if (isAValidURL(linkTextFieldValue.value) && !SettingsPreference.forceSaveWithoutFetchingAnyMetaData.value && !TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
+                                if (isAValidURL(linkTextFieldValue.value) && !Preferences.forceSaveWithoutFetchingAnyMetaData.value && !TempValues.forceSaveWithoutFetchingAnyMetaData.value) {
                                     HorizontalDivider(
                                         modifier = Modifier.padding(20.dp),
                                         thickness = 1.dp,
@@ -810,7 +810,7 @@ fun AddANewLinkDialogBox(
                                                 appendInlineContent(id = "infoIcon")
                                                 append(LocalizedStrings.retryingMetadataRetrievalWithASecondaryUserAgent.value)
                                                 withStyle(SpanStyle(fontWeight = FontWeight.SemiBold)) {
-                                                    append(SettingsPreference.secondaryJsoupUserAgent.value)
+                                                    append(Preferences.secondaryJsoupUserAgent.value)
                                                 }
                                             },
                                             style = MaterialTheme.typography.titleSmall,
@@ -1168,7 +1168,7 @@ private fun FolderSelectorComponent(
 
 object AddANewLinkDialogBox : ViewModel() {
 
-    val currentUserAgent = mutableStateOf(SettingsPreference.primaryJsoupUserAgent.value)
+    val currentUserAgent = mutableStateOf(Preferences.primaryJsoupUserAgent.value)
 
     @EntryPoint
     @InstallIn(SingletonComponent::class)
@@ -1190,7 +1190,7 @@ object AddANewLinkDialogBox : ViewModel() {
                     if (siteSpecificUserAgentRepo.doesDomainExistPartially(domain)) {
                         siteSpecificUserAgentRepo.getUserAgentByPartialDomain(domain)
                     } else {
-                        SettingsPreference.primaryJsoupUserAgent.value
+                        Preferences.primaryJsoupUserAgent.value
                     }
             }
         }

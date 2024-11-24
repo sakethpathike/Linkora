@@ -14,8 +14,8 @@ import com.sakethh.linkora.data.local.LinksTable
 import com.sakethh.linkora.data.local.RecentlyVisited
 import com.sakethh.linkora.data.local.folders.FoldersRepo
 import com.sakethh.linkora.data.local.links.LinksRepo
-import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.panels.PanelsRepo
+import com.sakethh.linkora.data.local.search.SearchRepo
 import com.sakethh.linkora.data.local.sorting.folders.regular.ParentRegularFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.folders.subfolders.SubFoldersSortingRepo
 import com.sakethh.linkora.data.local.sorting.links.folder.archive.ArchivedFolderLinksSortingRepo
@@ -27,7 +27,7 @@ import com.sakethh.linkora.ui.CommonUiEvent
 import com.sakethh.linkora.ui.CustomWebTab
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
@@ -288,7 +288,7 @@ class SearchScreenVM @Inject constructor(
         isSearchEnabled.value = false
         changeHistoryRetrievedData(
             sortingPreferences = SortingPreferences.valueOf(
-                SettingsPreference.selectedSortingType.value
+                Preferences.selectedSortingType.value
             )
         )
     }

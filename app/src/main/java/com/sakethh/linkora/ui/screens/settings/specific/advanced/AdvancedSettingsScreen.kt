@@ -40,10 +40,10 @@ import androidx.navigation.NavController
 import com.sakethh.linkora.LocalizedStrings
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.navigation.SiteSpecificUserAgentSettingsScreenRoute
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.localizationServerURL
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
+import com.sakethh.linkora.ui.screens.settings.Preferences.localizationServerURL
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import com.sakethh.linkora.ui.screens.settings.specific.TextFieldForPreferenceComposable
 import com.sakethh.linkora.utils.LinkoraValues
@@ -52,8 +52,8 @@ import com.sakethh.linkora.utils.LinkoraValues
 @Composable
 fun AdvancedSettingsScreen(navController: NavController) {
     val context = LocalContext.current
-    val primaryJsoupStringAgent = SettingsPreference.primaryJsoupUserAgent
-    val secondaryJsoupStringAgent = SettingsPreference.secondaryJsoupUserAgent
+    val primaryJsoupStringAgent = Preferences.primaryJsoupUserAgent
+    val secondaryJsoupStringAgent = Preferences.secondaryJsoupUserAgent
     val isReadOnlyTextFieldForPrimaryUserAgent = rememberSaveable {
         mutableStateOf(true)
     }
@@ -151,12 +151,12 @@ fun AdvancedSettingsScreen(navController: NavController) {
                     textFieldLabel = LocalizedStrings.primaryUserAgent.value,
                     textFieldValue = primaryJsoupStringAgent.value,
                     onResetButtonClick = {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                        Preferences.changeSettingPreferenceValue(
+                            stringPreferencesKey(PreferenceType.JSOUP_USER_AGENT.name),
                             context.dataStore,
                             "Twitterbot/1.0"
                         )
-                        SettingsPreference.primaryJsoupUserAgent.value =
+                        Preferences.primaryJsoupUserAgent.value =
                             "Twitterbot/1.0"
                     },
                     onTextFieldValueChange = {
@@ -171,12 +171,12 @@ fun AdvancedSettingsScreen(navController: NavController) {
                             primaryJsoupUserAgentFocusRequester.freeFocus()
                         }
                         if (isReadOnlyTextFieldForPrimaryUserAgent.value) {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsPreferences.JSOUP_USER_AGENT.name),
+                            Preferences.changeSettingPreferenceValue(
+                                stringPreferencesKey(PreferenceType.JSOUP_USER_AGENT.name),
                                 context.dataStore,
                                 primaryJsoupStringAgent.value
                             )
-                            SettingsPreference.primaryJsoupUserAgent.value =
+                            Preferences.primaryJsoupUserAgent.value =
                                 primaryJsoupStringAgent.value
                         }
                     },
@@ -190,12 +190,12 @@ fun AdvancedSettingsScreen(navController: NavController) {
                     textFieldLabel = LocalizedStrings.secondaryUserAgent.value,
                     textFieldValue = secondaryJsoupStringAgent.value,
                     onResetButtonClick = {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                        Preferences.changeSettingPreferenceValue(
+                            stringPreferencesKey(PreferenceType.SECONDARY_JSOUP_USER_AGENT.name),
                             context.dataStore,
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
                         )
-                        SettingsPreference.secondaryJsoupUserAgent.value =
+                        Preferences.secondaryJsoupUserAgent.value =
                             "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:131.0) Gecko/20100101 Firefox/131.0"
                     },
                     onTextFieldValueChange = {
@@ -210,12 +210,12 @@ fun AdvancedSettingsScreen(navController: NavController) {
                             secondaryJsoupUserAgentFocusRequester.freeFocus()
                         }
                         if (isReadOnlyTextFieldForSecondaryUserAgent.value) {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsPreferences.SECONDARY_JSOUP_USER_AGENT.name),
+                            Preferences.changeSettingPreferenceValue(
+                                stringPreferencesKey(PreferenceType.SECONDARY_JSOUP_USER_AGENT.name),
                                 context.dataStore,
                                 secondaryJsoupStringAgent.value
                             )
-                            SettingsPreference.secondaryJsoupUserAgent.value =
+                            Preferences.secondaryJsoupUserAgent.value =
                                 secondaryJsoupStringAgent.value
                         }
                     },
@@ -230,8 +230,8 @@ fun AdvancedSettingsScreen(navController: NavController) {
                     textFieldLabel = LocalizedStrings.localizationServer.value,
                     textFieldValue = localizationServerURL.value,
                     onResetButtonClick = {
-                        SettingsPreference.changeSettingPreferenceValue(
-                            stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
+                        Preferences.changeSettingPreferenceValue(
+                            stringPreferencesKey(PreferenceType.LOCALIZATION_SERVER_URL.name),
                             context.dataStore,
                             LinkoraValues.LINKORA_LOCALIZATION_SERVER
                         )
@@ -250,8 +250,8 @@ fun AdvancedSettingsScreen(navController: NavController) {
                             localizationServerTextFieldFocusRequester.freeFocus()
                         }
                         if (isReadOnlyTextFieldForLocalizationServer.value) {
-                            SettingsPreference.changeSettingPreferenceValue(
-                                stringPreferencesKey(SettingsPreferences.LOCALIZATION_SERVER_URL.name),
+                            Preferences.changeSettingPreferenceValue(
+                                stringPreferencesKey(PreferenceType.LOCALIZATION_SERVER_URL.name),
                                 context.dataStore,
                                 localizationServerURL.value
                             )

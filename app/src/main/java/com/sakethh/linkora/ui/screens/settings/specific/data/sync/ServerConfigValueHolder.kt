@@ -47,7 +47,7 @@ fun ServerConfigValueHolder(
     holderLabel: String,
     value: String,
     info: String,
-    onSaveClick: (newValue: String) -> Unit
+    onConfirmClick: (newValue: String) -> Unit
 ) {
     val textFieldReadOnly = rememberSaveable {
         mutableStateOf(true)
@@ -131,12 +131,12 @@ fun ServerConfigValueHolder(
                         .fillMaxWidth()
                         .padding(start = 15.dp, end = 15.dp),
                     onClick = {
-                        onSaveClick(textFieldValue.value)
+                        onConfirmClick(textFieldValue.value)
                         textFieldReadOnly.value = true
                         textFieldFocusRequester.freeFocus()
                     }
                 ) {
-                    Text("Save", style = MaterialTheme.typography.titleSmall)
+                    Text("Confirm", style = MaterialTheme.typography.titleSmall)
                 }
             } else {
                 FilledTonalButton(

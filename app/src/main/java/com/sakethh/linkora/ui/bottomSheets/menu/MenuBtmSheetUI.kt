@@ -76,7 +76,7 @@ import com.sakethh.linkora.ui.CoilImage
 import com.sakethh.linkora.ui.commonComposables.pulsateEffect
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetType
 import com.sakethh.linkora.ui.commonComposables.viewmodels.commonBtmSheets.OptionsBtmSheetVM
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.transferActions.TransferActionType
 import com.sakethh.linkora.ui.transferActions.TransferActions
 import com.sakethh.linkora.utils.fadedEdges
@@ -121,7 +121,7 @@ fun MenuBtmSheetUI(
                     .navigationBarsPadding()
                     .verticalScroll(rememberScrollState())
             ) {
-                if (menuBtmSheetParam.imgLink.isNotEmpty() && SettingsPreference.showAssociatedImagesInLinkMenu.value && (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK)) {
+                if (menuBtmSheetParam.imgLink.isNotEmpty() && Preferences.showAssociatedImagesInLinkMenu.value && (menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.IMPORTANT_LINKS_SCREEN || menuBtmSheetParam.btmSheetFor == OptionsBtmSheetType.LINK)) {
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()

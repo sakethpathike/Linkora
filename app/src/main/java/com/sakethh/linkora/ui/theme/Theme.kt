@@ -11,7 +11,7 @@ import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 
 
 private val LightColors = lightColorScheme(
@@ -87,40 +87,40 @@ fun LinkoraTheme(
 ) {
     val context = LocalContext.current
     val darkColors = DarkColors.copy(
-        background = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(0xFF000000) else DarkColors.background,
-        surface = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(0xFF000000) else DarkColors.surface
+        background = if (Preferences.shouldFollowAmoledTheme.value) Color(0xFF000000) else DarkColors.background,
+        surface = if (Preferences.shouldFollowAmoledTheme.value) Color(0xFF000000) else DarkColors.surface
     )
     val colors = when {
-        SettingsPreference.shouldFollowDynamicTheming.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            if (SettingsPreference.shouldFollowSystemTheme.value) {
+        Preferences.shouldFollowDynamicTheming.value && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
+            if (Preferences.shouldFollowSystemTheme.value) {
                 if (useDarkTheme) dynamicDarkColorScheme(context).copy(
-                    background = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(
+                    background = if (Preferences.shouldFollowAmoledTheme.value) Color(
                         0xFF000000
                     ) else dynamicDarkColorScheme(context).background,
-                    surface = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(0xFF000000) else dynamicDarkColorScheme(
+                    surface = if (Preferences.shouldFollowAmoledTheme.value) Color(0xFF000000) else dynamicDarkColorScheme(
                         context
                     ).surface
                 ) else dynamicLightColorScheme(
                     context
                 )
             } else {
-                if (SettingsPreference.shouldDarkThemeBeEnabled.value) dynamicDarkColorScheme(
+                if (Preferences.shouldDarkThemeBeEnabled.value) dynamicDarkColorScheme(
                     context
                 ).copy(
-                    background = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(
+                    background = if (Preferences.shouldFollowAmoledTheme.value) Color(
                         0xFF000000
                     ) else dynamicDarkColorScheme(context).background,
-                    surface = if (SettingsPreference.shouldFollowAmoledTheme.value) Color(0xFF000000) else dynamicDarkColorScheme(
+                    surface = if (Preferences.shouldFollowAmoledTheme.value) Color(0xFF000000) else dynamicDarkColorScheme(
                         context
                     ).surface
                 ) else dynamicLightColorScheme(context)
             }
         }
 
-        else -> if (SettingsPreference.shouldFollowSystemTheme.value) {
+        else -> if (Preferences.shouldFollowSystemTheme.value) {
             if (useDarkTheme) darkColors else LightColors
         } else {
-            if (SettingsPreference.shouldDarkThemeBeEnabled.value) darkColors else LightColors
+            if (Preferences.shouldDarkThemeBeEnabled.value) darkColors else LightColors
         }
     }
 

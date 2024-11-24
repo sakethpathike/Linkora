@@ -75,7 +75,7 @@ import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsSc
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
 import com.sakethh.linkora.ui.screens.home.HomeScreenVM
 import com.sakethh.linkora.ui.screens.linkLayout.LinkLayout
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
+import com.sakethh.linkora.ui.screens.settings.Preferences
 import com.sakethh.linkora.ui.screens.settings.composables.SpecificScreenScaffold
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -168,7 +168,7 @@ fun AllLinksScreen(navController: NavController) {
             imgURL = linksTable.imgURL,
             onMoreIconClick = {
                 selectedLinkUserAgent.value =
-                    linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+                    linksTable.userAgent ?: Preferences.primaryJsoupUserAgent.value
                 SpecificCollectionsScreenVM.screenType.value = selectedBtmSheetType
                 selectedLinkType.value = linkType.name
                 SpecificCollectionsScreenVM.selectedBtmSheetType.value =
@@ -221,7 +221,7 @@ fun AllLinksScreen(navController: NavController) {
                     ), context = context, uriHandler = uriHandler,
                     forceOpenInExternalBrowser = true,
                 )
-            }, userAgent = linksTable.userAgent ?: SettingsPreference.primaryJsoupUserAgent.value
+            }, userAgent = linksTable.userAgent ?: Preferences.primaryJsoupUserAgent.value
         )
     }
     SpecificScreenScaffold(
@@ -300,7 +300,7 @@ fun AllLinksScreen(navController: NavController) {
             }
             return@SpecificScreenScaffold
         }
-        when (SettingsPreference.currentlySelectedLinkLayout.value) {
+        when (Preferences.currentlySelectedLinkLayout.value) {
             LinkLayout.REGULAR_LIST_VIEW.name, LinkLayout.TITLE_ONLY_LIST_VIEW.name -> {
                 LazyColumn(
                     modifier = commonModifier
@@ -313,7 +313,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.SAVED_LINK,
                                     selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -340,7 +340,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.IMP_LINK,
                                     selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -367,7 +367,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.HISTORY_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -394,7 +394,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.ARCHIVE_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                             )
                         }
                     }
@@ -407,7 +407,7 @@ fun AllLinksScreen(navController: NavController) {
                                         linkType = LinkType.FOLDER_LINK,
                                         selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forTitleOnlyView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
+                                    forTitleOnlyView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.TITLE_ONLY_LIST_VIEW.name
                                 )
                         }
                     }
@@ -425,7 +425,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.SAVED_LINK,
                                     selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -452,7 +452,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.IMP_LINK,
                                     selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -479,7 +479,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.HISTORY_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -506,7 +506,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.ARCHIVE_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -519,7 +519,7 @@ fun AllLinksScreen(navController: NavController) {
                                         linkType = LinkType.FOLDER_LINK,
                                         selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                 )
                         }
                     }
@@ -539,7 +539,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.SAVED_LINK,
                                     selectedBtmSheetType = SpecificScreenType.SAVED_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -566,7 +566,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.IMP_LINK,
                                     selectedBtmSheetType = SpecificScreenType.IMPORTANT_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -593,7 +593,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.HISTORY_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ROOT_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -620,7 +620,7 @@ fun AllLinksScreen(navController: NavController) {
                                     linkType = LinkType.ARCHIVE_LINK,
                                     selectedBtmSheetType = SpecificScreenType.ARCHIVED_FOLDERS_LINKS_SCREEN
                                 ),
-                                forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                             )
                         }
                     }
@@ -633,7 +633,7 @@ fun AllLinksScreen(navController: NavController) {
                                         linkType = LinkType.FOLDER_LINK,
                                         selectedBtmSheetType = SpecificScreenType.SPECIFIC_FOLDER_LINKS_SCREEN
                                     ),
-                                    forStaggeredView = SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
+                                    forStaggeredView = Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name
                                 )
                         }
                     }
@@ -641,8 +641,8 @@ fun AllLinksScreen(navController: NavController) {
             }
         }
         val showQuickActions =
-            rememberSaveable(SettingsPreference.currentlySelectedLinkLayout.value) {
-                mutableStateOf(SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || SettingsPreference.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
+            rememberSaveable(Preferences.currentlySelectedLinkLayout.value) {
+                mutableStateOf(Preferences.currentlySelectedLinkLayout.value == LinkLayout.STAGGERED_VIEW.name || Preferences.currentlySelectedLinkLayout.value == LinkLayout.GRID_VIEW.name)
             }
         MenuBtmSheetUI(
             MenuBtmSheetParam(

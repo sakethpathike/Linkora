@@ -104,9 +104,9 @@ import com.sakethh.linkora.ui.navigation.ShelfScreenRoute
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenUIEvent
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificCollectionsScreenVM
 import com.sakethh.linkora.ui.screens.collections.specific.SpecificScreenType
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference
-import com.sakethh.linkora.ui.screens.settings.SettingsPreference.dataStore
-import com.sakethh.linkora.ui.screens.settings.SettingsPreferences
+import com.sakethh.linkora.ui.screens.settings.PreferenceType
+import com.sakethh.linkora.ui.screens.settings.Preferences
+import com.sakethh.linkora.ui.screens.settings.Preferences.dataStore
 import com.sakethh.linkora.ui.screens.settings.SortingPreferences
 import com.sakethh.linkora.ui.theme.LinkoraTheme
 import com.sakethh.linkora.utils.linkoraLog
@@ -173,16 +173,16 @@ fun ParentHomeScreen(
                     ) {
                         if (!isMainFabRotated.value) {
                             FloatingActionButton(onClick = {
-                                SettingsPreference.isShelfMinimizedInHomeScreen.value =
-                                    !SettingsPreference.isShelfMinimizedInHomeScreen.value
-                                SettingsPreference.changeSettingPreferenceValue(
-                                    booleanPreferencesKey(SettingsPreferences.SHELF_VISIBLE_STATE.name),
+                                Preferences.isShelfMinimizedInHomeScreen.value =
+                                    !Preferences.isShelfMinimizedInHomeScreen.value
+                                Preferences.changeSettingPreferenceValue(
+                                    booleanPreferencesKey(PreferenceType.SHELF_VISIBLE_STATE.name),
                                     context.dataStore,
-                                    SettingsPreference.isShelfMinimizedInHomeScreen.value
+                                    Preferences.isShelfMinimizedInHomeScreen.value
                                 )
                             }) {
                                 Icon(
-                                    imageVector = if (SettingsPreference.isShelfMinimizedInHomeScreen.value) Icons.Default.Maximize else Icons.Default.Minimize,
+                                    imageVector = if (Preferences.isShelfMinimizedInHomeScreen.value) Icons.Default.Maximize else Icons.Default.Minimize,
                                     contentDescription = ""
                                 )
                             }
@@ -303,7 +303,7 @@ fun ParentHomeScreen(
                     modifier = Modifier
                         .fillMaxHeight()
                         .animateContentSize()
-                        .width(if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsPreference.isShelfMinimizedInHomeScreen.value) 80.dp else 0.dp)
+                        .width(if (!homeScreenVM.isSelectionModeEnabled.value && !Preferences.isShelfMinimizedInHomeScreen.value) 80.dp else 0.dp)
                 ) {
                     item {
                         Spacer(modifier = Modifier.height(200.dp))
@@ -311,13 +311,13 @@ fun ParentHomeScreen(
                     items(panelData.value) {
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = it.panelId == SettingsPreference.lastSelectedPanelID.longValue,
+                            selected = it.panelId == Preferences.lastSelectedPanelID.longValue,
                             onClick = {
                                 coroutineScope.launch {
                                     async {
                                         pagerState.animateScrollToPage(0)
                                     }.await()
-                                    SettingsPreference.lastSelectedPanelID.longValue =
+                                    Preferences.lastSelectedPanelID.longValue =
                                         it.panelId
                                     homeScreenVM.changeSelectedPanelFolders(
                                         it.panelId, context
@@ -328,7 +328,7 @@ fun ParentHomeScreen(
                                 Column {
                                     Icon(
                                         modifier = Modifier.rotate(180f),
-                                        imageVector = if (it.panelId == SettingsPreference.lastSelectedPanelID.longValue) {
+                                        imageVector = if (it.panelId == Preferences.lastSelectedPanelID.longValue) {
                                             Icons.Filled.ViewArray
                                         } else {
                                             Icons.Outlined.ViewArray
@@ -353,22 +353,22 @@ fun ParentHomeScreen(
                     item {
                         androidx.compose.material3.NavigationRailItem(
                             modifier = Modifier.rotate(90f),
-                            selected = SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong(),
+                            selected = Preferences.lastSelectedPanelID.longValue == (-1).toLong(),
                             onClick = {
                                 coroutineScope.launch {
                                     if (panelData.value.isEmpty() || selectedPanelFolders.isEmpty()) {
-                                        SettingsPreference.lastSelectedPanelID.longValue = -1
-                                        SettingsPreference.changeSettingPreferenceValue(
-                                            intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                                        Preferences.lastSelectedPanelID.longValue = -1
+                                        Preferences.changeSettingPreferenceValue(
+                                            intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
                                             context.dataStore,
                                             newValue = -1
                                         )
                                     }
                                     pagerState.animateScrollToPage(0)
                                 }.invokeOnCompletion {
-                                    SettingsPreference.lastSelectedPanelID.longValue = -1
-                                    SettingsPreference.changeSettingPreferenceValue(
-                                        intPreferencesKey(SettingsPreferences.LAST_SELECTED_PANEL_ID.name),
+                                    Preferences.lastSelectedPanelID.longValue = -1
+                                    Preferences.changeSettingPreferenceValue(
+                                        intPreferencesKey(PreferenceType.LAST_SELECTED_PANEL_ID.name),
                                         context.dataStore,
                                         newValue = -1
                                     )
@@ -378,7 +378,7 @@ fun ParentHomeScreen(
                                 Column {
                                     Icon(
                                         modifier = Modifier.rotate(180f),
-                                        imageVector = if (SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong()) {
+                                        imageVector = if (Preferences.lastSelectedPanelID.longValue == (-1).toLong()) {
                                             Icons.Filled.Layers
                                         } else {
                                             Icons.Outlined.Layers
@@ -418,7 +418,7 @@ fun ParentHomeScreen(
                         Spacer(modifier = Modifier.height(200.dp))
                     }
                 }
-                if (!homeScreenVM.isSelectionModeEnabled.value && !SettingsPreference.isShelfMinimizedInHomeScreen.value) {
+                if (!homeScreenVM.isSelectionModeEnabled.value && !Preferences.isShelfMinimizedInHomeScreen.value) {
                     Box(
                         modifier = Modifier
                             .fillMaxHeight()
@@ -442,7 +442,7 @@ fun ParentHomeScreen(
                     LazyColumn(modifier = Modifier.padding(it)) {
                         stickyHeader {
                             Column(modifier = Modifier.animateContentSize()) {
-                                if (selectedPanelFolders.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
+                                if (selectedPanelFolders.isNotEmpty() && Preferences.lastSelectedPanelID.longValue != (-1).toLong()) {
                                     ScrollableTabRow(
                                         divider = {},
                                         modifier = Modifier
@@ -469,7 +469,7 @@ fun ParentHomeScreen(
                                             }
                                         }
                                     }
-                                } else if (SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong()) {
+                                } else if (Preferences.lastSelectedPanelID.longValue == (-1).toLong()) {
                                     Column {
                                         ScrollableTabRow(
                                             divider = {},
@@ -502,7 +502,7 @@ fun ParentHomeScreen(
                             }
                         }
                     }
-                    if (selectedPanelFolders.isNotEmpty() && SettingsPreference.lastSelectedPanelID.longValue != (-1).toLong()) {
+                    if (selectedPanelFolders.isNotEmpty() && Preferences.lastSelectedPanelID.longValue != (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -514,7 +514,7 @@ fun ParentHomeScreen(
                             ChildHomeScreen(
                                 homeScreenType = HomeScreenVM.HomeScreenType.CUSTOM_LIST,
                                 navController = navController,
-                                folderLinksData = when (SettingsPreference.selectedSortingType.value) {
+                                folderLinksData = when (Preferences.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.folderLinksSortingRepo
                                             .sortByAToZV10(selectedPanelFolders[it].folderId)
@@ -555,7 +555,7 @@ fun ParentHomeScreen(
                                             ).value
                                     }
                                 },
-                                childFoldersData = when (SettingsPreference.selectedSortingType.value) {
+                                childFoldersData = when (Preferences.selectedSortingType.value) {
                                     SortingPreferences.A_TO_Z.name -> {
                                         homeScreenVM.subFoldersSortingRepo.sortSubFoldersByAToZ(
                                             selectedPanelFolders[it].folderId
@@ -604,7 +604,7 @@ fun ParentHomeScreen(
                                 customWebTab = customWebTab
                             )
                         }
-                    } else if (SettingsPreference.lastSelectedPanelID.longValue == (-1).toLong()) {
+                    } else if (Preferences.lastSelectedPanelID.longValue == (-1).toLong()) {
                         HorizontalPager(
                             key = {
                                 it
@@ -840,20 +840,20 @@ fun ParentHomeScreen(
         )
     }
     LaunchedEffect(
-        key1 = SettingsPreference.lastSelectedPanelID.longValue,
+        key1 = Preferences.lastSelectedPanelID.longValue,
         key2 = panelData.value.size
     ) {
-        if (SettingsPreference.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && panelData.value.isNotEmpty()) {
+        if (Preferences.lastSelectedPanelID.longValue.toInt() != -1 && HomeScreenVM.initialStart && panelData.value.isNotEmpty()) {
             panelData.value.find {
-                it.panelId == SettingsPreference.lastSelectedPanelID.longValue
+                it.panelId == Preferences.lastSelectedPanelID.longValue
             }?.let {
                 panelsLazyColumnState.animateScrollToItem(panelData.value.indexOf(it))
             }
 
             homeScreenVM.changeSelectedPanelFolders(
-                (SettingsPreference.readSettingPreferenceValue(
+                (Preferences.readSettingPreferenceValue(
                     intPreferencesKey(
-                        SettingsPreferences.LAST_SELECTED_PANEL_ID.name
+                        PreferenceType.LAST_SELECTED_PANEL_ID.name
                     ), context.dataStore
                 ) ?: -1).toLong(), context
             )
