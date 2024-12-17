@@ -1,7 +1,7 @@
 ---
 name: Enhancement
 about: "‎ ‎ ‎ "
-title: ''
+title: "[Enhancement] <What to Improve>"
 labels: enhancement
 assignees: ''
 
