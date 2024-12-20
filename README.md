@@ -19,7 +19,7 @@ height="80">](https://github.com/sakethpathike/Linkora/releases) [<img src="http
 - Customize link names to your preference.
 - Share directly from other apps.
 - Sort and search links and folders quickly.
-- Import and export data easily (this is being written and will be updated with the standard HTML-based schema).
+- Import and export data easily.
 - Auto-recognize link images and titles.
 - Add folders to your **_Shelf_** for instant home screen access.
 - Hindi language support, with remote string loading to update languages seamlessly. For details on contributing language strings, check [this guide](https://github.com/sakethpathike/LinkoraLocalizationServer/blob/master/README.md).
